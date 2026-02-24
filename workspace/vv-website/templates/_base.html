@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <meta name="author" content="Vivian Voss">
+    <meta name="robots" content="index, follow">
+    {( slot meta )}
+    <meta name="description" content="Vivian Voss — Software Developer & System Architect. 30 years in the game.">
+    {( endslot )}
+    <title>{( slot title )}Vivian Voss{( endslot )}</title>
+    <link rel="canonical" href="https://vivianvoss.net{( slot canonical )}/{( endslot )}">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_GB">
+    <meta property="og:site_name" content="Vivian Voss">
+    <meta property="og:url" content="https://vivianvoss.net{( slot canonical )}/{( endslot )}">
+    <meta property="og:title" content="{( slot og-title )}Vivian Voss — Software Developer & System Architect{( endslot )}">
+    <meta property="og:description" content="{( slot og-desc )}30 years in the game. 26 professionally. Building minimal tools that earn every byte.{( endslot )}">
+    <link rel="stylesheet" href="{{ cn:path.styles }}castd.css">
+    <link rel="stylesheet" href="{{ cn:path.styles }}vv.css">
+</head>
+<body>
+    <canvas id="stars" aria-hidden="true"></canvas>
+    <a href="#content" class="skip-link">Skip to content</a>
+
+    {( cn:preset.header )}
+
+    <main id="content">
+        {( slot content )}{( endslot )}
+    </main>
+
+    {( cn:preset.footer )}
+
+    <script src="{{ cn:path.scripts }}castd.js"></script>
+    <script src="{{ cn:path.scripts }}nav.js"></script>
+    <script src="{{ cn:path.scripts }}stars.js"></script>
+</body>
+</html>
