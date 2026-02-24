@@ -7,7 +7,7 @@
     <meta name="author" content="Vivian Voss">
     <meta name="robots" content="index, follow">
     {( slot meta )}
-    <meta name="description" content="Vivian Voss — Software Developer & System Architect. 30 years in the game.">
+    <meta name="description" content="Vivian Voss — Software Developer & System Architect. 37 years in the game.">
     {( endslot )}
     <title>{( slot title )}Vivian Voss{( endslot )}</title>
     <link rel="canonical" href="https://vivianvoss.net{( slot canonical )}/{( endslot )}">
@@ -16,12 +16,16 @@
     <meta property="og:site_name" content="Vivian Voss">
     <meta property="og:url" content="https://vivianvoss.net{( slot canonical )}/{( endslot )}">
     <meta property="og:title" content="{( slot og-title )}Vivian Voss — Software Developer & System Architect{( endslot )}">
-    <meta property="og:description" content="{( slot og-desc )}30 years in the game. 26 professionally. Building minimal tools that earn every byte.{( endslot )}">
+    <meta property="og:description" content="{( slot og-desc )}37 years in the game. 26 professionally. Building minimal tools that earn every byte.{( endslot )}">
     <link rel="stylesheet" href="{{ cn:path.styles }}castd.css">
     <link rel="stylesheet" href="{{ cn:path.styles }}vv.css">
 </head>
 <body>
     <canvas id="stars" aria-hidden="true"></canvas>
+    <div class="game-score" style="display: none" aria-hidden="true">
+        <span id="game-score">0</span>
+    </div>
+    <div class="game-restart" style="display: none" aria-hidden="true">Ctrl+G Restart</div>
     <a href="#content" class="skip-link">Skip to content</a>
 
     {( cn:preset.header )}
@@ -35,5 +39,6 @@
     <script src="{{ cn:path.scripts }}castd.js"></script>
     <script src="{{ cn:path.scripts }}nav.js"></script>
     <script src="{{ cn:path.scripts }}stars.js"></script>
+    <script src="{{ cn:path.scripts }}perf.js"></script>
 </body>
 </html>
