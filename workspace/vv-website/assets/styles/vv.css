@@ -633,6 +633,10 @@
 
     /* --- Footer ----------------------------------------------------------- */
 
+    main#content:not(:has(*)) ~ footer[role="contentinfo"] {
+        display: none;
+    }
+
     footer[role="contentinfo"] {
         padding: calc(var(--unit) * 4) calc(var(--unit) * 3);
         border-top: 1px solid var(--border);
@@ -773,6 +777,7 @@
 
 @layer castd.game {
     .game-score,
+    .game-lives,
     .game-restart {
         display: none;
     }
@@ -789,8 +794,10 @@
             color: var(--accent);
             opacity: 0.15;
             pointer-events: none;
+            text-align: center;
         }
 
+        .game-lives,
         .game-restart {
             display: block;
             position: fixed;
@@ -803,7 +810,23 @@
             opacity: 0.3;
             pointer-events: none;
         }
+
+        .game-level {
+            display: block;
+            font-size: calc(var(--unit) * 2.25);
+            opacity: 1;
+        }
+
+        .game-lives {
+            bottom: calc(var(--unit) * 6);
+            letter-spacing: 0.25em;
+        }
     }
+
+    @keyframes game-blink {
+        50% { opacity: 0; }
+    }
+
 }
 
 /* ========================================================================
