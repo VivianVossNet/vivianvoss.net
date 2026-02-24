@@ -101,6 +101,8 @@
 
         &:focus {
             top: var(--unit);
+            outline: 2px solid var(--text-inv);
+            outline-offset: 2px;
         }
     }
 
@@ -124,6 +126,11 @@
             color: var(--text);
             font-size: calc(var(--unit) * 2.25);
             letter-spacing: -0.02em;
+
+            &:focus-visible {
+                outline: 2px solid var(--accent);
+                outline-offset: 2px;
+            }
         }
 
         & strong {
@@ -142,11 +149,16 @@
         cursor: pointer;
         padding: 0;
 
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
         & span,
         & span::before,
         & span::after {
             display: block;
-            width: calc(var(--unit) * 2.5);
+            width: calc(var(--unit) * 3);
             height: 2px;
             background: var(--text);
             transition: transform 0.2s, opacity 0.2s;
@@ -206,7 +218,19 @@
             &:hover {
                 color: var(--accent);
             }
+
+            &:focus-visible {
+                outline: 2px solid var(--accent);
+                outline-offset: 2px;
+            }
         }
+    }
+
+    /* --- Global focus ----------------------------------------------------- */
+
+    a:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
     }
 
     /* --- Main ------------------------------------------------------------- */
@@ -323,6 +347,11 @@
         & a:last-child {
             align-self: end;
         }
+
+        & a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
     }
 
     /* --- Series list ------------------------------------------------------ */
@@ -370,6 +399,11 @@
 
             &:hover {
                 text-decoration: underline;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--accent);
+                outline-offset: 2px;
             }
         }
     }
@@ -442,6 +476,161 @@
         letter-spacing: 0.05em;
     }
 
+    /* --- Contact form ----------------------------------------------------- */
+
+    .vv-form {
+        display: grid;
+        gap: calc(var(--unit) * 3);
+        max-width: 50ch;
+    }
+
+    .vv-form-field {
+        display: grid;
+        gap: calc(var(--unit) * 0.75);
+    }
+
+    .vv-form-field label {
+        font-size: calc(var(--unit) * 1.75);
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .vv-form-field input,
+    .vv-form-field textarea {
+        font-family: var(--font-body);
+        font-size: calc(var(--unit) * 2);
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: calc(var(--unit) * 1.5) calc(var(--unit) * 2);
+        width: 100%;
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+            border-color: var(--accent);
+        }
+    }
+
+    .vv-form-field textarea {
+        resize: vertical;
+        min-height: calc(var(--unit) * 16);
+    }
+
+    .vv-hidden {
+        display: none;
+    }
+
+    .vv-hp {
+        position: absolute;
+        left: -9999px;
+        opacity: 0;
+        height: 0;
+        overflow: hidden;
+    }
+
+    .vv-status {
+        max-width: 50ch;
+        padding: calc(var(--unit) * 2);
+        border: 1px solid var(--border);
+        font-size: calc(var(--unit) * 2);
+        line-height: var(--line-height-base);
+    }
+
+    .vv-status-ok {
+        color: oklch(72% 0.15 145);
+        border-color: oklch(72% 0.15 145 / 0.4);
+    }
+
+    .vv-status-err {
+        color: var(--accent);
+        border-color: var(--accent);
+    }
+
+    .vv-btn {
+        font-family: var(--font-heading);
+        font-size: calc(var(--unit) * 1.5);
+        color: var(--bg);
+        background: var(--accent);
+        border: none;
+        padding: calc(var(--unit) * 1.75) calc(var(--unit) * 3);
+        cursor: pointer;
+        letter-spacing: 0.05em;
+        justify-self: start;
+        transition: opacity 0.15s;
+
+        &:hover {
+            opacity: 0.85;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--text);
+            outline-offset: 2px;
+        }
+    }
+
+    /* --- Lighthouse scores ------------------------------------------------ */
+
+    .vv-lighthouse {
+        display: flex;
+        flex-wrap: wrap;
+        gap: calc(var(--unit) * 4);
+    }
+
+    .vv-lh-score {
+        display: grid;
+        justify-items: center;
+        gap: calc(var(--unit) * 1.5);
+
+        & span {
+            font-size: calc(var(--unit) * 1.75);
+            color: var(--muted);
+        }
+    }
+
+    .vv-lh-ring {
+        width: calc(var(--unit) * 10);
+        height: calc(var(--unit) * 10);
+        border-radius: 50%;
+        border: 3px solid oklch(72% 0.2 145);
+        display: grid;
+        place-items: center;
+        font-family: var(--font-heading);
+        font-size: calc(var(--unit) * 2.5);
+        color: oklch(72% 0.2 145);
+        box-shadow: 0 0 0 3px oklch(72% 0.2 145 / 0.15);
+    }
+
+    .vv-lh-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: calc(var(--unit) * 2);
+    }
+
+    .vv-lh-metric {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: calc(var(--unit) * 2);
+        display: grid;
+        gap: calc(var(--unit) * 0.5);
+        text-align: center;
+    }
+
+    .vv-lh-metric .value {
+        font-family: var(--font-heading);
+        font-size: calc(var(--unit) * 1.75);
+        color: oklch(72% 0.2 145);
+        line-height: 1.6;
+    }
+
+    .vv-lh-metric .label {
+        font-size: calc(var(--unit) * 1.5);
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
     /* --- Footer ----------------------------------------------------------- */
 
     footer[role="contentinfo"] {
@@ -492,6 +681,10 @@
         .vv-perf-grid {
             grid-template-columns: repeat(3, 1fr);
         }
+
+        .vv-lh-metrics {
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
 
     /* ======================================================================
@@ -538,6 +731,10 @@
         }
 
         .vv-perf-grid {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .vv-lh-metrics {
             grid-template-columns: repeat(6, 1fr);
         }
 
@@ -619,6 +816,7 @@
     }
 
     .vv-marquee-track {
-        animation-play-state: paused;
+        animation: none;
+        transform: none;
     }
 }
