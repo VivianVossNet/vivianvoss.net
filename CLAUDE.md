@@ -90,6 +90,69 @@ Aktive Serien:
 
 ---
 
+## Deployment auf primus
+
+### Server-Zugang
+
+- SSH: `ssh primus` (Host: primus.min2max.run)
+- Login-User: `prime` (Home: `/home/prime/`)
+- Shell: tcsh — kein `2>/dev/null`, kein Bash-Syntax
+- Jails auflisten: `jls`
+
+### Jail: vivianvoss_net
+
+- JID: 9 (kann sich ändern, immer per `jls` prüfen)
+- IP: 10.0.0.60
+- Hostname: web.vivianvoss.net
+- Jail-Root: `/rpool/jails/vivianvoss_net/`
+- CASTD-Pfad (in Jail): `/usr/local/castd/`
+- CASTD-Pfad (vom Host): `/rpool/jails/vivianvoss_net/usr/local/castd/`
+
+### Deployment-Workflow
+
+Der Login-User `prime` hat **keine Schreibrechte** in der Jail. Daher:
+
+1. **Lokal packen** (ohne macOS-Metadaten und xattrs):
+   ```sh
+   COPYFILE_DISABLE=1 tar --no-xattrs -czf /tmp/vv-deploy.tar.gz workspace/vv-website/ castd/backend/extensions/
+   ```
+
+2. **Per scp nach `/tmp/` auf primus kopieren:**
+   ```sh
+   scp /tmp/vv-deploy.tar.gz primus:/tmp/
+   ```
+
+3. **Config-Dateien separat hochladen** (immer komplette Dateien, NIEMALS patchen):
+   ```sh
+   # z.B. server.toml für Production:
+   scp /tmp/vv-server-prod.toml primus:/tmp/
+   ```
+
+4. **User die sudo-Befehle geben** zum Entpacken und Platzieren:
+   ```sh
+   # Auf primus als root:
+   cd /rpool/jails/vivianvoss_net/usr/local/castd
+   sudo tar xzf /tmp/vv-deploy.tar.gz
+   sudo cp /tmp/vv-server-prod.toml /rpool/jails/vivianvoss_net/usr/local/castd/server.toml
+   # CASTD stoppen BEVOR Binary ersetzt wird ("Text file busy"):
+   jexec vivianvoss_net pkill -f castd-bin
+   # Binary ersetzen (falls neues Binary):
+   cp /tmp/castd-freebsd-x86_64 /rpool/jails/vivianvoss_net/usr/local/castd/castd-bin
+   chmod 755 /rpool/jails/vivianvoss_net/usr/local/castd/castd-bin
+   # CASTD neu starten:
+   jexec vivianvoss_net daemon -o /var/log/castd.log /bin/sh -c "cd /usr/local/castd && ./castd-bin serve --bundle vv-website -p 1337"
+   # Aufräumen:
+   rm /tmp/vv-deploy.tar.gz /tmp/vv-server-prod.toml
+   ```
+
+**WICHTIG:**
+- Claude führt KEINE sudo/root-Befehle auf primus aus
+- Claude kopiert nur nach `/tmp/` und gibt dem User die Befehle
+- Config-Dateien werden IMMER als komplette, verifizierte Dateien hochgeladen — NIEMALS gepatcht
+- Die Production-`server.toml` enthält SMTP-Credentials und wird NICHT im Git-Repo gespeichert
+
+---
+
 ## Offene Fragen
 
 - [ ] Zweck: Persönliche Marke, Min2Max Hub, oder Hybrid?
