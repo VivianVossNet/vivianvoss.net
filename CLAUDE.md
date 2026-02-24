@@ -67,6 +67,29 @@ Aktive Serien:
 
 ---
 
+## Lokale Entwicklung
+
+### CASTD starten
+
+```sh
+./castd/castd.sh start --bundle vv-website
+```
+
+- `--bundle vv-website` ist **zwingend** — ohne den Parameter findet CASTD die Templates nicht (404 auf allen Seiten)
+- Die `server.toml` wird für den Bundle-Namen (noch) nicht ausgelesen
+- Restart: `./castd/castd.sh stop && ./castd/castd.sh start --bundle vv-website`
+- Port: 1337 (default)
+- Templates werden live ausgeliefert — kein Neustart nötig bei Template/CSS/JS-Änderungen
+- Neustart nötig bei: `server.toml`-Änderungen, Extension-Änderungen
+
+### CASTD Extensions
+
+- Extensions liegen in `castd/backend/extensions/<name>/init.lua`
+- Routes werden in `server.toml` unter `[extensions.routes]` gemappt
+- `cn.mail.send(to, subject, body)` — SMTP via `[mail]` Config in server.toml
+
+---
+
 ## Offene Fragen
 
 - [ ] Zweck: Persönliche Marke, Min2Max Hub, oder Hybrid?

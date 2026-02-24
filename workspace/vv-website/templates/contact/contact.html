@@ -3,14 +3,14 @@
 {( slot title )}Contact — Vivian Voss{( endslot )}
 
 {( slot meta )}
-<meta name="description" content="Get in touch with Vivian Voss. LinkedIn, GitHub, or email.">
+<meta name="description" content="Get in touch with Vivian Voss. LinkedIn or the contact form.">
 {( endslot )}
 
 {( slot canonical )}/contact{( endslot )}
 
 {( slot og-title )}Contact — Vivian Voss{( endslot )}
 
-{( slot og-desc )}Get in touch. LinkedIn, GitHub, or email.{( endslot )}
+{( slot og-desc )}Get in touch. LinkedIn or the contact form.{( endslot )}
 
 {( slot content )}
 <section class="vv-section" aria-labelledby="contact-title">
@@ -23,12 +23,70 @@
 <section class="vv-section" aria-labelledby="channels-title">
     <h2 id="channels-title">Channels</h2>
     <div class="vv-contact">
-        <p>&#x25A0; <a href="https://www.linkedin.com/in/vivianvoss/" target="_blank" rel="noopener">LinkedIn</a>
+        <p><span aria-hidden="true">&#x25A0;</span> <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">LinkedIn</a>
             — Primary. Where the writing happens.</p>
-        <p>&#x25A0; <a href="https://github.com/vivianvoss" target="_blank" rel="noopener">GitHub</a>
-            — Code speaks louder.</p>
-        <p>&#x25A0; <a href="mailto:hello@vivianvoss.net">hello@vivianvoss.net</a>
-            — For everything else.</p>
     </div>
+</section>
+
+<section class="vv-section" aria-labelledby="form-title">
+    <h2 id="form-title">Send a Message</h2>
+    <p>Delivered directly. No tracking, no third parties.</p>
+    <div id="cf-status" class="vv-status vv-hidden" role="alert" aria-live="assertive"></div>
+    <form class="vv-form" action="/contact/send" method="post">
+        <div class="vv-form-field">
+            <label for="cf-name">Name</label>
+            <input id="cf-name" name="name" type="text" required autocomplete="name">
+        </div>
+        <div class="vv-form-field">
+            <label for="cf-email">Email</label>
+            <input id="cf-email" name="email" type="email" required autocomplete="email">
+        </div>
+        <div class="vv-form-field">
+            <label for="cf-subject">Subject</label>
+            <input id="cf-subject" name="subject" type="text" required>
+        </div>
+        <div class="vv-form-field">
+            <label for="cf-message">Message</label>
+            <textarea id="cf-message" name="message" rows="5" required></textarea>
+        </div>
+        <div class="vv-form-field vv-hp" aria-hidden="true">
+            <label for="cf-website">Website</label>
+            <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <button type="submit" class="vv-btn">Send &#x25B6;</button>
+    </form>
+    <script>
+    (function(){
+        var p = new URLSearchParams(location.search);
+        var el = document.getElementById("cf-status");
+        var msg;
+        if (p.has("sent")) {
+            msg = "Message sent. Thank you.";
+            el.className = "vv-status vv-status-ok";
+            document.querySelector(".vv-form").style.display = "none";
+        } else if (p.get("error") === "1") {
+            msg = "All fields are required.";
+            el.className = "vv-status vv-status-err";
+        } else if (p.get("error") === "2") {
+            msg = "Something went wrong. Try LinkedIn instead.";
+            el.className = "vv-status vv-status-err";
+        }
+        if (msg) {
+            el.textContent = msg;
+            el.classList.remove("vv-hidden");
+            history.replaceState(null, "", "/contact");
+        }
+    })();
+    </script>
+</section>
+
+<section class="vv-section" aria-labelledby="legal-title">
+    <h2 id="legal-title">Legal Notice</h2>
+    <p>Information pursuant to DDG 5 (Digitale-Dienste-Gesetz).</p>
+    <p>Vivian Voss<br>
+        Hauptstr. 10<br>
+        76872 Winden/Pfalz<br>
+        Germany</p>
+    <p>E-Mail: via the <a href="#form-title">contact form above</a>.</p>
 </section>
 {( endslot )}
