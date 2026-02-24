@@ -6,8 +6,7 @@
  * Copyright 2026 Vivian Voss. All rights reserved.
  */
 (function () {
-    var ids = ["perf-ttfb", "perf-fcp", "perf-load", "perf-size", "perf-requests", "perf-dom"];
-    if (!document.getElementById(ids[0])) return;
+    if (!document.getElementById("perf-ttfb")) return;
 
     function ms(v) { return Math.round(v) + " ms"; }
     function kb(v) { return (v / 1024).toFixed(1) + " KB"; }
@@ -21,7 +20,6 @@
         if (!nav) return;
 
         set("perf-ttfb", ms(nav.responseStart - nav.requestStart));
-        set("perf-load", ms(nav.loadEventEnd - nav.startTime));
 
         var resources = performance.getEntriesByType("resource");
         var total = nav.transferSize || 0;
@@ -29,20 +27,42 @@
             total += resources[i].transferSize || 0;
         }
         set("perf-size", kb(total));
-        set("perf-requests", (resources.length + 1).toString());
-        set("perf-dom", document.querySelectorAll("*").length.toString());
     }
 
+    // FCP
     try {
-        var po = new PerformanceObserver(function (list) {
+        new PerformanceObserver(function (list) {
             var entries = list.getEntries();
             for (var i = 0; i < entries.length; i++) {
                 if (entries[i].name === "first-contentful-paint") {
                     set("perf-fcp", ms(entries[i].startTime));
                 }
             }
-        });
-        po.observe({ type: "paint", buffered: true });
+        }).observe({ type: "paint", buffered: true });
+    } catch (e) {}
+
+    // LCP
+    try {
+        new PerformanceObserver(function (list) {
+            var entries = list.getEntries();
+            if (entries.length) {
+                set("perf-lcp", ms(entries[entries.length - 1].startTime));
+            }
+        }).observe({ type: "largest-contentful-paint", buffered: true });
+    } catch (e) {}
+
+    // CLS
+    try {
+        var clsValue = 0;
+        new PerformanceObserver(function (list) {
+            var entries = list.getEntries();
+            for (var i = 0; i < entries.length; i++) {
+                if (!entries[i].hadRecentInput) {
+                    clsValue += entries[i].value;
+                }
+            }
+            set("perf-cls", clsValue.toFixed(3));
+        }).observe({ type: "layout-shift", buffered: true });
     } catch (e) {}
 
     if (document.readyState === "complete") {
