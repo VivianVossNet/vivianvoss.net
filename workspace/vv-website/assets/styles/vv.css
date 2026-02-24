@@ -6,6 +6,22 @@
  * Copyright 2026 Vivian Voss. All rights reserved.
  */
 
+@font-face {
+    font-family: 'Press Start 2P';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/assets/fonts/press-start-2p.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Oxanium';
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url('/assets/fonts/oxanium.woff2') format('woff2');
+}
+
 @layer theme {
     :root {
         --accent: oklch(68% 0.18 35);
@@ -15,6 +31,16 @@
         --text: light-dark(oklch(18% 0 0), oklch(93% 0 0));
         --muted: light-dark(oklch(55% 0 0), oklch(60% 0 0));
         --border: light-dark(oklch(88% 0 0), oklch(25% 0.005 260));
+        --font-body: 'Oxanium', system-ui, sans-serif;
+        --font-heading: 'Press Start 2P', monospace;
+    }
+
+    body {
+        font-family: var(--font-body);
+    }
+
+    h1, h2, h3 {
+        font-family: var(--font-heading);
     }
 }
 
@@ -24,11 +50,39 @@
 
 @layer castd {
 
+    /* --- Scrollbar (macOS-style overlay) ---------------------------------- */
+
+    html {
+        scrollbar-width: thin;
+        scrollbar-color: light-dark(oklch(70% 0 0 / 0.3), oklch(60% 0 0 / 0.3)) transparent;
+        overflow-y: scroll;
+    }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: light-dark(oklch(70% 0 0 / 0.3), oklch(60% 0 0 / 0.3));
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: light-dark(oklch(60% 0 0 / 0.5), oklch(70% 0 0 / 0.5));
+    }
+
     /* --- Canvas background ------------------------------------------------ */
 
     #stars {
         position: fixed;
         inset: 0;
+        width: 100%;
+        height: 100%;
         z-index: -1;
         pointer-events: none;
     }
@@ -172,24 +226,25 @@
     }
 
     .vv-section h1 {
-        font-size: calc(var(--unit) * 4);
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        line-height: var(--line-height-tight);
+        font-size: calc(var(--unit) * 2.5);
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        line-height: 1.6;
     }
 
     .vv-section h2 {
-        font-size: calc(var(--unit) * 2.75);
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        line-height: var(--line-height-tight);
+        font-size: calc(var(--unit) * 1.75);
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        line-height: 1.6;
         color: var(--accent);
     }
 
     .vv-section h3 {
-        font-size: calc(var(--unit) * 2.25);
-        font-weight: 600;
-        line-height: var(--line-height-tight);
+        font-size: calc(var(--unit) * 1.5);
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        line-height: 1.6;
     }
 
     .vv-section p {
@@ -211,7 +266,8 @@
     }
 
     .vv-hero h1 {
-        font-size: calc(var(--unit) * 5);
+        font-size: calc(var(--unit) * 3);
+        line-height: 1.6;
     }
 
     .vv-hero .tagline {
@@ -236,11 +292,13 @@
         border: 1px solid var(--border);
         padding: calc(var(--unit) * 3);
         display: grid;
+        grid-template-rows: auto auto 1fr auto;
         gap: calc(var(--unit) * 1.5);
 
         & h3 {
-            font-size: calc(var(--unit) * 2.25);
-            font-weight: 600;
+            font-size: calc(var(--unit) * 1.5);
+            font-weight: 400;
+            line-height: 1.6;
         }
 
         & p {
@@ -253,6 +311,17 @@
             color: var(--accent);
             font-size: calc(var(--unit) * 1.75);
             font-weight: 600;
+        }
+
+        & .status {
+            font-size: calc(var(--unit) * 1.75);
+            color: var(--muted);
+            font-style: italic;
+            align-self: end;
+        }
+
+        & a:last-child {
+            align-self: end;
         }
     }
 
@@ -277,8 +346,9 @@
         }
 
         & h3 {
-            font-size: calc(var(--unit) * 2.25);
-            font-weight: 600;
+            font-size: calc(var(--unit) * 1.5);
+            font-weight: 400;
+            line-height: 1.6;
         }
 
         & p {
@@ -304,6 +374,74 @@
         }
     }
 
+    /* --- Hardware timeline ------------------------------------------------ */
+
+    .vv-timeline {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: calc(var(--unit) * 2);
+        font-family: ui-monospace, monospace;
+        font-size: calc(var(--unit) * 1.75);
+        color: var(--accent);
+    }
+
+    .vv-timeline .year {
+        color: var(--muted);
+    }
+
+    /* --- Marquee (demoscene scroll) --------------------------------------- */
+
+    .vv-marquee {
+        overflow: hidden;
+        font-family: ui-monospace, monospace;
+        font-size: calc(var(--unit) * 1.75);
+        color: var(--accent);
+    }
+
+    .vv-marquee-track {
+        display: flex;
+        gap: calc(var(--unit) * 2);
+        white-space: nowrap;
+        width: max-content;
+        animation: marquee 30s linear infinite;
+    }
+
+    @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+
+    /* --- Performance dashboard -------------------------------------------- */
+
+    .vv-perf-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: calc(var(--unit) * 2);
+    }
+
+    .vv-perf-metric {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: calc(var(--unit) * 2);
+        display: grid;
+        gap: calc(var(--unit) * 0.5);
+        text-align: center;
+    }
+
+    .vv-perf-metric .value {
+        font-family: var(--font-heading);
+        font-size: calc(var(--unit) * 1.75);
+        color: var(--accent);
+        line-height: 1.6;
+    }
+
+    .vv-perf-metric .label {
+        font-size: calc(var(--unit) * 1.5);
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
     /* --- Footer ----------------------------------------------------------- */
 
     footer[role="contentinfo"] {
@@ -313,6 +451,17 @@
         gap: calc(var(--unit) * 2);
         color: var(--muted);
         font-size: calc(var(--unit) * 1.75);
+
+        & .powered-by {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--unit);
+        }
+
+        & .powered-by img {
+            vertical-align: middle;
+        }
 
         & .tech-stack {
             display: flex;
@@ -333,11 +482,15 @@
         }
 
         .vv-hero h1 {
-            font-size: calc(var(--unit) * 7);
+            font-size: calc(var(--unit) * 4);
         }
 
         .vv-cards {
             grid-template-columns: repeat(2, 1fr);
+        }
+
+        .vv-perf-grid {
+            grid-template-columns: repeat(3, 1fr);
         }
     }
 
@@ -373,15 +526,19 @@
         }
 
         .vv-hero h1 {
-            font-size: calc(var(--unit) * 9);
+            font-size: calc(var(--unit) * 5);
         }
 
         .vv-section h1 {
-            font-size: calc(var(--unit) * 5);
+            font-size: calc(var(--unit) * 3);
         }
 
         .vv-cards {
             grid-template-columns: repeat(3, 1fr);
+        }
+
+        .vv-perf-grid {
+            grid-template-columns: repeat(6, 1fr);
         }
 
         .vv-series-item {
@@ -408,7 +565,46 @@
         }
 
         .vv-hero h1 {
-            font-size: calc(var(--unit) * 11);
+            font-size: calc(var(--unit) * 6);
+        }
+    }
+}
+
+/* ========================================================================
+   GAME — Sublayer for Space Invaders easter egg
+   ======================================================================== */
+
+@layer castd.game {
+    .game-score,
+    .game-restart {
+        display: none;
+    }
+
+    @media (min-width: 560px) {
+        .game-score {
+            display: block;
+            position: fixed;
+            top: calc(var(--unit) * 15);
+            right: 50px;
+            z-index: 5;
+            font-family: var(--font-heading);
+            font-size: calc(var(--unit) * 10);
+            color: var(--accent);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .game-restart {
+            display: block;
+            position: fixed;
+            bottom: calc(var(--unit) * 3);
+            right: calc(var(--unit) * 3);
+            z-index: 5;
+            font-family: var(--font-heading);
+            font-size: calc(var(--unit) * 2.25);
+            color: var(--accent);
+            opacity: 0.3;
+            pointer-events: none;
         }
     }
 }
@@ -420,5 +616,9 @@
 @media (prefers-reduced-motion: reduce) {
     #stars {
         display: none;
+    }
+
+    .vv-marquee-track {
+        animation-play-state: paused;
     }
 }
