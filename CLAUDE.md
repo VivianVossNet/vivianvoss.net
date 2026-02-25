@@ -195,6 +195,16 @@ templates/blog/
 
 Each article template extends `_base.html` via slots (same pattern as all other pages).
 
+### Daily Workflow
+
+Every new LinkedIn post that becomes a blog article follows this process:
+
+1. Read the LinkedIn source post from `/Users/byvoss/Workbench/Privat/LinkedIn/`
+2. Create the article as a full rewrite (not 1:1 translation) in `templates/blog/<slug>/<slug>.html`
+3. Add the entry to `templates/blog/blog.html` (newest first, correct `data-tags`)
+4. Commit, deploy to primus, give user the sudo commands
+5. **Give the user the full URL** (`https://vivianvoss.net/blog/<slug>`) so they can cross-reference it on LinkedIn
+
 ---
 
 ## Offene Fragen
