@@ -909,6 +909,7 @@
 @layer castd.game {
     .game-score,
     .game-lives,
+    .game-pause-wrap,
     .game-restart {
         display: none;
     }
@@ -951,6 +952,38 @@
         .game-lives {
             bottom: calc(var(--unit) * 6);
             letter-spacing: 0.25em;
+        }
+
+        .game-pause-wrap {
+            display: grid;
+            position: fixed;
+            bottom: calc(var(--unit) * 3);
+            left: calc(var(--unit) * 3);
+            z-index: 5;
+            justify-items: center;
+            gap: 16px;
+        }
+
+        .game-pause {
+            font-family: var(--font-heading);
+            font-size: calc(var(--unit) * 13.3);
+            color: var(--accent);
+            opacity: 0.15;
+            cursor: pointer;
+            user-select: none;
+            line-height: 1;
+        }
+
+        .game-pause:hover {
+            opacity: 0.3;
+        }
+
+        .game-pause-hint {
+            font-family: var(--font-heading);
+            font-size: calc(var(--unit) * 2.25);
+            color: var(--accent);
+            opacity: 0.3;
+            pointer-events: none;
         }
     }
 
