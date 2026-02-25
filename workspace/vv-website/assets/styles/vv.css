@@ -22,6 +22,16 @@
     src: url('/assets/fonts/oxanium.woff2') format('woff2');
 }
 
+@property --tron-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes tron-spin {
+    to { --tron-angle: 360deg; }
+}
+
 @layer theme {
     :root {
         --accent: oklch(68% 0.18 35);
@@ -216,8 +226,10 @@
         & a {
             color: var(--text);
             text-decoration: none;
-            padding: var(--unit) 0;
+            padding: var(--unit) calc(var(--unit) * 1.5);
             font-size: calc(var(--unit) * 2);
+            border: 1px solid transparent;
+            border-radius: calc(var(--unit) * 0.75);
 
             &:hover {
                 color: var(--accent);
@@ -226,6 +238,35 @@
             &:focus-visible {
                 outline: 2px solid var(--accent);
                 outline-offset: 2px;
+            }
+
+            &[href="/game"] {
+                position: relative;
+                border-color: transparent;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    inset: -1px;
+                    border-radius: inherit;
+                    padding: 1px;
+                    background: conic-gradient(
+                        from var(--tron-angle),
+                        transparent 0deg,
+                        transparent 280deg,
+                        oklch(68% 0.18 35) 310deg,
+                        oklch(75% 0.12 230) 330deg,
+                        oklch(65% 0.2 270) 345deg,
+                        oklch(65% 0.15 140) 355deg,
+                        transparent 360deg
+                    );
+                    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+                    mask-composite: exclude;
+                    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+                    -webkit-mask-composite: xor;
+                    animation: tron-spin 6s linear infinite;
+                    pointer-events: none;
+                }
             }
         }
     }
@@ -910,7 +951,8 @@
     .game-score,
     .game-lives,
     .game-pause-wrap,
-    .game-restart {
+    .game-restart,
+    .game-audio {
         display: none;
     }
 
@@ -984,6 +1026,24 @@
             color: var(--accent);
             opacity: 0.3;
             pointer-events: none;
+        }
+
+        .game-audio {
+            display: block;
+            position: fixed;
+            top: calc(var(--unit) * 15);
+            left: calc(var(--unit) * 3);
+            z-index: 5;
+            font-size: calc(var(--unit) * 4);
+            color: var(--accent);
+            opacity: 0.15;
+            cursor: pointer;
+            user-select: none;
+            line-height: 1;
+        }
+
+        .game-audio:hover {
+            opacity: 0.3;
         }
     }
 

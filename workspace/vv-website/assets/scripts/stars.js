@@ -12,12 +12,250 @@
 (function () {
     var c = document.getElementById("stars");
     if (!c) return;
-    var ctx = c.getContext("2d");
+    var ctx = c.getContext("2d", { desynchronized: true });
+    c.style.willChange = "transform";
     var w, h;
     var mx = 0, my = 0;
     var hasMouse = false;
 
     var STORAGE_KEY = "vv-invaders";
+
+    /* --- Audio (8-bit chiptune, Web Audio API) ----------------------------- */
+    var audioCtx = null;
+    var musicGain = null;
+    var musicPlaying = false;
+
+    function initAudio() {
+        if (audioCtx) return;
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            musicGain = audioCtx.createGain();
+            musicGain.gain.value = 0.18;
+            musicGain.connect(audioCtx.destination);
+        } catch (e) {}
+    }
+
+    /* --- SFX --- */
+    function sfxPew() {
+        if (!audioCtx || !isGamePage || audioMuted) return;
+        var osc = audioCtx.createOscillator();
+        var g = audioCtx.createGain();
+        osc.type = "square";
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.08);
+        g.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+    }
+
+    function sfxHit() {
+        if (!audioCtx || !isGamePage || audioMuted) return;
+        /* noise burst — short static crash */
+        var len = audioCtx.sampleRate * 0.15;
+        var buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+        var data = buf.getChannelData(0);
+        for (var i = 0; i < len; i++) {
+            data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+        }
+        var src = audioCtx.createBufferSource();
+        src.buffer = buf;
+        var g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+        src.connect(g);
+        g.connect(audioCtx.destination);
+        src.start();
+    }
+
+    /* --- Chiptune music --- */
+    /* Notes: C4=262, D4=294, E4=330, F4=349, G4=392, A4=440, B4=494
+       Minor pentatonic in A: A C D E G — spacey and driving */
+    var TUNE_BPM = 135;
+    var TUNE_STEP = 60 / TUNE_BPM / 4; /* 16th note duration */
+    var STEPS_PER_SECTION = 32; /* 2 bars per section */
+
+    /* Section A — main theme (A minor pentatonic, driving) */
+    var SEC_A = {
+        lead: [
+            440, 0, 523, 0, 587, 587, 0, 659,  0, 784, 0, 659, 587, 0, 523, 0,
+            440, 0, 587, 0, 659, 0, 784, 880,  0, 784, 659, 0, 587, 523, 0, 0
+        ],
+        bass: [
+            110, 0, 0, 0, 131, 0, 0, 0, 147, 0, 0, 0, 165, 0, 131, 0,
+            110, 0, 0, 0, 147, 0, 0, 0, 165, 0, 0, 0, 196, 0, 165, 0
+        ],
+        arp: [
+            220, 262, 330, 220, 262, 330, 262, 330,  220, 262, 330, 220, 330, 262, 220, 330,
+            220, 294, 349, 220, 294, 349, 294, 349,  220, 294, 349, 220, 349, 294, 220, 294
+        ],
+        drums: [
+            1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 2, 0, 0, 2, 0, 2,
+            1, 0, 2, 0, 0, 0, 2, 0, 1, 1, 2, 0, 0, 2, 2, 0
+        ]
+    };
+    /* Section B — tension builder (higher, syncopated) */
+    var SEC_B = {
+        lead: [
+            659, 0, 784, 0, 880, 0, 784, 659,  0, 587, 0, 659, 784, 0, 880, 0,
+            1047, 0, 880, 0, 784, 659, 0, 587,  0, 523, 0, 587, 659, 0, 0, 0
+        ],
+        bass: [
+            165, 0, 0, 0, 196, 0, 0, 0, 220, 0, 0, 0, 196, 0, 165, 0,
+            131, 0, 0, 0, 147, 0, 0, 0, 165, 0, 0, 0, 131, 0, 110, 0
+        ],
+        arp: [
+            330, 392, 494, 330, 392, 494, 392, 494,  330, 392, 494, 330, 494, 392, 330, 494,
+            262, 330, 392, 262, 330, 392, 330, 392,  262, 330, 392, 262, 392, 330, 262, 330
+        ],
+        drums: [
+            1, 0, 2, 2, 0, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0,
+            1, 0, 2, 2, 0, 0, 2, 0, 1, 0, 0, 2, 1, 2, 0, 2
+        ]
+    };
+    /* Section C — breakdown (sparse, bass-heavy) */
+    var SEC_C = {
+        lead: [
+            0, 0, 0, 0, 440, 0, 0, 0,  0, 0, 523, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 587, 0, 0, 0,  659, 0, 0, 0, 587, 0, 0, 0
+        ],
+        bass: [
+            110, 110, 0, 110, 0, 0, 110, 0, 110, 110, 0, 110, 0, 0, 131, 0,
+            147, 147, 0, 147, 0, 0, 147, 0, 131, 131, 0, 131, 0, 0, 110, 0
+        ],
+        arp: [
+            0, 0, 0, 0, 0, 0, 0, 0,  220, 262, 330, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,  294, 349, 440, 0, 0, 0, 0, 0
+        ],
+        drums: [
+            1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+            1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0
+        ]
+    };
+    /* Section D — climax (full energy, octave higher) */
+    var SEC_D = {
+        lead: [
+            880, 0, 1047, 0, 1175, 1175, 0, 1319,  0, 1568, 0, 1319, 1175, 0, 1047, 0,
+            880, 0, 1047, 1175, 0, 1319, 1568, 0,  1760, 0, 1568, 0, 1319, 1175, 1047, 0
+        ],
+        bass: [
+            220, 0, 220, 0, 262, 0, 262, 0, 294, 0, 294, 0, 330, 0, 262, 0,
+            220, 0, 220, 0, 294, 0, 294, 0, 330, 0, 330, 0, 392, 0, 330, 0
+        ],
+        arp: [
+            440, 523, 659, 440, 523, 659, 523, 659,  440, 523, 659, 440, 659, 523, 440, 659,
+            440, 587, 698, 440, 587, 698, 587, 698,  440, 587, 698, 440, 698, 587, 440, 587
+        ],
+        drums: [
+            1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 2,
+            1, 0, 2, 0, 1, 0, 2, 0, 1, 1, 2, 0, 1, 2, 1, 2
+        ]
+    };
+
+    /* Song structure: A A B A  C C D A — each section plays 2 bars, total 16 bars */
+    var SONG = [SEC_A, SEC_A, SEC_B, SEC_A, SEC_C, SEC_C, SEC_D, SEC_A];
+
+    var musicBuffer = null;
+    var musicSource = null;
+
+    /* Render full song into an offline buffer for seamless looping */
+    function renderChiptune(cb) {
+        if (musicBuffer) { cb(musicBuffer); return; }
+        var sr = audioCtx.sampleRate;
+        var sectionLen = STEPS_PER_SECTION * TUNE_STEP;
+        var totalLen = SONG.length * sectionLen;
+        var samples = Math.ceil(sr * totalLen);
+        var offline = new OfflineAudioContext(1, samples, sr);
+        var master = offline.createGain();
+        master.gain.value = 1;
+        master.connect(offline.destination);
+
+        function addTone(freq, start, dur, vol, type) {
+            var osc = offline.createOscillator();
+            var g = offline.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            g.gain.setValueAtTime(vol, start);
+            g.gain.setValueAtTime(0.001, start + dur);
+            osc.connect(g);
+            g.connect(master);
+            osc.start(start);
+            osc.stop(start + dur);
+        }
+
+        for (var si = 0; si < SONG.length; si++) {
+            var sec = SONG[si];
+            var base = si * sectionLen;
+
+            for (var i = 0; i < STEPS_PER_SECTION; i++) {
+                var t = base + i * TUNE_STEP;
+                /* Lead — square */
+                if (sec.lead[i]) addTone(sec.lead[i], t, TUNE_STEP * 0.8, 0.28, "square");
+                /* Bass — triangle */
+                if (sec.bass[i]) addTone(sec.bass[i], t, TUNE_STEP * 0.9, 0.35, "triangle");
+                /* Arpeggio — square, quiet */
+                if (sec.arp[i]) addTone(sec.arp[i], t, TUNE_STEP * 0.5, 0.08, "square");
+                /* Drums */
+                if (sec.drums[i] === 1) {
+                    var osc = offline.createOscillator();
+                    var g = offline.createGain();
+                    osc.type = "sine";
+                    osc.frequency.setValueAtTime(150, t);
+                    osc.frequency.exponentialRampToValueAtTime(40, t + 0.06);
+                    g.gain.setValueAtTime(0.4, t);
+                    g.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+                    osc.connect(g);
+                    g.connect(master);
+                    osc.start(t);
+                    osc.stop(t + 0.08);
+                } else if (sec.drums[i] === 2) {
+                    var len = Math.floor(sr * 0.03);
+                    var buf = offline.createBuffer(1, len, sr);
+                    var d = buf.getChannelData(0);
+                    for (var j = 0; j < len; j++) d[j] = (Math.random() * 2 - 1) * (1 - j / len);
+                    var src = offline.createBufferSource();
+                    src.buffer = buf;
+                    var g = offline.createGain();
+                    g.gain.setValueAtTime(0.15, t);
+                    g.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+                    src.connect(g);
+                    g.connect(master);
+                    src.start(t);
+                }
+            }
+        }
+
+        offline.startRendering().then(function (rendered) {
+            musicBuffer = rendered;
+            cb(rendered);
+        });
+    }
+
+    function startMusic() {
+        if (!isGamePage || musicPlaying || audioMuted) return;
+        initAudio();
+        if (!audioCtx) return;
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        musicPlaying = true;
+        renderChiptune(function (buf) {
+            if (!musicPlaying) return;
+            musicSource = audioCtx.createBufferSource();
+            musicSource.buffer = buf;
+            musicSource.loop = true;
+            musicSource.connect(musicGain);
+            musicSource.start();
+        });
+    }
+
+    function stopMusic() {
+        musicPlaying = false;
+        if (musicSource) {
+            try { musicSource.stop(); } catch (e) {}
+            musicSource = null;
+        }
+    }
 
     /* --- Stars ------------------------------------------------------------ */
     var stars = [];
@@ -215,7 +453,7 @@
         var ah = sprite.length * px;
         var ox = a.x - aw / 2;
         var oy = a.y - ah / 2;
-        var dim = paused ? 0.3 : 1;
+        var dim = (paused || (gameOver && !isGamePage)) ? 0.3 : 1;
         if (a.healer) {
             var blink = 0.3 + 0.5 * Math.abs(Math.sin(now * 0.004));
             ctx.fillStyle = "oklch(65% 0.2 25 / " + (blink * dim) + ")";
@@ -282,6 +520,7 @@
                     dualShot = false;
                     powerShot = false;
                     lives--;
+                    sfxHit();
                     updateLivesDisplay();
                     if (lives <= 0) enterGameOver();
                 }
@@ -297,6 +536,7 @@
 
     function shoot() {
         if (!hasMouse || lives <= 0 || paused || countdown) return;
+        sfxPew();
         if (dualShot) {
             var dualOff = powerShot ? 18 : 8;
             bullets.push({ x: mx - dualOff, y: my - 15, speed: 8 });
@@ -356,6 +596,7 @@
                 enemyBullets.splice(i, 1);
                 addExplosion(mx, my);
                 lives--;
+                sfxHit();
                 shipInvuln = now + 1500;
                 updateLivesDisplay();
                 if (lives <= 0) enterGameOver();
@@ -604,6 +845,7 @@
                 addExplosion(a.x, a.y);
                 a.alive = false;
                 lives--;
+                sfxHit();
                 shipInvuln = now + 1500;
                 updateLivesDisplay();
                 if (lives <= 0) enterGameOver();
@@ -619,12 +861,25 @@
     var pauseEl = document.getElementById("game-pause");
     var pauseHintEl = document.getElementById("game-pause-hint");
     var pauseWrapEl = document.getElementById("game-pause-wrap");
+    var audioEl = document.getElementById("game-audio");
+    var audioMuted = false;
+
+    function toggleAudio() {
+        audioMuted = !audioMuted;
+        if (audioEl) audioEl.textContent = audioMuted ? "\uD83D\uDD07" : "\uD83D\uDD0A";
+        if (audioMuted) {
+            stopMusic();
+        } else if (!paused && !gameOver && !countdown && hasMouse) {
+            startMusic();
+        }
+    }
 
     function togglePause() {
         if (gameOver || lives <= 0 || countdown) return;
         paused = !paused;
         if (paused) {
             pausedAt = performance.now();
+            stopMusic();
         } else {
             var elapsed = performance.now() - pausedAt;
             lastSpawn += elapsed;
@@ -635,6 +890,7 @@
             for (var gi = 0; gi < aliens.length; gi++) {
                 if (aliens[gi].gunner && aliens[gi].lastShot) aliens[gi].lastShot += elapsed;
             }
+            startMusic();
         }
         if (pauseEl) {
             pauseEl.innerHTML = paused ? "&#x25B6;" : "&#x23F8;";
@@ -652,6 +908,7 @@
 
     /* --- Leaderboard ------------------------------------------------------ */
     var PLAYER_NAME_KEY = "vv-invaders-name";
+    var PLAYER_TOKEN_KEY = "vv-invaders-token";
     var leaderboard = [];
     var nameEntry = "";
     var nameEntryActive = false;
@@ -690,6 +947,21 @@
         xhr.send();
     }
 
+    function getToken() {
+        try {
+            var ls = localStorage.getItem(PLAYER_TOKEN_KEY);
+            if (ls) return ls;
+        } catch (e) {}
+        var match = document.cookie.match("(?:^|; )" + PLAYER_TOKEN_KEY + "=([^;]*)");
+        return match ? decodeURIComponent(match[1]) : "";
+    }
+    function saveToken(t) {
+        try { localStorage.setItem(PLAYER_TOKEN_KEY, t); } catch (e) {}
+        var d = new Date(); d.setFullYear(d.getFullYear() + 1);
+        document.cookie = PLAYER_TOKEN_KEY + "=" + encodeURIComponent(t) +
+            ";path=/;expires=" + d.toUTCString() + ";SameSite=Lax";
+    }
+
     function submitScore(name, sc, cb) {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/api/highscores");
@@ -698,11 +970,12 @@
             try {
                 var data = JSON.parse(xhr.responseText);
                 leaderboard = data.scores || [];
+                if (data.token) saveToken(data.token);
             } catch (e) {}
             if (cb) cb();
         };
         xhr.onerror = function () { if (cb) cb(); };
-        xhr.send(JSON.stringify({ name: name, score: sc }));
+        xhr.send(JSON.stringify({ name: name, score: sc, token: getToken() }));
     }
 
     /* --- Font-based rendering (Press Start 2P) ------------------------------ */
@@ -937,6 +1210,7 @@
     function enterGameOver() {
         gameOver = true;
         paused = false;
+        stopMusic();
         gameOverTime = performance.now();
         finalScore = score;
         showLeaderboard = false;
@@ -1003,6 +1277,7 @@
         if (scoreEl) scoreEl.parentElement.style.display = "";
         if (livesEl) livesEl.style.display = "";
         if (restartEl) restartEl.style.display = "";
+        startMusic();
     }
 
     function drawCountdown(now) {
@@ -1065,6 +1340,15 @@
                 ctx.fillText(logo[li], 0, -totalH / 2 + li * lineH);
             }
             ctx.restore();
+
+            /* Copyright line below logo */
+            var copyrightY = startY + (totalH / 2) * scaleY + 20 * scaleY;
+            var copySize = Math.max(8, Math.floor(12 * scaleX));
+            ctx.font = copySize + "px " + ARCADE_FONT;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            ctx.fillStyle = "oklch(65% 0.05 260 / " + (titleAlpha * 0.5) + ")";
+            ctx.fillText("\u00A9 MMXXVI by Min2Max Studios \u2013 Vivian Voss", w / 2, copyrightY);
         }
 
         /* Countdown 3-2-1: starts at 1000ms */
@@ -1156,6 +1440,7 @@
         if (!hasMouse && gameEnabled) {
             hasMouse = true;
             updateLivesDisplay();
+            if (isGamePage && audioEl) audioEl.style.display = "";
             if (isGamePage && !gameOver) {
                 startCountdown();
             } else if (gameOver) {
@@ -1172,8 +1457,13 @@
     c.style.pointerEvents = "none";
     document.addEventListener("click", function (e) {
         if (!gameEnabled) return;
+        initAudio();
         if (e.target.closest("#game-pause")) {
             togglePause();
+            return;
+        }
+        if (e.target.closest("#game-audio")) {
+            toggleAudio();
             return;
         }
         if (e.target.closest("a, button, nav, input, select, textarea")) return;
