@@ -610,7 +610,9 @@
 
     function enterGameOver() {
         gameOver = true;
+        paused = false;
         gameOverTime = performance.now();
+        if (pauseWrapEl) pauseWrapEl.style.display = "none";
         if (restartEl) {
             restartEl.textContent = "Press Key";
             restartEl.style.animation = "game-blink 1s step-end infinite";
@@ -620,6 +622,7 @@
     function leaveGameOver() {
         gameOver = false;
         resetGame();
+        if (pauseWrapEl) pauseWrapEl.style.display = "";
         if (restartEl) {
             restartEl.textContent = "Ctrl+G Restart";
             restartEl.style.animation = "";
@@ -707,15 +710,14 @@
 
     document.addEventListener("keydown", function (e) {
         if (!gameEnabled) return;
-        /* Space always toggles pause — never restarts */
-        if (e.key === " " && !e.target.closest("input, textarea, select, button")) {
-            e.preventDefault();
-            if (!gameOver) togglePause();
-            return;
-        }
         if (gameOver) {
             e.preventDefault();
             leaveGameOver();
+            return;
+        }
+        if (e.key === " " && !e.target.closest("input, textarea, select, button")) {
+            e.preventDefault();
+            togglePause();
             return;
         }
         if (e.ctrlKey && e.key === "g") {
