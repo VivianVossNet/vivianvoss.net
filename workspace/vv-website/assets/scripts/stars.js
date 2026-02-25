@@ -296,10 +296,11 @@
     var powerShot = false;
 
     function shoot() {
-        if (!hasMouse || lives <= 0 || paused) return;
+        if (!hasMouse || lives <= 0 || paused || countdown) return;
         if (dualShot) {
-            bullets.push({ x: mx - 8, y: my - 15, speed: 8 });
-            bullets.push({ x: mx + 8, y: my - 15, speed: 8 });
+            var dualOff = powerShot ? 18 : 8;
+            bullets.push({ x: mx - dualOff, y: my - 15, speed: 8 });
+            bullets.push({ x: mx + dualOff, y: my - 15, speed: 8 });
         }
         if (powerShot) {
             bullets.push({ x: mx, y: my - 15, speed: 8, power: true });
@@ -575,9 +576,23 @@
 
     function checkShipCollision(now) {
         if (lives <= 0) return;
-        if (now < shipInvuln) return;
         var shipW = 15;
         var shipH = 12;
+        /* Collect healer hearts on touch (always, even during invuln) */
+        for (var i = aliens.length - 1; i >= 0; i--) {
+            var a = aliens[i];
+            if (!a.alive || !a.healer) continue;
+            var dx = Math.abs(a.x - mx);
+            var dy = Math.abs(a.y - my);
+            if (dx < (shipW + 7) / 2 && dy < (shipH + 6) / 2) {
+                addExplosion(a.x, a.y);
+                a.alive = false;
+                lives = Math.min(MAX_LIVES, lives + 1);
+                updateLivesDisplay();
+                saveState();
+            }
+        }
+        if (now < shipInvuln) return;
         for (var i = aliens.length - 1; i >= 0; i--) {
             var a = aliens[i];
             if (!a.alive || a.healer) continue;
@@ -606,7 +621,7 @@
     var pauseWrapEl = document.getElementById("game-pause-wrap");
 
     function togglePause() {
-        if (gameOver || lives <= 0) return;
+        if (gameOver || lives <= 0 || countdown) return;
         paused = !paused;
         if (paused) {
             pausedAt = performance.now();
@@ -738,7 +753,7 @@
     }
 
     function drawGameOverSplash(now) {
-        if (!isGamePage || !gameOver) return;
+        if (!gameOver || !isGamePage) return;
         var elapsed = now - gameOverTime;
 
         /* dark overlay — stays once drawn */
@@ -783,7 +798,7 @@
                         qualifies = leaderboard.length < 5 || finalScore > leaderboard[leaderboard.length - 1].score;
                     }
                 }
-                if (qualifies) {
+                if (qualifies && isGamePage) {
                     playerQualified = true;
                     nameEntryActive = true;
                     nameEntry = savedName;
@@ -929,10 +944,19 @@
         playerQualified = false;
         nameEntryActive = false;
         nameEntry = "";
-        if (pauseWrapEl) pauseWrapEl.style.display = "none";
-        if (restartEl) {
-            restartEl.textContent = "";
-            restartEl.style.animation = "";
+        if (isGamePage) {
+            if (pauseWrapEl) pauseWrapEl.style.display = "none";
+            if (scoreEl) scoreEl.parentElement.style.display = "none";
+            if (livesEl) livesEl.style.display = "none";
+            if (restartEl) {
+                restartEl.textContent = "";
+                restartEl.style.animation = "";
+            }
+        } else {
+            if (restartEl) {
+                restartEl.textContent = "PRESS KEY";
+                restartEl.style.animation = "blink 1s step-end infinite";
+            }
         }
     }
 
@@ -944,10 +968,123 @@
         nameEntryActive = false;
         nameEntry = "";
         resetGame();
+        if (isGamePage) {
+            startCountdown();
+        } else {
+            if (pauseWrapEl) pauseWrapEl.style.display = "";
+            if (scoreEl) scoreEl.parentElement.style.display = "";
+            if (livesEl) livesEl.style.display = "";
+            if (restartEl) {
+                restartEl.textContent = "Ctrl+G Restart";
+                restartEl.style.animation = "";
+                restartEl.style.display = "";
+            }
+        }
+    }
+
+    /* --- Countdown intro (game page only) --------------------------------- */
+    var countdown = false;
+    var countdownStart = 0;
+    var COUNTDOWN_DURATION = 4000; /* 1s title + 3s count */
+
+    function startCountdown() {
+        countdown = true;
+        countdownStart = performance.now();
+        if (pauseWrapEl) pauseWrapEl.style.display = "none";
+        if (scoreEl) scoreEl.parentElement.style.display = "none";
+        if (livesEl) livesEl.style.display = "none";
+        if (restartEl) restartEl.style.display = "none";
+    }
+
+    function endCountdown() {
+        countdown = false;
+        initTimers();
         if (pauseWrapEl) pauseWrapEl.style.display = "";
-        if (restartEl) {
-            restartEl.textContent = "Ctrl+G Restart";
-            restartEl.style.animation = "";
+        if (scoreEl) scoreEl.parentElement.style.display = "";
+        if (livesEl) livesEl.style.display = "";
+        if (restartEl) restartEl.style.display = "";
+    }
+
+    function drawCountdown(now) {
+        var elapsed = now - countdownStart;
+        if (elapsed >= COUNTDOWN_DURATION) {
+            endCountdown();
+            return;
+        }
+
+        /* ASCII art logo rendered as monospace text on canvas */
+        var titleAlpha = elapsed < 500 ? elapsed / 500 :
+                         elapsed < 3000 ? 1 :
+                         Math.max(0, 1 - (elapsed - 3000) / 1000);
+
+        if (titleAlpha > 0) {
+            var logo = [
+                "_________ __________ ___________",
+                "\\_   ___ \\\\______   \\\\__    ___/",
+                "/    \\  \\/ |     ___/  |    |",
+                "\\     \\____|    |      |    |",
+                " \\______  /|____|      |____|",
+                "        \\/",
+                "  _________.___   ________________________________________    _____",
+                " /   _____/|   | /  _____/\\__    ___/\\_   _____/\\______   \\  /     \\",
+                " \\_____  \\ |   |/   \\  ___  |    |    |    __)_  |       _/ /  \\ /  \\",
+                " /        \\|   |\\    \\_\\  \\ |    |    |        \\ |    |   \\/    Y    \\",
+                "/_______  /|___| \\______  / |____|   /_______  / |____|_  /\\____|__  /",
+                "        \\/              \\/                   \\/         \\/         \\/"
+            ];
+            /* Scale font to fit width */
+            var maxLen = 0;
+            for (var li = 0; li < logo.length; li++) {
+                if (logo[li].length > maxLen) maxLen = logo[li].length;
+            }
+            /* CSS-style scaling: render at fixed size, then scale to fit */
+            var baseFontSize = 14;
+            var lineH = baseFontSize * 1.1;
+            var totalH = logo.length * lineH;
+            var totalW = maxLen * baseFontSize * 0.6;
+            var scaleX = (w * 0.68) / totalW;
+            var scaleY = scaleX;
+            var centreX = w / 2;
+            var startY = h * 0.28;
+
+            ctx.save();
+            ctx.translate(centreX, startY);
+            ctx.scale(scaleX, scaleY);
+
+            /* Gradient: light blue → red → white (in scaled coords) */
+            var grad = ctx.createLinearGradient(-totalW / 2, -totalH / 2, totalW / 2, totalH / 2);
+            grad.addColorStop(0, "oklch(75% 0.15 230 / " + titleAlpha + ")");
+            grad.addColorStop(0.5, "oklch(65% 0.22 25 / " + titleAlpha + ")");
+            grad.addColorStop(1, "oklch(95% 0.02 90 / " + titleAlpha + ")");
+
+            ctx.font = baseFontSize + "px monospace";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            ctx.fillStyle = grad;
+            for (var li = 0; li < logo.length; li++) {
+                ctx.fillText(logo[li], 0, -totalH / 2 + li * lineH);
+            }
+            ctx.restore();
+        }
+
+        /* Countdown 3-2-1: starts at 1000ms */
+        if (elapsed >= 1000) {
+            var countElapsed = elapsed - 1000;
+            var digit = 3 - Math.floor(countElapsed / 1000);
+            if (digit >= 1 && digit <= 3) {
+                var digitProgress = (countElapsed % 1000) / 1000;
+                /* Scale up towards viewer: starts small, grows large */
+                var baseSize = Math.max(40, Math.floor(w / 8));
+                var scale = 1 + digitProgress * 2;
+                var digitSize = Math.floor(baseSize * scale);
+                /* Fade out as it grows */
+                var digitAlpha = Math.max(0, 1 - digitProgress);
+                ctx.font = digitSize + "px " + ARCADE_FONT;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "oklch(80% 0.15 55 / " + digitAlpha + ")";
+                ctx.fillText("" + digit, w / 2, h * 0.55);
+            }
         }
     }
 
@@ -964,7 +1101,9 @@
         drawStars();
 
         if (hasMouse) {
-            if (paused || gameOver) {
+            if (countdown) {
+                drawCountdown(now);
+            } else if (paused || gameOver) {
                 /* Frozen state — draw everything but update nothing */
                 for (var i = 0; i < aliens.length; i++) drawAlien(aliens[i], now);
                 drawBullets();
@@ -1016,11 +1155,17 @@
         my = e.clientY;
         if (!hasMouse && gameEnabled) {
             hasMouse = true;
-            if (scoreEl) scoreEl.parentElement.style.display = "";
-            if (livesEl) livesEl.style.display = "";
-            if (pauseWrapEl) pauseWrapEl.style.display = "";
-            if (restartEl) restartEl.style.display = "";
             updateLivesDisplay();
+            if (isGamePage && !gameOver) {
+                startCountdown();
+            } else if (gameOver) {
+                /* Game over active — HUD stays hidden, canvas draws overlay */
+            } else {
+                if (scoreEl) scoreEl.parentElement.style.display = "";
+                if (livesEl) livesEl.style.display = "";
+                if (pauseWrapEl) pauseWrapEl.style.display = "";
+                if (restartEl) restartEl.style.display = "";
+            }
         }
     });
 
@@ -1042,6 +1187,7 @@
         if (e.ctrlKey && e.key === "g") {
             e.preventDefault();
             resetGame();
+            if (isGamePage) startCountdown();
             return;
         }
 
@@ -1052,9 +1198,23 @@
             if (key === "Enter" && nameEntry.length > 0) {
                 nameEntryActive = false;
                 saveName(nameEntry);
-                submitScore(nameEntry, finalScore, function () {
-                    playerQualified = false;
-                });
+                /* Optimistic update: insert into leaderboard immediately
+                   so the name stays visible while XHR is in flight */
+                var found = false;
+                for (var li = 0; li < leaderboard.length; li++) {
+                    if (leaderboard[li].name === nameEntry) {
+                        leaderboard[li].score = Math.max(leaderboard[li].score, finalScore);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    leaderboard.push({ name: nameEntry, score: finalScore });
+                }
+                leaderboard.sort(function (a, b) { return b.score - a.score; });
+                if (leaderboard.length > 5) leaderboard.length = 5;
+                playerQualified = false;
+                submitScore(nameEntry, finalScore);
                 return;
             }
             if (key === "Backspace") {
@@ -1069,15 +1229,15 @@
             return;
         }
 
-        /* Game over — press any key to restart (only after leaderboard shown) */
-        if (gameOver && showLeaderboard && !nameEntryActive) {
+        /* Game over on non-game pages: any key restarts immediately */
+        if (gameOver && !isGamePage) {
             e.preventDefault();
             leaveGameOver();
             return;
         }
 
-        /* Game over on non-game pages: restart immediately */
-        if (gameOver && !isGamePage) {
+        /* Game over on game page — press any key after leaderboard shown */
+        if (gameOver && showLeaderboard && !nameEntryActive) {
             e.preventDefault();
             leaveGameOver();
             return;
