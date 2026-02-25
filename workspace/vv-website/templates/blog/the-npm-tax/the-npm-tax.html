@@ -1,0 +1,304 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The npm Tax — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="You approved one package. You received 1,400. The hidden costs of npm's dependency model, and why your node_modules folder is an invoice.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-npm-tax{( endslot )}
+
+{( slot og-title )}The npm Tax — Vivian Voss{( endslot )}
+
+{( slot og-desc )}You approved one package. You received 1,400. The hidden costs of npm's dependency model, and why your node_modules folder is an invoice.{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-02">2 January 2026</time>
+            <span aria-hidden="true">■</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The npm Tax</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> ■ Episode 03</p>
+
+        <blockquote>
+            <p>"But it's just one dependency!"</p>
+        </blockquote>
+
+        <p>That sentence has done more damage to software security than any zero-day exploit.
+            It sounds reasonable. It feels proportionate. And it is the argument that installs
+            1,400 packages before your kettle has boiled.</p>
+
+        <h2>The Arithmetic of Trust</h2>
+
+        <p>One package installs twenty. Each of those installs ten more. The growth is not linear;
+            it is exponential, and the numbers are not hypothetical.
+            <a href="https://www.npmjs.com/package/express" target="_blank" rel="noopener">Express.js</a>:
+            one framework, fifty-seven dependencies. <a href="https://bundlephobia.com" target="_blank" rel="noopener">create-react-app</a>:
+            you approved one package and received north of 1,400.</p>
+
+        <svg viewBox="0 0 600 320" aria-label="Dependency explosion diagram: one package at the top branches into twenty, each of which branches into ten more, illustrating exponential growth." role="img" style="max-width: 540px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .dep-node { fill: var(--accent); }
+                .dep-line { stroke: var(--border); stroke-width: 1; fill: none; }
+                .dep-text { font-family: ui-monospace, monospace; fill: var(--muted); font-size: 11px; text-anchor: middle; }
+                .dep-label { font-family: ui-monospace, monospace; fill: var(--text); font-size: 12px; text-anchor: middle; font-weight: 600; }
+                .dep-count { font-family: ui-monospace, monospace; fill: var(--accent); font-size: 13px; text-anchor: middle; font-weight: 700; }
+                .dep-ghost { fill: var(--muted); opacity: 0.35; }
+            </style>
+            <!-- Level 0: Your package -->
+            <circle cx="300" cy="30" r="8" class="dep-node"/>
+            <text x="300" y="16" class="dep-label">npm install foo</text>
+            <text x="300" y="55" class="dep-count">1 package</text>
+
+            <!-- Lines: Level 0 to Level 1 -->
+            <line x1="300" y1="38" x2="80" y2="105" class="dep-line"/>
+            <line x1="300" y1="38" x2="140" y2="105" class="dep-line"/>
+            <line x1="300" y1="38" x2="200" y2="105" class="dep-line"/>
+            <line x1="300" y1="38" x2="260" y2="105" class="dep-line"/>
+            <line x1="300" y1="38" x2="340" y2="105" class="dep-line"/>
+            <line x1="300" y1="38" x2="400" y2="105" class="dep-line"/>
+            <line x1="300" y1="38" x2="460" y2="105" class="dep-line"/>
+            <line x1="300" y1="38" x2="520" y2="105" class="dep-line"/>
+
+            <!-- Level 1: Direct dependencies -->
+            <circle cx="80" cy="110" r="5" class="dep-node"/>
+            <circle cx="140" cy="110" r="5" class="dep-node"/>
+            <circle cx="200" cy="110" r="5" class="dep-node"/>
+            <circle cx="260" cy="110" r="5" class="dep-node"/>
+            <circle cx="340" cy="110" r="5" class="dep-node"/>
+            <circle cx="400" cy="110" r="5" class="dep-node"/>
+            <circle cx="460" cy="110" r="5" class="dep-node"/>
+            <circle cx="520" cy="110" r="5" class="dep-node"/>
+            <!-- Ghost dots for the rest -->
+            <circle cx="290" cy="110" r="2.5" class="dep-ghost"/>
+            <circle cx="300" cy="110" r="2.5" class="dep-ghost"/>
+            <circle cx="310" cy="110" r="2.5" class="dep-ghost"/>
+            <text x="300" y="138" class="dep-count">20 packages</text>
+
+            <!-- Lines: Level 1 to Level 2 (sampled) -->
+            <line x1="80" y1="115" x2="30" y2="195" class="dep-line"/>
+            <line x1="80" y1="115" x2="55" y2="195" class="dep-line"/>
+            <line x1="80" y1="115" x2="80" y2="195" class="dep-line"/>
+            <line x1="80" y1="115" x2="105" y2="195" class="dep-line"/>
+            <line x1="80" y1="115" x2="130" y2="195" class="dep-line"/>
+
+            <line x1="260" y1="115" x2="210" y2="195" class="dep-line"/>
+            <line x1="260" y1="115" x2="235" y2="195" class="dep-line"/>
+            <line x1="260" y1="115" x2="260" y2="195" class="dep-line"/>
+            <line x1="260" y1="115" x2="285" y2="195" class="dep-line"/>
+            <line x1="260" y1="115" x2="310" y2="195" class="dep-line"/>
+
+            <line x1="460" y1="115" x2="390" y2="195" class="dep-line"/>
+            <line x1="460" y1="115" x2="415" y2="195" class="dep-line"/>
+            <line x1="460" y1="115" x2="440" y2="195" class="dep-line"/>
+            <line x1="460" y1="115" x2="465" y2="195" class="dep-line"/>
+            <line x1="460" y1="115" x2="490" y2="195" class="dep-line"/>
+
+            <line x1="520" y1="115" x2="515" y2="195" class="dep-line"/>
+            <line x1="520" y1="115" x2="540" y2="195" class="dep-line"/>
+            <line x1="520" y1="115" x2="565" y2="195" class="dep-line"/>
+
+            <!-- Level 2: Transitive dependencies -->
+            <circle cx="30" cy="200" r="3" class="dep-node"/>
+            <circle cx="55" cy="200" r="3" class="dep-node"/>
+            <circle cx="80" cy="200" r="3" class="dep-node"/>
+            <circle cx="105" cy="200" r="3" class="dep-node"/>
+            <circle cx="130" cy="200" r="3" class="dep-node"/>
+
+            <circle cx="210" cy="200" r="3" class="dep-node"/>
+            <circle cx="235" cy="200" r="3" class="dep-node"/>
+            <circle cx="260" cy="200" r="3" class="dep-node"/>
+            <circle cx="285" cy="200" r="3" class="dep-node"/>
+            <circle cx="310" cy="200" r="3" class="dep-node"/>
+
+            <!-- Ghost dots in middle gap -->
+            <circle cx="160" cy="200" r="1.5" class="dep-ghost"/>
+            <circle cx="170" cy="200" r="1.5" class="dep-ghost"/>
+            <circle cx="180" cy="200" r="1.5" class="dep-ghost"/>
+
+            <circle cx="340" cy="200" r="1.5" class="dep-ghost"/>
+            <circle cx="350" cy="200" r="1.5" class="dep-ghost"/>
+            <circle cx="360" cy="200" r="1.5" class="dep-ghost"/>
+
+            <circle cx="390" cy="200" r="3" class="dep-node"/>
+            <circle cx="415" cy="200" r="3" class="dep-node"/>
+            <circle cx="440" cy="200" r="3" class="dep-node"/>
+            <circle cx="465" cy="200" r="3" class="dep-node"/>
+            <circle cx="490" cy="200" r="3" class="dep-node"/>
+            <circle cx="515" cy="200" r="3" class="dep-node"/>
+            <circle cx="540" cy="200" r="3" class="dep-node"/>
+            <circle cx="565" cy="200" r="3" class="dep-node"/>
+            <text x="300" y="228" class="dep-count">200+ packages</text>
+
+            <!-- Level 3 hint: dense dot field -->
+            <line x1="30" y1="203" x2="25" y2="265" class="dep-line" style="opacity:0.3"/>
+            <line x1="55" y1="203" x2="45" y2="265" class="dep-line" style="opacity:0.3"/>
+            <line x1="80" y1="203" x2="70" y2="265" class="dep-line" style="opacity:0.3"/>
+            <line x1="105" y1="203" x2="95" y2="265" class="dep-line" style="opacity:0.3"/>
+            <line x1="260" y1="203" x2="250" y2="265" class="dep-line" style="opacity:0.3"/>
+            <line x1="285" y1="203" x2="275" y2="265" class="dep-line" style="opacity:0.3"/>
+            <line x1="440" y1="203" x2="430" y2="265" class="dep-line" style="opacity:0.3"/>
+            <line x1="465" y1="203" x2="455" y2="265" class="dep-line" style="opacity:0.3"/>
+            <line x1="490" y1="203" x2="480" y2="265" class="dep-line" style="opacity:0.3"/>
+            <line x1="540" y1="203" x2="530" y2="265" class="dep-line" style="opacity:0.3"/>
+
+            <!-- Level 3: Dense ghost field -->
+            <circle cx="20" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="35" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="50" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="65" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="80" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="95" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="110" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="125" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="140" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="155" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="170" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="185" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="200" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="215" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="230" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="245" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="260" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="275" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="290" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="305" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="320" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="335" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="350" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="365" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="380" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="395" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="410" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="425" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="440" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="455" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="470" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="485" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="500" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="515" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="530" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="545" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="560" cy="270" r="1.5" class="dep-ghost"/>
+            <circle cx="575" cy="270" r="1.5" class="dep-ghost"/>
+            <text x="300" y="300" class="dep-count">1,400+ packages</text>
+            <text x="300" y="316" class="dep-text">You approved one.</text>
+        </svg>
+
+        <p>Now ask yourself: did you vet Express? Perhaps. Did you vet its fifty-seven dependencies?
+            Their dependencies? The maintainer three levels deep -- the one whose name you have never
+            encountered, whose code quietly processes your user input -- did anyone audit that?</p>
+
+        <p>The honest answer, in virtually every project on Earth, is no.</p>
+
+        <h2>Three Principles, Systematically Violated</h2>
+
+        <p>Information security has operated on a small set of foundational principles for decades.
+            They are not controversial. They are not new. And npm violates all three, by design,
+            every single day.</p>
+
+        <p><strong>Never execute untrusted code.</strong> npm install runs arbitrary scripts from
+            strangers. <strong>Verify before trust.</strong> The dependency tree is too deep and
+            too wide for meaningful verification. <strong>Minimise attack surface.</strong>
+            Each additional package is another door you cannot lock, another window you
+            cannot watch.</p>
+
+        <p>These are not edge cases. This is the default mode of operation for the largest
+            package registry on the planet.</p>
+
+        <h2>The Casualty List</h2>
+
+        <p>If this were merely theoretical, one might file it under "known risk, accepted trade-off"
+            and move on. It is not theoretical.</p>
+
+        <p>In 2016, a developer <a href="https://blog.npmjs.org/post/141577284765/kik-left-pad-and-npm" target="_blank" rel="noopener">unpublished
+            a package called left-pad</a> -- eleven lines of code that padded a string with spaces. The cascading
+            failure took down build systems across the industry. Thousands of projects broke because
+            they had delegated string padding to a stranger. The function, incidentally, is now
+            built into JavaScript itself via
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart" target="_blank" rel="noopener"><code>String.prototype.padStart()</code></a>,
+            shipped natively since ES2017.</p>
+
+        <p>In 2018, <a href="https://snyk.io/blog/malicious-code-found-in-npm-package-event-stream/" target="_blank" rel="noopener">event-stream</a>,
+            a package with eight million weekly downloads, was handed to a new maintainer who
+            injected code designed to steal cryptocurrency. The attack was elegant, targeted, and
+            went undetected for weeks.</p>
+
+        <p>In 2021, <a href="https://github.com/advisories/GHSA-pjwm-rvh2-c87w" target="_blank" rel="noopener">ua-parser-js</a>,
+            seven million weekly downloads, was compromised to distribute cryptominers. The package
+            parses user-agent strings. The attack payload mined currency.</p>
+
+        <p>Three incidents. Three different years. The same structural defect.</p>
+
+        <h2>The Security Theatre</h2>
+
+        <p>Your security team audits your code. Commendable. But who audits the 1,400 packages you
+            have silently delegated trust to?</p>
+
+        <p>Dependabot? Snyk? They scan for <em>known</em> vulnerabilities -- that is, vulnerabilities
+            discovered and catalogued after someone has already been harmed. They are plasters applied
+            to a structural wound. Snyk raised $530 million on that business model, which tells you
+            rather more about the size of the wound than the quality of the plaster.</p>
+
+        <p>npm hosts 2.1 million packages -- the largest code pile on Earth. According to
+            <a href="https://www.sonatype.com/state-of-the-software-supply-chain/introduction" target="_blank" rel="noopener">Sonatype's State of the Software Supply Chain report</a>,
+            over half are effectively unmaintained. You are running production systems on code
+            whose authors have moved on, lost interest, or never intended it for production
+            in the first place.</p>
+
+        <h2>The Root Cause</h2>
+
+        <p>How did we arrive here? The answer is disarmingly simple: JavaScript shipped without
+            a standard library.</p>
+
+        <p>No HTTP client. No cryptography. No date formatting that actually works. Rather than
+            fixing the language -- rather than shipping batteries, as Python does, or building
+            rich standard libraries, as Go and Rust have done -- the ecosystem reached for npm.
+            npm became the de facto standard library. 2.1 million packages later, we are living
+            with the consequences.</p>
+
+        <p>The reductio ad absurdum is a package called
+            <a href="https://www.npmjs.com/package/is-odd" target="_blank" rel="noopener">is-odd</a>,
+            which at its peak enjoyed 400,000 weekly downloads. Its purpose: to determine whether a number is odd.
+            The implementation is one line of arithmetic:</p>
+
+        <p><code>return n % 2 === 1;</code></p>
+
+        <p>Four hundred thousand developers per week chose to install, download, and trust a
+            third-party package rather than write a single expression. This is not laziness. This
+            is a culture that has normalised outsourcing judgement to strangers.</p>
+
+        <h2>The Compound Interest</h2>
+
+        <aside>
+            <p>According to <a href="https://www.sonatype.com/state-of-the-software-supply-chain/introduction" target="_blank" rel="noopener">Sonatype</a>,
+                developers spend between 15 and 30 per cent of their working time managing dependency updates.
+                That is not development. That is maintenance of other people's decisions.</p>
+        </aside>
+
+        <p>The npm tax is not a one-off payment. It compounds. Every dependency you add is a
+            subscription to someone else's maintenance schedule, security posture, and architectural
+            opinions. When they change, you change. When they break, you break. When they vanish,
+            you scramble.</p>
+
+        <p>The alternatives exist and have existed for some time. Write fewer dependencies and more
+            of your own code -- the function is one line, after all. Evaluate whether Deno or Bun,
+            with their more considered standard libraries, suit your constraints.
+            Use <code>padStart()</code>, which has been native since 2017, instead of installing a
+            package to pad strings.</p>
+
+        <p>Or continue as before. The node_modules folder that weighs more than your application is
+            not a feature. It is an invoice. And like all invoices, it comes due.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

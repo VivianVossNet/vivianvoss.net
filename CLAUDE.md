@@ -176,6 +176,8 @@ Source directory: `/Users/byvoss/Workbench/Privat/LinkedIn/`
 - Add proper semantic HTML: `<article>`, `<blockquote>`, `<code>`, `<h2>` for sections
 - Every article must have: title, date, LinkedIn link, category tags, full body text
 - Where the argument benefits from visual support, include inline SVG diagrams (architecture comparisons, data flow, performance graphs, stack visualisations). SVGs are embedded directly in the template HTML, not as external files. Keep them minimal, monochrome with accent colour, and matching the site's design language
+- Sources are linked inline where the fact appears, not collected in a reference list at the bottom. The blog format allows proper `<a>` links — use them. This replaces the LinkedIn convention of listing URLs in the first comment
+- The first LinkedIn comment is included only when it adds a genuinely interesting fact, counterpoint, or data point that enriches the article. It becomes a styled aside or follow-up section, not a separate block
 
 ### Category Tags
 

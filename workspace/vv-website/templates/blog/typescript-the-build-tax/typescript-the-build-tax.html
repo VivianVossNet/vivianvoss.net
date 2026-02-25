@@ -1,0 +1,260 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}TypeScript: The Build Tax — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="TypeScript solves a preference, not a deficiency. The compile step, the configuration labyrinth, and the alternative that was there all along.">
+{( endslot )}
+
+{( slot canonical )}/blog/typescript-the-build-tax{( endslot )}
+
+{( slot og-title )}TypeScript: The Build Tax — Vivian Voss{( endslot )}
+
+{( slot og-desc )}TypeScript solves a preference, not a deficiency. The compile step, the configuration labyrinth, and the alternative that was there all along.{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-26">26 January 2026</time>
+            <span aria-hidden="true">■</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>TypeScript: The Build Tax</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Performance-Fresser</em> ■ Episode 10</p>
+
+        <p>ECMAScript is a complete language. It has been for some time. Types are not
+            missing from JavaScript &mdash; they were never part of the specification, which
+            is a rather different thing. Some teams want them enforced at authoring time.
+            That is a perfectly legitimate preference. But a preference and a deficiency
+            are not the same, and the distinction matters because one of them requires
+            a compiler and the other does not.</p>
+
+        <h2>The Same Information, Two Pipelines</h2>
+
+        <p>Consider a function. A greeting, since the industry appears to have
+            standardised on those for demonstration purposes. Here it is in TypeScript:</p>
+
+        <pre><code>function greet(name: string): string {
+    return `Hello, ${name}`;
+}</code></pre>
+
+        <p>And here is the same function annotated with
+            <a href="https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html" target="_blank" rel="noopener">JSDoc</a>:</p>
+
+        <pre><code>/** @param {string} name @returns {string} */
+function greet(name) {
+    return `Hello, ${name}`;
+}</code></pre>
+
+        <p>Identical type information. Identical IDE support &mdash; the same IntelliSense,
+            the same autocompletion, the same refactoring tools. Visual Studio Code processes
+            both through the same TypeScript language server. The diagnostic output is the same.
+            The developer experience is the same.</p>
+
+        <p>The difference is what happens next.</p>
+
+        <!-- Pipeline comparison SVG -->
+        <svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram comparing two pipelines: TypeScript requires a compile step from .ts through tsc to .js, while JSDoc goes directly from .js to production with no build step." style="max-width: 560px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .pipe-label { font: 700 12px ui-monospace, monospace; letter-spacing: 0.04em; }
+                .pipe-node { font: 400 11px system-ui, sans-serif; }
+                .pipe-small { font: 400 9.5px system-ui, sans-serif; }
+                .pipe-accent { font: 700 11px ui-monospace, monospace; }
+            </style>
+            <defs>
+                <marker id="arr-a" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+                <marker id="arr-m" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+            </defs>
+
+            <!-- TypeScript pipeline -->
+            <text x="300" y="20" text-anchor="middle" fill="var(--muted)" class="pipe-label">TYPESCRIPT PIPELINE</text>
+
+            <rect x="30" y="38" width="120" height="40" rx="3" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+            <text x="90" y="56" text-anchor="middle" fill="var(--text)" class="pipe-node">source.ts</text>
+            <text x="90" y="70" text-anchor="middle" fill="var(--muted)" class="pipe-small">authored code</text>
+
+            <line x1="150" y1="58" x2="215" y2="58" stroke="var(--muted)" stroke-width="1" marker-end="url(#arr-m)"/>
+
+            <rect x="217" y="38" width="166" height="40" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="300" y="56" text-anchor="middle" fill="var(--accent)" class="pipe-accent">tsc compiler</text>
+            <text x="300" y="70" text-anchor="middle" fill="var(--muted)" class="pipe-small">strip types, emit JS</text>
+
+            <line x1="383" y1="58" x2="448" y2="58" stroke="var(--muted)" stroke-width="1" marker-end="url(#arr-m)"/>
+
+            <rect x="450" y="38" width="120" height="40" rx="3" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+            <text x="510" y="56" text-anchor="middle" fill="var(--text)" class="pipe-node">source.js</text>
+            <text x="510" y="70" text-anchor="middle" fill="var(--muted)" class="pipe-small">shipped code</text>
+
+            <text x="300" y="102" text-anchor="middle" fill="var(--muted)" class="pipe-small">tsc --watch runs permanently ■ 18 s for 334 files ■ 100+ config options</text>
+
+            <!-- Divider -->
+            <line x1="30" y1="124" x2="570" y2="124" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+
+            <!-- JSDoc pipeline -->
+            <text x="300" y="156" text-anchor="middle" fill="var(--accent)" class="pipe-label">JSDOC PIPELINE</text>
+
+            <rect x="30" y="174" width="120" height="40" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="90" y="192" text-anchor="middle" fill="var(--text)" class="pipe-node">source.js</text>
+            <text x="90" y="206" text-anchor="middle" fill="var(--muted)" class="pipe-small">authored code</text>
+
+            <line x1="150" y1="194" x2="448" y2="194" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arr-a)"/>
+            <text x="300" y="188" text-anchor="middle" fill="var(--accent)" class="pipe-accent">no build step</text>
+
+            <rect x="450" y="174" width="120" height="40" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="510" y="192" text-anchor="middle" fill="var(--text)" class="pipe-node">source.js</text>
+            <text x="510" y="206" text-anchor="middle" fill="var(--muted)" class="pipe-small">shipped code</text>
+
+            <text x="300" y="238" text-anchor="middle" fill="var(--accent)" class="pipe-small">same file ■ same types ■ same IDE support ■ zero compilation</text>
+        </svg>
+
+        <p>The TypeScript file must pass through a compiler before the browser can execute it.
+            The JSDoc file is the shipping artefact. It runs as written. The type annotations
+            live in comments, which the engine ignores and the tooling reads. Nothing is stripped.
+            Nothing is transpiled. Nothing can go wrong between authoring and execution because
+            there is no "between."</p>
+
+        <h2>The Build Tax</h2>
+
+        <p>Every change to a TypeScript file requires compilation. <code>tsc --watch</code> runs
+            permanently in the background, consuming CPU cycles and file-system watchers while
+            you work. For small projects, the delay is negligible. For large codebases, it is not.</p>
+
+        <p>One team <a href="https://dev.to/jose_loui_ce3703a67547b15/how-we-cut-typescript-compile-times-by-85-and-saved-our-sanity-45ab" target="_blank" rel="noopener">documented
+            eighteen seconds</a> to compile 334 files. Eighteen seconds of dead air every time the
+            build runs. Multiply that by the number of developers, the number of commits, the
+            number of CI pipelines, and the figure stops being a rounding error.</p>
+
+        <p>Microsoft's response to the performance problem is instructive. Rather than questioning
+            whether compilation is the right approach, they are
+            <a href="https://dev.to/extinctsion/typescript-just-got-faster-the-new-go-powered-tsc-40e0" target="_blank" rel="noopener">rewriting
+            the compiler in Go</a> for a promised tenfold speedup. One does admire the engineering.
+            One also notes that the fastest compiler is still slower than no compiler at all.</p>
+
+        <h2>The Configuration Labyrinth</h2>
+
+        <p>The <a href="https://www.typescriptlang.org/tsconfig/" target="_blank" rel="noopener"><code>tsconfig.json</code></a>
+            specification offers north of one hundred options. Strict mode, module resolution
+            strategy, target ECMAScript version, path aliases, project references, incremental
+            compilation, declaration maps, composite builds &mdash; the list continues with
+            the quiet determination of a Victorian novel.</p>
+
+        <p>Every team debates which flags to enable. Every project inherits a configuration
+            that someone chose eighteen months ago for reasons no one can reconstruct. The
+            configuration file becomes load-bearing infrastructure: touch it and things break
+            in ways that have nothing to do with your code and everything to do with the
+            compiler's opinion of your code.</p>
+
+        <p>JSDoc requires no configuration file. The types live in the source. The editor
+            reads them. That is the entire workflow.</p>
+
+        <h2>The Type Gymnastics</h2>
+
+        <p>TypeScript's type system is Turing-complete, which is a polite way of saying it
+            can express anything, including things no reasonable person would wish to read.
+            Consider:</p>
+
+        <pre><code>Partial&lt;Pick&lt;Omit&lt;T, 'id'&gt;, keyof U&gt;&gt;</code></pre>
+
+        <p>This is not a pathological example constructed to make a point. This is Tuesday
+            afternoon in a mature TypeScript codebase. The type system rewards cleverness over
+            clarity, and clever types have a way of accumulating until the cognitive overhead
+            of reading the type signature exceeds the cognitive overhead of reading the code
+            it describes. At that point, the types are no longer documentation. They are a
+            second codebase that happens to share the same file.</p>
+
+        <h2>The Third-Party Lottery</h2>
+
+        <p><a href="https://github.com/DefinitelyTyped/DefinitelyTyped" target="_blank" rel="noopener">DefinitelyTyped</a>
+            hosts over eight thousand community-maintained type definitions for JavaScript
+            libraries that do not ship their own. The definitions are often excellent. They
+            are also, on occasion, outdated, incomplete, or quietly wrong &mdash; because the
+            types are maintained separately from the library, by different people, on a
+            different release cadence.</p>
+
+        <p>The result is a lottery. Install a library, install its types, and discover at
+            some indeterminate future point that the two have drifted apart. The compiler
+            reports no error because the type definition says everything is fine. The runtime
+            disagrees. The compiler was never going to win this argument, because the
+            compiler is not present at runtime.</p>
+
+        <h2>The Runtime Reality</h2>
+
+        <p>This is the structural irony at the heart of the TypeScript proposition. The types
+            exist exclusively at compile time. They are stripped before execution. The shipped
+            JavaScript contains no trace of them. The compiler can verify that your code
+            conforms to its own model of the world, but it cannot verify that the world
+            conforms to its model.</p>
+
+        <p>An API that returns <code>{ "age": "twenty-five" }</code> where the type
+            definition expects <code>number</code> will sail through compilation without a
+            murmur. The error surfaces at runtime, in production, on a Friday afternoon &mdash;
+            precisely the scenario the type system was supposed to prevent.</p>
+
+        <p>Runtime validation requires runtime code. Zod, io-ts, Ajv &mdash; these exist
+            because the compiler cannot do what the marketing implies it does. If you need
+            runtime safety, you need runtime checks. The types were always a suggestion.</p>
+
+        <h2>The Alternative That Already Exists</h2>
+
+        <p>JSDoc type annotations have been supported by the TypeScript language server since
+            TypeScript 2.3, released in 2017. The same engine that powers TypeScript's IDE
+            experience &mdash; autocompletion, diagnostics, refactoring, go-to-definition &mdash;
+            reads JSDoc annotations in plain JavaScript files. The tooling is identical. The
+            developer experience is identical. The difference is the absence of a build step.</p>
+
+        <p>This is not a fringe position. The
+            <a href="https://devclass.com/2023/05/11/typescript-is-not-worth-it-for-developing-libraries-says-svelte-author-as-team-switches-to-javascript-and-jsdoc/" target="_blank" rel="noopener">Svelte framework migrated from TypeScript to JSDoc</a>.
+            <a href="https://blog.logrocket.com/typescript-vs-jsdoc-javascript/" target="_blank" rel="noopener">Webpack has always used JSDoc</a>.
+            HTMX uses JSDoc. These are not small projects maintained by people unaware of
+            TypeScript's existence. They are large, widely-used codebases whose maintainers
+            evaluated the trade-off and concluded that a compiler was not worth the tax.</p>
+
+        <blockquote>
+            <p>TypeScript for apps, JSDoc for libraries.</p>
+        </blockquote>
+
+        <p>That is
+            <a href="https://x.com/Rich_Harris/status/1661051005985865728" target="_blank" rel="noopener">Rich Harris</a>,
+            creator of Svelte, drawing a line that the industry has been reluctant to draw.
+            The suggestion is not that TypeScript has no place. It is that its place is
+            smaller than its adoption would imply, and that the build step it demands is
+            not free.</p>
+
+        <h2>The Compounding Cost</h2>
+
+        <p>Build steps do not exist in isolation. They interact. TypeScript compilation feeds
+            into bundling, which feeds into minification, which feeds into source-map generation,
+            which feeds into deployment. Each stage adds latency, configuration surface, and
+            failure modes. The
+            <a href="https://github.com/microsoft/TypeScript/wiki/Performance" target="_blank" rel="noopener">TypeScript Performance wiki</a>
+            is an entire document dedicated to managing the cost of the compiler &mdash; project
+            references, incremental builds, <code>skipLibCheck</code>, isolatedModules. An
+            ecosystem of workarounds for a problem that need not exist.</p>
+
+        <p>The build step you skip is the build step that cannot break. The configuration
+            you omit is the configuration that cannot drift. The compiler you do not run is
+            the compiler that never stands between your code and your user.</p>
+
+        <p>TypeScript solved a genuine problem: large teams benefit from enforced type
+            contracts. The question is not whether the problem is real. The question is
+            whether the solution &mdash; a compiler, a configuration file, a build pipeline,
+            a type system complex enough to be Turing-complete &mdash; is proportionate to
+            the problem it addresses.</p>
+
+        <p>For some teams, the answer is yes. For rather more than will admit it,
+            the answer is a comment block and a language server that was there all along.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
