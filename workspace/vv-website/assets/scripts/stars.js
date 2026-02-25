@@ -130,6 +130,7 @@
     var lastHealer = 0;
 
     function spawnAlien(now) {
+        if (lastSpawn === 0) { initTimers(now); return; }
         if (now - lastHealer >= HEALER_INTERVAL) {
             lastHealer = now;
             aliens.push({
@@ -345,8 +346,9 @@
     function loadState() {
         try {
             var raw = localStorage.getItem(STORAGE_KEY);
-            if (!raw) return;
+            if (!raw) { initTimers(); return; }
             var state = JSON.parse(raw);
+            initTimers();
             if (typeof state.score === "number") {
                 score = Math.max(0, state.score);
                 if (scoreEl) scoreEl.textContent = score;
@@ -400,13 +402,18 @@
         }
     }
 
+    function initTimers(now) {
+        if (!now) now = performance.now();
+        lastSpawn = now;
+        lastElite = now;
+        lastHealer = now;
+    }
+
     function resetGame() {
         aliens = [];
         bullets = [];
         explosions = [];
-        lastSpawn = 0;
-        lastElite = 0;
-        lastHealer = 0;
+        initTimers();
         score = 0;
         lives = MAX_LIVES;
         dualShot = false;
@@ -700,14 +707,15 @@
 
     document.addEventListener("keydown", function (e) {
         if (!gameEnabled) return;
+        /* Space always toggles pause — never restarts */
+        if (e.key === " " && !e.target.closest("input, textarea, select, button")) {
+            e.preventDefault();
+            if (!gameOver) togglePause();
+            return;
+        }
         if (gameOver) {
             e.preventDefault();
             leaveGameOver();
-            return;
-        }
-        if (e.key === " " && !e.target.closest("input, textarea, select, button")) {
-            e.preventDefault();
-            togglePause();
             return;
         }
         if (e.ctrlKey && e.key === "g") {
