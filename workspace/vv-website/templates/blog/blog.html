@@ -24,13 +24,126 @@
 
 <section class="vv-section" aria-labelledby="posts-title">
     <h2 id="posts-title">Articles</h2>
-    <div class="vv-series">
-        <article class="vv-series-item">
+
+    <div class="vv-tag-filter" role="group" aria-label="Filter by category">
+        <button class="vv-tag-btn is-active" data-filter="all">All</button>
+        <button class="vv-tag-btn" data-filter="the-invoice">The Invoice</button>
+        <button class="vv-tag-btn" data-filter="performance-fresser">Performance-Fresser</button>
+        <button class="vv-tag-btn" data-filter="divide-et-impera">Divide et Impera</button>
+        <button class="vv-tag-btn" data-filter="the-copy-cat">The Copy Cat</button>
+        <button class="vv-tag-btn" data-filter="architecture">Architecture</button>
+        <button class="vv-tag-btn" data-filter="unix">Unix</button>
+        <button class="vv-tag-btn" data-filter="frontend">Frontend</button>
+        <button class="vv-tag-btn" data-filter="demoscene">Demoscene</button>
+    </div>
+
+    <div class="vv-series" id="blog-list">
+        <article class="vv-series-item" data-tags="demoscene architecture">
             <span class="day">25 Feb 2026</span>
-            <h3><a href="/blog/example-post">Why every byte matters</a></h3>
-            <p>On the demoscene principle of earning your place. How constraint
-                breeds clarity and why the smallest solution is usually the correct one.</p>
+            <h3><a href="/blog/why-every-byte-matters">Why Every Byte Matters</a></h3>
+            <p>The demoscene taught a generation that constraint is not limitation — it is
+                method. Every instruction must justify its presence. The same principle
+                applies to production software.</p>
+        </article>
+
+        <article class="vv-series-item" data-tags="architecture unix">
+            <span class="day">23 Feb 2026</span>
+            <h3><a href="/blog/the-original-microservices">The Original Microservices</a></h3>
+            <p>Unix had single responsibility, API contracts, message queues, and service
+                discovery in 1973. The industry repackaged it and called it microservices.</p>
+        </article>
+
+        <article class="vv-series-item" data-tags="architecture frontend">
+            <span class="day">14 Feb 2026</span>
+            <h3><a href="/blog/the-interpreted-stack">The Interpreted Stack</a></h3>
+            <p>The job description is admirably brief: a request arrives, HTML leaves.
+                And yet, a quarter century of accretion has produced something rather more elaborate.</p>
+        </article>
+
+        <article class="vv-series-item" data-tags="divide-et-impera">
+            <span class="day">10 Feb 2026</span>
+            <h3><a href="/blog/agile-the-hostile-takeover">Agile: The Hostile Takeover</a></h3>
+            <p>Divide and conquer. The oldest strategy of control. Fragment the opposition.
+                Isolate the units. They call it Agile.</p>
+        </article>
+
+        <article class="vv-series-item" data-tags="the-copy-cat architecture">
+            <span class="day">05 Feb 2026</span>
+            <h3><a href="/blog/mvc-for-web">MVC for Web</a></h3>
+            <p>In 1979, Trygve Reenskaug invented MVC for Smalltalk desktop applications.
+                Then Ruby on Rails borrowed the terminology for the web. One small problem:
+                the web works rather differently.</p>
+        </article>
+
+        <article class="vv-series-item" data-tags="performance-fresser frontend">
+            <span class="day">26 Jan 2026</span>
+            <h3><a href="/blog/typescript-the-build-tax">TypeScript: The Build Tax</a></h3>
+            <p>ECMAScript is a complete language. Types are not missing from JavaScript —
+                they were never part of the specification. A preference and a deficiency
+                are not the same thing.</p>
+        </article>
+
+        <article class="vv-series-item" data-tags="performance-fresser">
+            <span class="day">19 Jan 2026</span>
+            <h3><a href="/blog/the-pattern">The Pattern</a></h3>
+            <p>Over eight episodes we dissected individual performance problems. Stand back
+                far enough and a shape emerges. The same shape, every time. Today we name it.</p>
+        </article>
+
+        <article class="vv-series-item" data-tags="the-invoice frontend">
+            <span class="day">02 Jan 2026</span>
+            <h3><a href="/blog/the-npm-tax">The npm Tax</a></h3>
+            <p>"But it's just one dependency!" That sentence has done more damage to software
+                security than any zero-day exploit. It installs 1,400 packages before your
+                kettle has boiled.</p>
+        </article>
+
+        <article class="vv-series-item" data-tags="the-invoice frontend">
+            <span class="day">31 Dec 2025</span>
+            <h3><a href="/blog/the-spa-tax">The SPA Tax</a></h3>
+            <p>"We need a Single Page Application." A perfectly reasonable sentence,
+                provided one does not ask the follow-up question. But let us ask it anyway.</p>
+        </article>
+
+        <article class="vv-series-item" data-tags="the-invoice architecture">
+            <span class="day">19 Dec 2025</span>
+            <h3><a href="/blog/the-microservices-tax">The Microservices Tax</a></h3>
+            <p>"But deployments are cleaner!" That sentence has launched more Kubernetes clusters
+                than any legitimate scaling requirement. Let us examine the invoice.</p>
+        </article>
+
+        <article class="vv-series-item" data-tags="architecture">
+            <span class="day">07 Dec 2025</span>
+            <h3><a href="/blog/shallow-errors">Shallow Errors</a></h3>
+            <p>In 2013, a German data scientist discovered Xerox scanners were silently
+                changing numbers in scanned documents. No error. No warning. Just a quiet
+                substitution.</p>
         </article>
     </div>
 </section>
+
+<script>
+(function () {
+    var btns = document.querySelectorAll('.vv-tag-btn');
+    var items = document.querySelectorAll('#blog-list .vv-series-item');
+
+    btns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var filter = btn.getAttribute('data-filter');
+
+            btns.forEach(function (b) { b.classList.remove('is-active'); });
+            btn.classList.add('is-active');
+
+            items.forEach(function (item) {
+                if (filter === 'all') {
+                    item.style.display = '';
+                } else {
+                    var tags = (item.getAttribute('data-tags') || '').split(' ');
+                    item.style.display = tags.indexOf(filter) !== -1 ? '' : 'none';
+                }
+            });
+        });
+    });
+})();
+</script>
 {( endslot )}

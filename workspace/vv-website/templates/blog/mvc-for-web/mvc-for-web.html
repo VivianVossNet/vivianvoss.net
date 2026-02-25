@@ -1,0 +1,270 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}MVC for Web — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="MVC was designed for desktop applications in 1979. The web borrowed the terminology in 2005 and lost the mechanism. The Copy Cat Episode 01.">
+{( endslot )}
+
+{( slot canonical )}/blog/mvc-for-web{( endslot )}
+
+{( slot og-title )}MVC for Web — Vivian Voss{( endslot )}
+
+{( slot og-desc )}MVC was designed for desktop applications in 1979. The web borrowed the terminology in 2005 and lost the mechanism.{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-05">05 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>MVC for Web</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p>In 1979, at Xerox PARC, <a href="https://folk.universitetetioslo.no/trygver/themes/mvc/mvc-index.html" target="_blank" rel="noopener">Trygve Reenskaug invented MVC</a>
+            for Smalltalk desktop applications. The idea was genuinely elegant:
+            the Model holds state, the View renders it, and the Controller
+            mediates user input. When the Model changes, it notifies the View
+            through the <a href="https://en.wikipedia.org/wiki/Design_Patterns" target="_blank" rel="noopener">Observer pattern</a>.
+            The View updates automatically. Everything lives in memory,
+            everything observes everything else. A persistent, circular,
+            synchronous architecture.</p>
+
+        <p>It worked beautifully. It was also designed for a world in which
+            the Model, the View, and the Controller all inhabit the same
+            process, on the same machine, for the entire lifetime of the
+            application.</p>
+
+        <p>Then, in 2005, Ruby on Rails arrived and borrowed the terminology
+            for the web.</p>
+
+        <p>One small problem: the web works rather differently.</p>
+
+        <h2>The Mechanism That Isn't</h2>
+
+        <p>A web request arrives. The server loads data from a database &#x2014;
+            this is called the Model. It renders HTML &#x2014; this is called the
+            View. A routing function dispatches the work &#x2014; this is called the
+            Controller. The response is sent. Then everything is destroyed.
+            Model: gone. View: gone. Controller: gone.</p>
+
+        <p>There is no Observer pattern. Nothing observes anything, because
+            there is nothing left alive to do the observing. The "circular"
+            architecture that made Reenskaug's design so elegant is, on the web,
+            a straight line ending in disposal.</p>
+
+        <p>We kept the names. We lost the mechanism.</p>
+
+        <svg viewBox="0 0 640 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three flow diagrams compared: original desktop MVC with circular Observer pattern, web MVC as a linear flow where everything is destroyed, and LEAT as a clean linear flow." style="max-width: 640px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .dia-title { font: 600 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dia-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .dia-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .dia-box { fill: none; stroke: var(--border); stroke-width: 1.5; rx: 3; }
+                .dia-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .dia-arrow { fill: none; stroke: var(--muted); stroke-width: 1.5; marker-end: url(#dia-ah); }
+                .dia-arrow-accent { fill: none; stroke: var(--accent); stroke-width: 2; marker-end: url(#dia-ah-accent); }
+                .dia-observer { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 3; marker-end: url(#dia-ah-accent); }
+                .dia-dead { font: 700 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dia-line { stroke: var(--border); stroke-width: 1; stroke-dasharray: 3 3; }
+            </style>
+            <defs>
+                <marker id="dia-ah" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+                    <polygon points="0 0, 7 2.5, 0 5" fill="var(--muted)"/>
+                </marker>
+                <marker id="dia-ah-accent" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+                    <polygon points="0 0, 7 2.5, 0 5" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <!-- === 1. Original MVC (Desktop, 1979) === -->
+            <text class="dia-title" x="10" y="20">Original MVC &#x2014; Desktop, 1979</text>
+
+            <!-- Controller -->
+            <rect class="dia-box" x="240" y="40" width="120" height="40"/>
+            <text class="dia-label" x="300" y="64" text-anchor="middle">Controller</text>
+
+            <!-- Model -->
+            <rect class="dia-box" x="80" y="120" width="120" height="40"/>
+            <text class="dia-label" x="140" y="144" text-anchor="middle">Model</text>
+
+            <!-- View -->
+            <rect class="dia-box" x="400" y="120" width="120" height="40"/>
+            <text class="dia-label" x="460" y="144" text-anchor="middle">View</text>
+
+            <!-- Controller -> Model -->
+            <path class="dia-arrow" d="M 248 80 Q 200 100, 192 120"/>
+            <text class="dia-sub" x="195" y="96">updates</text>
+
+            <!-- Controller -> View -->
+            <path class="dia-arrow" d="M 352 80 Q 400 100, 408 120"/>
+            <text class="dia-sub" x="370" y="96">selects</text>
+
+            <!-- Model -> View (Observer) -->
+            <path class="dia-observer" d="M 200 148 Q 300 180, 400 148"/>
+            <text class="dia-sub" x="280" y="178" text-anchor="middle">notifies (Observer)</text>
+
+            <!-- View -> Controller (user input) -->
+            <path class="dia-arrow" d="M 460 120 Q 480 60, 360 52"/>
+            <text class="dia-sub" x="440" y="54">user input</text>
+
+            <text class="dia-sub" x="555" y="144" fill="var(--accent)">&#x2190; persistent</text>
+
+            <!-- Divider -->
+            <line class="dia-line" x1="10" y1="205" x2="630" y2="205"/>
+
+            <!-- === 2. Web "MVC" (2005+) === -->
+            <text class="dia-title" x="10" y="230">Web &#x201C;MVC&#x201D; &#x2014; 2005+</text>
+
+            <rect class="dia-box" x="20" y="250" width="90" height="36"/>
+            <text class="dia-label" x="65" y="272" text-anchor="middle">Request</text>
+
+            <path class="dia-arrow" d="M 110 268 L 142 268"/>
+
+            <rect class="dia-box" x="148" y="250" width="100" height="36"/>
+            <text class="dia-label" x="198" y="272" text-anchor="middle">Controller</text>
+
+            <path class="dia-arrow" d="M 248 268 L 274 268"/>
+
+            <rect class="dia-box" x="280" y="250" width="80" height="36"/>
+            <text class="dia-label" x="320" y="272" text-anchor="middle">Model</text>
+
+            <path class="dia-arrow" d="M 360 268 L 386 268"/>
+
+            <rect class="dia-box" x="392" y="250" width="80" height="36"/>
+            <text class="dia-label" x="432" y="272" text-anchor="middle">View</text>
+
+            <path class="dia-arrow" d="M 472 268 L 498 268"/>
+
+            <rect class="dia-box" x="504" y="250" width="100" height="36"/>
+            <text class="dia-label" x="554" y="272" text-anchor="middle">Response</text>
+
+            <!-- Death markers -->
+            <text class="dia-dead" x="198" y="308" text-anchor="middle">&#x2717;</text>
+            <text class="dia-dead" x="320" y="308" text-anchor="middle">&#x2717;</text>
+            <text class="dia-dead" x="432" y="308" text-anchor="middle">&#x2717;</text>
+            <text class="dia-sub" x="320" y="325" text-anchor="middle">everything destroyed after response</text>
+
+            <!-- Divider -->
+            <line class="dia-line" x1="10" y1="350" x2="630" y2="350"/>
+
+            <!-- === 3. LEAT === -->
+            <text class="dia-title" x="10" y="375">LEAT &#x2014; Linear Event-Actor-Turnback</text>
+
+            <rect class="dia-box-accent" x="60" y="395" width="90" height="40"/>
+            <text class="dia-label" x="105" y="419" text-anchor="middle">Event</text>
+            <text class="dia-sub" x="105" y="449" text-anchor="middle">arrives</text>
+
+            <path class="dia-arrow-accent" d="M 150 415 L 220 415"/>
+
+            <rect class="dia-box-accent" x="230" y="395" width="120" height="40"/>
+            <text class="dia-label" x="290" y="419" text-anchor="middle">Actor</text>
+            <text class="dia-sub" x="290" y="449" text-anchor="middle">processes</text>
+
+            <path class="dia-arrow-accent" d="M 350 415 L 420 415"/>
+
+            <rect class="dia-box-accent" x="430" y="395" width="120" height="40"/>
+            <text class="dia-label" x="490" y="419" text-anchor="middle">Turnback</text>
+            <text class="dia-sub" x="490" y="449" text-anchor="middle">returns</text>
+
+            <text class="dia-sub" x="290" y="490" text-anchor="middle" fill="var(--accent)">no cycle &#x2014; no pretence</text>
+        </svg>
+
+        <h2>The Inheritance of Inconvenience</h2>
+
+        <p>What followed from this terminological loan was rather predictable.
+            The circular architecture promised by the names never materialised,
+            because it cannot materialise on the web. So developers started
+            patching the gap between promise and reality:</p>
+
+        <p>&#x25A0; "Controllers are too fat" &#x2014; move logic into services.<br>
+            &#x25A0; "Models are too fat" &#x2014; add Service Objects.<br>
+            &#x25A0; "Services are too many" &#x2014; add Repositories.<br>
+            &#x25A0; "Still messy" &#x2014; adopt
+            <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" target="_blank" rel="noopener">Clean Architecture</a>.</p>
+
+        <p>Each layer attempts to fix the layer above it. The result, in a
+            non-trivial application, is a filing system for code that knows
+            precisely where everything lives but has rather lost track of what
+            anything does. Seventeen files for a counter. Marvellous.</p>
+
+        <h2>What MVC Actually Gives You on the Web</h2>
+
+        <p>Let us be precise about this. The benefit of web MVC is not
+            architectural. It is <em>familiarity</em>. Tutorials teach it. Bootcamps
+            drill it. Stack Overflow assumes it. Job postings require it.
+            These are real advantages &#x2014; in the same way that driving on the
+            left is a real advantage if you happen to live in Britain. It is
+            convention, not physics.</p>
+
+        <p>The pattern does not map to what the web actually does. It maps to
+            what the web would do if it were a Smalltalk desktop application
+            running in a single process on a Xerox Alto. It is not. It has not
+            been for some time.</p>
+
+        <h2>What the Web Actually Does</h2>
+
+        <p>The web is linear. It always has been. An event arrives &#x2014; an HTTP
+            request, a WebSocket message, a scheduled task. Something processes
+            that event: reads from a database, applies business rules, computes
+            a result. A value returns: HTML, JSON, a redirect, an error. Done.
+            No cycle. No persistent observers. No circular notification chains.</p>
+
+        <p>I have been building web applications this way for over a decade.
+            Recently, I gave the pattern a name, mostly so I could stop
+            explaining the same thing in every architecture review:
+            <strong>LEAT</strong> &#x2014; Linear Event-Actor-Turnback.</p>
+
+        <p>Event: something happens. Actor: something processes it. Turnback:
+            a value comes back. That is what the web does. LEAT is not a
+            framework or a product. It is a description. An honest one.</p>
+
+        <aside>
+            <h2>The Arithmetic</h2>
+            <p>A simple counter, implemented faithfully in web MVC:
+                a Controller, a Model, a View, a route definition, and the
+                template. Five files. Thirty-two lines of code. The same counter
+                as a LEAT function: one file, one function. Scale that to a
+                mid-size e-commerce project with fifty features: MVC yields
+                roughly 250 files and 1,600 lines of structural code. LEAT:
+                approximately 50 files and 200 lines. The business logic is
+                identical. The ceremony is not.</p>
+        </aside>
+
+        <h2>The Distinction Worth Making</h2>
+
+        <p>None of this is an argument against MVC itself. Reenskaug's design
+            remains brilliant &#x2014; for what it was designed for. In a desktop
+            application, a mobile app, a game engine, or any context where
+            objects persist in memory and observe each other's state, MVC is
+            precisely the right tool. It solved a genuine problem, and it
+            solved it well.</p>
+
+        <p>The error was not in inventing MVC. The error was in copying the
+            terminology to a context where the mechanism cannot follow.
+            We kept the names, built an industry of workarounds around the
+            mismatch, and then blamed the developers when the workarounds
+            needed workarounds of their own.</p>
+
+        <blockquote>
+            <p>The web was already linear. It did not need to be taught
+                circularity and then disciplined for failing at it.</p>
+        </blockquote>
+
+        <p>Patterns travel well when they travel with their mechanisms.
+            Stripped of the Observer, stripped of persistence, stripped of
+            the circular notification chain, MVC on the web is three folders
+            and a habit. If that is all it takes to make a team productive,
+            fair enough. But let us at least be honest about what we are
+            doing &#x2014; and stop pretending the architecture is something
+            the protocol never supported.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

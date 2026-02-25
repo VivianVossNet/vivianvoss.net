@@ -1,0 +1,467 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Original Microservices — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Unix had single responsibility, API contracts, message queues, and service discovery in 1973. The industry repackaged it and called it microservices.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-original-microservices{( endslot )}
+
+{( slot og-title )}The Original Microservices — Vivian Voss{( endslot )}
+
+{( slot og-desc )}Unix had single responsibility, API contracts, message queues, and service discovery in 1973. The industry repackaged it and called it microservices.{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-23">23 February 2026</time>
+            <span aria-hidden="true">■</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Original Microservices</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p>
+            <a href="https://en.wikipedia.org/wiki/Grep" target="_blank" rel="noopener"><code>grep</code></a>
+            was written in 1973.
+            <a href="https://en.wikipedia.org/wiki/AWK" target="_blank" rel="noopener"><code>awk</code></a>
+            in 1977.
+            <a href="https://en.wikipedia.org/wiki/Sed" target="_blank" rel="noopener"><code>sed</code></a>
+            in 1974.
+            <code>sort</code>, <code>uniq</code>, <code>cut</code>, <code>wc</code>: all before 1980.
+            Each does one thing. Each takes text in and puts text out. Each composes with any other
+            through a <a href="https://en.wikipedia.org/wiki/Pipeline_(Unix)" target="_blank" rel="noopener">pipe</a>.
+        </p>
+
+        <p>
+            The industry spent the better part of a decade building vastly more complex solutions
+            for what these tools had been doing all along. Then, in
+            <a href="https://martinfowler.com/articles/microservices.html" target="_blank" rel="noopener">2014</a>,
+            it gave the pattern a name: "Microservices." One might observe that the
+            naming ceremony arrived roughly forty-one years late.
+        </p>
+
+        <h2>The Pattern</h2>
+
+        <p>
+            Every microservices tutorial teaches the same handful of principles as though they were
+            recently discovered. Open any conference talk from the past decade, and you will find
+            the same vocabulary: single responsibility, loose coupling, well-defined contracts,
+            independent deployability. All perfectly reasonable ideas. All present in Unix since
+            <a href="https://harmful.cat-v.org/cat-v/unix_prog_design.pdf" target="_blank" rel="noopener">1978</a>,
+            when Doug McIlroy wrote them down as though they were self-evident truths. Which, to be fair,
+            they rather were.
+        </p>
+
+        <blockquote>
+            <p>Write programs that do one thing and do it well. Write programs to work together.
+                Write programs to handle text streams, because that is a universal interface.</p>
+        </blockquote>
+
+        <p>
+            That is not a microservices manifesto. That is McIlroy, 1978. The resemblance to
+            modern architectural guidance is not coincidental. It is genealogical.
+        </p>
+
+        <p>
+            Consider the mapping. Each Unix tool has a single responsibility: <code>grep</code>
+            filters, <code>sort</code> sorts, <code>uniq</code> deduplicates. The API contract
+            is <code>stdin</code> and <code>stdout</code> &mdash; text in, text out, the universal
+            interface. The message queue is the pipe: one process writes, the next reads,
+            backpressure built in at the kernel level. Service discovery is <code>$PATH</code>.
+            Orchestration is the shell script. Observability is <code>tee</code> &mdash; tap into
+            any data stream between any two services, live, with zero configuration.
+        </p>
+
+        <!-- Comparison table: Unix concepts vs modern reimaginations -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" role="img" aria-label="Comparison: Unix concepts from the 1970s mapped to their modern microservices equivalents" style="max-width: 720px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .svg-heading { font: 700 13px ui-monospace, monospace; }
+                .svg-label { font: 600 11.5px ui-monospace, monospace; }
+                .svg-text { font: 400 11.5px system-ui, sans-serif; }
+            </style>
+            <!-- Header -->
+            <rect x="0" y="0" width="240" height="32" rx="2" fill="var(--accent)" opacity="0.9"/>
+            <rect x="240" y="0" width="240" height="32" rx="2" fill="var(--muted)" opacity="0.25"/>
+            <rect x="480" y="0" width="240" height="32" rx="2" fill="var(--muted)" opacity="0.15"/>
+            <text x="120" y="21" text-anchor="middle" fill="var(--bg)" class="svg-heading">Unix (1973&ndash;1978)</text>
+            <text x="360" y="21" text-anchor="middle" fill="var(--text)" class="svg-heading">Modern Equivalent</text>
+            <text x="600" y="21" text-anchor="middle" fill="var(--text)" class="svg-heading">Overhead</text>
+            <!-- Rows -->
+            <line x1="0" y1="32" x2="720" y2="32" stroke="var(--border)" stroke-width="1"/>
+            <!-- Row 1 -->
+            <rect x="0" y="33" width="720" height="44" fill="var(--surface)" opacity="0.5"/>
+            <text x="16" y="52" fill="var(--accent)" class="svg-label">pipe |</text>
+            <text x="16" y="68" fill="var(--muted)" class="svg-text">Kernel buffer, zero config</text>
+            <text x="256" y="52" fill="var(--text)" class="svg-label">Message Queue</text>
+            <text x="256" y="68" fill="var(--muted)" class="svg-text">Kafka, RabbitMQ, SQS</text>
+            <text x="496" y="52" fill="var(--accent)" class="svg-label">JVM + broker cluster</text>
+            <text x="496" y="68" fill="var(--muted)" class="svg-text">6&ndash;32 GB RAM</text>
+            <line x1="0" y1="77" x2="720" y2="77" stroke="var(--border)" stroke-width="0.5"/>
+            <!-- Row 2 -->
+            <text x="16" y="97" fill="var(--accent)" class="svg-label">stdin / stdout</text>
+            <text x="16" y="113" fill="var(--muted)" class="svg-text">Text in, text out</text>
+            <text x="256" y="97" fill="var(--text)" class="svg-label">API Contract</text>
+            <text x="256" y="113" fill="var(--muted)" class="svg-text">REST, gRPC, GraphQL</text>
+            <text x="496" y="97" fill="var(--accent)" class="svg-label">Schema registry + gateway</text>
+            <text x="496" y="113" fill="var(--muted)" class="svg-text">Serialisation overhead</text>
+            <line x1="0" y1="121" x2="720" y2="121" stroke="var(--border)" stroke-width="0.5"/>
+            <!-- Row 3 -->
+            <rect x="0" y="122" width="720" height="44" fill="var(--surface)" opacity="0.5"/>
+            <text x="16" y="141" fill="var(--accent)" class="svg-label">$PATH</text>
+            <text x="16" y="157" fill="var(--muted)" class="svg-text">Shell resolves binaries</text>
+            <text x="256" y="141" fill="var(--text)" class="svg-label">Service Discovery</text>
+            <text x="256" y="157" fill="var(--muted)" class="svg-text">Consul, etcd, DNS-SD</text>
+            <text x="496" y="141" fill="var(--accent)" class="svg-label">Distributed consensus</text>
+            <text x="496" y="157" fill="var(--muted)" class="svg-text">Raft protocol, heartbeats</text>
+            <line x1="0" y1="166" x2="720" y2="166" stroke="var(--border)" stroke-width="0.5"/>
+            <!-- Row 4 -->
+            <text x="16" y="186" fill="var(--accent)" class="svg-label">sh / xargs -P</text>
+            <text x="16" y="202" fill="var(--muted)" class="svg-text">Sequential + parallel</text>
+            <text x="256" y="186" fill="var(--text)" class="svg-label">Orchestration</text>
+            <text x="256" y="202" fill="var(--muted)" class="svg-text">Kubernetes, Nomad, ECS</text>
+            <text x="496" y="186" fill="var(--accent)" class="svg-label">12&ndash;24 GB control plane</text>
+            <text x="496" y="202" fill="var(--muted)" class="svg-text">etcd + scheduler + API</text>
+            <line x1="0" y1="210" x2="720" y2="210" stroke="var(--border)" stroke-width="0.5"/>
+            <!-- Row 5 -->
+            <rect x="0" y="211" width="720" height="44" fill="var(--surface)" opacity="0.5"/>
+            <text x="16" y="230" fill="var(--accent)" class="svg-label">tee</text>
+            <text x="16" y="246" fill="var(--muted)" class="svg-text">Tap any stream, live</text>
+            <text x="256" y="230" fill="var(--text)" class="svg-label">Observability</text>
+            <text x="256" y="246" fill="var(--muted)" class="svg-text">ELK, Datadog, Splunk</text>
+            <text x="496" y="230" fill="var(--accent)" class="svg-label">$150+/GB/day (Splunk)</text>
+            <text x="496" y="246" fill="var(--muted)" class="svg-text">$15&ndash;23/host/mo (Datadog)</text>
+            <line x1="0" y1="255" x2="720" y2="255" stroke="var(--border)" stroke-width="0.5"/>
+            <!-- Row 6 -->
+            <text x="16" y="275" fill="var(--accent)" class="svg-label">exit codes</text>
+            <text x="16" y="291" fill="var(--muted)" class="svg-text">0 = success, nonzero = fail</text>
+            <text x="256" y="275" fill="var(--text)" class="svg-label">Health Checks</text>
+            <text x="256" y="291" fill="var(--muted)" class="svg-text">HTTP probes, circuit breakers</text>
+            <text x="496" y="275" fill="var(--accent)" class="svg-label">Sidecar proxies</text>
+            <text x="496" y="291" fill="var(--muted)" class="svg-text">Envoy, Istio mesh</text>
+            <line x1="0" y1="299" x2="720" y2="299" stroke="var(--border)" stroke-width="0.5"/>
+            <!-- Row 7 -->
+            <rect x="0" y="300" width="720" height="40" fill="var(--surface)" opacity="0.5"/>
+            <text x="16" y="324" fill="var(--accent)" class="svg-label">jails (2000)</text>
+            <text x="256" y="324" fill="var(--text)" class="svg-label">Containers</text>
+            <text x="496" y="324" fill="var(--accent)" class="svg-label">Daemon + hub + subscription</text>
+        </svg>
+
+        <p>
+            Every row in that table tells the same story: a kernel-native mechanism, battle-tested
+            for decades, repackaged with a distributed system bolted on top. The original does not
+            require a cluster. It requires a shell.
+        </p>
+
+        <h2>The Demonstration</h2>
+
+        <p>
+            Consider a practical scenario. You want the twenty most frequently requested URLs that
+            returned a 404. In the microservices world, this is an observability problem. You will
+            need a log shipper, an indexing cluster, a query language, and a dashboard. In the Unix
+            world, it is a pipeline:
+        </p>
+
+        <p><code>grep 404 access.log | cut -d' ' -f7 | sort | uniq -c | sort -rn | head -20</code></p>
+
+        <p>
+            Six processes. One pipeline. Each stateless, composable, and replaceable. No configuration
+            files, no YAML, no cluster. The data flows left to right through the pipe, each tool
+            performing its single transformation and handing the result to the next.
+        </p>
+
+        <p>
+            The industry will happily sell you the
+            <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html" target="_blank" rel="noopener">Elastic Stack</a>
+            for this. Elasticsearch alone recommends 4&ndash;8 GB of heap memory.
+            <code>grep</code> uses approximately 2 MB of resident memory. One is not like the other.
+        </p>
+
+        <!-- Architecture comparison: Unix pipeline vs modern microservices -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-label="Architecture diagram comparing a simple Unix pipeline to a modern microservices topology" style="max-width: 720px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .svg-title { font: 700 12px ui-monospace, monospace; letter-spacing: 0.05em; }
+                .svg-node { font: 400 10.5px system-ui, sans-serif; }
+                .svg-small { font: 400 9px system-ui, sans-serif; }
+            </style>
+            <defs>
+                <marker id="arrow-accent" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+                <marker id="arrow-muted" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+            </defs>
+
+            <!-- LEFT SIDE: Unix Pipeline -->
+            <text x="160" y="20" text-anchor="middle" fill="var(--accent)" class="svg-title">UNIX PIPELINE</text>
+            <text x="160" y="35" text-anchor="middle" fill="var(--muted)" class="svg-small">6 processes, 1 pipe, ~12 MB total</text>
+
+            <!-- Pipeline nodes -->
+            <rect x="30" y="56" width="110" height="36" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="85" y="78" text-anchor="middle" fill="var(--text)" class="svg-node">grep 404</text>
+
+            <line x1="140" y1="74" x2="170" y2="74" stroke="var(--accent)" stroke-width="1" marker-end="url(#arrow-accent)"/>
+            <text x="155" y="67" text-anchor="middle" fill="var(--muted)" class="svg-small">|</text>
+
+            <rect x="172" y="56" width="110" height="36" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="227" y="78" text-anchor="middle" fill="var(--text)" class="svg-node">cut -d' ' -f7</text>
+
+            <line x1="85" y1="92" x2="85" y2="118" stroke="var(--accent)" stroke-width="1" marker-end="url(#arrow-accent)"/>
+            <text x="92" y="110" fill="var(--muted)" class="svg-small">|</text>
+
+            <rect x="30" y="120" width="110" height="36" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="85" y="142" text-anchor="middle" fill="var(--text)" class="svg-node">sort</text>
+
+            <line x1="140" y1="138" x2="170" y2="138" stroke="var(--accent)" stroke-width="1" marker-end="url(#arrow-accent)"/>
+            <text x="155" y="131" text-anchor="middle" fill="var(--muted)" class="svg-small">|</text>
+
+            <rect x="172" y="120" width="110" height="36" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="227" y="142" text-anchor="middle" fill="var(--text)" class="svg-node">uniq -c</text>
+
+            <line x1="85" y1="156" x2="85" y2="182" stroke="var(--accent)" stroke-width="1" marker-end="url(#arrow-accent)"/>
+            <text x="92" y="174" fill="var(--muted)" class="svg-small">|</text>
+
+            <rect x="30" y="184" width="110" height="36" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="85" y="206" text-anchor="middle" fill="var(--text)" class="svg-node">sort -rn</text>
+
+            <line x1="140" y1="202" x2="170" y2="202" stroke="var(--accent)" stroke-width="1" marker-end="url(#arrow-accent)"/>
+            <text x="155" y="195" text-anchor="middle" fill="var(--muted)" class="svg-small">|</text>
+
+            <rect x="172" y="184" width="110" height="36" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="227" y="206" text-anchor="middle" fill="var(--text)" class="svg-node">head -20</text>
+
+            <!-- Result -->
+            <line x1="227" y1="220" x2="227" y2="248" stroke="var(--accent)" stroke-width="1" marker-end="url(#arrow-accent)"/>
+            <text x="227" y="266" text-anchor="middle" fill="var(--accent)" class="svg-node">stdout &#x2192; result</text>
+
+            <!-- Divider -->
+            <line x1="340" y1="10" x2="340" y2="410" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+
+            <!-- RIGHT SIDE: Modern Microservices -->
+            <text x="530" y="20" text-anchor="middle" fill="var(--muted)" class="svg-title">MODERN EQUIVALENT</text>
+            <text x="530" y="35" text-anchor="middle" fill="var(--muted)" class="svg-small">12+ services, 20&ndash;40 GB RAM</text>
+
+            <!-- API Gateway -->
+            <rect x="460" y="48" width="140" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
+            <text x="530" y="67" text-anchor="middle" fill="var(--muted)" class="svg-node">API Gateway</text>
+
+            <!-- Service Mesh -->
+            <rect x="370" y="42" width="320" height="248" rx="5" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 2"/>
+            <text x="688" y="56" text-anchor="end" fill="var(--border)" class="svg-small">Service Mesh</text>
+
+            <!-- Log Shipper -->
+            <rect x="385" y="92" width="120" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
+            <text x="445" y="111" text-anchor="middle" fill="var(--muted)" class="svg-node">Log Shipper</text>
+            <line x1="530" y1="78" x2="480" y2="92" stroke="var(--muted)" stroke-width="0.75" marker-end="url(#arrow-muted)"/>
+
+            <!-- Message Queue -->
+            <rect x="555" y="92" width="120" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
+            <text x="615" y="111" text-anchor="middle" fill="var(--muted)" class="svg-node">Message Queue</text>
+            <line x1="505" y1="114" x2="553" y2="107" stroke="var(--muted)" stroke-width="0.75" marker-end="url(#arrow-muted)"/>
+
+            <!-- Elasticsearch -->
+            <rect x="385" y="140" width="120" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
+            <text x="445" y="159" text-anchor="middle" fill="var(--muted)" class="svg-node">Elasticsearch</text>
+            <line x1="615" y1="122" x2="505" y2="145" stroke="var(--muted)" stroke-width="0.75" marker-end="url(#arrow-muted)"/>
+            <text x="445" y="183" text-anchor="middle" fill="var(--muted)" class="svg-small">4&ndash;8 GB heap</text>
+
+            <!-- Kibana -->
+            <rect x="555" y="140" width="120" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
+            <text x="615" y="159" text-anchor="middle" fill="var(--muted)" class="svg-node">Kibana</text>
+            <line x1="505" y1="155" x2="553" y2="155" stroke="var(--muted)" stroke-width="0.75" marker-end="url(#arrow-muted)"/>
+
+            <!-- Container Runtime -->
+            <rect x="385" y="196" width="120" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
+            <text x="445" y="215" text-anchor="middle" fill="var(--muted)" class="svg-node">Container Runtime</text>
+
+            <!-- Orchestrator -->
+            <rect x="555" y="196" width="120" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
+            <text x="615" y="215" text-anchor="middle" fill="var(--muted)" class="svg-node">Orchestrator</text>
+            <line x1="505" y1="211" x2="553" y2="211" stroke="var(--muted)" stroke-width="0.75" marker-end="url(#arrow-muted)"/>
+            <text x="615" y="239" text-anchor="middle" fill="var(--muted)" class="svg-small">12&ndash;24 GB control plane</text>
+
+            <!-- Registry -->
+            <rect x="385" y="252" width="120" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
+            <text x="445" y="271" text-anchor="middle" fill="var(--muted)" class="svg-node">Image Registry</text>
+            <line x1="445" y1="226" x2="445" y2="250" stroke="var(--muted)" stroke-width="0.75" marker-end="url(#arrow-muted)"/>
+
+            <!-- Service Discovery -->
+            <rect x="555" y="252" width="120" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
+            <text x="615" y="271" text-anchor="middle" fill="var(--muted)" class="svg-node">Service Discovery</text>
+            <line x1="615" y1="226" x2="615" y2="250" stroke="var(--muted)" stroke-width="0.75" marker-end="url(#arrow-muted)"/>
+
+            <!-- Bottom annotations -->
+            <rect x="370" y="308" width="150" height="36" rx="3" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 2"/>
+            <text x="445" y="325" text-anchor="middle" fill="var(--muted)" class="svg-small">Config management</text>
+            <text x="445" y="338" text-anchor="middle" fill="var(--muted)" class="svg-small">Secrets, env vars, vaults</text>
+
+            <rect x="540" y="308" width="150" height="36" rx="3" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 2"/>
+            <text x="615" y="325" text-anchor="middle" fill="var(--muted)" class="svg-small">CI/CD pipeline</text>
+            <text x="615" y="338" text-anchor="middle" fill="var(--muted)" class="svg-small">Build, test, deploy, rollback</text>
+
+            <!-- Bottom label -->
+            <text x="160" y="310" text-anchor="middle" fill="var(--accent)" class="svg-title">Same result.</text>
+            <text x="160" y="330" text-anchor="middle" fill="var(--accent)" class="svg-small">One line of shell.</text>
+
+            <text x="530" y="370" text-anchor="middle" fill="var(--muted)" class="svg-title">Same result.</text>
+            <text x="530" y="390" text-anchor="middle" fill="var(--muted)" class="svg-small">A team, a budget, and a prayer.</text>
+        </svg>
+
+        <p>
+            The diagram is not a caricature. It is a conservative rendering. A production ELK
+            deployment typically includes a reverse proxy, an ingest pipeline, index lifecycle
+            management, alerting, and role-based access control. The Unix pipeline includes
+            none of these because it does not need them. The data never leaves the machine.
+        </p>
+
+        <h2>The Repackaging</h2>
+
+        <p>
+            Docker took <a href="https://docs.docker.com/engine/security/" target="_blank" rel="noopener">cgroups and namespaces</a>
+            &mdash; kernel features available since the 1990s &mdash; and added a daemon, a hub,
+            and a subscription model. <a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener">FreeBSD jails</a>
+            achieved process isolation in 2000, without a background daemon and without phoning home.
+            <a href="https://kubernetes.io/docs/setup/production-environment/" target="_blank" rel="noopener">Kubernetes</a>
+            buried <code>iptables</code>, <code>cgroups</code>, and <code>etcd</code> under
+            12&ndash;24 GB of control plane RAM. The kernel features are still doing the actual work.
+            They are simply harder to see now, which is rather the point.
+        </p>
+
+        <p>
+            This is not an argument against containerisation or orchestration as concepts. Large
+            distributed systems face genuine problems that a single machine cannot solve. The
+            objection is narrower and, one hopes, more interesting: the industry did not merely
+            adopt Unix principles. It repackaged them &mdash; not to make them more accessible,
+            but to make them more billable. The abstractions rarely subtract complexity. They
+            redistribute it, usually into places where it is harder to inspect and more expensive
+            to debug.
+        </p>
+
+        <h2>The Invoice</h2>
+
+        <p>
+            It is worth placing the numbers side by side, not to be provocative, but because
+            the comparison itself is instructive. The left column has been compiling and running
+            on production systems for half a century. The right column requires a procurement
+            process.
+        </p>
+
+        <aside aria-label="Cost comparison between Unix tools and commercial alternatives">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 292" role="img" aria-label="Table comparing resource usage: Unix tools versus modern commercial equivalents" style="max-width: 600px; width: 100%; height: auto; margin: 2em 0;">
+                <style>
+                    .inv-heading { font: 700 11.5px ui-monospace, monospace; }
+                    .inv-label { font: 600 11px system-ui, sans-serif; }
+                    .inv-value { font: 400 11px ui-monospace, monospace; }
+                    .inv-accent { font: 700 11px ui-monospace, monospace; }
+                </style>
+                <!-- Header -->
+                <rect x="0" y="0" width="200" height="28" fill="var(--accent)" opacity="0.15"/>
+                <rect x="200" y="0" width="200" height="28" fill="var(--accent)" opacity="0.15"/>
+                <rect x="400" y="0" width="200" height="28" fill="var(--accent)" opacity="0.15"/>
+                <text x="100" y="19" text-anchor="middle" fill="var(--accent)" class="inv-heading">Problem</text>
+                <text x="300" y="19" text-anchor="middle" fill="var(--accent)" class="inv-heading">Unix</text>
+                <text x="500" y="19" text-anchor="middle" fill="var(--accent)" class="inv-heading">Modern</text>
+                <line x1="0" y1="28" x2="600" y2="28" stroke="var(--border)" stroke-width="1"/>
+
+                <!-- Row 1: Log search -->
+                <rect x="0" y="29" width="600" height="44" fill="var(--surface)" opacity="0.4"/>
+                <text x="16" y="48" fill="var(--text)" class="inv-label">Log search</text>
+                <text x="216" y="48" fill="var(--text)" class="inv-value">grep</text>
+                <text x="216" y="64" fill="var(--muted)" class="inv-value">2 MB RSS &#x2014; $0</text>
+                <text x="416" y="48" fill="var(--muted)" class="inv-value">Splunk</text>
+                <text x="416" y="64" fill="var(--muted)" class="inv-value">$150+/GB/day</text>
+                <line x1="0" y1="73" x2="600" y2="73" stroke="var(--border)" stroke-width="0.5"/>
+
+                <!-- Row 2: Log indexing -->
+                <text x="16" y="92" fill="var(--text)" class="inv-label">Log indexing</text>
+                <text x="216" y="92" fill="var(--text)" class="inv-value">grep + sort + uniq</text>
+                <text x="216" y="108" fill="var(--muted)" class="inv-value">~6 MB RSS &#x2014; $0</text>
+                <text x="416" y="92" fill="var(--muted)" class="inv-value">ELK Stack</text>
+                <text x="416" y="108" fill="var(--muted)" class="inv-value">4&#x2013;8 GB heap</text>
+                <line x1="0" y1="117" x2="600" y2="117" stroke="var(--border)" stroke-width="0.5"/>
+
+                <!-- Row 3: Monitoring -->
+                <rect x="0" y="118" width="600" height="44" fill="var(--surface)" opacity="0.4"/>
+                <text x="16" y="137" fill="var(--text)" class="inv-label">Monitoring</text>
+                <text x="216" y="137" fill="var(--text)" class="inv-value">ps + awk + cron</text>
+                <text x="216" y="153" fill="var(--muted)" class="inv-value">~1 MB RSS &#x2014; $0</text>
+                <text x="416" y="137" fill="var(--muted)" class="inv-value">Datadog</text>
+                <text x="416" y="153" fill="var(--muted)" class="inv-value">$15&#x2013;23/host/month</text>
+                <line x1="0" y1="162" x2="600" y2="162" stroke="var(--border)" stroke-width="0.5"/>
+
+                <!-- Row 4: Process isolation -->
+                <text x="16" y="181" fill="var(--text)" class="inv-label">Process isolation</text>
+                <text x="216" y="181" fill="var(--text)" class="inv-value">jails (2000)</text>
+                <text x="216" y="197" fill="var(--muted)" class="inv-value">Kernel-native &#x2014; $0</text>
+                <text x="416" y="181" fill="var(--muted)" class="inv-value">Docker</text>
+                <text x="416" y="197" fill="var(--muted)" class="inv-value">Daemon + registry + sub</text>
+                <line x1="0" y1="206" x2="600" y2="206" stroke="var(--border)" stroke-width="0.5"/>
+
+                <!-- Row 5: Orchestration -->
+                <rect x="0" y="207" width="600" height="44" fill="var(--surface)" opacity="0.4"/>
+                <text x="16" y="226" fill="var(--text)" class="inv-label">Orchestration</text>
+                <text x="216" y="226" fill="var(--text)" class="inv-value">rc.d + jails</text>
+                <text x="216" y="242" fill="var(--muted)" class="inv-value">0 MB overhead &#x2014; $0</text>
+                <text x="416" y="226" fill="var(--muted)" class="inv-value">Kubernetes</text>
+                <text x="416" y="242" fill="var(--muted)" class="inv-value">12&#x2013;24 GB control plane</text>
+                <line x1="0" y1="251" x2="600" y2="251" stroke="var(--border)" stroke-width="0.5"/>
+
+                <!-- Row 6: Service discovery -->
+                <text x="16" y="270" fill="var(--text)" class="inv-label">Service discovery</text>
+                <text x="216" y="270" fill="var(--text)" class="inv-value">$PATH</text>
+                <text x="216" y="286" fill="var(--muted)" class="inv-value">Built into the shell</text>
+                <text x="416" y="270" fill="var(--muted)" class="inv-value">Consul / etcd</text>
+                <text x="416" y="286" fill="var(--muted)" class="inv-value">Distributed consensus</text>
+            </svg>
+        </aside>
+
+        <p>
+            The <a href="https://www.splunk.com/en_us/products/pricing.html" target="_blank" rel="noopener">Splunk</a>
+            pricing page is an education in itself. At $150 or more per gigabyte per day, a moderately
+            busy web server generating 10 GB of logs daily would cost $1,500 per day for the privilege
+            of searching text &mdash; a task that <code>grep</code>, a fifty-three-year-old binary,
+            performs in milliseconds for the price of a few megabytes of RAM.
+            <a href="https://www.datadoghq.com/pricing/" target="_blank" rel="noopener">Datadog</a>
+            charges $15&ndash;23 per host per month for metrics that <code>ps</code>,
+            <code>awk</code>, and <code>cron</code> have collected since before most of its
+            engineers were born.
+        </p>
+
+        <p>
+            One might argue that these commercial platforms offer features beyond raw search:
+            dashboards, alerting, anomaly detection, retention policies. This is true. One might
+            also argue that a significant proportion of their customers use approximately none of
+            these features and are, in effect, paying enterprise rates for <code>grep</code>.
+        </p>
+
+        <h2>The Uncomfortable Conclusion</h2>
+
+        <p>
+            The tools are compiled. They are optimised. They have been battle-tested for half a
+            century. They implement the microservices pattern in its purest form: small, stateless,
+            composable processes communicating through a universal text interface with built-in
+            backpressure. The pattern was never lost. It was never even obscure. It was taught in
+            every introductory Unix course for decades.
+        </p>
+
+        <p>
+            The industry did not ignore the Unix philosophy. It studied it, extracted the principles,
+            wrapped them in YAML, and sold them back with a support contract. Not to make them more
+            accessible &mdash; the man pages were always free &mdash; but to make them more billable.
+        </p>
+
+        <p>
+            The tools are there. They always were. The question is not whether they work.
+            The question is whether anyone still bothers to look.
+        </p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,275 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Interpreted Stack — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Seven layers of compensation. One compiled binary. The standard PHP deployment is not a stack — it is a monument to sunk cost.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-interpreted-stack{( endslot )}
+
+{( slot og-title )}The Interpreted Stack — Vivian Voss{( endslot )}
+
+{( slot og-desc )}Seven layers of compensation. One compiled binary. The standard PHP deployment is not a stack — it is a monument to sunk cost.{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-14">14 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Interpreted Stack</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p>The job description is admirably brief: a request arrives, HTML leaves.
+            One job. One process ought to do. And yet, over a quarter of a century
+            of accretion, the standard PHP deployment has arrived at something
+            rather more elaborate.</p>
+
+        <h2>The Seven Layers</h2>
+
+        <p>Consider what the typical PHP production environment actually requires
+            before it can perform this single, modest task:</p>
+
+        <p><strong>Nginx</strong> &#x2014; because PHP cannot serve HTTP on its own.
+            A language designed for the web that requires a separate programme to
+            participate in it. One might call this an architectural decision. One
+            might also call it an admission.</p>
+
+        <p><strong><a href="https://docs.platform.sh/languages/php/fpm.html" target="_blank" rel="noopener">PHP-FPM</a></strong>
+            &#x2014; because the language needs an external process manager to handle
+            concurrent requests. The FastCGI Process Manager spawns worker pools,
+            manages lifetimes, and consumes
+            <a href="https://docs.platform.sh/languages/php/fpm.html" target="_blank" rel="noopener">300&#x2013;600 MB of memory</a>
+            merely to supervise a language that cannot supervise itself.</p>
+
+        <p><strong><a href="https://www.php.net/manual/en/opcache.configuration.php" target="_blank" rel="noopener">OPcache</a></strong>
+            &#x2014; because interpreting the same source files on every request proved,
+            unsurprisingly, too slow. The solution: cache the compiled bytecode between
+            requests, which is to say, approximate what a compiled language does by default.
+            PHP 8's JIT compiler improves synthetic benchmarks by up to
+            <a href="https://stitcher.io/blog/jit-in-real-life-web-applications" target="_blank" rel="noopener">eleven times</a>,
+            but real web workloads see a rather more modest
+            <a href="https://sevalla.com/blog/laravel-benchmarks/" target="_blank" rel="noopener">1.8% improvement</a>.
+            The bottleneck, it turns out, was never the CPU.</p>
+
+        <p><strong>Composer + vendor/</strong> &#x2014; because the language ships without
+            a standard library worth mentioning. Need to send an HTTP request? Install a
+            package. Parse a date? Package. Validate an email? Package. The
+            <a href="https://laracasts.com/discuss/channels/laravel/laravel-project-size-way-too-big" target="_blank" rel="noopener">vendor/ directory</a>
+            of a typical Laravel application weighs 50&#x2013;200 MB. That is not a
+            dependency tree. It is a dependency forest, and no one has drawn the map.</p>
+
+        <p><strong>A framework</strong> &#x2014; because the language provides no routing,
+            no request lifecycle, no structure. Laravel, Symfony, or one of their many
+            imitators must supply what the language itself declined to.</p>
+
+        <p><strong>A template engine</strong> &#x2014; because mixing business logic and
+            HTML markup was eventually recognised as poor form. Blade, Twig, or a
+            bespoke alternative now separates concerns that a well-designed language
+            would never have entangled.</p>
+
+        <p><strong>Redis</strong> &#x2014; because PHP forgets everything after each request.
+            The shared-nothing architecture, once presented as a feature, requires an
+            external in-memory store to maintain any state whatsoever between page loads.
+            Sessions, caches, queues &#x2014; all outsourced to a separate system because
+            the primary one has the long-term memory of a goldfish.</p>
+
+        <p>Seven layers. Each one a patch on the one below. Each one adding latency,
+            memory, configuration surface, and failure modes. Not one of them addresses
+            the root cause. They merely make the symptoms more comfortable.</p>
+
+        <h2>The Diagram</h2>
+
+        <p>It is worth seeing the architecture drawn plainly. On the left, the standard
+            PHP deployment: seven distinct components, each compensating for a limitation
+            in the one beneath it. On the right, the compiled alternative.</p>
+
+        <svg viewBox="0 0 580 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison diagram: seven-layer PHP stack versus a single compiled binary. The PHP stack shows Nginx, PHP-FPM, OPcache, Composer, Framework, Template Engine, and Redis stacked vertically. The compiled binary is a single block." style="max-width: 580px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .stack-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .stack-sub { font: 400 10.5px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .stack-title { font: 600 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .stack-box { fill: none; stroke: var(--border); stroke-width: 1.5; }
+                .stack-accent { fill: none; stroke: var(--accent); stroke-width: 2; }
+                .stack-patch { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 3; }
+                .stack-fill { fill: var(--accent); opacity: 0.08; }
+                .stack-fill-solid { fill: var(--accent); opacity: 0.15; }
+            </style>
+            <!-- PHP Stack title -->
+            <text class="stack-title" x="140" y="20" text-anchor="middle">Interpreted Stack</text>
+            <!-- PHP Stack layers (bottom to top, drawn top to bottom visually) -->
+            <rect class="stack-box stack-fill" x="30" y="36" width="220" height="44" rx="3"/>
+            <text class="stack-label" x="140" y="55" text-anchor="middle">Nginx</text>
+            <text class="stack-sub" x="140" y="70" text-anchor="middle">cannot serve HTTP alone</text>
+
+            <line class="stack-patch" x1="80" y1="80" x2="200" y2="80"/>
+
+            <rect class="stack-box stack-fill" x="30" y="84" width="220" height="44" rx="3"/>
+            <text class="stack-label" x="140" y="103" text-anchor="middle">PHP-FPM</text>
+            <text class="stack-sub" x="140" y="118" text-anchor="middle">cannot manage processes</text>
+
+            <line class="stack-patch" x1="80" y1="128" x2="200" y2="128"/>
+
+            <rect class="stack-box stack-fill" x="30" y="132" width="220" height="44" rx="3"/>
+            <text class="stack-label" x="140" y="151" text-anchor="middle">OPcache</text>
+            <text class="stack-sub" x="140" y="166" text-anchor="middle">interpreting is too slow</text>
+
+            <line class="stack-patch" x1="80" y1="176" x2="200" y2="176"/>
+
+            <rect class="stack-box stack-fill" x="30" y="180" width="220" height="44" rx="3"/>
+            <text class="stack-label" x="140" y="199" text-anchor="middle">Composer + vendor/</text>
+            <text class="stack-sub" x="140" y="214" text-anchor="middle">no standard library</text>
+
+            <line class="stack-patch" x1="80" y1="224" x2="200" y2="224"/>
+
+            <rect class="stack-box stack-fill" x="30" y="228" width="220" height="44" rx="3"/>
+            <text class="stack-label" x="140" y="247" text-anchor="middle">Framework</text>
+            <text class="stack-sub" x="140" y="262" text-anchor="middle">no routing, no structure</text>
+
+            <line class="stack-patch" x1="80" y1="272" x2="200" y2="272"/>
+
+            <rect class="stack-box stack-fill" x="30" y="276" width="220" height="44" rx="3"/>
+            <text class="stack-label" x="140" y="295" text-anchor="middle">Template Engine</text>
+            <text class="stack-sub" x="140" y="310" text-anchor="middle">logic and markup entangled</text>
+
+            <line class="stack-patch" x1="80" y1="320" x2="200" y2="320"/>
+
+            <rect class="stack-box stack-fill" x="30" y="324" width="220" height="44" rx="3"/>
+            <text class="stack-label" x="140" y="343" text-anchor="middle">Redis</text>
+            <text class="stack-sub" x="140" y="358" text-anchor="middle">forgets everything per request</text>
+
+            <!-- Brace / annotation -->
+            <text class="stack-sub" x="140" y="390" text-anchor="middle">300&#x2013;600 MB &#xB7; 300 ms cold start</text>
+            <text class="stack-sub" x="140" y="408" text-anchor="middle">50&#x2013;200 MB vendor/ alone</text>
+
+            <!-- Compiled Binary title -->
+            <text class="stack-title" x="440" y="20" text-anchor="middle">Compiled Binary</text>
+            <!-- Single block -->
+            <rect class="stack-accent stack-fill-solid" x="340" y="36" width="200" height="332" rx="3"/>
+            <text class="stack-label" x="440" y="170" text-anchor="middle">Routes</text>
+            <text class="stack-label" x="440" y="190" text-anchor="middle">Renders</text>
+            <text class="stack-label" x="440" y="210" text-anchor="middle">Scripts</text>
+            <text class="stack-label" x="440" y="230" text-anchor="middle">Serves</text>
+            <text class="stack-sub" x="440" y="260" text-anchor="middle">One process. One binary.</text>
+
+            <text class="stack-sub" x="440" y="390" text-anchor="middle">891 KB &#xB7; &lt;1 ms cold start</text>
+            <text class="stack-sub" x="440" y="408" text-anchor="middle">1.8 MB idle memory</text>
+        </svg>
+
+        <p>The question is not which layer to optimise. The question is which of these
+            seven layers would exist at all if the starting point had been a compiled
+            binary.</p>
+
+        <p>The answer, rather inconveniently for the ecosystem, is none of them.</p>
+
+        <h2>The Uncluttered Methods Pattern</h2>
+
+        <p>For over fifteen years I have followed what I call UMP: the Uncluttered
+            Methods Pattern. The principle is simple enough to fit on a napkin, and
+            rather difficult to argue with once you have read it:</p>
+
+        <blockquote>
+            <p>Eliminate every layer that exists only to compensate for the one below it.</p>
+        </blockquote>
+
+        <p>This is Occam's razor applied to system architecture. Not "move fast and
+            break things." Not "keep it simple, stupid." Something more precise:
+            every layer in your stack must justify its existence on its own merits,
+            not as an apology for the layer beneath.</p>
+
+        <p>Apply this to the standard web stack, and what remains is a compiled binary
+            that routes, renders, scripts, and serves. No process manager. No bytecode
+            cache. No dependency forest. No external state store. One binary. One
+            process. One job.</p>
+
+        <h2>The Numbers</h2>
+
+        <p>Theory is pleasant. Arithmetic is persuasive. Here is what
+            <a href="https://github.com/get-castd/server" target="_blank" rel="noopener">CASTD</a>
+            &#x2014; a compiled Rust web server with Lua scripting and built-in
+            templating &#x2014; actually measures in production:</p>
+
+        <p><strong>CASTD</strong> (real, measured, running):</p>
+        <ul>
+            <li>Binary size: 891 KB. Multithreaded. Vertically scaling.</li>
+            <li>Memory: 1.8 MB idle, 4 MB under 200 concurrent connections.</li>
+            <li>Cold start: &lt;1 ms.</li>
+        </ul>
+
+        <p><strong>One
+            <a href="https://sevalla.com/blog/laravel-benchmarks/" target="_blank" rel="noopener">Laravel stack</a></strong>
+            (Nginx + PHP-FPM + OPcache + Redis + Cron + Queue):</p>
+        <ul>
+            <li>Deploy size: 50&#x2013;200 MB (vendor/ alone).</li>
+            <li>Memory: 300&#x2013;600 MB (FPM worker pool).</li>
+            <li><a href="https://www.deployhq.com/blog/comparing-php-application-servers-in-2025-performance-scalability-and-modern-options" target="_blank" rel="noopener">Cold start</a>: 300 ms.</li>
+        </ul>
+
+        <p>Now scale that to an enterprise deployment. Eight application servers:</p>
+
+        <p>PHP stack: approximately 19 GB of memory. CASTD: approximately 32 MB.
+            The ratio is not a rounding error. It is a factor of 600.</p>
+
+        <p>One might reasonably ask what the other 18.97 GB are doing. The answer,
+            of course, is compensating.</p>
+
+        <h2>Precedent at Scale</h2>
+
+        <p>This is not a novel pattern. It is not even a controversial one, if you
+            look at who else uses it.</p>
+
+        <p><a href="https://blog.cloudflare.com/pushing-nginx-to-its-limit-with-lua/" target="_blank" rel="noopener">Cloudflare</a>
+            runs their entire CDN on precisely this architecture: a compiled core
+            extended with Lua, built on
+            <a href="https://en.wikipedia.org/wiki/OpenResty" target="_blank" rel="noopener">OpenResty</a>.
+            Forty million websites. The pattern is not theoretical. It is
+            infrastructure-grade, battle-tested, and rather thoroughly proven.</p>
+
+        <p>The difference is that Cloudflare uses it to serve other people's
+            websites. CASTD uses it to replace the stack those websites run on.</p>
+
+        <aside>
+            <h2>Under Load</h2>
+            <p>A load test tells the full story. Five thousand requests at 200
+                concurrent connections: memory rose from 3,760 KB to 4,224 KB &#x2014;
+                a difference of 464 KB. When the test ended, the binary returned
+                the memory immediately.</p>
+            <p>No garbage collector deliberating. No worker pool lingering. The
+                operating system asked for memory back, and the compiled binary
+                obliged. This is what happens when the runtime is not an
+                interpreter pretending to be a server, but an actual server
+                that happens to interpret Lua when asked.</p>
+            <p>UMP in practice: every layer must justify its existence.
+                The layers that cannot, do not survive the audit.</p>
+        </aside>
+
+        <h2>The Uncomfortable Arithmetic</h2>
+
+        <p>The PHP ecosystem will point out, correctly, that it powers a vast
+            percentage of the web. WordPress alone accounts for over 40% of all
+            websites. This is true, and it is also irrelevant. Market share is
+            not a technical argument. Internet Explorer once had 95% market share.
+            The question is not what is popular. The question is what is necessary.</p>
+
+        <p>Seven layers to serve HTML. Each layer a product. Each product a team.
+            Each team a budget. Each budget a stakeholder who would prefer the
+            problem to remain unsolved.</p>
+
+        <p>The compiled binary has no such stakeholders. It simply does the job.</p>
+
+        <blockquote>
+            <p>One binary. One process. One job.</p>
+        </blockquote>
+
+        <p>The rest is archaeology.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

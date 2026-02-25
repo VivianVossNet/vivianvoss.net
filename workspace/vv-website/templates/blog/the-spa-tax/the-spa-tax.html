@@ -1,0 +1,312 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The SPA Tax — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="What happens when a shop decides it needs a Single Page Application. The cascade of complexity, the JavaScript payload, and the alternatives that already exist.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-spa-tax{( endslot )}
+
+{( slot og-title )}The SPA Tax — Vivian Voss{( endslot )}
+
+{( slot og-desc )}What happens when a shop decides it needs a Single Page Application. The cascade, the payload, and the alternatives that already exist.{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2025-12-31">31 December 2025</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The SPA Tax</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p>"We need a Single Page Application."</p>
+
+        <p>A perfectly reasonable sentence, provided one does not ask the follow-up
+            question. But let us ask it anyway: for what, precisely?</p>
+
+        <p>An online shop. Product catalogue, cart, checkout. The sort of thing
+            server-side rendering handled comfortably in 1995, back when modems
+            still made that noise and nobody thought twice about it.</p>
+
+        <p>But once the letters S, P, and A appear in a requirements document,
+            something rather expensive begins to happen.</p>
+
+        <h2>The Cascade</h2>
+
+        <p>A Single Page Application is never just a Single Page Application.
+            It is a commitment &#x2014; one that arrives in stages, each stage
+            presented as a natural consequence of the previous, each one adding
+            headcount, tooling, and infrastructure cost that was not in the
+            original estimate.</p>
+
+        <p>The mechanism works as follows. You choose a framework: React, Vue,
+            or Angular. The framework requires state management, because client-side
+            applications must keep track of what the server used to track for them.
+            State management requires client-side routing, because the browser's
+            native navigation no longer applies. Routing requires an API layer &#x2014;
+            REST or GraphQL &#x2014; because the server now serves data rather than
+            pages. The API requires token authentication, because sessions are
+            suddenly someone else's problem. Authentication requires a build pipeline,
+            because none of this ships as plain HTML. The build pipeline requires
+            Node.js for server-side rendering, because search engines still expect
+            actual markup. SSR requires hydration logic, because the client must
+            silently reconstruct what the server already built. And all of the above
+            requires DevOps. Kubernetes, probably. A platform team, definitely.</p>
+
+        <svg viewBox="0 0 400 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The SPA cascade: one requirement triggers ten layers of complexity, from React down to a platform team." style="max-width: 400px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cascade-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cascade-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cascade-line { stroke: var(--accent); stroke-width: 2; }
+                .cascade-dot { fill: var(--accent); }
+                .cascade-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .cascade-trigger { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+            <!-- Trigger -->
+            <rect class="cascade-trigger" x="80" y="10" width="240" height="36"/>
+            <text class="cascade-label" x="200" y="33" text-anchor="middle">"We need a SPA"</text>
+            <!-- Vertical spine -->
+            <line class="cascade-line" x1="200" y1="46" x2="200" y2="600" opacity="0.2"/>
+            <!-- Node 1: Framework -->
+            <circle class="cascade-dot" cx="200" cy="76" r="4"/>
+            <rect class="cascade-box" x="220" y="62" width="170" height="30"/>
+            <text class="cascade-label" x="305" y="82" text-anchor="middle">React / Vue / Angular</text>
+            <!-- Node 2: State management -->
+            <circle class="cascade-dot" cx="200" cy="126" r="4"/>
+            <rect class="cascade-box" x="10" y="112" width="170" height="30"/>
+            <text class="cascade-label" x="95" y="132" text-anchor="middle">State Management</text>
+            <!-- Node 3: Client-side routing -->
+            <circle class="cascade-dot" cx="200" cy="176" r="4"/>
+            <rect class="cascade-box" x="220" y="162" width="170" height="30"/>
+            <text class="cascade-label" x="305" y="182" text-anchor="middle">Client-side Routing</text>
+            <!-- Node 4: API layer -->
+            <circle class="cascade-dot" cx="200" cy="226" r="4"/>
+            <rect class="cascade-box" x="10" y="212" width="170" height="30"/>
+            <text class="cascade-label" x="95" y="232" text-anchor="middle">REST / GraphQL API</text>
+            <!-- Node 5: Token auth -->
+            <circle class="cascade-dot" cx="200" cy="276" r="4"/>
+            <rect class="cascade-box" x="220" y="262" width="170" height="30"/>
+            <text class="cascade-label" x="305" y="282" text-anchor="middle">Token Authentication</text>
+            <!-- Node 6: Build pipeline -->
+            <circle class="cascade-dot" cx="200" cy="326" r="4"/>
+            <rect class="cascade-box" x="10" y="312" width="170" height="30"/>
+            <text class="cascade-label" x="95" y="332" text-anchor="middle">Build Pipeline</text>
+            <!-- Node 7: Node SSR -->
+            <circle class="cascade-dot" cx="200" cy="376" r="4"/>
+            <rect class="cascade-box" x="220" y="362" width="170" height="30"/>
+            <text class="cascade-label" x="305" y="382" text-anchor="middle">Node.js SSR</text>
+            <!-- Node 8: Hydration -->
+            <circle class="cascade-dot" cx="200" cy="426" r="4"/>
+            <rect class="cascade-box" x="10" y="412" width="170" height="30"/>
+            <text class="cascade-label" x="95" y="432" text-anchor="middle">Hydration Logic</text>
+            <!-- Node 9: DevOps -->
+            <circle class="cascade-dot" cx="200" cy="476" r="4"/>
+            <rect class="cascade-box" x="220" y="462" width="170" height="30"/>
+            <text class="cascade-label" x="305" y="482" text-anchor="middle">DevOps / Kubernetes</text>
+            <!-- Node 10: Platform team -->
+            <circle class="cascade-dot" cx="200" cy="526" r="4"/>
+            <rect class="cascade-box" x="10" y="512" width="170" height="30"/>
+            <text class="cascade-label" x="95" y="532" text-anchor="middle">Platform Team</text>
+            <!-- Cost label -->
+            <line class="cascade-line" x1="200" y1="560" x2="200" y2="580" stroke-dasharray="4 3"/>
+            <rect class="cascade-trigger" x="80" y="580" width="240" height="30"/>
+            <text class="cascade-sub" x="200" y="600" text-anchor="middle">infrastructure cost: 3x minimum</text>
+        </svg>
+
+        <p>Infrastructure cost tripled &#x2014; at minimum &#x2014; not because
+            users demanded faster checkouts, but because the architecture demanded
+            babysitting.</p>
+
+        <h2>The Scaling Paradox</h2>
+
+        <p>Node.js cannot utilise more than one CPU core per process. This is not
+            a controversial claim; it is a documented property of the event loop.
+            The prescribed solution is horizontal scaling: more processes, more
+            containers, more billable compute hours. PHP handles concurrent requests
+            natively. Rust and Go scale vertically. Node.js scales by multiplication
+            &#x2014; and a remarkable number of people decided this was a good idea.</p>
+
+        <p>One might charitably call it job creation.</p>
+
+        <h2>The Payload</h2>
+
+        <p>The consequences arrive in the browser. According to the
+            <a href="https://almanac.httparchive.org/en/2024/javascript" target="_blank" rel="noopener">2024 HTTP Archive</a>,
+            the median web page now ships <strong>558 KB of JavaScript</strong>,
+            of which <strong>44% is unused</strong> during the initial page load.
+            Google's own
+            <a href="https://web.dev/performance-budgets-101/" target="_blank" rel="noopener">performance budget guidance</a>
+            recommends staying under 170 KB. The average SPA delivers triple that
+            without breaking a sweat.</p>
+
+        <p>Zoom out further and the trajectory becomes rather difficult to defend.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="JavaScript payload growth from 2010 to 2024. Median JS rose from 90 KB to 650 KB, far exceeding Google's 170 KB recommendation." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .chart-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .chart-value { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .chart-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .chart-axis { stroke: var(--border); stroke-width: 1; }
+                .chart-bar { fill: var(--accent); opacity: 0.7; }
+                .chart-limit { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 8 4; }
+                .chart-limit-label { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .chart-area { fill: var(--accent); opacity: 0.08; }
+                .chart-line { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+                .chart-dot { fill: var(--accent); }
+            </style>
+            <!-- Y axis -->
+            <line class="chart-axis" x1="60" y1="20" x2="60" y2="250"/>
+            <!-- X axis -->
+            <line class="chart-axis" x1="60" y1="250" x2="500" y2="250"/>
+            <!-- Y axis labels -->
+            <text class="chart-muted" x="55" y="248" text-anchor="end">0</text>
+            <text class="chart-muted" x="55" y="213" text-anchor="end">100</text>
+            <text class="chart-muted" x="55" y="178" text-anchor="end">200</text>
+            <text class="chart-muted" x="55" y="143" text-anchor="end">300</text>
+            <text class="chart-muted" x="55" y="108" text-anchor="end">400</text>
+            <text class="chart-muted" x="55" y="73" text-anchor="end">500</text>
+            <text class="chart-muted" x="55" y="38" text-anchor="end">600</text>
+            <!-- Y axis unit -->
+            <text class="chart-muted" x="10" y="140" text-anchor="start" transform="rotate(-90 10 140)">KB (median)</text>
+            <!-- Grid lines -->
+            <line class="chart-axis" x1="60" y1="215" x2="500" y2="215" opacity="0.3"/>
+            <line class="chart-axis" x1="60" y1="180" x2="500" y2="180" opacity="0.3"/>
+            <line class="chart-axis" x1="60" y1="145" x2="500" y2="145" opacity="0.3"/>
+            <line class="chart-axis" x1="60" y1="110" x2="500" y2="110" opacity="0.3"/>
+            <line class="chart-axis" x1="60" y1="75" x2="500" y2="75" opacity="0.3"/>
+            <line class="chart-axis" x1="60" y1="40" x2="500" y2="40" opacity="0.3"/>
+            <!-- Area fill under the line -->
+            <polygon class="chart-area" points="80,218 140,208 200,190 260,162 320,128 380,85 440,55 480,22 480,250 80,250"/>
+            <!-- Data line: 2010=90, 2012=120, 2014=170, 2016=250, 2018=350, 2020=470, 2022=560, 2024=650 -->
+            <polyline class="chart-line" points="80,218 140,208 200,190 260,162 320,128 380,85 440,55 480,22"/>
+            <!-- Data points -->
+            <circle class="chart-dot" cx="80" cy="218" r="4"/>
+            <circle class="chart-dot" cx="140" cy="208" r="4"/>
+            <circle class="chart-dot" cx="200" cy="190" r="4"/>
+            <circle class="chart-dot" cx="260" cy="162" r="4"/>
+            <circle class="chart-dot" cx="320" cy="128" r="4"/>
+            <circle class="chart-dot" cx="380" cy="85" r="4"/>
+            <circle class="chart-dot" cx="440" cy="55" r="4"/>
+            <circle class="chart-dot" cx="480" cy="22" r="4"/>
+            <!-- Data values -->
+            <text class="chart-value" x="80" y="210" text-anchor="middle">90</text>
+            <text class="chart-value" x="480" y="16" text-anchor="middle">650</text>
+            <!-- X axis labels -->
+            <text class="chart-label" x="80" y="268" text-anchor="middle">2010</text>
+            <text class="chart-label" x="140" y="268" text-anchor="middle">2012</text>
+            <text class="chart-label" x="200" y="268" text-anchor="middle">2014</text>
+            <text class="chart-label" x="260" y="268" text-anchor="middle">2016</text>
+            <text class="chart-label" x="320" y="268" text-anchor="middle">2018</text>
+            <text class="chart-label" x="380" y="268" text-anchor="middle">2020</text>
+            <text class="chart-label" x="440" y="268" text-anchor="middle">2022</text>
+            <text class="chart-label" x="480" y="268" text-anchor="middle">2024</text>
+            <!-- Google 170KB recommendation line -->
+            <line class="chart-limit" x1="60" y1="190" x2="500" y2="190"/>
+            <text class="chart-limit-label" x="500" y="186" text-anchor="end">&#x25C0; Google: 170 KB max</text>
+            <!-- Source -->
+            <text class="chart-muted" x="500" y="295" text-anchor="end">Source: HTTP Archive, State of JavaScript</text>
+        </svg>
+
+        <p>Median JavaScript payload grew from
+            <a href="https://httparchive.org/reports/state-of-javascript" target="_blank" rel="noopener">90 KB in 2010 to 650 KB in 2024</a>.
+            That is not progress. That is force-feeding marketed as growth.</p>
+
+        <h2>The Amortisation Fallacy</h2>
+
+        <p>The standard defence of the SPA runs approximately thus: the initial
+            load cost is higher, certainly, but it amortises across a long session
+            because subsequent navigations are faster. The application shell stays
+            in memory. The investment pays off.</p>
+
+        <p>A compelling argument, provided one's users actually stay.</p>
+
+        <p>E-commerce visitors view three to five pages per session, then leave.
+            They are gone before the app shell investment has so much as broken
+            even. The SPA model bets on session depth that a shop simply does not
+            produce.</p>
+
+        <aside>
+            <p>The SPA genuinely makes sense for <em>desktop applications in a browser</em>.
+                Gmail. Google Maps. Figma. Users stay for hours, interact hundreds of
+                times. The load cost amortises beautifully. That, however, is not 90%
+                of websites. It is not even 10%.</p>
+        </aside>
+
+        <p>A shop is not Gmail. Rather obvious, one might think. Apparently not.</p>
+
+        <h2>The Metrics Defence</h2>
+
+        <p>"But our metrics say otherwise!" &#x2014; Of course they do. When the
+            dashboard is designed to confirm the decision that was already made,
+            confirmation is precisely what it produces. Agile dashboards share a
+            curious property with Soviet five-year plans: targets are always met,
+            the methodology is never questioned, and anyone who raises the
+            discrepancy between the numbers and observable reality is invited to
+            recalibrate their expectations.</p>
+
+        <p>One does not measure the cost of the SPA by comparing SPA-to-SPA.
+            One measures it by comparing the SPA to what the server would have
+            delivered without one. That comparison, for some reason, never appears
+            on the dashboard.</p>
+
+        <h2>The Ecosystem as Business Model</h2>
+
+        <p><a href="https://www.npmjs.com/" target="_blank" rel="noopener">npm</a>
+            hosts 2.1 million packages. A staggering number, until one considers
+            how many of them solve problems that exist only within the SPA paradigm.
+            Client-side routing libraries. State serialisation utilities. Hydration
+            helpers. Server-component bridges. Entire categories that vanish the
+            moment you render HTML on the server and let the browser do what browsers
+            have done since 1993.</p>
+
+        <p>The complexity is not accidental. It is the business model.</p>
+
+        <p>Bootcamps teach React because "that is what companies want." Companies
+            want React because "that is what bootcamps teach." The loop is
+            self-reinforcing, economically rational for every participant, and
+            entirely disconnected from the question of whether the user needed
+            a Single Page Application in the first place. Splendid.</p>
+
+        <h2>The Alternative Exists</h2>
+
+        <p>This is not a call to return to PHP 4 and table layouts. The alternatives
+            are modern, well-documented, and considerably lighter.</p>
+
+        <p><a href="https://hotwired.dev/" target="_blank" rel="noopener">Hotwire</a>
+            delivers 90% server-rendered HTML with minimal JavaScript for the
+            interactive bits.
+            <a href="https://htmx.org/" target="_blank" rel="noopener">htmx</a>
+            weighs 14 KB and extends HTML itself rather than replacing it.
+            Progressive enhancement &#x2014; the principle that a page should work
+            before JavaScript loads, then improve when it does &#x2014; still works
+            precisely as advertised. It simply lacks a venture-funded marketing
+            department.</p>
+
+        <p>The fastest SPA is, rather often, no SPA at all.</p>
+
+        <blockquote>
+            <p>Server-side rendering solved the online shop in 1995. Everything
+                since has been an argument about why the solution needs to be
+                more expensive.</p>
+        </blockquote>
+
+        <p>The SPA tax is not a line item on an invoice. It is the invoice &#x2014;
+            the infrastructure, the headcount, the tooling, the build minutes, the
+            platform team, the Kubernetes cluster, the on-call rota. All of it
+            flowing from a single architectural decision that was never questioned
+            because questioning it would have meant admitting the requirements
+            document was wrong.</p>
+
+        <p>Three to five pages. Then they leave.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
