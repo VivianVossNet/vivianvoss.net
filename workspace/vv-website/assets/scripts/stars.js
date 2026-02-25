@@ -525,6 +525,12 @@
         dualShot = false;
         powerShot = false;
         paused = false;
+        gameOver = false;
+        showLeaderboard = false;
+        leaderboardFetched = false;
+        playerQualified = false;
+        nameEntryActive = false;
+        nameEntry = "";
         if (pauseEl) { pauseEl.innerHTML = "&#x23F8;"; pauseEl.style.fontSize = ""; }
         if (pauseHintEl) pauseHintEl.textContent = "Space Pause";
         if (scoreEl) scoreEl.textContent = "0";
@@ -630,6 +636,7 @@
                      !document.querySelector("main#content").children.length;
 
     /* --- Leaderboard ------------------------------------------------------ */
+    var PLAYER_NAME_KEY = "vv-invaders-name";
     var leaderboard = [];
     var nameEntry = "";
     var nameEntryActive = false;
@@ -637,6 +644,22 @@
     var leaderboardFetched = false;
     var playerQualified = false;
     var finalScore = 0;
+
+    function getSavedName() {
+        /* localStorage first, cookie as fallback */
+        try {
+            var ls = localStorage.getItem(PLAYER_NAME_KEY);
+            if (ls) return ls;
+        } catch (e) {}
+        var match = document.cookie.match("(?:^|; )" + PLAYER_NAME_KEY + "=([^;]*)");
+        return match ? decodeURIComponent(match[1]) : "";
+    }
+    function saveName(n) {
+        try { localStorage.setItem(PLAYER_NAME_KEY, n); } catch (e) {}
+        var d = new Date(); d.setFullYear(d.getFullYear() + 1);
+        document.cookie = PLAYER_NAME_KEY + "=" + encodeURIComponent(n) +
+            ";path=/;expires=" + d.toUTCString() + ";SameSite=Lax";
+    }
 
     function fetchLeaderboard(cb) {
         var xhr = new XMLHttpRequest();
@@ -667,236 +690,233 @@
         xhr.send(JSON.stringify({ name: name, score: sc }));
     }
 
-    /* 5x5 pixel font — full A-Z + 0-9 for leaderboard */
-    var FONT5 = {
-        A: [" ### ","#   #","#####","#   #","#   #"],
-        B: ["#### ","#   #","#### ","#   #","#### "],
-        C: [" ####","#    ","#    ","#    "," ####"],
-        D: ["#### ","#   #","#   #","#   #","#### "],
-        E: ["#####","#    ","#### ","#    ","#####"],
-        F: ["#####","#    ","#### ","#    ","#    "],
-        G: ["#####","#    ","# ###","#   #","#####"],
-        H: ["#   #","#   #","#####","#   #","#   #"],
-        I: [" ### ","  #  ","  #  ","  #  "," ### "],
-        J: ["#####","    #","    #","#   #"," ### "],
-        K: ["#   #","#  # ","###  ","#  # ","#   #"],
-        L: ["#    ","#    ","#    ","#    ","#####"],
-        M: ["#   #","## ##","# # #","#   #","#   #"],
-        N: ["#   #","##  #","# # #","#  ##","#   #"],
-        O: [" ### ","#   #","#   #","#   #"," ### "],
-        P: ["#### ","#   #","#### ","#    ","#    "],
-        Q: [" ### ","#   #","# # #","#  # "," ## #"],
-        R: ["#### ","#   #","#### ","#  # ","#   #"],
-        S: [" ####","#    "," ### ","    #","#### "],
-        T: ["#####","  #  ","  #  ","  #  ","  #  "],
-        U: ["#   #","#   #","#   #","#   #"," ### "],
-        V: ["#   #","#   #"," # # "," # # ","  #  "],
-        W: ["#   #","#   #","# # #","## ##","#   #"],
-        X: ["#   #"," # # ","  #  "," # # ","#   #"],
-        Y: ["#   #"," # # ","  #  ","  #  ","  #  "],
-        Z: ["#####","   # ","  #  "," #   ","#####"],
-        "0": [" ### ","#  ##","# # #","##  #"," ### "],
-        "1": ["  #  "," ##  ","  #  ","  #  "," ### "],
-        "2": [" ### ","#   #","  ## "," #   ","#####"],
-        "3": ["#### ","    #"," ### ","    #","#### "],
-        "4": ["#   #","#   #","#####","    #","    #"],
-        "5": ["#####","#    ","#### ","    #","#### "],
-        "6": [" ### ","#    ","#### ","#   #"," ### "],
-        "7": ["#####","    #","   # ","  #  ","  #  "],
-        "8": [" ### ","#   #"," ### ","#   #"," ### "],
-        "9": [" ### ","#   #"," ####","    #"," ### "],
-        " ": ["     ","     ","     ","     ","     "],
-        ".": ["     ","     ","     ","     ","  #  "],
-        "-": ["     ","     "," ### ","     ","     "],
-        "#": [" # # ","#####"," # # ","#####"," # # "]
-    };
+    /* --- Font-based rendering (Press Start 2P) ------------------------------ */
+    var ARCADE_FONT = "'Press Start 2P', monospace";
+    var arcadeFontReady = false;
 
-    function drawPixelText(text, ox, oy, px, color) {
-        for (var ci = 0; ci < text.length; ci++) {
-            var glyph = FONT5[text[ci]];
-            if (!glyph) continue;
-            var gap = px;
-            var charW = 5 * px + gap;
-            for (var row = 0; row < 5; row++) {
-                for (var col = 0; col < 5; col++) {
-                    if (glyph[row][col] !== "#") continue;
-                    ctx.fillStyle = color;
-                    ctx.fillRect(ox + ci * charW + col * px, oy + row * px, px, px);
-                }
-            }
+    /* Pre-check font availability; draw immediately either way */
+    if (document.fonts && document.fonts.check) {
+        arcadeFontReady = document.fonts.check("12px " + ARCADE_FONT);
+        if (!arcadeFontReady) {
+            document.fonts.ready.then(function () { arcadeFontReady = true; });
         }
+    } else {
+        arcadeFontReady = true;
     }
 
-    function textWidth(text, px) {
-        var gap = px;
-        return text.length * (5 * px + gap) - gap;
+    /* Gradient helper: creates an animated warm gradient fill across text.
+       Uses an off-screen canvas as mask so the gradient "shows through" the letters. */
+    function drawGradientText(text, cx, cy, size, now) {
+        if (!text) return;
+        var font = size + "px " + ARCADE_FONT;
+        ctx.font = font;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        /* animated diagonal gradient */
+        var offset = Math.sin(now * 0.0008) * 300;
+        var x0 = cx - 200 + offset;
+        var y0 = cy - 100 + offset * 0.5;
+        var x1 = cx + 200 + offset;
+        var y1 = cy + 100 + offset * 0.5;
+        var grad = ctx.createLinearGradient(x0, y0, x1, y1);
+        grad.addColorStop(0, "oklch(75% 0.18 85 / 0.9)");
+        grad.addColorStop(0.5, "oklch(68% 0.22 55 / 0.95)");
+        grad.addColorStop(1, "oklch(62% 0.20 35 / 0.9)");
+
+        ctx.fillStyle = grad;
+        ctx.fillText(text, cx, cy);
+    }
+
+    function drawPlainText(text, cx, cy, size, color) {
+        if (!text) return;
+        ctx.font = size + "px " + ARCADE_FONT;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = color;
+        ctx.fillText(text, cx, cy);
     }
 
     function drawGameOverSplash(now) {
         if (!isGamePage || !gameOver) return;
         var elapsed = now - gameOverTime;
-        var fade = Math.min(1, elapsed / 800);
 
-        /* dark overlay */
+        /* dark overlay — stays once drawn */
+        var fade = Math.min(1, elapsed / 800);
         ctx.fillStyle = "oklch(0% 0 0 / " + (fade * 0.6) + ")";
         ctx.fillRect(0, 0, w, h);
 
-        /* Phase 1: GAME OVER text for first 2 seconds */
-        if (!showLeaderboard) {
-            var text = "GAME OVER";
-            var px = Math.max(4, Math.floor(w / 80));
-            var gap = px;
-            var charW = 5 * px + gap;
-            var totalW = text.length * charW - gap;
-            var totalH = 5 * px;
-            var ox = (w - totalW) / 2;
-            var oy = (h - totalH) / 2 - px * 3;
-
-            for (var ci = 0; ci < text.length; ci++) {
-                var ch = text[ci];
-                var glyph = FONT5[ch];
-                if (!glyph) continue;
-
-                for (var row = 0; row < 5; row++) {
-                    for (var col = 0; col < 5; col++) {
-                        if (glyph[row][col] !== "#") continue;
-
-                        var bx = ox + ci * charW + col * px;
-                        var by = oy + row * px;
-
-                        var wave = Math.sin(elapsed * 0.003 + ci * 0.7 + row * 0.4) * px * 1.5;
-                        by += wave;
-
-                        var hue = 35 + Math.sin(elapsed * 0.002 + ci * 0.5) * 15;
-                        var alpha = fade * (0.7 + 0.3 * Math.sin(elapsed * 0.004 + ci * 0.3));
-
-                        ctx.fillStyle = "oklch(68% 0.18 " + hue + " / " + alpha + ")";
-                        ctx.fillRect(bx, by, px, px);
-                    }
-                }
+        /* Phase 1: GAME OVER wave for first 2s, then fade out */
+        if (elapsed < 3000) {
+            var goAlpha = elapsed < 2000 ? fade : Math.max(0, 1 - (elapsed - 2000) / 1000);
+            if (goAlpha > 0) {
+                var size = Math.max(20, Math.floor(w / 20));
+                var baseY = h * 0.45;
+                var wave = Math.sin(elapsed * 0.003) * size * 0.3;
+                var hue = 35 + Math.sin(elapsed * 0.002) * 15;
+                ctx.font = size + "px " + ARCADE_FONT;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "oklch(68% 0.18 " + hue + " / " + goAlpha + ")";
+                ctx.fillText("GAME OVER", w / 2, baseY + wave);
             }
-
-            /* After 2s, transition to leaderboard */
-            if (elapsed >= 2000 && !leaderboardFetched) {
-                leaderboardFetched = true;
-                fetchLeaderboard(function () {
-                    showLeaderboard = true;
-                    /* check if player qualifies (score > 0 required) */
-                    if (finalScore > 0 && (leaderboard.length < 5 || finalScore > leaderboard[leaderboard.length - 1].score)) {
-                        playerQualified = true;
-                        nameEntryActive = true;
-                        nameEntry = "";
-                    }
-                });
-            }
-            return;
         }
 
-        /* Phase 2: Leaderboard screen */
-        drawLeaderboardScreen(now, fade);
+        /* After 2s, fetch leaderboard (once) */
+        if (elapsed >= 2000 && !leaderboardFetched) {
+            leaderboardFetched = true;
+            fetchLeaderboard(function () {
+                showLeaderboard = true;
+                var savedName = getSavedName();
+                var existingEntry = null;
+                for (var qi = 0; qi < leaderboard.length; qi++) {
+                    if (savedName && leaderboard[qi].name === savedName) {
+                        existingEntry = leaderboard[qi];
+                        break;
+                    }
+                }
+                var qualifies = false;
+                if (finalScore > 0) {
+                    if (existingEntry) {
+                        qualifies = finalScore > existingEntry.score;
+                    } else {
+                        qualifies = leaderboard.length < 5 || finalScore > leaderboard[leaderboard.length - 1].score;
+                    }
+                }
+                if (qualifies) {
+                    playerQualified = true;
+                    nameEntryActive = true;
+                    nameEntry = savedName;
+                }
+            });
+        }
+
+        /* Phase 2: Leaderboard (fades in after GAME OVER fades out) */
+        if (showLeaderboard) {
+            var lbFade = Math.min(1, (elapsed - 2000) / 600);
+            if (lbFade > 0) {
+                ctx.globalAlpha = lbFade;
+                drawLeaderboardScreen(now);
+                ctx.globalAlpha = 1;
+            }
+        }
     }
 
-    function drawLeaderboardScreen(now, fade) {
-        var px = Math.max(3, Math.floor(w / 100));
-        var gap = px;
-        var charW = 5 * px + gap;
-        var lineH = 5 * px + px * 3;
+    function drawLeaderboardScreen(now) {
+        /* Sizing — scale to viewport */
+        var titleSize = Math.max(14, Math.floor(w / 30));
+        var rowSize = Math.max(10, Math.floor(w / 50));
+        var smallSize = Math.max(8, Math.floor(rowSize * 0.75));
+        var lineH = rowSize * 2.8;
+        var leftX = w * 0.2;
+        var rightX = w * 0.8;
+        var centreX = w / 2;
 
-        /* animated diagonal gradient offset */
-        var gradT = now * 0.0008;
-        var gradOffset = Math.sin(gradT) * 200;
+        /* Title */
+        var titleY = h * 0.1 + titleSize;
+        drawGradientText("HIGH SCORES", centreX, titleY, titleSize, now);
 
-        /* Title: HIGH SCORES */
-        var title = "HIGH SCORES";
-        var titlePx = Math.max(4, Math.floor(w / 70));
-        var titleW = textWidth(title, titlePx);
-        var titleOx = (w - titleW) / 2;
-        var titleOy = h * 0.12;
+        /* Score rows — tight below title */
+        var firstRowY = titleY + titleSize * 1.5;
 
-        drawGradientText(title, titleOx, titleOy, titlePx, now, gradOffset);
-
-        /* Score rows */
-        var rowPx = px;
-        var rowY = titleOy + 5 * titlePx + lineH * 1.5;
+        /* Build display list: if player qualified, insert at correct position
+           by score (sorted descending). Filter out existing entry with same name
+           to avoid duplicates (player overwrites their slot). */
+        var displayList = [];
+        if (nameEntryActive || playerQualified) {
+            var playerEntry = { name: nameEntry, score: finalScore, isPlayer: true };
+            /* filter leaderboard: remove existing entry with same name */
+            var filtered = [];
+            for (var fi = 0; fi < leaderboard.length; fi++) {
+                if (nameEntry && leaderboard[fi].name === nameEntry) continue;
+                filtered.push(leaderboard[fi]);
+            }
+            var inserted = false;
+            for (var di = 0; di < filtered.length && displayList.length < 5; di++) {
+                if (!inserted && finalScore >= filtered[di].score) {
+                    displayList.push(playerEntry);
+                    inserted = true;
+                }
+                if (displayList.length < 5) {
+                    displayList.push(filtered[di]);
+                }
+            }
+            if (!inserted && displayList.length < 5) {
+                displayList.push(playerEntry);
+            }
+        } else {
+            for (var di2 = 0; di2 < leaderboard.length && displayList.length < 5; di2++) {
+                displayList.push(leaderboard[di2]);
+            }
+        }
 
         for (var i = 0; i < 5; i++) {
-            var entry = leaderboard[i];
+            var entry = displayList[i];
             var rank = (i + 1) + ".";
             var name = entry ? entry.name : "---";
             var sc = entry ? ("" + entry.score) : "0";
+            var ry = firstRowY + i * lineH;
 
-            /* rank on the left */
-            var rowOx = w * 0.2;
-            drawGradientText(rank, rowOx, rowY + i * lineH, rowPx, now, gradOffset);
+            /* rank */
+            ctx.font = rowSize + "px " + ARCADE_FONT;
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+            drawGradientTextLeft(rank, leftX, ry, rowSize, now);
 
-            /* name after rank */
-            var nameOx = rowOx + textWidth("0. ", rowPx) + rowPx * 2;
-            drawGradientText(name, nameOx, rowY + i * lineH, rowPx, now, gradOffset);
+            /* name — blink if it's the player's entry being typed */
+            var nameX = leftX + ctx.measureText("0. ").width + rowSize;
+            if (entry && entry.isPlayer && nameEntryActive) {
+                var blinkName = nameEntry + (Math.floor(now / 400) % 2 === 0 ? "_" : " ");
+                drawGradientTextLeft(blinkName, nameX, ry, rowSize, now);
+            } else {
+                drawGradientTextLeft(name, nameX, ry, rowSize, now);
+            }
 
             /* score right-aligned */
-            var scoreW = textWidth(sc, rowPx);
-            var scoreOx = w * 0.8 - scoreW;
-            drawGradientText(sc, scoreOx, rowY + i * lineH, rowPx, now, gradOffset);
+            drawGradientTextRight(sc, rightX, ry, rowSize, now);
         }
 
-        /* Name entry (if qualifying) */
-        if (nameEntryActive) {
-            var entryLabel = "ENTER NAME";
-            var entryPx = Math.max(2, Math.floor(rowPx * 0.8));
-            var entryLabelW = textWidth(entryLabel, entryPx);
-            var entryY = rowY + 5 * lineH + lineH;
-            drawGradientText(entryLabel, (w - entryLabelW) / 2, entryY, entryPx, now, gradOffset);
+        /* Bottom area */
+        var bottomY = firstRowY + 5 * lineH + lineH * 0.5;
 
-            /* current name input */
-            var inputY = entryY + 5 * entryPx + entryPx * 3;
-            var inputPx = Math.max(3, Math.floor(rowPx * 1.2));
-            var display = nameEntry + (Math.floor(now / 400) % 2 === 0 ? "_" : " ");
-            var inputW = textWidth(display, inputPx);
-            drawGradientText(display, (w - inputW) / 2, inputY, inputPx, now, gradOffset);
-        } else if (!nameEntryActive && showLeaderboard) {
+        if (nameEntryActive) {
+            drawGradientText("WINNER", centreX, bottomY, smallSize, now);
+        } else {
             /* PRESS KEY blink */
-            var elapsed = now - gameOverTime;
-            if (Math.floor(elapsed / 500) % 2 === 0) {
-                var pressText = "PRESS KEY";
-                var pressPx = Math.max(2, Math.floor(rowPx * 0.8));
-                var pressW = textWidth(pressText, pressPx);
-                var pressY = rowY + 5 * lineH + lineH;
-                drawGradientText(pressText, (w - pressW) / 2, pressY, pressPx, now, gradOffset);
+            if (Math.floor(now / 500) % 2 === 0) {
+                drawGradientText("PRESS KEY", centreX, bottomY, smallSize, now);
             }
         }
     }
 
-    function drawGradientText(text, ox, oy, px, now, gradOffset) {
-        var gap = px;
-        var charW = 5 * px + gap;
+    function drawGradientTextLeft(text, x, y, size, now) {
+        if (!text) return;
+        ctx.font = size + "px " + ARCADE_FONT;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
 
-        for (var ci = 0; ci < text.length; ci++) {
-            var glyph = FONT5[text[ci]];
-            if (!glyph) continue;
+        var offset = Math.sin(now * 0.0008) * 300;
+        var grad = ctx.createLinearGradient(x - 100 + offset, y - 50 + offset * 0.5, x + 300 + offset, y + 50 + offset * 0.5);
+        grad.addColorStop(0, "oklch(75% 0.18 85 / 0.9)");
+        grad.addColorStop(0.5, "oklch(68% 0.22 55 / 0.95)");
+        grad.addColorStop(1, "oklch(62% 0.20 35 / 0.9)");
+        ctx.fillStyle = grad;
+        ctx.fillText(text, x, y);
+    }
 
-            for (var row = 0; row < 5; row++) {
-                for (var col = 0; col < 5; col++) {
-                    if (glyph[row][col] !== "#") continue;
+    function drawGradientTextRight(text, x, y, size, now) {
+        if (!text) return;
+        ctx.font = size + "px " + ARCADE_FONT;
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
 
-                    var bx = ox + ci * charW + col * px;
-                    var by = oy + row * px;
-
-                    /* diagonal position for gradient */
-                    var diagPos = (bx + by + gradOffset) % 400;
-                    if (diagPos < 0) diagPos += 400;
-                    var t = diagPos / 400;
-
-                    /* warm yellow (hue ~85) to orange (hue ~40) */
-                    var hue = 85 - t * 45;
-                    var lightness = 72 - t * 10;
-                    var chroma = 0.16 + t * 0.06;
-                    var alpha = 0.75 + 0.15 * Math.sin(now * 0.002 + ci * 0.3);
-
-                    ctx.fillStyle = "oklch(" + lightness + "% " + chroma + " " + hue + " / " + alpha + ")";
-                    ctx.fillRect(bx, by, px, px);
-                }
-            }
-        }
+        var offset = Math.sin(now * 0.0008) * 300;
+        var grad = ctx.createLinearGradient(x - 300 + offset, y - 50 + offset * 0.5, x + 100 + offset, y + 50 + offset * 0.5);
+        grad.addColorStop(0, "oklch(75% 0.18 85 / 0.9)");
+        grad.addColorStop(0.5, "oklch(68% 0.22 55 / 0.95)");
+        grad.addColorStop(1, "oklch(62% 0.20 35 / 0.9)");
+        ctx.fillStyle = grad;
+        ctx.fillText(text, x, y);
     }
 
     function enterGameOver() {
@@ -944,10 +964,13 @@
         drawStars();
 
         if (hasMouse) {
-            if (paused) {
+            if (paused || gameOver) {
+                /* Frozen state — draw everything but update nothing */
                 for (var i = 0; i < aliens.length; i++) drawAlien(aliens[i], now);
                 drawBullets();
                 drawEnemyBullets();
+                drawExplosions();
+                drawGameOverSplash(now);
             } else {
                 if (lives > 0) spawnAlien(now);
                 updateAliens(now);
@@ -974,8 +997,6 @@
                     saveTimer = now;
                     saveState();
                 }
-
-                drawGameOverSplash(now);
             }
         }
 
@@ -1017,12 +1038,20 @@
     document.addEventListener("keydown", function (e) {
         if (!gameEnabled) return;
 
+        /* Ctrl+G hard reset — always works, even during game over */
+        if (e.ctrlKey && e.key === "g") {
+            e.preventDefault();
+            resetGame();
+            return;
+        }
+
         /* Leaderboard name entry mode */
         if (gameOver && nameEntryActive) {
             e.preventDefault();
             var key = e.key;
             if (key === "Enter" && nameEntry.length > 0) {
                 nameEntryActive = false;
+                saveName(nameEntry);
                 submitScore(nameEntry, finalScore, function () {
                     playerQualified = false;
                 });
@@ -1030,10 +1059,12 @@
             }
             if (key === "Backspace") {
                 nameEntry = nameEntry.slice(0, -1);
+                saveName(nameEntry);
                 return;
             }
-            if (key.length === 1 && /^[A-Za-z0-9]$/.test(key) && nameEntry.length < 8) {
+            if (key.length === 1 && /^[A-Za-z0-9\-]$/.test(key) && nameEntry.length < 16) {
                 nameEntry += key.toUpperCase();
+                saveName(nameEntry);
             }
             return;
         }
@@ -1062,10 +1093,6 @@
             e.preventDefault();
             togglePause();
             return;
-        }
-        if (e.ctrlKey && e.key === "g") {
-            e.preventDefault();
-            resetGame();
         }
     });
 
