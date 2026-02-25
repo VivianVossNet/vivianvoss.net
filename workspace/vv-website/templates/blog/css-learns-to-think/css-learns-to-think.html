@@ -1,0 +1,330 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}CSS Learns to Think — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="For twenty-three years, CSS could only look downward. In 2023 it learned to look up, sideways, and around corners. On :has(), :is(), :where() and why they replace JavaScript you never needed to write.">
+{( endslot )}
+
+{( slot canonical )}/blog/css-learns-to-think{( endslot )}
+
+{( slot og-title )}CSS Learns to Think — Vivian Voss{( endslot )}
+
+{( slot og-desc )}For twenty-three years, CSS could only look downward. In 2023 it learned to look up, sideways, and around corners.{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-25">25 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/posts/vvoss_stackpatterns-css-webdev-activity-7432353420205993984-2UA9" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>CSS Learns to Think</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p>For twenty-three years, CSS could only look downward.</p>
+
+        <p>A parent styled its children. A container styled its contents.
+            Never the reverse. If a form field turned invalid, you could
+            paint the input red. You could not, however, touch the label
+            above it, the fieldset around it, or the submit button below it.
+            Not without reaching for JavaScript, binding an event listener,
+            toggling a class, and hoping nobody refactored the DOM between
+            now and Tuesday.</p>
+
+        <p>In 2023, CSS learned to look up, sideways, and around corners.
+            Three pseudo-classes shipped across every major browser within
+            twelve months of each other. Individually, each is useful.
+            Together, they retire entire categories of JavaScript.</p>
+
+        <h2>:has() &#x2014; The Parent Selector</h2>
+
+        <p>The specification calls it a
+            <a href="https://www.w3.org/TR/selectors-4/#relational" target="_blank" rel="noopener">relational pseudo-class</a>.
+            Developers call it the parent selector, because that is what
+            they have been requesting since approximately the Bronze Age of
+            web standards. The idea is disarmingly simple: select an element
+            based on what it <em>contains</em>.</p>
+
+<pre><code>form:has(:invalid) button[type="submit"] {
+  opacity: 0.5;
+  pointer-events: none;
+}</code></pre>
+
+        <p>If any field inside the form is invalid, dim the submit button.
+            No event listener. No state variable. No framework. The browser
+            evaluates the condition on every reflow, automatically, at native
+            speed, and entirely without your assistance.</p>
+
+        <p>The implications are rather far-reaching. Consider a card
+            component:</p>
+
+<pre><code>.card:has(img) {
+  grid-template-rows: auto 1fr;
+}
+
+.card:not(:has(img)) {
+  grid-template-rows: 1fr;
+}</code></pre>
+
+        <p>Cards with images get a two-row layout. Cards without get a
+            single row. The layout adapts to the content &#x2014; not to a
+            class name somebody remembered to add at half past five on a
+            Friday.</p>
+
+        <p>Or consider what was previously the domain of JavaScript
+            entirely &#x2014; a label that responds to its sibling input's
+            validity:</p>
+
+<pre><code>label:has(+ input:invalid) {
+  color: oklch(55% 0.25 25);
+}</code></pre>
+
+        <p>The <code>+</code> adjacent sibling combinator inside
+            <code>:has()</code> gives CSS something it never had: the ability
+            to style an element based on what comes <em>after</em> it. The
+            label precedes the input in the DOM. Previously, only JavaScript
+            could bridge that gap. Now the stylesheet handles it.</p>
+
+        <svg viewBox="0 0 480 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing how CSS selectors could only cascade downward before 2023, and how :has() enables upward and sideways selection." style="max-width: 480px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .dir-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .dir-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .dir-node { fill: none; stroke: var(--border); stroke-width: 1.5; rx: 4; }
+                .dir-node-hl { fill: none; stroke: var(--accent); stroke-width: 2; rx: 4; }
+                .dir-arrow-old { stroke: var(--muted); stroke-width: 1.5; fill: none; opacity: 0.4; marker-end: url(#arrow-old); }
+                .dir-arrow-new { stroke: var(--accent); stroke-width: 2; fill: none; marker-end: url(#arrow-new); }
+            </style>
+            <defs>
+                <marker id="arrow-old" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--muted)" stroke-width="1.5" opacity="0.4"/>
+                </marker>
+                <marker id="arrow-new" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                </marker>
+            </defs>
+            <!-- Left: Before 2023 -->
+            <text class="dir-label" x="100" y="20" text-anchor="middle">Before 2023</text>
+            <rect class="dir-node" x="45" y="35" width="110" height="30"/>
+            <text class="dir-sub" x="100" y="55" text-anchor="middle">form</text>
+            <rect class="dir-node" x="15" y="95" width="80" height="30"/>
+            <text class="dir-sub" x="55" y="115" text-anchor="middle">label</text>
+            <rect class="dir-node" x="110" y="95" width="80" height="30"/>
+            <text class="dir-sub" x="150" y="115" text-anchor="middle">input</text>
+            <rect class="dir-node" x="45" y="155" width="110" height="30"/>
+            <text class="dir-sub" x="100" y="175" text-anchor="middle">button</text>
+            <!-- Downward arrows only -->
+            <path class="dir-arrow-old" d="M80,65 L60,95"/>
+            <path class="dir-arrow-old" d="M120,65 L145,95"/>
+            <path class="dir-arrow-old" d="M100,65 L100,155"/>
+            <text class="dir-sub" x="100" y="210" text-anchor="middle">Downward only</text>
+            <!-- Right: After 2023 -->
+            <text class="dir-label" x="360" y="20" text-anchor="middle">With :has()</text>
+            <rect class="dir-node-hl" x="305" y="35" width="110" height="30"/>
+            <text class="dir-sub" x="360" y="55" text-anchor="middle">form</text>
+            <rect class="dir-node-hl" x="275" y="95" width="80" height="30"/>
+            <text class="dir-sub" x="315" y="115" text-anchor="middle">label</text>
+            <rect class="dir-node" x="370" y="95" width="80" height="30"/>
+            <text class="dir-sub" x="410" y="115" text-anchor="middle">input &#x274C;</text>
+            <rect class="dir-node-hl" x="305" y="155" width="110" height="30"/>
+            <text class="dir-sub" x="360" y="175" text-anchor="middle">button</text>
+            <!-- Upward + sideways arrows -->
+            <path class="dir-arrow-new" d="M400,95 L375,65"/>
+            <path class="dir-arrow-new" d="M370,105 L355,105"/>
+            <path class="dir-arrow-old" d="M360,65 L360,155"/>
+            <text class="dir-sub" x="360" y="210" text-anchor="middle">Up, sideways, through</text>
+            <!-- Legend -->
+            <line x1="140" y1="250" x2="170" y2="250" stroke="var(--muted)" stroke-width="1.5" opacity="0.4"/>
+            <text class="dir-sub" x="175" y="254">Traditional cascade</text>
+            <line x1="290" y1="250" x2="320" y2="250" stroke="var(--accent)" stroke-width="2"/>
+            <text class="dir-sub" x="325" y="254">:has() selection</text>
+        </svg>
+
+        <h2>:is() &#x2014; The Grouper</h2>
+
+        <p>Before <code>:is()</code>, grouping selectors meant writing out
+            every combination by hand. The combinatorial explosion was real
+            and, frankly, tedious:</p>
+
+<pre><code>/* Before: six selectors, three shared properties */
+article h1, article h2, article h3,
+section h1, section h2, section h3 {
+  line-height: 1.2;
+}</code></pre>
+
+        <p>After:</p>
+
+<pre><code>:is(article, section) :is(h1, h2, h3) {
+  line-height: 1.2;
+}</code></pre>
+
+        <p>One line. Same result. <code>:is()</code>
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:is" target="_blank" rel="noopener">groups selectors</a>
+            without the cartesian product. Two parents, three headings,
+            one rule &#x2014; rather than six selectors pretending they are
+            not the same thought repeated with minor variations.</p>
+
+        <p>There is, however, a subtlety worth noting: specificity.
+            <code>:is()</code> adopts the specificity of its
+            <em>most specific</em> argument. This matters:</p>
+
+<pre><code>:is(#hero, .card) p {
+  /* specificity: 1,0,1 — the #id wins */
+}</code></pre>
+
+        <p>Every <code>.card p</code> in that rule inherits the specificity
+            of <code>#hero</code>. If that surprises you, you are not alone.
+            If it does not surprise you, you have either read the
+            specification or been burnt by it. Possibly both.</p>
+
+        <h2>:where() &#x2014; The Reset Tool</h2>
+
+        <p>Identical syntax to <code>:is()</code>. Identical grouping
+            behaviour. One critical difference:
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:where" target="_blank" rel="noopener">specificity is always zero</a>.</p>
+
+<pre><code>:where(article, section) :is(h1, h2, h3) {
+  line-height: 1.2;
+}</code></pre>
+
+        <p>This rule applies, but any other rule overrides it without
+            a fight. No <code>!important</code>. No specificity arms race.
+            No increasingly desperate selector chains. The rule simply
+            yields.</p>
+
+        <p>This is precisely what you want for defaults, resets, and base
+            layers. Write the sensible fallback. Let the specifics win.
+            If you have ever wondered how
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer" target="_blank" rel="noopener"><code>@layer</code></a>
+            and zero-specificity selectors complement each other: this is how.
+            <code>:where()</code> provides zero-weight defaults within a layer.
+            <code>@layer</code> controls which layers override which.
+            Together, they make the cascade predictable rather than adversarial.</p>
+
+        <h2>The Combination</h2>
+
+        <p>Individually, each pseudo-class solves a class of problem.
+            Combined, they become rather more interesting:</p>
+
+<pre><code>:where(.card):has(:is(img, video)) {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}</code></pre>
+
+        <p>Translation: any card containing an image or video gets a 16:9
+            ratio. <code>:where()</code> keeps the specificity at zero so
+            component-level styles override freely. <code>:has()</code>
+            inspects the children. <code>:is()</code> groups the media types.
+            Three pseudo-classes. One declaration block. Zero JavaScript.
+            Zero specificity conflicts.</p>
+
+        <svg viewBox="0 0 480 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Specificity comparison: :is() adopts highest specificity from its arguments, :where() is always zero." style="max-width: 480px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .spec-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .spec-code { font: 400 11px/1 ui-monospace, monospace; fill: var(--muted); }
+                .spec-val { font: 600 13px/1 ui-monospace, monospace; }
+                .spec-bar-high { fill: var(--accent); opacity: 0.7; }
+                .spec-bar-zero { fill: var(--muted); opacity: 0.15; }
+            </style>
+            <text class="spec-label" x="0" y="20">Specificity of grouped selectors</text>
+            <!-- :is() row -->
+            <text class="spec-code" x="0" y="55">:is(#id, .class)</text>
+            <rect class="spec-bar-high" x="170" y="42" width="200" height="18" rx="2"/>
+            <text class="spec-val" x="380" y="56" fill="var(--accent)">1,0,0</text>
+            <text class="spec-code" x="430" y="56">&#x2190; adopts #id</text>
+            <!-- :where() row -->
+            <text class="spec-code" x="0" y="90">:where(#id, .class)</text>
+            <rect class="spec-bar-zero" x="170" y="77" width="4" height="18" rx="2"/>
+            <text class="spec-val" x="184" y="91" fill="var(--muted)">0,0,0</text>
+            <text class="spec-code" x="240" y="91">&#x2190; always zero</text>
+            <!-- Divider -->
+            <line x1="0" y1="115" x2="480" y2="115" stroke="var(--border)" stroke-width="0.5"/>
+            <!-- :has() row -->
+            <text class="spec-label" x="0" y="140">Direction of selection</text>
+            <text class="spec-code" x="0" y="168">parent &#x2192; child</text>
+            <text class="spec-code" x="170" y="168">Traditional CSS (23 years)</text>
+            <text class="spec-code" x="0" y="190">child &#x2192; parent</text>
+            <text class="spec-val" x="170" y="190" fill="var(--accent)">:has() (since 2023)</text>
+        </svg>
+
+        <h2>What This Replaces</h2>
+
+        <p>Before <code>:has()</code>, styling a parent based on child
+            state required:</p>
+
+        <ul>
+            <li>A JavaScript event listener</li>
+            <li>A state variable or class toggle</li>
+            <li>A re-render or DOM mutation</li>
+            <li>A framework, quite possibly</li>
+        </ul>
+
+        <p>Four moving parts to achieve what one CSS selector now handles
+            natively. The browser checks the condition on every reflow. It
+            does so in compiled C++, not interpreted JavaScript. It does so
+            without your build step, your bundler, or your state management
+            library. It does so, in fact, for free.</p>
+
+        <p>Consider a practical set of patterns that previously required
+            JavaScript &#x2014; every one of which is now pure CSS:</p>
+
+<pre><code>/* Form validation without JS */
+form:has(:invalid) .submit {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Dark mode via checkbox toggle */
+html:has(input#dark:checked) {
+  color-scheme: dark;
+}
+
+/* Empty state message */
+ul:not(:has(li))::after {
+  content: "No items yet.";
+}</code></pre>
+
+        <p>The dark mode toggle is particularly instructive. An
+            <code>&lt;input type="checkbox"&gt;</code> somewhere in the DOM,
+            a single <code>:has()</code> on <code>&lt;html&gt;</code>, and
+            the entire page switches colour scheme. No JavaScript. No
+            localStorage. No flash of unstyled content. The checkbox state
+            is the application state. CSS reads it directly.</p>
+
+        <h2>The Deeper Point</h2>
+
+        <p>These three pseudo-classes are not incremental improvements.
+            They are a phase change. For twenty-three years, CSS was a
+            one-way cascade: parent to child, top to bottom, general to
+            specific. That constraint forced an entire generation of
+            developers to reach for JavaScript whenever the styling
+            direction needed to reverse.</p>
+
+        <p>That constraint no longer exists.</p>
+
+        <p><a href="https://caniuse.com/css-has" target="_blank" rel="noopener"><code>:has()</code></a>
+            sits at 91% global browser support.
+            <a href="https://caniuse.com/css-matches-pseudo" target="_blank" rel="noopener"><code>:is()</code></a>
+            and
+            <a href="https://caniuse.com/mdn-css_selectors_where" target="_blank" rel="noopener"><code>:where()</code></a>
+            are at 98% each. Every modern browser has shipped all three since
+            December 2023. There is no polyfill required. There is no
+            build step. There is no bundle size. There is a selector.</p>
+
+        <p>The language that styles the web can finally reason about
+            the structure of the web. Twenty-three years late, perhaps.
+            But better late than another npm install.</p>
+
+        <blockquote>
+            <p>The best JavaScript is the JavaScript you did not write.
+                CSS just made quite a lot of it unnecessary.</p>
+        </blockquote>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
