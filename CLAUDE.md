@@ -88,6 +88,24 @@ Aktive Serien:
 - Routes werden in `server.toml` unter `[extensions.routes]` gemappt
 - `cn.mail.send(to, subject, body)` — SMTP via `[mail]` Config in server.toml
 
+Aktive Extensions:
+
+| Extension | Route | Funktion |
+|-----------|-------|----------|
+| `contact_form` | `/contact/send` | Kontaktformular, sendet E-Mail via SMTP |
+| `highscores` | `/api/highscores` | Arcade-Leaderboard (GET top 5, POST neuer Score), Token-basierte Name-Ownership |
+| `robots` | `/robots.txt` | Crawl-Regeln (GPTBot/ChatGPT geblockt, Google erlaubt, /game + /api geblockt) |
+| `sitemap` | `/sitemap.xml` | Alle Seiten + Blog-Artikel mit Priority/Changefreq |
+| `llms` | `/llms.txt` | Strukturierter Kontext für LLMs (Person, Philosophie, Ecosystem, Seitenstruktur) |
+
+Extension-Details:
+
+- **robots** (`robots/init.lua`): Statischer Text via `cn.res.body()`, `Content-Type: text/plain`, 24h Cache
+- **sitemap** (`sitemap/init.lua`): Lua-Tabelle `pages` mit allen URLs, generiert XML via String-Konkatenation, `Content-Type: application/xml`, 24h Cache
+- **llms** (`llms/init.lua`): Markdown-Kontext via `cn.res.body()`, `Content-Type: text/plain`, 24h Cache
+- **highscores** (`highscores/init.lua`): GET liefert Top 5 als JSON, POST validiert Name (1-16 Zeichen, A-Z0-9-), Score (positiver Integer), Token-Ownership (cn.crypto.token()), Pruning auf 5 Einträge
+- **contact_form** (`contact_form/init.lua`): Parst Formular, sendet via `cn.mail.send()`
+
 ---
 
 ## Deployment auf primus
@@ -201,9 +219,27 @@ Every new LinkedIn post that becomes a blog article follows this process:
 
 1. Read the LinkedIn source post from `/Users/byvoss/Workbench/Privat/LinkedIn/`
 2. Create the article as a full rewrite (not 1:1 translation) in `templates/blog/<slug>/<slug>.html`
-3. Add the entry to `templates/blog/blog.html` (newest first, correct `data-tags`)
-4. Commit, deploy to primus, give user the sudo commands
-5. **Give the user the full URL** (`https://vivianvoss.net/blog/<slug>`) so they can cross-reference it on LinkedIn
+3. Add the `{( slot jsonld )}` with Article schema (see existing articles for pattern)
+4. Add the entry to `templates/blog/blog.html` (newest first, correct `data-tags`)
+5. **Add the URL to `castd/backend/extensions/sitemap/init.lua`** in the `pages` table
+6. Commit, deploy to primus, give user the sudo commands
+7. **Give the user the full URL** (`https://vivianvoss.net/blog/<slug>`) so they can cross-reference it on LinkedIn
+
+### SEO & Discoverability Checklist
+
+**PFLICHT bei jeder neuen Seite oder neuem Blog-Artikel:**
+
+1. **sitemap.xml** — URL in `castd/backend/extensions/sitemap/init.lua` eintragen
+2. **JSON-LD Article** — `{( slot jsonld )}` Block im Artikel-Template (Blog-Artikel)
+3. **llms.txt** — Bei neuen Seiten (nicht Blog-Artikeln) den Eintrag in `castd/backend/extensions/llms/init.lua` aktualisieren
+4. **robots.txt** — Nur anpassen wenn Seiten explizit geblockt werden sollen
+
+**Dateien:**
+- `castd/backend/extensions/robots/init.lua` — Crawl-Regeln
+- `castd/backend/extensions/sitemap/init.lua` — Alle URLs
+- `castd/backend/extensions/llms/init.lua` — LLM-Kontext
+- `workspace/vv-website/templates/_base.html` — JSON-LD Person + WebSite (global)
+- Blog-Artikel: `{( slot jsonld )}` für Article Schema
 
 ---
 
