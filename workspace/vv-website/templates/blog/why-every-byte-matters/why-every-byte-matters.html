@@ -1,0 +1,211 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Why Every Byte Matters — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="On the demoscene principle of earning your place. How constraint breeds clarity, why reduction is an engineering method, and what 4,096 bytes can teach a 500 MB Electron application.">
+{( endslot )}
+
+{( slot canonical )}/blog/why-every-byte-matters{( endslot )}
+
+{( slot og-title )}Why Every Byte Matters — Vivian Voss{( endslot )}
+
+{( slot og-desc )}On the demoscene principle of earning your place. How constraint breeds clarity and why reduction is an engineering method.{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-25">25 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Why Every Byte Matters</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p>4,096 bytes. That is less than this paragraph. Yet
+            <a href="https://www.pouet.net/prod.php?which=76399" target="_blank" rel="noopener">Zetsubo</a>
+            by Prismbeings (2018) contains an entire world within that budget:
+            procedural geometry, an atmospheric soundtrack, real-time rendering.
+            No textures. No samples. No assets. Everything generated from
+            mathematics at runtime.</p>
+
+        <p>The answer to "how much beauty fits in four kilobytes" turns out to
+            be: rather more than you would believe.</p>
+
+        <p>Meanwhile, the median web page in 2025 ships
+            <a href="https://httparchive.org/reports/state-of-javascript" target="_blank" rel="noopener">558 KB of JavaScript</a>,
+            of which 44% never executes. Slack weighs 55 MB for a chat message.
+            A chat message is 100 bytes. The client outweighs its payload by a
+            factor of 550,000. One does not need a degree in engineering to
+            suspect that something has gone rather wrong.</p>
+
+        <h2>Constraint as Method</h2>
+
+        <p>The demoscene is not nostalgia. It is a design discipline that has
+            been proving a thesis since the 1980s: constraint does not limit
+            creativity. It clarifies it.</p>
+
+        <p>Consider <a href="https://www.pouet.net/prod.php?which=89389" target="_blank" rel="noopener">Clean Slate</a>
+            by Conspiracy (2021). Sixty-four kilobytes &#x2014; the size of a
+            small JPEG. Three people (BoyC, Gargaj, Zoom) fit physically-based
+            rendering, volumetric lighting, procedural textures, procedural
+            geometry, and a fully synthesised soundtrack into that space. It won
+            <a href="https://revision-party.net/" target="_blank" rel="noopener">Revision</a>,
+            the world's largest demoparty. It finished twenty bytes under the
+            limit.</p>
+
+        <p>Or consider <a href="https://www.pouet.net/prod.php?which=97384" target="_blank" rel="noopener">Prelude to Neobyte</a>
+            by Spectrox (2025): built for TIC-80, a fantasy console with 240 by
+            136 pixels, 16 colours, and 4 audio channels. Voxel landscapes,
+            copper bar effects, real-time shadows, an underwater endscroller.
+            In 2025, these constraints are entirely artificial. Nobody forces
+            anyone to work with 16 colours. They choose to. And within those
+            constraints, they create something that modern frameworks with
+            unlimited resources rarely achieve: coherence.</p>
+
+        <p>That word matters. When you have infinite resources, every decision
+            is hedged. When bytes are limited, every decision is justified.
+            There is no room for "we might need this later" or "it was already
+            in the boilerplate." Every instruction earns its place or it does
+            not ship.</p>
+
+        <svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Size comparison: demoscene productions versus common web applications. Zetsubo at 4 KB, Clean Slate at 64 KB, htm/a at 4.5 KB, versus React at 136 KB, Slack at 55 MB, and median JS payload at 558 KB." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .bar-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .bar-value { font: 400 11px/1 ui-monospace, monospace; fill: var(--muted); }
+                .bar-craft { fill: var(--accent); opacity: 0.7; }
+                .bar-bloat { fill: var(--muted); opacity: 0.3; }
+            </style>
+            <!-- Constraint-driven -->
+            <text class="bar-label" x="0" y="20">Constraint-driven</text>
+            <rect class="bar-craft" x="0" y="30" width="4" height="16" rx="2"/>
+            <text class="bar-value" x="12" y="42">Zetsubo &#x2014; 4 KB</text>
+            <rect class="bar-craft" x="0" y="54" width="5" height="16" rx="2"/>
+            <text class="bar-value" x="12" y="66">htm/a &#x2014; 4.5 KB</text>
+            <rect class="bar-craft" x="0" y="78" width="32" height="16" rx="2"/>
+            <text class="bar-value" x="40" y="90">Clean Slate &#x2014; 64 KB</text>
+            <!-- Modern defaults -->
+            <text class="bar-label" x="0" y="128">Modern defaults</text>
+            <rect class="bar-bloat" x="0" y="138" width="68" height="16" rx="2"/>
+            <text class="bar-value" x="76" y="150">React &#x2014; 136 KB</text>
+            <rect class="bar-bloat" x="0" y="162" width="279" height="16" rx="2"/>
+            <text class="bar-value" x="287" y="174">Median JS payload &#x2014; 558 KB</text>
+            <rect class="bar-bloat" x="0" y="186" width="480" height="16" rx="2"/>
+            <text class="bar-value" x="0" y="218">Slack &#x2014; 55,000 KB</text>
+        </svg>
+
+        <h2>The Cost of Not Caring</h2>
+
+        <p>One might argue that bytes are cheap now. Storage is cheap. Bandwidth
+            is cheap. And in a narrow, first-world, fibre-connected sense, that
+            is true. But the argument mistakes the invoice for the cost.</p>
+
+        <p>A mid-range Android device parses JavaScript
+            <a href="https://v8.dev/blog/cost-of-javascript-2019" target="_blank" rel="noopener">twenty-five times slower</a>
+            than a MacBook Pro. Those 558 KB of JavaScript are not merely downloaded;
+            they are parsed, compiled, and executed on a processor with a fraction
+            of the power and a battery the size of a biscuit. React sites spend
+            <a href="https://httparchive.org/reports/state-of-javascript" target="_blank" rel="noopener">431% more main-thread time</a>
+            on mobile than on desktop. "Mobile First" in 2026 means: same
+            application, smaller viewport. Same bundle, same framework, shipped
+            to a device that thermal-throttles under the load.</p>
+
+        <p>This is not an engineering trade-off. This is contempt through
+            negligence.</p>
+
+        <p>And the dependency graph makes it worse. In 2016, a developer named
+            Azer Ko&#x00E7;ulu unpublished a package called
+            <a href="https://blog.npmjs.org/post/141577284765/kik-left-pad-and-npm" target="_blank" rel="noopener">left-pad</a>:
+            eleven lines of code. Babel broke. React broke. Thousands of
+            projects broke. We called it a fluke. In 2025,
+            <a href="https://socket.dev/blog/shai-hulud-npm-worm" target="_blank" rel="noopener">Shai-Hulud</a>
+            &#x2014; a self-replicating worm &#x2014; compromised 700+ npm
+            packages reaching 132 million monthly downloads. It wiped home
+            directories. We called it an outlier. But
+            <a href="https://www.usenix.org/conference/usenixsecurity19/presentation/zimmerman" target="_blank" rel="noopener">99% of vulnerabilities</a>
+            come from dependencies, not your code. The system is working
+            precisely as designed. We simply chose not to look at the design.</p>
+
+        <h2>What Constraint Teaches</h2>
+
+        <p>The demoscene teaches three things that thirty years of enterprise
+            software development has been trying to unlearn:</p>
+
+        <p><strong>First: every abstraction has a cost.</strong> In a 4 KB intro,
+            there is no room for an abstraction layer that "makes things easier."
+            If the abstraction does not reduce the total size, it is not an
+            abstraction &#x2014; it is overhead. The same principle holds at any
+            scale. A CSS-in-JS library that adds 13 KB of runtime to avoid
+            writing a class name is not solving a problem. It is importing one.</p>
+
+        <p><strong>Second: the best code is the code you did not write.</strong>
+            Every line is a liability. Every dependency is an attack surface.
+            Every byte transferred is time your user spends waiting. The question
+            is never "can we add this?" The question is: must we?</p>
+
+        <p><strong>Third: reduction is a creative act.</strong> Removing code
+            requires deeper understanding than adding it. Anyone can add a
+            feature. Removing one without breaking the system demands that you
+            understand every interaction, every dependency, every assumption.
+            The demoscener who fits a world into 4 KB is not working with less.
+            They understand more.</p>
+
+        <h2>Proof, Not Theory</h2>
+
+        <p>This is not an aesthetic preference. It is a falsifiable claim.
+            If constraint-driven engineering works, then small tools should
+            outperform large ones at the tasks they share. They do.</p>
+
+        <p><a href="https://htma.run" target="_blank" rel="noopener">htm/a</a>
+            delivers server-side reactivity in 4.5 KB. React requires 136 KB
+            minified &#x2014; then adds a virtual DOM that
+            <a href="https://svelte.dev/blog/virtual-dom-is-pure-overhead" target="_blank" rel="noopener">introduces roughly 30% overhead</a>
+            compared to direct DOM manipulation, followed by a hydration step
+            that blocks up to 30% of page load.</p>
+
+        <p><a href="https://minline.run" target="_blank" rel="noopener">minline.js</a>
+            provides DOM-based templating in 1,337 bytes. Not kilobytes. Bytes.
+            The entire library is smaller than most configuration files.</p>
+
+        <p>This website &#x2014; vivianvoss.net &#x2014; runs on
+            <a href="https://castd.run" target="_blank" rel="noopener">CASTD</a>,
+            a server whose binary is roughly 2 MB. It serves HTML. It handles
+            templates. It manages extensions. It does not require Node.js, npm,
+            a build step, a bundler, or a transpiler. A request arrives. HTML
+            leaves. One job. One process.</p>
+
+        <p>Unix understood this in 1973: <code>grep</code>, <code>awk</code>,
+            <code>sed</code>, <code>sort</code>, <code>uniq</code> &#x2014;
+            each does one thing, each takes text in and puts text out, each
+            composes with any other through a pipe. The industry spent the
+            better part of a decade building vastly more complex solutions
+            for what these tools had been doing all along.</p>
+
+        <h2>The Deeper Question</h2>
+
+        <p>Every byte that ships without justification is a small act of
+            disrespect &#x2014; to the user's bandwidth, to their battery,
+            to their time, and to the craft itself. Not because minimalism
+            is fashionable, but because unjustified complexity is a defect.
+            It has failure modes. It has maintenance cost. It has cognitive
+            load. And none of these diminish with time. They compound.</p>
+
+        <p>The demoscene proved, four decades ago, that constraint breeds
+            elegance. That technical beauty emerges from reduction. That a
+            world fits in 4 KB if every byte earns its place.</p>
+
+        <p>Nothing about that proof has expired.</p>
+
+        <blockquote>
+            <p>The question is never whether we can afford to care about every
+                byte. The question is whether we can afford not to.</p>
+        </blockquote>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
