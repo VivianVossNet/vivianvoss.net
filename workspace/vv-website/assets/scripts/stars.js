@@ -183,13 +183,14 @@
         var ah = sprite.length * px;
         var ox = a.x - aw / 2;
         var oy = a.y - ah / 2;
+        var dim = paused ? 0.3 : 1;
         if (a.healer) {
             var blink = 0.3 + 0.5 * Math.abs(Math.sin(now * 0.004));
-            ctx.fillStyle = "oklch(65% 0.2 25 / " + blink + ")";
+            ctx.fillStyle = "oklch(65% 0.2 25 / " + (blink * dim) + ")";
         } else if (a.elite) {
-            ctx.fillStyle = "oklch(70% 0.2 330 / 0.8)";
+            ctx.fillStyle = "oklch(70% 0.2 330 / " + (0.8 * dim) + ")";
         } else {
-            ctx.fillStyle = "oklch(65% 0.15 140 / 0.6)";
+            ctx.fillStyle = "oklch(65% 0.15 140 / " + (0.6 * dim) + ")";
         }
         for (var r = 0; r < sprite.length; r++) {
             for (var col = 0; col < sprite[r].length; col++) {
@@ -244,7 +245,7 @@
     var dualShot = false;
 
     function shoot() {
-        if (!hasMouse || lives <= 0) return;
+        if (!hasMouse || lives <= 0 || paused) return;
         if (dualShot) {
             bullets.push({ x: mx - 8, y: my - 15, speed: 8 });
             bullets.push({ x: mx + 8, y: my - 15, speed: 8 });
@@ -409,6 +410,9 @@
         score = 0;
         lives = MAX_LIVES;
         dualShot = false;
+        paused = false;
+        if (pauseEl) { pauseEl.innerHTML = "&#x23F8;"; pauseEl.style.fontSize = ""; }
+        if (pauseHintEl) pauseHintEl.textContent = "Space Pause";
         if (scoreEl) scoreEl.textContent = "0";
         updateLevel();
         updateLivesDisplay();
@@ -471,6 +475,32 @@
                 break;
             }
         }
+    }
+
+    /* --- Pause ------------------------------------------------------------ */
+    var paused = false;
+    var pausedAt = 0;
+    var pauseEl = document.getElementById("game-pause");
+    var pauseHintEl = document.getElementById("game-pause-hint");
+    var pauseWrapEl = document.getElementById("game-pause-wrap");
+
+    function togglePause() {
+        if (gameOver || lives <= 0) return;
+        paused = !paused;
+        if (paused) {
+            pausedAt = performance.now();
+        } else {
+            var elapsed = performance.now() - pausedAt;
+            lastSpawn += elapsed;
+            lastElite += elapsed;
+            lastHealer += elapsed;
+            if (shipInvuln > 0) shipInvuln += elapsed;
+        }
+        if (pauseEl) {
+            pauseEl.innerHTML = paused ? "&#x25B6;" : "&#x23F8;";
+            pauseEl.style.fontSize = paused ? "calc(var(--unit) * 8)" : "";
+        }
+        if (pauseHintEl) pauseHintEl.textContent = paused ? "Space Resume" : "Space Pause";
     }
 
     /* --- Game over -------------------------------------------------------- */
@@ -602,30 +632,35 @@
         drawStars();
 
         if (hasMouse) {
-            if (lives > 0) spawnAlien(now);
-            updateAliens();
-            updateBullets();
-            checkCollisions();
-            if (lives > 0) checkShipCollision(now);
-            updateExplosions();
+            if (paused) {
+                for (var i = 0; i < aliens.length; i++) drawAlien(aliens[i], now);
+                drawBullets();
+            } else {
+                if (lives > 0) spawnAlien(now);
+                updateAliens();
+                updateBullets();
+                checkCollisions();
+                if (lives > 0) checkShipCollision(now);
+                updateExplosions();
 
-            for (var i = 0; i < aliens.length; i++) drawAlien(aliens[i], now);
-            drawBullets();
-            drawExplosions();
-            if (lives > 0) {
-                drawShip(mx, my);
-                if (now < shipInvuln) {
-                    ctx.fillStyle = "oklch(75% 0.12 230 / " + (0.15 + 0.15 * Math.sin(now * 0.02)) + ")";
-                    ctx.fillRect(mx - 18, my - 14, 36, 28);
+                for (var i = 0; i < aliens.length; i++) drawAlien(aliens[i], now);
+                drawBullets();
+                drawExplosions();
+                if (lives > 0) {
+                    drawShip(mx, my);
+                    if (now < shipInvuln) {
+                        ctx.fillStyle = "oklch(75% 0.12 230 / " + (0.15 + 0.15 * Math.sin(now * 0.02)) + ")";
+                        ctx.fillRect(mx - 18, my - 14, 36, 28);
+                    }
                 }
-            }
 
-            if (now - saveTimer > 5000) {
-                saveTimer = now;
-                saveState();
-            }
+                if (now - saveTimer > 5000) {
+                    saveTimer = now;
+                    saveState();
+                }
 
-            drawGameOverSplash(now);
+                drawGameOverSplash(now);
+            }
         }
 
         requestAnimationFrame(frame);
@@ -646,6 +681,7 @@
             hasMouse = true;
             if (scoreEl) scoreEl.parentElement.style.display = "";
             if (livesEl) livesEl.style.display = "";
+            if (pauseWrapEl) pauseWrapEl.style.display = "";
             if (restartEl) restartEl.style.display = "";
             updateLivesDisplay();
         }
@@ -654,6 +690,10 @@
     c.style.pointerEvents = "none";
     document.addEventListener("click", function (e) {
         if (!gameEnabled) return;
+        if (e.target.closest("#game-pause")) {
+            togglePause();
+            return;
+        }
         if (e.target.closest("a, button, nav, input, select, textarea")) return;
         shoot();
     });
@@ -663,6 +703,11 @@
         if (gameOver) {
             e.preventDefault();
             leaveGameOver();
+            return;
+        }
+        if (e.key === " " && !e.target.closest("input, textarea, select, button")) {
+            e.preventDefault();
+            togglePause();
             return;
         }
         if (e.ctrlKey && e.key === "g") {
