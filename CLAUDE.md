@@ -153,6 +153,48 @@ Der Login-User `prime` hat **keine Schreibrechte** in der Jail. Daher:
 
 ---
 
+## Blog
+
+### Quelle
+
+Blog articles are handpicked from Vivian's LinkedIn posts (series and standalone).
+Source directory: `/Users/byvoss/Workbench/Privat/LinkedIn/`
+
+### Tone & Style
+
+- BBC British English with dry humour — debating club mode
+- Didactically structured: the reader should arrive at the conclusion feeling genuinely convinced, not lectured
+- The reader should smile at least once — wit over snark, understatement over hyperbole
+- Include the first LinkedIn comment where it adds value (as a dialogue element)
+- Links to original LinkedIn post always present in the article header
+
+### Content Rules
+
+- Each article is a full rewrite in polished British English — not a 1:1 translation of the LinkedIn post
+- Preserve the core argument and technical substance, but elevate the prose
+- Remove LinkedIn-specific formatting (hashtags, engagement hooks, "What do you think?" closers)
+- Add proper semantic HTML: `<article>`, `<blockquote>`, `<code>`, `<h2>` for sections
+- Every article must have: title, date, LinkedIn link, category tags, full body text
+- Where the argument benefits from visual support, include inline SVG diagrams (architecture comparisons, data flow, performance graphs, stack visualisations). SVGs are embedded directly in the template HTML, not as external files. Keep them minimal, monochrome with accent colour, and matching the site's design language
+
+### Category Tags
+
+Each article has one or more tags from a fixed set. Tags are used for filtering on the blog index page.
+Tags are defined as `data-tags` attributes on the blog index entries and filtered client-side.
+
+### File Structure
+
+```
+templates/blog/
+  blog.html                         # /blog (index with tag filter)
+  article-slug/
+    article-slug.html               # /blog/article-slug (full article)
+```
+
+Each article template extends `_base.html` via slots (same pattern as all other pages).
+
+---
+
 ## Offene Fragen
 
 - [ ] Zweck: Persönliche Marke, Min2Max Hub, oder Hybrid?
