@@ -1,0 +1,392 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Team Autonomy: The Balkanisation &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Give teams autonomy. Four teams, four frameworks, four pipelines, four security postures. A cross-team feature ships in month three. Conway's Law called. Nobody answered.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-balkanisation{( endslot )}
+
+{( slot og-title )}Team Autonomy: The Balkanisation &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Give teams autonomy. Four teams, four frameworks, four pipelines, four security postures. Conway's Law called. Nobody answered.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Team Autonomy: The Balkanisation",
+    "datePublished": "2026-02-01",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-balkanisation",
+    "description": "Give teams autonomy. Four teams, four frameworks, four pipelines, four security postures. A cross-team feature ships in month three. Conway's Law called. Nobody answered.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-01">01 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Team Autonomy: The Balkanisation</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Divide et Impera</em> &#x25A0; Episode 02</p>
+
+        <p>&#x201C;Give teams autonomy.&#x201D;</p>
+
+        <p>A perfectly reasonable sentence. Nobody could possibly object. Autonomy
+            implies trust. Trust implies competence. Competence implies better
+            software. The logic is elegant, self-reinforcing, and wrong in
+            precisely the way that elegant logic tends to be wrong &#x2014; by
+            omitting everything that happens after the slide deck.</p>
+
+        <p>What happens after the slide deck is four teams, four frameworks,
+            four deployment pipelines, four security postures, and a system
+            architecture that resembles fourteenth-century Europe.</p>
+
+        <h2>The Map</h2>
+
+        <p>Here is what &#x201C;autonomous teams&#x201D; looks like in practice.
+            Not in the conference talk. In the codebase.</p>
+
+        <!-- SVG 1: The four autonomous teams and their incompatible stacks -->
+        <svg viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four autonomous teams with incompatible technology stacks: Team A uses React, Scrum, GitHub Actions, and environment variables. Team B uses Vue, Kanban, GitLab CI, and Consul. Team C uses Svelte, bash scripts, and secrets in git. Team D uses Angular, Jenkins, and a spreadsheet." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .bk-title { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .bk-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .bk-team { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .bk-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .bk-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .bk-row { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .bk-val { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .bk-header { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+            </style>
+
+            <!-- Column headers -->
+            <text class="bk-header" x="70" y="18" text-anchor="middle">Framework</text>
+            <text class="bk-header" x="185" y="18" text-anchor="middle">Process</text>
+            <text class="bk-header" x="310" y="18" text-anchor="middle">Pipeline</text>
+            <text class="bk-header" x="440" y="18" text-anchor="middle">Secrets</text>
+
+            <!-- Team A -->
+            <rect class="bk-box-accent" x="10" y="30" width="500" height="66"/>
+            <text class="bk-team" x="260" y="50" text-anchor="middle">Team A</text>
+            <text class="bk-row" x="70" y="72" text-anchor="middle">React</text>
+            <text class="bk-val" x="70" y="86" text-anchor="middle">18.2, TypeScript</text>
+            <text class="bk-row" x="185" y="72" text-anchor="middle">Scrum</text>
+            <text class="bk-val" x="185" y="86" text-anchor="middle">2-week sprints</text>
+            <text class="bk-row" x="310" y="72" text-anchor="middle">GitHub Actions</text>
+            <text class="bk-val" x="310" y="86" text-anchor="middle">YAML workflows</text>
+            <text class="bk-row" x="440" y="72" text-anchor="middle">Env vars</text>
+            <text class="bk-val" x="440" y="86" text-anchor="middle">.env files</text>
+
+            <!-- Team B -->
+            <rect class="bk-box" x="10" y="110" width="500" height="66"/>
+            <text class="bk-team" x="260" y="130" text-anchor="middle">Team B</text>
+            <text class="bk-row" x="70" y="152" text-anchor="middle">Vue 3</text>
+            <text class="bk-val" x="70" y="166" text-anchor="middle">Composition API</text>
+            <text class="bk-row" x="185" y="152" text-anchor="middle">Kanban</text>
+            <text class="bk-val" x="185" y="166" text-anchor="middle">no sprints</text>
+            <text class="bk-row" x="310" y="152" text-anchor="middle">GitLab CI</text>
+            <text class="bk-val" x="310" y="166" text-anchor="middle">.gitlab-ci.yml</text>
+            <text class="bk-row" x="440" y="152" text-anchor="middle">Consul</text>
+            <text class="bk-val" x="440" y="166" text-anchor="middle">KV store</text>
+
+            <!-- Team C -->
+            <rect class="bk-box" x="10" y="190" width="500" height="66"/>
+            <text class="bk-team" x="260" y="210" text-anchor="middle">Team C</text>
+            <text class="bk-row" x="70" y="232" text-anchor="middle">Svelte</text>
+            <text class="bk-val" x="70" y="246" text-anchor="middle">SvelteKit</text>
+            <text class="bk-row" x="185" y="232" text-anchor="middle">&#x201C;We just ship&#x201D;</text>
+            <text class="bk-val" x="185" y="246" text-anchor="middle">no methodology</text>
+            <text class="bk-row" x="310" y="232" text-anchor="middle">Bash scripts</text>
+            <text class="bk-val" x="310" y="246" text-anchor="middle">deploy.sh</text>
+            <text class="bk-row" x="440" y="232" text-anchor="middle">In git</text>
+            <text class="bk-val" x="440" y="246" text-anchor="middle">config.json</text>
+
+            <!-- Team D -->
+            <rect class="bk-box" x="10" y="270" width="500" height="66"/>
+            <text class="bk-team" x="260" y="290" text-anchor="middle">Team D</text>
+            <text class="bk-row" x="70" y="312" text-anchor="middle">Angular 17</text>
+            <text class="bk-val" x="70" y="326" text-anchor="middle">standalone</text>
+            <text class="bk-row" x="185" y="312" text-anchor="middle">Scrum-ish</text>
+            <text class="bk-val" x="185" y="326" text-anchor="middle">3-week sprints</text>
+            <text class="bk-row" x="310" y="312" text-anchor="middle">Jenkins</text>
+            <text class="bk-val" x="310" y="326" text-anchor="middle">Groovy pipelines</text>
+            <text class="bk-row" x="440" y="312" text-anchor="middle">Spreadsheet</text>
+            <text class="bk-val" x="440" y="326" text-anchor="middle">shared drive</text>
+
+            <!-- Summary -->
+            <text class="bk-sub" x="260" y="365" text-anchor="middle" fill="var(--accent)">4 frameworks &#x00B7; 4 pipelines &#x00B7; 4 deployment strategies &#x00B7; 4 security postures</text>
+        </svg>
+
+        <p>Team A chose React, Scrum, GitHub Actions, and environment variables.
+            Team B chose Vue, Kanban, GitLab CI, and Consul. Team C chose Svelte,
+            bash scripts, and &#x2014; one does wish this were an exaggeration &#x2014;
+            secrets committed to git. Team D chose Angular, Jenkins, and a
+            spreadsheet on a shared drive.</p>
+
+        <p>Each team made a locally rational decision. Each team selected the
+            tools they knew best, the process they found most comfortable, the
+            deployment strategy they could maintain. Locally, every choice was
+            defensible. Globally, the result is four kingdoms with incompatible
+            infrastructure, no shared tooling, and a security posture that
+            ranges from &#x201C;adequate&#x201D; to &#x201C;career-limiting.&#x201D;</p>
+
+        <p>The system diagram does not resemble a modern software platform.
+            It resembles a map of fourteenth-century Europe: fragmented,
+            contested, and held together primarily by the shared delusion that
+            everyone is on the same side.</p>
+
+        <h2>The Cross-Team Feature</h2>
+
+        <p>The real cost of balkanisation does not appear until someone requests
+            a feature that touches more than one kingdom.</p>
+
+        <p>Week one: learning the other team&#x2019;s codebase. Not the language &#x2014;
+            everyone speaks JavaScript, or at least a dialect of it. The framework.
+            The idioms. The state management pattern. The directory structure.
+            The build tooling. The things nobody documented because &#x201C;it&#x2019;s
+            obvious if you work here.&#x201D;</p>
+
+        <p>Week two: understanding the other team&#x2019;s pipeline. Not how CI/CD
+            works in theory. How <em>this particular</em> CI/CD works. The
+            Groovy script that Team D&#x2019;s senior wrote in 2019 and nobody has
+            touched since. The GitLab runner that Team B configured with a
+            specific Docker image that only exists on one registry. The bash
+            script that Team C runs manually because &#x201C;we just ship.&#x201D;</p>
+
+        <p>Week three: negotiating the API contract. Not designing it. Negotiating
+            it. Because Team A expects REST with JSON:API, Team B expects GraphQL,
+            Team C expects &#x201C;whatever works,&#x201D; and Team D expects a meeting to
+            discuss the meeting where they will discuss the API.</p>
+
+        <p>Week four: discovering that a decision made in 2019 &#x2014; by someone
+            who has since left the company &#x2014; blocks the integration entirely.
+            Nobody knows why the decision was made. The
+            <a href="https://adr.github.io/" target="_blank" rel="noopener">architecture decision record</a>
+            does not exist, because architecture decision records require the
+            kind of cross-team discipline that &#x201C;autonomous teams&#x201D; was
+            specifically designed to eliminate.</p>
+
+        <p>The feature ships in month three. The estimate was two weeks.</p>
+
+        <!-- SVG 2: Cross-team feature timeline -->
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cross-team feature timeline: week one learning codebases, week two understanding pipelines, week three negotiating APIs, week four discovering a 2019 blocker. Estimated two weeks, shipped in month three." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .ft-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .ft-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .ft-week { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .ft-bar { fill: var(--accent); opacity: 0.15; rx: 3; }
+                .ft-bar-accent { fill: var(--accent); opacity: 0.6; rx: 3; }
+                .ft-spine { stroke: var(--border); stroke-width: 1; }
+                .ft-dot { fill: var(--accent); }
+            </style>
+
+            <!-- Spine -->
+            <line class="ft-spine" x1="40" y1="30" x2="40" y2="240"/>
+
+            <!-- Week 1 -->
+            <circle class="ft-dot" cx="40" cy="40" r="5"/>
+            <text class="ft-week" x="60" y="44">Week 1</text>
+            <text class="ft-label" x="130" y="44">Learning codebases</text>
+            <rect class="ft-bar" x="130" y="50" width="360" height="14"/>
+            <text class="ft-sub" x="140" y="61">4 frameworks, 4 sets of idioms, 0 shared documentation</text>
+
+            <!-- Week 2 -->
+            <circle class="ft-dot" cx="40" cy="90" r="5"/>
+            <text class="ft-week" x="60" y="94">Week 2</text>
+            <text class="ft-label" x="130" y="94">Understanding pipelines</text>
+            <rect class="ft-bar" x="130" y="100" width="360" height="14"/>
+            <text class="ft-sub" x="140" y="111">GitHub Actions, GitLab CI, Jenkins, bash</text>
+
+            <!-- Week 3 -->
+            <circle class="ft-dot" cx="40" cy="140" r="5"/>
+            <text class="ft-week" x="60" y="144">Week 3</text>
+            <text class="ft-label" x="130" y="144">Negotiating APIs</text>
+            <rect class="ft-bar" x="130" y="150" width="360" height="14"/>
+            <text class="ft-sub" x="140" y="161">REST vs GraphQL vs &#x201C;whatever works&#x201D;</text>
+
+            <!-- Week 4 -->
+            <circle class="ft-dot" cx="40" cy="190" r="5"/>
+            <text class="ft-week" x="60" y="194">Week 4</text>
+            <text class="ft-label" x="130" y="194">Discovering the 2019 blocker</text>
+            <rect class="ft-bar-accent" x="130" y="200" width="360" height="14"/>
+            <text class="ft-sub" x="140" y="211">No ADR. Author departed. Reason unknown.</text>
+
+            <!-- Summary line -->
+            <line x1="60" y1="240" x2="490" y2="240" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="ft-sub" x="100" y="260" text-anchor="start">Estimate:</text>
+            <text class="ft-label" x="160" y="260">2 weeks</text>
+            <text class="ft-sub" x="300" y="260" text-anchor="start">Actual:</text>
+            <text class="ft-week" x="348" y="260">month 3</text>
+            <text class="ft-sub" x="260" y="285" text-anchor="middle">The estimate assumed shared infrastructure. There is none.</text>
+        </svg>
+
+        <h2>Conway&#x2019;s Revenge</h2>
+
+        <p>In 1967, Melvin Conway observed something that has been politely
+            ignored by management consultants for the better part of six decades:
+            <a href="https://www.melconway.com/Home/Committees_Paper.html" target="_blank" rel="noopener">organisations design systems that mirror their own communication structure</a>.
+            Not sometimes. Always. Not as a tendency. As a law.</p>
+
+        <p>If four teams do not talk to each other, the system will have four
+            components that do not talk to each other. If the teams use different
+            tools, the system will use different tools. If the teams have
+            different security practices, the system will have different
+            security postures. Conway did not frame this as a risk. He framed
+            it as an inevitability. The architecture is the org chart, whether
+            you planned it that way or not.</p>
+
+        <p>&#x201C;Give teams autonomy&#x201D; sounds like freedom. What it produces,
+            absent shared technical governance, is fragmentation with a
+            motivational poster.</p>
+
+        <h2>The Dependency Paradox</h2>
+
+        <p>The pitch was independence. The result is a new, more intricate web
+            of dependencies.</p>
+
+        <p>The &#x201C;autonomous&#x201D; teams now depend on a platform team to
+            maintain four different CI/CD pipelines. They depend on a DevOps
+            team to provision four different deployment targets. They depend on
+            an architecture board to adjudicate API disputes. They depend on
+            an integration team to make the four kingdoms speak to one
+            another. They depend on a security team to audit four different
+            approaches to credential management, one of which involves a
+            shared drive.</p>
+
+        <p>The monolith had one dependency graph. It was legible, if
+            occasionally ugly. The &#x201C;autonomous&#x201D; organisation has a mesh
+            of dependencies so dense that mapping it requires a dedicated
+            consultant and a whiteboard the size of a small country.</p>
+
+        <p>We traded one dependency for a hundred. And we called it
+            independence.</p>
+
+        <h2>The Numbers</h2>
+
+        <p>The average enterprise runs
+            <a href="https://www.thoughtworks.com/insights" target="_blank" rel="noopener">over 200 microservices</a>.
+            The average developer understands three to four of them. Integration
+            bugs &#x2014; failures at the boundaries between services, between
+            teams, between kingdoms &#x2014; account for
+            40 to 60 per cent of production incidents.</p>
+
+        <!-- SVG 3: The comprehension gap -->
+        <svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comprehension gap: 200+ services in the average enterprise, 3-4 understood per developer, 40-60% of incidents are integration bugs." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cg-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cg-value { font: 700 22px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cg-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cg-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 6; }
+                .cg-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 6; }
+            </style>
+
+            <text class="cg-sub" x="260" y="18" text-anchor="middle" fill="var(--muted)" style="letter-spacing: 0.08em; text-transform: uppercase;">The comprehension gap</text>
+
+            <!-- Box 1: Total services -->
+            <rect class="cg-box" x="15" y="35" width="150" height="90"/>
+            <text class="cg-value" x="90" y="75" text-anchor="middle">200+</text>
+            <text class="cg-label" x="90" y="95" text-anchor="middle">services</text>
+            <text class="cg-sub" x="90" y="112" text-anchor="middle">avg. enterprise</text>
+
+            <!-- Box 2: Understood per dev -->
+            <rect class="cg-box-accent" x="185" y="35" width="150" height="90"/>
+            <text class="cg-value" x="260" y="75" text-anchor="middle">3&#x2013;4</text>
+            <text class="cg-label" x="260" y="95" text-anchor="middle">understood</text>
+            <text class="cg-sub" x="260" y="112" text-anchor="middle">per developer</text>
+
+            <!-- Box 3: Integration incidents -->
+            <rect class="cg-box" x="355" y="35" width="150" height="90"/>
+            <text class="cg-value" x="430" y="75" text-anchor="middle">40&#x2013;60%</text>
+            <text class="cg-label" x="430" y="95" text-anchor="middle">of incidents</text>
+            <text class="cg-sub" x="430" y="112" text-anchor="middle">integration bugs</text>
+
+            <!-- Connecting context -->
+            <line x1="165" y1="80" x2="185" y2="80" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 2"/>
+            <line x1="335" y1="80" x2="355" y2="80" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 2"/>
+
+            <!-- Bottom line -->
+            <text class="cg-sub" x="260" y="160" text-anchor="middle">A developer understands 1.5% of the system.</text>
+            <text class="cg-sub" x="260" y="178" text-anchor="middle">The majority of production failures occur in the 98.5% they do not.</text>
+
+            <text class="cg-sub" x="260" y="218" text-anchor="middle" fill="var(--accent)">Source: thoughtworks.com, Team Topologies</text>
+        </svg>
+
+        <p>Read those numbers again. A developer understands roughly
+            1.5 per cent of the system they are ostensibly responsible for.
+            The majority of production failures occur in the 98.5 per cent
+            they do not understand. This is not a knowledge management problem.
+            It is a structural inevitability of fragmentation at scale.</p>
+
+        <p>Matthew Skelton and Manuel Pais articulate this rather precisely in
+            <a href="https://teamtopologies.com/" target="_blank" rel="noopener"><em>Team Topologies</em></a>:
+            team boundaries must align with architectural boundaries, and both
+            must be designed together. Autonomy without alignment is not
+            empowerment. It is entropy with a headcount.</p>
+
+        <h2>The Vocabulary Trick, Again</h2>
+
+        <p>As with
+            <a href="/blog/agile-the-hostile-takeover">Agile before it</a>,
+            the vocabulary is doing most of the heavy lifting. &#x201C;Autonomy&#x201D;
+            sounds like trust. In practice, it means &#x201C;nobody is responsible
+            for the whole.&#x201D; &#x201C;Ownership&#x201D; sounds like accountability.
+            In practice, it means &#x201C;my service, my rules, your problem when
+            they interact.&#x201D; &#x201C;Empowerment&#x201D; sounds like agency. In
+            practice, it means &#x201C;we have no platform, no standards, and no
+            shared understanding of what &#x2018;production-ready&#x2019; means.&#x201D;</p>
+
+        <p>The words remain. The meaning inverts. One begins to notice a
+            pattern.</p>
+
+        <h2>What Alignment Looks Like</h2>
+
+        <p>The alternative is not the abolition of autonomy. It is autonomy
+            within constraints. A shared deployment pipeline. A shared secret
+            management strategy. A shared understanding of what constitutes
+            a production-ready service. Agreed API contracts. Architecture
+            decision records that outlast the individuals who made the
+            decisions.</p>
+
+        <p>This is not radical. It is, in fact, how every functioning
+            federation in history has worked: local governance, shared
+            infrastructure, agreed protocols at the boundaries. The cantons
+            are autonomous. The railway gauge is standard.</p>
+
+        <p>The question is not whether teams should have autonomy. Of course
+            they should. The question is whether autonomy means &#x201C;choose your
+            own framework, pipeline, deployment strategy, and security posture&#x201D;
+            or whether it means &#x201C;decide how to solve the problem, within a
+            system that allows the solutions to compose.&#x201D;</p>
+
+        <p>One of these produces a platform. The other produces a map of
+            fourteenth-century Europe.</p>
+
+        <h2>The Punchline</h2>
+
+        <p>&#x201C;Give teams autonomy&#x201D; was never wrong. It was incomplete.
+            Autonomy without alignment is fragmentation. Fragmentation without
+            governance is balkanisation. And balkanisation, as the Balkans
+            themselves could attest, does not tend to end with everyone
+            agreeing on the API contract.</p>
+
+        <p>Four teams. Four frameworks. Four pipelines. Four security
+            postures. One company. Zero shared infrastructure.</p>
+
+        <p>They called it autonomy. Conway called it inevitable.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

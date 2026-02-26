@@ -1,0 +1,372 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}MongoDB: The Reinvention of the Wheel &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="MongoDB stores relational data in a document store, then rebuilds everything SQL already provides. The Aggregation Pipeline is proprietary SQL. Mongoose is the schema you removed. The invoice, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-mongodb-tax{( endslot )}
+
+{( slot og-title )}MongoDB: The Reinvention of the Wheel &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}MongoDB stores relational data in a document store, then rebuilds everything SQL already provides. The Aggregation Pipeline is proprietary SQL. Mongoose is the schema you removed.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "MongoDB: The Reinvention of the Wheel",
+    "datePublished": "2026-02-13",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-mongodb-tax",
+    "description": "MongoDB stores relational data in a document store, then rebuilds everything SQL already provides. The Aggregation Pipeline is proprietary SQL. Mongoose is the schema you removed. The invoice, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-13">13 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>MongoDB: The Reinvention of the Wheel</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> &#x25A0; Episode 09</p>
+
+        <blockquote>
+            <p>&#x201C;But we don&#x2019;t need relationships!&#x201D;</p>
+        </blockquote>
+
+        <p>Your data has relationships whether you model them or not. A customer has
+            orders. An order has items. Items belong to a catalogue. These are not
+            design decisions. They are facts about the domain. The only choice is
+            whether you express them in a system designed to enforce them, or pretend
+            they do not exist and discover the consequences at three in the morning.</p>
+
+        <p>In 1970, Edgar F. Codd published
+            <a href="https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf" target="_blank" rel="noopener">&#x201C;A Relational Model of Data for Large Shared Data Banks&#x201D;</a>.
+            The paper is fifty-six years old. The problems it solved have not changed.
+            The data has not changed. Only the marketing has.</p>
+
+        <h2>The Denormalisation Trap</h2>
+
+        <p>MongoDB&#x2019;s recommended pattern is to embed related data directly in
+            the document. A customer&#x2019;s address appears in the customer document,
+            in each of their order documents, in the shipping documents, in the invoice
+            documents. Five copies of the same address, stored in five places, governed
+            by nothing.</p>
+
+        <p>The customer moves house. You update the customer document. The four order
+            documents still show the old address. Three shipping documents reference
+            a street that no longer applies. The invoice documents are now factually
+            incorrect.</p>
+
+        <svg viewBox="0 0 520 340" aria-label="Denormalisation problem: one address stored in five places. When the address changes, only one copy is updated. The remaining four become stale, producing inconsistent data across customer, orders, shipping, and invoice documents." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .mg-title { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .mg-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .mg-box-stale { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; stroke-dasharray: 6 3; }
+                .mg-box-ok { fill: none; stroke: var(--text); stroke-width: 1.5; rx: 4; }
+                .mg-label { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 11px; font-weight: 600; }
+                .mg-addr { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 10px; }
+                .mg-addr-new { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .mg-stale { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .mg-ok { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .mg-muted { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 10px; }
+                .mg-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#mg-arrowhead); }
+            </style>
+            <defs>
+                <marker id="mg-arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="260" y="22" class="mg-title" text-anchor="middle">One Address, Five Documents</text>
+            <!-- Updated: Customer doc -->
+            <rect x="15" y="44" width="145" height="70" class="mg-box-ok"/>
+            <text x="87" y="64" class="mg-label" text-anchor="middle">customer</text>
+            <text x="87" y="80" class="mg-addr-new" text-anchor="middle">10 New Road</text>
+            <text x="87" y="104" class="mg-ok" text-anchor="middle">&#x2713; updated</text>
+            <!-- Stale: Order 1 -->
+            <rect x="185" y="44" width="145" height="70" class="mg-box-stale"/>
+            <text x="257" y="64" class="mg-label" text-anchor="middle">order #1</text>
+            <text x="257" y="80" class="mg-addr" text-anchor="middle">5 Old Street</text>
+            <text x="257" y="104" class="mg-stale" text-anchor="middle">&#x2717; stale</text>
+            <!-- Stale: Order 2 -->
+            <rect x="355" y="44" width="145" height="70" class="mg-box-stale"/>
+            <text x="427" y="64" class="mg-label" text-anchor="middle">order #2</text>
+            <text x="427" y="80" class="mg-addr" text-anchor="middle">5 Old Street</text>
+            <text x="427" y="104" class="mg-stale" text-anchor="middle">&#x2717; stale</text>
+            <!-- Stale: Shipping -->
+            <rect x="100" y="140" width="145" height="70" class="mg-box-stale"/>
+            <text x="172" y="160" class="mg-label" text-anchor="middle">shipping</text>
+            <text x="172" y="176" class="mg-addr" text-anchor="middle">5 Old Street</text>
+            <text x="172" y="200" class="mg-stale" text-anchor="middle">&#x2717; stale</text>
+            <!-- Stale: Invoice -->
+            <rect x="270" y="140" width="145" height="70" class="mg-box-stale"/>
+            <text x="342" y="160" class="mg-label" text-anchor="middle">invoice</text>
+            <text x="342" y="176" class="mg-addr" text-anchor="middle">5 Old Street</text>
+            <text x="342" y="200" class="mg-stale" text-anchor="middle">&#x2717; stale</text>
+            <!-- Arrow from update to stale docs -->
+            <line x1="87" y1="114" x2="87" y2="240" class="mg-arrow"/>
+            <text x="260" y="250" class="mg-muted" text-anchor="middle">MongoDB calls this &#x201C;eventual consistency&#x201D;</text>
+            <!-- Bottom comparison -->
+            <line x1="15" y1="268" x2="500" y2="268" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4"/>
+            <rect x="100" y="280" width="310" height="46" class="mg-box-ok"/>
+            <text x="255" y="300" class="mg-label" text-anchor="middle">PostgreSQL: addresses table</text>
+            <text x="255" y="316" class="mg-addr-new" text-anchor="middle">One row. Updated once. Consistent everywhere.</text>
+        </svg>
+
+        <p>MongoDB&#x2019;s documentation calls this &#x201C;eventual consistency.&#x201D;
+            A more honest description would be &#x201C;inconsistent until someone notices.&#x201D;
+            In a normalised relational database, the address exists in precisely one place.
+            You update it once. Every query that references it returns the current value.
+            Not eventually. Immediately. This is not a feature of PostgreSQL. It is the
+            entire point of normalisation, and it was solved in 1970.</p>
+
+        <h2>Reinventing the JOIN</h2>
+
+        <p>The moment your document model encounters a relationship it cannot embed &#x2014;
+            and it will, because data has relationships whether you like it or not &#x2014;
+            you need to fetch related documents. In SQL, this is a JOIN. One query. The
+            database engine optimises it. The query planner has had fifty years of research
+            poured into making it fast.</p>
+
+        <p>In MongoDB, you write application code. You fetch the first document, extract
+            the reference, fetch the second document, combine them in memory. Two round trips.
+            No query planner. No optimisation. Just your code, doing badly what a database
+            engine does well.</p>
+
+        <p>Or you use the
+            <a href="https://www.mongodb.com/docs/manual/reference/operator/aggregation/lookup/" target="_blank" rel="noopener">Aggregation Pipeline</a>
+            with <code>$lookup</code>. Which is &#x2014; and there is no polite way to phrase
+            this &#x2014; a JOIN. A proprietary, MongoDB-specific JOIN, expressed in nested
+            JSON objects rather than declarative SQL, documented in MongoDB&#x2019;s own format,
+            and transferable to precisely zero other databases.</p>
+
+        <svg viewBox="0 0 520 360" aria-label="Code comparison: a SQL JOIN expressed in two readable lines versus the equivalent MongoDB aggregation pipeline expressed in twelve lines of nested JSON, plus app-code fallback requiring two separate queries and a manual loop." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .cd-title { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cd-head { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .cd-code { font-family: ui-monospace, monospace; fill: var(--text); font-size: 10px; }
+                .cd-muted { font-family: ui-monospace, monospace; fill: var(--muted); font-size: 10px; }
+                .cd-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cd-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .cd-count { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .cd-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+            <text x="260" y="20" class="cd-title" text-anchor="middle">The Same Query, Two Ways</text>
+            <!-- SQL box -->
+            <rect x="15" y="36" width="490" height="80" class="cd-box-accent"/>
+            <text x="30" y="56" class="cd-head">SQL (PostgreSQL)</text>
+            <text x="30" y="76" class="cd-code">SELECT o.id, c.name, o.total</text>
+            <text x="30" y="90" class="cd-code">FROM orders o JOIN customers c ON o.customer_id = c.id;</text>
+            <text x="400" y="108" class="cd-count">2 lines. Portable. Optimised.</text>
+            <!-- MongoDB Aggregation box -->
+            <rect x="15" y="132" width="490" height="144" class="cd-box"/>
+            <text x="30" y="152" class="cd-head">MongoDB Aggregation Pipeline</text>
+            <text x="30" y="170" class="cd-code">db.orders.aggregate([</text>
+            <text x="30" y="184" class="cd-code">  { $lookup: {</text>
+            <text x="30" y="198" class="cd-code">      from: "customers",</text>
+            <text x="30" y="212" class="cd-code">      localField: "customer_id",</text>
+            <text x="30" y="226" class="cd-code">      foreignField: "_id",</text>
+            <text x="30" y="240" class="cd-code">      as: "customer"</text>
+            <text x="30" y="254" class="cd-code">  }},</text>
+            <text x="30" y="268" class="cd-code">  { $unwind: "$customer" }</text>
+            <text x="400" y="268" class="cd-count">Proprietary. Verbose.</text>
+            <!-- App-code fallback -->
+            <rect x="15" y="292" width="490" height="56" class="cd-box"/>
+            <text x="30" y="312" class="cd-head">MongoDB App-Code Fallback</text>
+            <text x="30" y="330" class="cd-code">const orders = await db.orders.find();</text>
+            <text x="30" y="344" class="cd-muted">// then loop, fetch each customer, merge in memory</text>
+        </svg>
+
+        <p>The SQL version is two lines. It is declarative, portable across every relational
+            database on the planet, and understood by anyone who has spent ten minutes with
+            the language. The Aggregation Pipeline version is a proprietary reinvention of
+            the same operation, expressed in a syntax that transfers to nothing else. The
+            app-code fallback is worse still: two round trips, manual merging, and the quiet
+            certainty that your hand-written loop is slower and buggier than a query planner
+            with decades of optimisation behind it.</p>
+
+        <h2>The Schemaless Illusion</h2>
+
+        <p>&#x201C;Schemaless&#x201D; is MongoDB&#x2019;s most celebrated feature. It is also
+            its most misleading.</p>
+
+        <p>Your data has a schema. It always has a schema. The question is not whether
+            a schema exists, but where it is enforced. In a relational database, the schema
+            lives in the database itself. It is declared, versioned, and enforced at write
+            time. If you attempt to insert a string where an integer belongs, the database
+            refuses. If you attempt to reference a row that does not exist, the foreign key
+            constraint stops you. The data is guaranteed to be structurally correct at rest.</p>
+
+        <p>In MongoDB, the schema lives in your application code. Every function that reads
+            a document must validate its structure. Every write must be manually checked for
+            consistency. The schema has not been removed. It has been moved from a system
+            designed to enforce it &#x2014; the database &#x2014; to a system that is not:
+            your application.</p>
+
+        <p>The proof is
+            <a href="https://mongoosejs.com/" target="_blank" rel="noopener">Mongoose</a>,
+            the most popular MongoDB ODM for Node.js, with over 1.8 million weekly downloads.
+            Its primary feature: adding schemas to MongoDB. The community&#x2019;s most-used
+            tool for MongoDB exists to restore the very thing MongoDB removed. One could
+            not write a more damning review if one tried.</p>
+
+        <h2>The Timeline of Reinvention</h2>
+
+        <p>The history is instructive, not because it is complicated, but because it is
+            embarrassingly straightforward.</p>
+
+        <p>Codd publishes the relational model in 1970. Fifty-three years of research,
+            optimisation, and battle-testing follow. Then MongoDB 1.0 arrives in 2009,
+            and in 2012 &#x2014; this is the part that bears emphasis &#x2014; it ships with
+            <a href="https://aphyr.com/posts/284-jepsen-mongodb" target="_blank" rel="noopener">no write acknowledgement by default</a>.
+            The database confirms a write before it has actually been written. Kyle Kingsbury&#x2019;s
+            Jepsen analysis remains essential reading for anyone who stores data they would
+            prefer not to lose.</p>
+
+        <p>Multi-document transactions arrive in 2018. ACID compliance &#x2014; the baseline
+            feature of every relational database since the 1980s &#x2014; took MongoDB nine
+            years to implement. Also in 2018, MongoDB switches from the AGPL to the
+            <a href="https://www.mongodb.com/blog/post/mongodb-now-released-under-the-server-side-public-license" target="_blank" rel="noopener">Server Side Public License</a>,
+            a licence so restrictive that
+            the Open Source Initiative refuses to recognise it. Your &#x201C;open source&#x201D;
+            database is no longer open source by any standard definition.</p>
+
+        <p>By 2023,
+            <a href="https://investors.mongodb.com/" target="_blank" rel="noopener">Atlas generates $1.7 billion in revenue</a>.
+            The business model works. The engineering argument, however, has not improved.</p>
+
+        <svg viewBox="0 0 520 280" aria-label="Timeline from 1970 to 2023. Codd publishes the relational model in 1970. MongoDB 1.0 ships in 2009. No write acknowledgement by default in 2012. Multi-document transactions and SSPL licence in 2018. Atlas revenue reaches 1.7 billion dollars in 2023." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .tl-title { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tl-year { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .tl-text { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 10px; }
+                .tl-muted { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 9px; }
+                .tl-line { stroke: var(--border); stroke-width: 1.5; }
+                .tl-dot { fill: var(--accent); }
+                .tl-dot-muted { fill: var(--muted); }
+            </style>
+            <text x="260" y="20" class="tl-title" text-anchor="middle">The Reinvention Timeline</text>
+            <!-- Main line -->
+            <line x1="40" y1="60" x2="480" y2="60" class="tl-line"/>
+            <!-- 1970 -->
+            <circle cx="60" cy="60" r="5" class="tl-dot"/>
+            <text x="60" y="48" class="tl-year" text-anchor="middle">1970</text>
+            <text x="60" y="80" class="tl-text" text-anchor="middle">Codd: relational</text>
+            <text x="60" y="92" class="tl-text" text-anchor="middle">model published</text>
+            <!-- 2009 -->
+            <circle cx="180" cy="60" r="5" class="tl-dot-muted"/>
+            <text x="180" y="48" class="tl-year" text-anchor="middle">2009</text>
+            <text x="180" y="80" class="tl-text" text-anchor="middle">MongoDB 1.0</text>
+            <!-- 2012 -->
+            <circle cx="260" cy="60" r="5" class="tl-dot"/>
+            <text x="260" y="48" class="tl-year" text-anchor="middle">2012</text>
+            <text x="260" y="80" class="tl-text" text-anchor="middle">No write ack</text>
+            <text x="260" y="92" class="tl-muted" text-anchor="middle">by default</text>
+            <!-- 2018 -->
+            <circle cx="370" cy="60" r="5" class="tl-dot"/>
+            <text x="370" y="48" class="tl-year" text-anchor="middle">2018</text>
+            <text x="370" y="80" class="tl-text" text-anchor="middle">Multi-doc ACID</text>
+            <text x="370" y="92" class="tl-muted" text-anchor="middle">(9 years late)</text>
+            <text x="370" y="106" class="tl-text" text-anchor="middle">SSPL licence</text>
+            <text x="370" y="118" class="tl-muted" text-anchor="middle">(not open source)</text>
+            <!-- 2023 -->
+            <circle cx="460" cy="60" r="5" class="tl-dot"/>
+            <text x="460" y="48" class="tl-year" text-anchor="middle">2023</text>
+            <text x="460" y="80" class="tl-text" text-anchor="middle">Atlas: $1.7B</text>
+            <text x="460" y="92" class="tl-muted" text-anchor="middle">revenue</text>
+            <!-- Bottom note -->
+            <line x1="40" y1="140" x2="480" y2="140" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4"/>
+            <text x="260" y="165" class="tl-text" text-anchor="middle">Meanwhile, PostgreSQL (1996&#x2013;present):</text>
+            <text x="260" y="182" class="tl-muted" text-anchor="middle">Free. ACID since day one. JSONB for document-shaped data.</text>
+            <text x="260" y="196" class="tl-muted" text-anchor="middle">Real open source. No write acknowledgement surprises.</text>
+            <text x="260" y="216" class="tl-text" text-anchor="middle">Everything MongoDB rebuilt, PostgreSQL never lost.</text>
+        </svg>
+
+        <h2>The PostgreSQL Counter-Argument</h2>
+
+        <p><a href="https://www.postgresql.org/docs/current/datatype-json.html" target="_blank" rel="noopener">PostgreSQL
+            ships JSONB</a>. A native, indexable, queryable binary JSON type. You can
+            store document-shaped data &#x2014; the genuinely useful part of the document
+            model &#x2014; inside a relational database, alongside proper foreign keys,
+            proper transactions, and proper ACID guarantees. No ODM required. No
+            Aggregation Pipeline. No proprietary query syntax.</p>
+
+        <p>The document model is not the problem. The problem is making it the
+            <em>only</em> model. Some data is genuinely document-shaped: logs, events,
+            sensor readings, CMS content. PostgreSQL handles these with JSONB. The rest
+            of your data &#x2014; the customers, orders, inventory, and everything else
+            with relationships &#x2014; gets proper relational modelling, enforced at
+            the database level.</p>
+
+        <p>One database. Both models. Free.
+            <a href="https://www.mongodb.com/pricing" target="_blank" rel="noopener">MongoDB Atlas</a>,
+            meanwhile, charges for every operation, every gigabyte, and every hour of
+            uptime. The pricing page requires a calculator. PostgreSQL&#x2019;s pricing
+            page is a single word: free.</p>
+
+        <h2>The Fair Concession</h2>
+
+        <p>MongoDB is not without legitimate use cases. Logs, event streams, sensor
+            data, time-series telemetry &#x2014; data that is genuinely document-shaped,
+            append-mostly, and rarely joined. In these contexts, a document store is
+            the natural fit, and MongoDB serves well.</p>
+
+        <p>The problem is scope. MongoDB was not marketed as a specialist tool for
+            append-heavy, relationship-free data. It was marketed as a general-purpose
+            database replacement. &#x201C;Say goodbye to complex schemas!&#x201D; &#x2014;
+            the implication being that schemas are the problem rather than the solution.
+            And an industry that was tired of writing migration scripts believed it.</p>
+
+        <aside>
+            <p>A colleague once observed that the Aggregation Pipeline is what happens
+                when you remove SQL from a database and then spend nine years putting it
+                back, one operator at a time, in JSON. The observation has not aged poorly.</p>
+        </aside>
+
+        <h2>The Root Cause</h2>
+
+        <p>How did competent engineers adopt a database that ships without write
+            acknowledgement and calls the absence of schema enforcement a feature?</p>
+
+        <p>The same way they adopted every other tool in this series: the marketing
+            arrived before the evaluation. &#x201C;Schemaless&#x201D; sounds like freedom.
+            &#x201C;Document model&#x201D; sounds modern. &#x201C;NoSQL&#x201D; sounds like
+            progress. The words are chosen with care. They bypass the technical question
+            &#x2014; &#x201C;Does my data have relationships?&#x201D; &#x2014; and replace
+            it with an emotional one: &#x201C;Do you want to be modern?&#x201D;</p>
+
+        <p>The answer to the first question is almost always yes. Your data has
+            relationships. It has structure. It has constraints that must be enforced
+            somewhere. The only question is whether you enforce them in a system built
+            for the purpose, or scatter them across application code and hope for the best.</p>
+
+        <h2>The Verdict</h2>
+
+        <p>MongoDB stores relational data in a document store, then spends a decade
+            rebuilding the relational features it discarded. The Aggregation Pipeline
+            is SQL with worse syntax. Mongoose is the schema the database was supposed
+            to make unnecessary. Multi-document transactions are ACID compliance, nine
+            years late. The SSPL is an open-source licence that is not open source.</p>
+
+        <p>Codd solved this in 1970. PostgreSQL implements it for free, with JSONB for
+            the bits that genuinely benefit from a document model. The wheel was invented.
+            It was round. It worked.</p>
+
+        <p>MongoDB reinvented it &#x2014; square &#x2014; and charged $1.7 billion
+            for the privilege. The invoice is on the table.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

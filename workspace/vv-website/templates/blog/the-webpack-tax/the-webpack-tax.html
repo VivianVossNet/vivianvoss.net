@@ -1,0 +1,397 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Webpack Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Webpack solved a 2012 problem that ES Modules natively solved in 2017. esbuild is 106x faster. Vite cold-starts in 1.7 seconds. The bundler tax, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-webpack-tax{( endslot )}
+
+{( slot og-title )}The Webpack Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Webpack solved a 2012 problem that ES Modules natively solved in 2017. esbuild is 106x faster. The bundler tax, itemised.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Webpack Tax",
+    "datePublished": "2026-02-15",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-webpack-tax",
+    "description": "Webpack solved a 2012 problem that ES Modules natively solved in 2017. esbuild is 106x faster. Vite cold-starts in 1.7 seconds. The bundler tax, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-15">15 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Webpack Tax</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Performance-Fresser</em> &#x25A0; Episode 13</p>
+
+        <p>In 2012, JavaScript had a module problem. The browser did not understand
+            <code>require()</code>. Node.js used CommonJS. AMD existed for those with a
+            particular appetite for acronyms. And somewhere in between, a developer named
+            Tobias Koppers built a tool that could take all these competing module formats,
+            resolve their dependency graphs, and emit a single file the browser could execute.
+            It was called Webpack, and it was, at the time, genuinely useful.</p>
+
+        <p>In 2017, ES Modules shipped natively in every major browser. The problem Webpack
+            was built to solve &#x2014; that browsers could not understand module imports &#x2014;
+            ceased to exist. <code>import</code> and <code>export</code> became part of the
+            language. The browser understood them. The build step became optional.</p>
+
+        <p>It is now 2026. Webpack is nine years older than the problem it solves. And yet
+            <a href="https://2024.stateofjs.com/en-US/libraries/build_tools/" target="_blank" rel="noopener">86%
+            of JavaScript developers</a> still use it. The bundler that bundles your patience.</p>
+
+        <h2>The Build That Time Forgot</h2>
+
+        <p>Evan Wallace released
+            <a href="https://esbuild.github.io/" target="_blank" rel="noopener">esbuild</a> in 2020,
+            written in Go, and published benchmarks that read less like a comparison and more
+            like an autopsy report. Three.js &#x2014; a substantial, real-world codebase &#x2014;
+            bundled in 0.39 seconds by esbuild. Webpack 5 required 41.21 seconds. That is not
+            a percentage improvement. That is a <strong>106x difference</strong>.</p>
+
+        <p>The TypeScript compiler for the Rome project: esbuild managed 0.10 seconds. Webpack 5
+            needed 16.69 seconds. A factor of <strong>167</strong>. One hundred and sixty-seven
+            times slower, to produce the same output, from the same input, on the same machine.</p>
+
+        <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Build time comparison between esbuild and Webpack 5. Three.js: esbuild 0.39 seconds versus Webpack 5 at 41.21 seconds, 106 times slower. TypeScript Rome project: esbuild 0.10 seconds versus Webpack 5 at 16.69 seconds, 167 times slower." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .bt-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .bt-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .bt-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .bt-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .bt-bar { fill: var(--accent); opacity: 0.7; }
+                .bt-bar-dim { fill: var(--muted); opacity: 0.25; }
+                .bt-axis { stroke: var(--border); stroke-width: 1; }
+                .bt-factor { font: 700 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+            </style>
+            <!-- Title -->
+            <text class="bt-title" x="260" y="20" text-anchor="middle">BUILD TIME &#x2014; SAME INPUT, SAME OUTPUT</text>
+
+            <!-- Section 1: Three.js -->
+            <text class="bt-label" x="30" y="56">Three.js</text>
+
+            <!-- esbuild bar -->
+            <text class="bt-muted" x="30" y="80">esbuild</text>
+            <rect class="bt-bar" x="110" y="68" width="4" height="20" rx="2"/>
+            <text class="bt-value" x="122" y="83">0.39 s</text>
+
+            <!-- Webpack bar -->
+            <text class="bt-muted" x="30" y="112">Webpack 5</text>
+            <rect class="bt-bar-dim" x="110" y="100" width="380" height="20" rx="2"/>
+            <text class="bt-label" x="380" y="115" text-anchor="middle">41.21 s</text>
+
+            <!-- Factor -->
+            <text class="bt-factor" x="495" y="96" text-anchor="end">106x</text>
+            <text class="bt-muted" x="495" y="115" text-anchor="end">slower</text>
+
+            <!-- Divider -->
+            <line class="bt-axis" x1="30" y1="140" x2="500" y2="140" opacity="0.3"/>
+
+            <!-- Section 2: TypeScript (Rome) -->
+            <text class="bt-label" x="30" y="170">TypeScript (Rome)</text>
+
+            <!-- esbuild bar -->
+            <text class="bt-muted" x="30" y="194">esbuild</text>
+            <rect class="bt-bar" x="110" y="182" width="3" height="20" rx="2"/>
+            <text class="bt-value" x="121" y="197">0.10 s</text>
+
+            <!-- Webpack bar -->
+            <text class="bt-muted" x="30" y="226">Webpack 5</text>
+            <rect class="bt-bar-dim" x="110" y="214" width="380" height="20" rx="2"/>
+            <text class="bt-label" x="365" y="229" text-anchor="middle">16.69 s</text>
+
+            <!-- Factor -->
+            <text class="bt-factor" x="495" y="210" text-anchor="end">167x</text>
+            <text class="bt-muted" x="495" y="229" text-anchor="end">slower</text>
+
+            <!-- Source -->
+            <text class="bt-muted" x="260" y="275" text-anchor="middle">Source: esbuild.github.io</text>
+            <text class="bt-muted" x="260" y="290" text-anchor="middle">Both tools: same input files, same output format, same machine</text>
+        </svg>
+
+        <p>One might argue that benchmarks are synthetic, that real-world projects differ,
+            that context matters. One would be correct about all three. And yet, when the
+            magnitude is a hundred-fold, context becomes a footnote. Webpack is not slightly
+            slower. It is categorically slower, in the way that a horse-drawn carriage is
+            categorically slower than an aeroplane. Both reach the destination. One of them
+            allows you to have lunch first.</p>
+
+        <h2>The Memory Hole</h2>
+
+        <p>Build time is the visible cost. Memory consumption is the one nobody watches until
+            the CI server falls over.</p>
+
+        <p>Webpack 4, on a mid-sized production project, consumed between 500 and 800 MB of RAM.
+            Unpleasant, but manageable. Webpack 5 &#x2014; the version marketed as the performance
+            upgrade &#x2014; consumed
+            <a href="https://github.com/webpack/webpack/issues/13550" target="_blank" rel="noopener">3.8 GB on the
+            same project</a>. Not a different project. Not a larger codebase. The same files,
+            the same output, and nearly five times the memory.</p>
+
+        <p>The root cause is <code>terser-webpack-plugin</code>, Webpack&#x2019;s default
+            minifier. It spawns worker threads for parallel minification &#x2014; a sensible
+            optimisation in theory. In practice, each worker clones the entire AST into its
+            own memory space. Four workers, four copies of the abstract syntax tree, four times
+            the allocation, and a garbage collector that cannot reclaim any of it until all
+            workers complete. The parallelism that was supposed to save time costs memory
+            instead, and the trade-off was made without asking.</p>
+
+        <p>GitLab&#x2019;s development environment, powered by Webpack, has been
+            <a href="https://tines.com/blog/understanding-why-our-build-got-15x-slower-with-webpack-5" target="_blank" rel="noopener">documented
+            at 30 GB of RAM</a>. Thirty gigabytes. For a development environment. For a tool
+            whose job is to concatenate files.</p>
+
+        <h2>The Developer Experience Tax</h2>
+
+        <p>A developer&#x2019;s day begins with a cold start. Open the project, start the
+            dev server, wait. How long one waits depends, rather dramatically, on the bundler.</p>
+
+        <p>Vite, built on esbuild for dependency pre-bundling and native ES Modules for
+            serving, cold-starts a project with a thousand React components in 1.7 seconds.
+            Webpack 5, on the
+            <a href="https://github.com/farm-fe/performance-compare" target="_blank" rel="noopener">same
+            project</a>, requires 5.6 seconds. Three times slower to reach the point where
+            development can begin.</p>
+
+        <p>But cold starts happen once. Hot Module Replacement happens hundreds of times
+            a day &#x2014; every save, every change, every iteration. This is where the tax
+            becomes a salary deduction.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Developer experience comparison. Cold start with 1000 React components: Vite 1.7 seconds, Webpack 5.6 seconds. Hot Module Replacement: Vite 10 to 20 milliseconds, Webpack 500 to 1600 milliseconds. The HMR difference means Webpack developers wait 50 to 80 times longer on every save." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .dx-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .dx-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dx-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .dx-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dx-bar { fill: var(--accent); opacity: 0.7; }
+                .dx-bar-dim { fill: var(--muted); opacity: 0.25; }
+                .dx-axis { stroke: var(--border); stroke-width: 1; }
+                .dx-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .dx-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .dx-big { font: 700 22px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+            </style>
+            <!-- Title -->
+            <text class="dx-title" x="260" y="20" text-anchor="middle">DEVELOPER EXPERIENCE &#x2014; 1,000 REACT COMPONENTS</text>
+
+            <!-- Left card: Cold Start -->
+            <rect class="dx-box" x="20" y="40" width="230" height="150"/>
+            <text class="dx-label" x="135" y="65" text-anchor="middle">Cold Start</text>
+
+            <!-- Vite bar -->
+            <text class="dx-muted" x="35" y="96">Vite</text>
+            <rect class="dx-bar" x="80" y="84" width="68" height="18" rx="2"/>
+            <text class="dx-value" x="156" y="98">1.7 s</text>
+
+            <!-- Webpack bar -->
+            <text class="dx-muted" x="35" y="126">Webpack 5</text>
+            <rect class="dx-bar-dim" x="80" y="114" width="150" height="18" rx="2"/>
+            <text class="dx-label" x="236" y="128">5.6 s</text>
+
+            <!-- Factor -->
+            <text class="dx-value" x="135" y="168" text-anchor="middle">3.3x slower</text>
+
+            <!-- Right card: HMR -->
+            <rect class="dx-box-hl" x="270" y="40" width="230" height="150"/>
+            <text class="dx-label" x="385" y="65" text-anchor="middle">Hot Module Replacement</text>
+
+            <!-- Vite bar -->
+            <text class="dx-muted" x="285" y="96">Vite</text>
+            <rect class="dx-bar" x="345" y="84" width="4" height="18" rx="2"/>
+            <text class="dx-value" x="357" y="98">10&#x2013;20 ms</text>
+
+            <!-- Webpack bar -->
+            <text class="dx-muted" x="285" y="126">Webpack 5</text>
+            <rect class="dx-bar-dim" x="345" y="114" width="130" height="18" rx="2"/>
+            <text class="dx-label" x="481" y="128">500&#x2013;1600 ms</text>
+
+            <!-- Factor -->
+            <text class="dx-value" x="385" y="168" text-anchor="middle">50&#x2013;80x slower</text>
+
+            <!-- Bottom annotation -->
+            <rect class="dx-box" x="60" y="210" width="400" height="50"/>
+            <text class="dx-label" x="260" y="232" text-anchor="middle">200 saves/day &#xD7; 1 second lost per save</text>
+            <text class="dx-big" x="260" y="254" text-anchor="middle">3 minutes 20 seconds</text>
+            <text class="dx-muted" x="260" y="275" text-anchor="middle">per developer, per day &#x2014; staring at a spinner</text>
+
+            <!-- Source -->
+            <text class="dx-muted" x="260" y="298" text-anchor="middle">Source: github.com/farm-fe/performance-compare</text>
+        </svg>
+
+        <p>Vite updates the browser in 10 to 20 milliseconds. Webpack takes 500 to 1,600
+            milliseconds. On every single save. Two hundred saves a day &#x2014; a conservative
+            estimate for an active developer &#x2014; and Webpack costs three minutes and twenty
+            seconds of dead air. Not thinking time. Not debugging. Staring at a browser that
+            has not yet caught up with the code you wrote two seconds ago.</p>
+
+        <p>Multiply by a team of twenty. Multiply by two hundred and fifty working days. The
+            figure stops being an inconvenience and starts appearing on a spreadsheet.</p>
+
+        <h2>The Configuration Cathedral</h2>
+
+        <p>esbuild&#x2019;s configuration for a production build fits in a function call.
+            Webpack&#x2019;s configuration is a Gothic cathedral of loaders, plugins, rules,
+            resolve aliases, optimisation strategies, and split-chunk heuristics. Thirty-plus
+            configuration categories. Two hundred lines before the first line of application
+            code is processed.</p>
+
+        <p>The Webpack documentation, to its credit, is comprehensive. It has to be. The
+            surface area of what can go wrong is so vast that the documentation is less a
+            guide and more a survival manual. One does not <em>learn</em> Webpack configuration.
+            One <em>inherits</em> it, from a colleague who has since left the company, in a
+            file that has not been touched in fourteen months because the last person who
+            touched it spent two days fixing the cascade of errors that followed.</p>
+
+        <blockquote>
+            <p>The most common Webpack configuration strategy: copy it from Stack Overflow
+                and pray.</p>
+        </blockquote>
+
+        <p>The configuration file becomes load-bearing archaeology. Every <code>module.rules</code>
+            entry has a story. Every <code>resolve.alias</code> was a workaround for something.
+            Every plugin was added to fix a problem caused by another plugin. The configuration
+            does not describe a build process. It describes the accumulated anxieties of every
+            developer who has touched the project.</p>
+
+        <h2>The Sentiment Index</h2>
+
+        <p>Numbers measure performance. Surveys measure pain.</p>
+
+        <p>The
+            <a href="https://2024.stateofjs.com/en-US/libraries/build_tools/" target="_blank" rel="noopener">State
+            of JavaScript 2024</a> survey paints a portrait of a tool that the industry uses
+            out of inertia rather than enthusiasm. Webpack&#x2019;s usage stands at 86% &#x2014;
+            an enormous installed base. Its satisfaction score: <strong>14% positive</strong>.
+            Its dislike ratio: <strong>37%</strong>. More than a third of its users actively
+            dislike it. Only 14% would recommend it.</p>
+
+        <p>Vite, by contrast, reports a 98% retention rate. Ninety-eight per cent of developers
+            who try Vite continue to use it. One does not typically see retention figures that
+            high outside of subscription services that make cancellation deliberately difficult.</p>
+
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sentiment comparison from State of JavaScript 2024. Webpack: 86 percent usage, 37 percent dislike, 14 percent positive satisfaction. Vite: 98 percent retention rate. The gap between usage and satisfaction tells the story." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .sv-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sv-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sv-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sv-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sv-bar { fill: var(--accent); opacity: 0.7; }
+                .sv-bar-neg { fill: var(--muted); opacity: 0.4; }
+                .sv-bar-low { fill: var(--accent); opacity: 0.3; }
+                .sv-axis { stroke: var(--border); stroke-width: 1; }
+                .sv-big { font: 700 28px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sv-vs { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <!-- Title -->
+            <text class="sv-title" x="260" y="20" text-anchor="middle">STATE OF JS 2024 &#x2014; BUILD TOOLS</text>
+
+            <!-- Webpack section -->
+            <text class="sv-label" x="30" y="55">WEBPACK</text>
+
+            <!-- Usage bar -->
+            <text class="sv-muted" x="30" y="80">Usage</text>
+            <rect class="sv-bar-neg" x="110" y="68" width="344" height="18" rx="2"/>
+            <text class="sv-value" x="462" y="82">86%</text>
+
+            <!-- Dislike bar -->
+            <text class="sv-muted" x="30" y="108">Dislike</text>
+            <rect class="sv-bar-neg" x="110" y="96" width="148" height="18" rx="2"/>
+            <text class="sv-value" x="266" y="110">37%</text>
+
+            <!-- Positive bar -->
+            <text class="sv-muted" x="30" y="136">Positive</text>
+            <rect class="sv-bar-low" x="110" y="124" width="56" height="18" rx="2"/>
+            <text class="sv-value" x="174" y="138">14%</text>
+
+            <!-- Divider -->
+            <line class="sv-axis" x1="30" y1="162" x2="500" y2="162" opacity="0.3"/>
+            <text class="sv-vs" x="260" y="158" text-anchor="middle">vs</text>
+
+            <!-- Vite section -->
+            <text class="sv-label" x="30" y="192">VITE</text>
+
+            <!-- Retention bar -->
+            <text class="sv-muted" x="30" y="216">Retention</text>
+            <rect class="sv-bar" x="110" y="204" width="392" height="18" rx="2"/>
+            <text class="sv-value" x="510" y="218">98%</text>
+
+            <!-- Bottom summary -->
+            <text class="sv-muted" x="260" y="252" text-anchor="middle">86% use Webpack. 14% are happy about it.</text>
+            <text class="sv-muted" x="260" y="268" text-anchor="middle">Source: 2024.stateofjs.com</text>
+        </svg>
+
+        <p>The gap between Webpack&#x2019;s usage and its satisfaction is the gap between
+            habit and choice. Eighty-six per cent of developers use Webpack because their
+            project already uses Webpack, because the CI pipeline expects Webpack, because
+            migrating away from Webpack requires touching the configuration file, and nobody
+            wants to touch the configuration file. Fourteen per cent would choose it again.
+            The rest are hostages.</p>
+
+        <h2>The Problem That Solved Itself</h2>
+
+        <p>Webpack was built to solve a genuine problem: browsers could not understand
+            JavaScript modules. In 2012, if you wanted to split your code across multiple
+            files, you needed a tool to reassemble them into something the browser could
+            execute. Webpack did this. It did it well. It earned its place.</p>
+
+        <p>Then the platform caught up.</p>
+
+        <p>ES Modules shipped in Chrome 61 (September 2017), Firefox 60 (May 2018), Safari 11
+            (September 2017), and Edge 16 (October 2017). The <code>&lt;script type="module"&gt;</code>
+            attribute told the browser to treat the file as a module. <code>import</code> and
+            <code>export</code> worked natively. No bundler. No loader. No configuration file.
+            The browser understood modules because the specification said it should, and the
+            browser vendors implemented the specification.</p>
+
+        <p>That was nine years ago. The problem Webpack solves has been solved, by the platform,
+            natively, for nine years. And yet Webpack persists &#x2014; not because the problem
+            returned, but because the ecosystem built on top of the solution never noticed the
+            problem had left.</p>
+
+        <h2>The Invoice</h2>
+
+        <p>Let us itemise.</p>
+
+        <p><strong>106x slower</strong> than esbuild on Three.js. <strong>167x slower</strong>
+            on TypeScript compilation. <strong>3.8 GB of RAM</strong> for a project that Webpack 4
+            handled in 800 MB. <strong>30 GB</strong> in GitLab&#x2019;s dev environment.
+            Cold starts 3.3x slower than Vite. HMR 50 to 80 times slower. A configuration
+            system with thirty-plus categories that no single developer fully understands.
+            An 86% usage rate with a 14% satisfaction score.</p>
+
+        <p>Every one of these costs is documented. Every one is measurable. Every one is paid
+            daily &#x2014; in developer time waiting for builds, in CI minutes burning compute,
+            in RAM allocated to a tool that concatenates files with the resource appetite of a
+            database server.</p>
+
+        <p>Webpack was the right tool for 2012. It is the inherited tool of 2026. The
+            distinction between those two is the Webpack Tax: the cost of continuing to pay
+            for a problem the platform solved nine years ago, because the configuration
+            file is too frightening to replace.</p>
+
+        <aside>
+            <p>The fastest bundler is the one the browser does not need.
+                The second fastest is the one that finishes before you notice it started.
+                Webpack is neither.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,388 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}JavaScript Bloat: The Battery Tax — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="558 KB median JavaScript per page. 44 per cent never executes. Mobile parses 25x slower than your dev machine. The battery invoice, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-javascript-tax{( endslot )}
+
+{( slot og-title )}JavaScript Bloat: The Battery Tax — Vivian Voss{( endslot )}
+
+{( slot og-desc )}558 KB median JavaScript, 44 per cent unused. Mobile parses 25x slower. The thermal throttling feedback loop and the battery invoice.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "JavaScript Bloat: The Battery Tax",
+    "datePublished": "2026-02-22",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-javascript-tax",
+    "description": "558 KB median JavaScript per page. 44 per cent never executes. Mobile parses 25x slower than your dev machine. The battery invoice, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-22">22 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>JavaScript Bloat: The Battery Tax</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Performance-Fresser</em> &#x25A0; Episode 14</p>
+
+        <p>The median web page in 2026 ships
+            <a href="https://httparchive.org/reports/state-of-javascript" target="_blank" rel="noopener">558 KB of JavaScript</a>.
+            Not the worst offenders. The median. Half of all pages deliver more. And of
+            that 558 KB,
+            <a href="https://web.dev/articles/unused-javascript" target="_blank" rel="noopener">44 per cent is never executed</a>.
+            Not eventually. Not under rare conditions. Never. Two hundred and forty-five
+            kilobytes of code that travels across the network, gets parsed by the engine,
+            occupies memory, and does precisely nothing. Shipped, paid for, and thrown away
+            &#x2014; on every single page load.</p>
+
+        <p>On the developer&#x2019;s MacBook Pro, this is invisible. The M-series chip
+            parses the bundle in under 200 milliseconds, the fan stays silent, and the
+            Lighthouse score glows a reassuring green. The developer commits, deploys,
+            and moves on to the next sprint.</p>
+
+        <p>On the user&#x2019;s phone, the same bundle takes five seconds.</p>
+
+        <h2>The 25x Gap</h2>
+
+        <p>In 2019, the V8 team at Google published a paper that the industry has spent
+            seven years politely ignoring.
+            <a href="https://v8.dev/blog/cost-of-javascript-2019" target="_blank" rel="noopener">The Cost of JavaScript</a>
+            demonstrated that mobile devices parse JavaScript roughly 25 times slower than
+            a high-end laptop. Not two times. Not five. Twenty-five.</p>
+
+        <p>The arithmetic is merciless. A 500 KB bundle that takes 200 milliseconds on a
+            developer&#x2019;s workstation demands five full seconds on a mid-range Android
+            handset &#x2014; the kind of device that represents the majority of the
+            world&#x2019;s web traffic. Five seconds of a locked main thread. Five seconds
+            of an unresponsive screen. Five seconds during which the user stares at a
+            layout that looks finished but refuses to obey their fingers.</p>
+
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Parse time comparison for a 500 kilobyte JavaScript bundle. A developer laptop parses it in 200 milliseconds. A mid-range mobile phone requires 5,000 milliseconds. The mobile device is 25 times slower." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .pt-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pt-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .pt-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .pt-bar { fill: var(--accent); opacity: 0.6; }
+                .pt-bar-dim { fill: var(--accent); opacity: 0.15; }
+                .pt-axis { stroke: var(--border); stroke-width: 1; }
+                .pt-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .pt-multiplier { font: 700 18px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+            </style>
+            <!-- Title -->
+            <text class="pt-muted" x="260" y="16" text-anchor="middle">500 KB JavaScript &#x2014; parse time</text>
+            <!-- Axes -->
+            <line class="pt-axis" x1="160" y1="40" x2="160" y2="180"/>
+            <line class="pt-axis" x1="160" y1="180" x2="500" y2="180"/>
+            <!-- X-axis labels -->
+            <text class="pt-muted" x="160" y="198" text-anchor="middle">0</text>
+            <text class="pt-muted" x="228" y="198" text-anchor="middle">1s</text>
+            <text class="pt-muted" x="296" y="198" text-anchor="middle">2s</text>
+            <text class="pt-muted" x="364" y="198" text-anchor="middle">3s</text>
+            <text class="pt-muted" x="432" y="198" text-anchor="middle">4s</text>
+            <text class="pt-muted" x="500" y="198" text-anchor="middle">5s</text>
+            <!-- Grid lines -->
+            <line class="pt-axis" x1="228" y1="40" x2="228" y2="180" opacity="0.2"/>
+            <line class="pt-axis" x1="296" y1="40" x2="296" y2="180" opacity="0.2"/>
+            <line class="pt-axis" x1="364" y1="40" x2="364" y2="180" opacity="0.2"/>
+            <line class="pt-axis" x1="432" y1="40" x2="432" y2="180" opacity="0.2"/>
+            <line class="pt-axis" x1="500" y1="40" x2="500" y2="180" opacity="0.2"/>
+            <!-- Laptop bar: 200ms -->
+            <text class="pt-label" x="155" y="75" text-anchor="end">Dev Laptop</text>
+            <rect class="pt-bar" x="160" y="62" width="14" height="24" rx="2"/>
+            <text class="pt-value" x="182" y="80">200 ms</text>
+            <!-- Mobile bar: 5000ms -->
+            <text class="pt-label" x="155" y="135" text-anchor="end">Mobile</text>
+            <rect class="pt-bar-dim" x="160" y="122" width="340" height="24" rx="2"/>
+            <text class="pt-value" x="508" y="140">5,000 ms</text>
+            <!-- Multiplier -->
+            <text class="pt-multiplier" x="260" y="240" text-anchor="middle">25&#x00D7; slower</text>
+            <text class="pt-muted" x="260" y="258" text-anchor="middle">Same code. Same bundle. Different planet.</text>
+            <!-- Source -->
+            <text class="pt-muted" x="500" y="274" text-anchor="end">Source: v8.dev, 2019</text>
+        </svg>
+
+        <p>The reason is physics, not software. A laptop runs an x86 or ARM chip at
+            sustained multi-gigahertz clock speeds, backed by active cooling and a power
+            supply that does not care about thermals. A phone runs a thermally constrained
+            ARM SoC that throttles itself the moment it gets warm. And parsing half a
+            megabyte of JavaScript makes it warm rather quickly.</p>
+
+        <h2>The Throttling Spiral</h2>
+
+        <p>This is where the story turns from regrettable to perverse. JavaScript
+            execution on mobile is not merely slow. It is self-defeatingly slow, because
+            of a feedback loop that the industry appears determined not to discuss.</p>
+
+        <p>Heavy JavaScript demands sustained main-thread CPU time. Sustained CPU time
+            generates heat. Heat triggers thermal throttling. Throttling reduces clock
+            speed. Reduced clock speed means the same JavaScript takes longer. Longer
+            execution generates more heat. More heat triggers deeper throttling. The
+            device enters a spiral where the payload actively degrades its own execution
+            environment.</p>
+
+        <p>The <a href="https://catchjs.com/Blog/PerformanceInTheWild" target="_blank" rel="noopener">CatchJS 2024 study</a>
+            quantified this with uncomfortable precision. React-based sites exhibited
+            <strong>431 per cent more main-thread time</strong> on mobile compared to
+            desktop. Not 31. Not 131. Four hundred and thirty-one per cent. The same
+            study measured a <strong>146 per cent increase in frame defects</strong>
+            &#x2014; dropped frames, janky scrolling, input latency &#x2014; directly
+            attributable to thermal throttling under sustained JavaScript load.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The thermal throttling feedback loop. Heavy JavaScript causes CPU load, which produces heat, which triggers throttling, which causes slower execution, which extends CPU load duration, creating a self-reinforcing cycle. Results: 431 per cent more main-thread time, 146 per cent more frame defects." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .tl-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tl-value { font: 700 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .tl-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .tl-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .tl-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .tl-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#tl-arr); }
+                .tl-stat-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tl-stat-val { font: 700 20px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .tl-stat-lbl { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <defs>
+                <marker id="tl-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <!-- Title -->
+            <text class="tl-muted" x="260" y="16" text-anchor="middle">THE THROTTLING SPIRAL</text>
+            <!-- Cycle nodes -->
+            <rect class="tl-box-hl" x="185" y="30" width="150" height="30"/>
+            <text class="tl-label" x="260" y="50" text-anchor="middle">Heavy JavaScript</text>
+
+            <rect class="tl-box" x="370" y="80" width="120" height="30"/>
+            <text class="tl-label" x="430" y="100" text-anchor="middle">CPU Load</text>
+
+            <rect class="tl-box" x="370" y="145" width="120" height="30"/>
+            <text class="tl-label" x="430" y="165" text-anchor="middle">Heat</text>
+
+            <rect class="tl-box" x="185" y="195" width="150" height="30"/>
+            <text class="tl-label" x="260" y="215" text-anchor="middle">Thermal Throttle</text>
+
+            <rect class="tl-box" x="30" y="145" width="120" height="30"/>
+            <text class="tl-label" x="90" y="165" text-anchor="middle">Slower Execution</text>
+
+            <rect class="tl-box" x="30" y="80" width="120" height="30"/>
+            <text class="tl-label" x="90" y="100" text-anchor="middle">Longer Duration</text>
+
+            <!-- Arrows forming cycle -->
+            <path class="tl-arrow" d="M 335 50 Q 380 50, 380 80"/>
+            <path class="tl-arrow" d="M 430 110 L 430 145"/>
+            <path class="tl-arrow" d="M 370 165 Q 340 185, 335 200"/>
+            <path class="tl-arrow" d="M 185 210 Q 140 210, 140 175"/>
+            <path class="tl-arrow" d="M 90 145 L 90 110"/>
+            <path class="tl-arrow" d="M 150 90 Q 180 60, 185 48"/>
+
+            <!-- Stats below -->
+            <rect class="tl-stat-box" x="70" y="248" width="170" height="44"/>
+            <text class="tl-stat-val" x="155" y="272" text-anchor="middle">+431%</text>
+            <text class="tl-stat-lbl" x="155" y="286" text-anchor="middle">main-thread time (mobile vs desktop)</text>
+
+            <rect class="tl-stat-box" x="280" y="248" width="170" height="44"/>
+            <text class="tl-stat-val" x="365" y="272" text-anchor="middle">+146%</text>
+            <text class="tl-stat-lbl" x="365" y="286" text-anchor="middle">frame defects under sustained load</text>
+        </svg>
+
+        <p>The laptop never enters this spiral. It has a fan, a heat sink, and a power
+            supply plugged into the wall. The phone has a lithium cell and whatever heat
+            dissipation the chassis permits. The development environment and the deployment
+            environment share a language and absolutely nothing else.</p>
+
+        <h2>The Battery Asymmetry</h2>
+
+        <p>There is a further indignity. Images and video &#x2014; the assets that
+            actually constitute the majority of page weight &#x2014; are decoded by
+            dedicated hardware. The GPU handles image decompression. A hardware video
+            decoder handles media playback. These circuits are purpose-built, thermally
+            efficient, and draw a fraction of the power that general-purpose computation
+            requires.</p>
+
+        <p>JavaScript has no such luxury. Every byte of it demands the main CPU. Every
+            parse cycle, every function call, every garbage collection pass runs on the
+            same general-purpose cores that the operating system is trying to clock down
+            to preserve battery life. A 500 KB image is decoded by a hardware unit that
+            barely registers on the power budget. A 500 KB JavaScript bundle monopolises
+            the main thread and drains the battery whilst doing so.</p>
+
+        <p>The user notices this. Not consciously, not as a technical observation, but as
+            the vague, persistent awareness that certain websites make their phone warm and
+            their battery percentage drop. They do not diagnose the cause. They simply
+            leave. And in the analytics dashboard, this registers as a bounce &#x2014;
+            attributed to content, to design, to anything except the 558 KB of JavaScript
+            that turned their phone into a hand warmer.</p>
+
+        <h2>The Application Obesity Epidemic</h2>
+
+        <p>Nikita Tonsky, in his
+            <a href="https://tonsky.me/blog/js-bloat/" target="_blank" rel="noopener">2024 survey of application sizes</a>,
+            catalogued the dimensions of the crisis with admirable precision. Slack: 55 MB.
+            LinkedIn: 31 MB. Gmail: 20 MB. These are client-side footprints &#x2014; the
+            weight your device must download, store, and execute to perform tasks that are,
+            at their core, astonishingly simple.</p>
+
+        <p>A chat message is roughly 100 bytes of text. The Slack client required to
+            display that message weighs 55 megabytes. The ratio is 550,000 to 1. Five
+            hundred and fifty thousand bytes of client infrastructure for every byte of
+            actual content. One might call this comprehensive engineering. One might also
+            call it an extraordinary failure of proportionality.</p>
+
+        <blockquote>
+            <p>A chat message is 100 bytes. The client is 55 MB. The overhead ratio is
+                550,000:1. If physical post worked this way, every letter would arrive
+                in a shipping container.</p>
+        </blockquote>
+
+        <p>Gmail requires 20 MB to display an email. The email itself &#x2014; headers,
+            body, the lot &#x2014; might be 15 KB. LinkedIn demands 31 MB to show a feed
+            of text posts that average perhaps 500 bytes each. The clients have become
+            several orders of magnitude larger than the content they exist to present.
+            The envelope has consumed the letter.</p>
+
+        <h2>&#x201C;Mobile First&#x201D;</h2>
+
+        <p>The phrase &#x201C;mobile first&#x201D; appeared in design lexicon around 2011,
+            when Luke Wroblewski argued that designing for the smallest screen forces
+            clarity of purpose. It was a design principle. By 2026, it has been reduced
+            to a CSS strategy: the same bundle, the same JavaScript, the same framework
+            overhead, delivered to a viewport that is merely narrower.</p>
+
+        <p>This is not mobile first. This is desktop-with-media-queries. The device
+            that is slowest at parsing JavaScript, most constrained in memory, most
+            vulnerable to thermal throttling, and most sensitive to battery drain receives
+            the identical payload as a workstation with active cooling and mains power.
+            &#x201C;Mobile first&#x201D; in 2026 means the mobile device gets the
+            desktop&#x2019;s JavaScript bill and a responsive grid to make it look
+            intentional.</p>
+
+        <p>To ship 558 KB of JavaScript to a device you know parses it 25 times slower,
+            throttles under the load, and drains its battery in the process is not a
+            technical oversight. It is contempt, expressed through negligence.</p>
+
+        <h2>The Alternative</h2>
+
+        <p>The solution is not complicated. It is merely unfashionable.</p>
+
+        <p>Server-side device intelligence &#x2014; the server knows the client. The
+            <code>User-Agent</code> header, the
+            <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Client_hints" target="_blank" rel="noopener">Client Hints API</a>,
+            the <code>Save-Data</code> header. The information is there. A template engine
+            that builds per-device pages can deliver precisely what each client needs:
+            full interactivity for the workstation, a minimal client for the phone, zero
+            JavaScript for the reader who simply wants to read.</p>
+
+        <p>The pattern is old. It predates the SPA era. The server renders HTML. The
+            browser displays it. Interactive elements are enhanced progressively, not
+            reconstructed from a JavaScript monolith. The approach has a name &#x2014;
+            progressive enhancement &#x2014; and it fell out of favour not because it
+            stopped working, but because it was insufficiently complex to sustain a
+            conference circuit.</p>
+
+        <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Payload comparison. Industry median ships 558 kilobytes of JavaScript, 44 per cent unused. A server-rendered alternative with minimal client JavaScript: under 10 kilobytes gzipped, zero unused code, direct DOM mutation, no virtual DOM." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .pc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pc-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .pc-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .pc-bar { fill: var(--accent); opacity: 0.15; }
+                .pc-bar-used { fill: var(--accent); opacity: 0.5; }
+                .pc-bar-alt { fill: var(--accent); opacity: 0.85; }
+                .pc-axis { stroke: var(--border); stroke-width: 1; }
+                .pc-waste { fill: none; stroke: var(--accent); stroke-width: 1; stroke-dasharray: 4 2; }
+            </style>
+            <!-- Title -->
+            <text class="pc-muted" x="260" y="16" text-anchor="middle">JAVASCRIPT PAYLOAD &#x2014; what ships vs what runs</text>
+            <!-- Axes -->
+            <line class="pc-axis" x1="140" y1="30" x2="140" y2="170"/>
+            <line class="pc-axis" x1="140" y1="170" x2="510" y2="170"/>
+            <!-- X-axis -->
+            <text class="pc-muted" x="140" y="188" text-anchor="middle">0</text>
+            <text class="pc-muted" x="252" y="188" text-anchor="middle">200 KB</text>
+            <text class="pc-muted" x="363" y="188" text-anchor="middle">400 KB</text>
+            <text class="pc-muted" x="474" y="188" text-anchor="middle">600 KB</text>
+            <!-- Grid -->
+            <line class="pc-axis" x1="252" y1="30" x2="252" y2="170" opacity="0.2"/>
+            <line class="pc-axis" x1="363" y1="30" x2="363" y2="170" opacity="0.2"/>
+            <line class="pc-axis" x1="474" y1="30" x2="474" y2="170" opacity="0.2"/>
+            <!-- Industry median: 558 KB total, 313 KB executed, 245 KB unused -->
+            <text class="pc-label" x="135" y="60" text-anchor="end">Median</text>
+            <text class="pc-label" x="135" y="72" text-anchor="end">Website</text>
+            <rect class="pc-bar" x="140" y="50" width="326" height="28" rx="2"/>
+            <rect class="pc-bar-used" x="140" y="50" width="183" height="28" rx="2"/>
+            <rect class="pc-waste" x="323" y="50" width="143" height="28" rx="0"/>
+            <text class="pc-value" x="474" y="68">558 KB</text>
+            <text class="pc-muted" x="230" y="92">56% executed</text>
+            <text class="pc-muted" x="394" y="92">44% waste</text>
+            <!-- Server-rendered minimal: ~8.8 KB gzipped -->
+            <text class="pc-label" x="135" y="130" text-anchor="end">Server</text>
+            <text class="pc-label" x="135" y="142" text-anchor="end">Rendered</text>
+            <rect class="pc-bar-alt" x="140" y="120" width="5" height="28" rx="2"/>
+            <text class="pc-value" x="155" y="138">8.8 KB gz</text>
+            <text class="pc-muted" x="155" y="158">0% waste &#x2014; direct DOM, no virtual DOM</text>
+            <!-- Source -->
+            <text class="pc-muted" x="510" y="210" text-anchor="end">Sources: httparchive.org, web.dev</text>
+        </svg>
+
+        <p>htm/a &#x2014; the server-side reactivity framework from
+            <a href="/ecosystem">the Min2Max ecosystem</a> &#x2014; ships 8.8 KB gzipped.
+            Direct DOM mutation. No virtual DOM. No reconciliation. No hydration ceremony.
+            The server renders the page. The browser displays it. Interactive elements
+            respond without downloading a quarter-megabyte of unused abstractions first.</p>
+
+        <p>8.8 KB is not a boast. It is an engineering constraint. When the framework
+            must justify every byte, the byte count stays honest. When the framework is
+            permitted to grow without consequence, you get 558 KB and a warm phone.</p>
+
+        <h2>The Invoice</h2>
+
+        <p>Let us itemise what the user pays.</p>
+
+        <p><strong>558 KB</strong> of JavaScript, median. <strong>245 KB</strong> of it
+            never executes. <strong>25&#x00D7;</strong> parse-time penalty on mobile.
+            <strong>431%</strong> more main-thread time for framework-heavy sites on
+            phones. <strong>146%</strong> more frame defects from thermal throttling.
+            A battery that drains because JavaScript has no hardware decoder &#x2014;
+            every cycle runs on the main CPU. Application clients that outweigh their
+            content by a factor of 550,000.</p>
+
+        <p>Every one of these numbers is measured. Every one is published. And every one
+            is absorbed by the user &#x2014; not as a statistic, but as heat in their
+            palm, percentage points draining from their battery, and the quiet frustration
+            of a page that will not respond.</p>
+
+        <aside>
+            <p>The user&#x2019;s phone is not slow. The user&#x2019;s phone is burdened.
+                There is a difference, and the difference is your JavaScript.</p>
+        </aside>
+
+        <p>The web was designed to be lightweight. HTML is lightweight. CSS is
+            lightweight. Both can be parsed incrementally, rendered progressively, and
+            displayed before the full document has arrived. JavaScript is the exception.
+            It demands synchronous parsing, monopolises the main thread, generates heat,
+            triggers throttling, and consumes battery &#x2014; and the industry ships
+            558 KB of it, median, to devices that were designed to last a day on a single
+            charge.</p>
+
+        <p>The invoice is not in your build output. It is in your user&#x2019;s battery
+            settings, listed under &#x201C;Safari&#x201D; or &#x201C;Chrome,&#x201D;
+            quietly draining a resource they did not volunteer.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
