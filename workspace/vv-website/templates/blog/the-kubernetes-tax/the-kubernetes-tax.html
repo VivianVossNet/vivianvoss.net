@@ -1,0 +1,485 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Kubernetes Tax — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="81 resource types. 200 lines of YAML to replace one systemctl command. A platform team before your first customer. The Kubernetes invoice, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-kubernetes-tax{( endslot )}
+
+{( slot og-title )}The Kubernetes Tax — Vivian Voss{( endslot )}
+
+{( slot og-desc )}81 resource types. 200 lines of YAML to replace one systemctl command. The Kubernetes invoice, itemised.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Kubernetes Tax",
+    "datePublished": "2024-12-29",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-kubernetes-tax",
+    "description": "81 resource types. 200 lines of YAML to replace one systemctl command. A platform team before your first customer. The Kubernetes invoice, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2024-12-29">29 December 2024</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Kubernetes Tax</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> &#x25A0; Episode 02</p>
+
+        <blockquote>
+            <p>&#x201C;We need Kubernetes.&#x201D;</p>
+        </blockquote>
+
+        <p>That sentence has cost more engineering hours than any distributed systems
+            problem it was deployed to solve. It sounds authoritative. It sounds
+            inevitable. And it is the sentence that transforms a perfectly functional
+            deployment &#x2014; one that ran with <code>systemctl start myapp</code>
+            &#x2014; into an orchestration platform with 81 distinct resource types,
+            each carrying its own YAML schema, lifecycle hooks, and failure modes.</p>
+
+        <p>Let us examine the invoice.</p>
+
+        <h2>The Complexity Tariff</h2>
+
+        <p>Before Kubernetes, deploying an application looked like this:</p>
+
+        <p><code>systemctl start myapp</code></p>
+
+        <p>One line. One command. The service starts. It restarts on failure if you
+            have written a competent unit file. Logs appear in <code>journalctl</code>.
+            The whole affair takes roughly four seconds, including the time to type it.</p>
+
+        <p>After Kubernetes, deploying the same application requires 200 or more lines
+            of YAML spread across five to eight files: a Deployment, a Service, an Ingress,
+            a ConfigMap, a Secret, a HorizontalPodAutoscaler, a PersistentVolumeClaim,
+            and &#x2014; depending on how seriously one takes the liturgy &#x2014; a
+            NetworkPolicy, a ServiceAccount, and a PodDisruptionBudget. Each file has its
+            own <code>apiVersion</code>, its own <code>kind</code>, and its own quietly
+            expanding surface area of things that can go wrong.</p>
+
+        <svg viewBox="0 0 520 280" aria-label="Deployment complexity comparison: systemctl start myapp as a single line versus Kubernetes requiring 200-plus lines of YAML across 5 to 8 files." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .k8s-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .k8s-mono { font: 400 11px/1 ui-monospace, monospace; fill: var(--text); }
+                .k8s-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .k8s-count { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .k8s-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .k8s-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .k8s-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+                .k8s-yaml { fill: var(--accent); opacity: 0.12; rx: 2; }
+            </style>
+
+            <!-- Left: systemctl -->
+            <text class="k8s-label" x="120" y="20" text-anchor="middle">Before</text>
+            <rect class="k8s-accent-box" x="20" y="35" width="200" height="40"/>
+            <text class="k8s-mono" x="120" y="60" text-anchor="middle">systemctl start myapp</text>
+            <text class="k8s-count" x="120" y="100" text-anchor="middle">1 line</text>
+            <text class="k8s-muted" x="120" y="116" text-anchor="middle">1 command &#x2022; 4 seconds</text>
+
+            <!-- Divider -->
+            <line class="k8s-divider" x1="250" y1="10" x2="250" y2="270"/>
+
+            <!-- Right: Kubernetes -->
+            <text class="k8s-label" x="385" y="20" text-anchor="middle">After</text>
+
+            <!-- Stacked YAML file representations -->
+            <rect class="k8s-yaml" x="280" y="35" width="90" height="22"/>
+            <text class="k8s-muted" x="325" y="50" text-anchor="middle">Deployment</text>
+
+            <rect class="k8s-yaml" x="280" y="61" width="90" height="22"/>
+            <text class="k8s-muted" x="325" y="76" text-anchor="middle">Service</text>
+
+            <rect class="k8s-yaml" x="280" y="87" width="90" height="22"/>
+            <text class="k8s-muted" x="325" y="102" text-anchor="middle">Ingress</text>
+
+            <rect class="k8s-yaml" x="280" y="113" width="90" height="22"/>
+            <text class="k8s-muted" x="325" y="128" text-anchor="middle">ConfigMap</text>
+
+            <rect class="k8s-yaml" x="390" y="35" width="110" height="22"/>
+            <text class="k8s-muted" x="445" y="50" text-anchor="middle">Secret</text>
+
+            <rect class="k8s-yaml" x="390" y="61" width="110" height="22"/>
+            <text class="k8s-muted" x="445" y="76" text-anchor="middle">HPA</text>
+
+            <rect class="k8s-yaml" x="390" y="87" width="110" height="22"/>
+            <text class="k8s-muted" x="445" y="102" text-anchor="middle">PVC</text>
+
+            <rect class="k8s-yaml" x="390" y="113" width="110" height="22"/>
+            <text class="k8s-muted" x="445" y="128" text-anchor="middle">NetworkPolicy</text>
+
+            <text class="k8s-count" x="385" y="168" text-anchor="middle">200+ lines of YAML</text>
+            <text class="k8s-muted" x="385" y="184" text-anchor="middle">5&#x2013;8 files &#x2022; 81 resource types</text>
+
+            <!-- Bottom comparison bar -->
+            <line class="k8s-divider" x1="20" y1="210" x2="500" y2="210"/>
+
+            <!-- Scale bars -->
+            <rect x="20" y="225" width="3" height="14" rx="1" style="fill: var(--accent);"/>
+            <text class="k8s-muted" x="30" y="236">systemctl</text>
+
+            <rect x="20" y="250" width="200" height="14" rx="1" style="fill: var(--accent); opacity: 0.5;"/>
+            <text class="k8s-muted" x="228" y="261">Kubernetes YAML</text>
+
+            <text class="k8s-muted" x="500" y="261" text-anchor="end">~200x more configuration</text>
+        </svg>
+
+        <p>The YAML, incidentally, is not merely verbose. It drifts. The configuration
+            committed to Git and the configuration actually running in the cluster are,
+            in any sufficiently mature deployment, two different things. Discovering which
+            of the two is the source of truth requires <code>kubectl</code>,
+            <code>stern</code>, <code>k9s</code>, <code>Lens</code>, and &#x2014; in the
+            more colourful incidents &#x2014; a prayer. One does not debug Kubernetes so
+            much as interrogate it, and it is not always forthcoming.</p>
+
+        <h2>The Platform Tax</h2>
+
+        <p>Kubernetes does not run itself. It requires a platform team: engineers whose
+            full-time occupation is maintaining the system that runs your system. The
+            going rate is two to four engineers at &#x20AC;80,000 to &#x20AC;120,000 per
+            annum. That is &#x20AC;160,000 to &#x20AC;480,000 in annual salary before
+            a single cloud invoice has been opened. Before a single line of product code
+            has been deployed. Before a single customer has been acquired.</p>
+
+        <p>These are not people writing features. They are not shipping products. They
+            are maintaining the infrastructure that maintains the infrastructure. It is
+            rather like hiring a full-time mechanic to keep the lorry running that
+            delivers your milk, when the dairy is across the road.</p>
+
+        <p>Developers who previously deployed with <code>git push</code> now open Jira
+            tickets. &#x201C;DevOps&#x201D; &#x2014; a term coined to eliminate the wall
+            between development and operations &#x2014; became, in practice, &#x201C;Dev
+            waits for Ops.&#x201D; The wall was not torn down. It was rebuilt in YAML and
+            given a service-level agreement.</p>
+
+        <h2>The Utilisation Scandal</h2>
+
+        <p>Here is the number that should appear on every quarterly board report and
+            never does.</p>
+
+        <p>According to
+            <a href="https://www.datadoghq.com/state-of-kubernetes/" target="_blank" rel="noopener">Datadog&#x2019;s 2023 State of Kubernetes report</a>,
+            average cluster utilisation is <strong>13 per cent</strong>. Thirteen. That is
+            87 per cent of paid compute sitting idle. You are provisioning 7.7 times the
+            resources you actually use, and the cloud provider is sending an invoice for
+            every idle cycle.</p>
+
+        <svg viewBox="0 0 520 300" aria-label="Cluster utilisation diagram: 13 per cent of compute is actually used, 87 per cent is wasted. Visualised as a grid where only a small fraction of cells are filled." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .util-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .util-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .util-count { font: 700 22px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .util-count-dim { font: 700 22px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); opacity: 0.5; }
+                .util-used { fill: var(--accent); }
+                .util-idle { fill: var(--border); opacity: 0.3; }
+                .util-source { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <text class="util-label" x="260" y="20" text-anchor="middle">Average Kubernetes Cluster Utilisation</text>
+
+            <!-- 10x10 grid = 100 cells, 13 filled (used), 87 empty (idle) -->
+            <!-- Row 1 -->
+            <rect class="util-used" x="110" y="40" width="20" height="20" rx="2"/>
+            <rect class="util-used" x="134" y="40" width="20" height="20" rx="2"/>
+            <rect class="util-used" x="158" y="40" width="20" height="20" rx="2"/>
+            <rect class="util-used" x="182" y="40" width="20" height="20" rx="2"/>
+            <rect class="util-used" x="206" y="40" width="20" height="20" rx="2"/>
+            <rect class="util-used" x="230" y="40" width="20" height="20" rx="2"/>
+            <rect class="util-used" x="254" y="40" width="20" height="20" rx="2"/>
+            <rect class="util-used" x="278" y="40" width="20" height="20" rx="2"/>
+            <rect class="util-used" x="302" y="40" width="20" height="20" rx="2"/>
+            <rect class="util-used" x="326" y="40" width="20" height="20" rx="2"/>
+            <!-- Row 2 -->
+            <rect class="util-used" x="110" y="64" width="20" height="20" rx="2"/>
+            <rect class="util-used" x="134" y="64" width="20" height="20" rx="2"/>
+            <rect class="util-used" x="158" y="64" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="182" y="64" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="206" y="64" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="230" y="64" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="254" y="64" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="278" y="64" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="302" y="64" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="326" y="64" width="20" height="20" rx="2"/>
+            <!-- Row 3 -->
+            <rect class="util-idle" x="110" y="88" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="134" y="88" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="158" y="88" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="182" y="88" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="206" y="88" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="230" y="88" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="254" y="88" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="278" y="88" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="302" y="88" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="326" y="88" width="20" height="20" rx="2"/>
+            <!-- Row 4 -->
+            <rect class="util-idle" x="110" y="112" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="134" y="112" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="158" y="112" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="182" y="112" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="206" y="112" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="230" y="112" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="254" y="112" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="278" y="112" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="302" y="112" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="326" y="112" width="20" height="20" rx="2"/>
+            <!-- Row 5 -->
+            <rect class="util-idle" x="110" y="136" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="134" y="136" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="158" y="136" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="182" y="136" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="206" y="136" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="230" y="136" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="254" y="136" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="278" y="136" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="302" y="136" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="326" y="136" width="20" height="20" rx="2"/>
+            <!-- Row 6 -->
+            <rect class="util-idle" x="110" y="160" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="134" y="160" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="158" y="160" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="182" y="160" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="206" y="160" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="230" y="160" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="254" y="160" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="278" y="160" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="302" y="160" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="326" y="160" width="20" height="20" rx="2"/>
+            <!-- Row 7 -->
+            <rect class="util-idle" x="110" y="184" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="134" y="184" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="158" y="184" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="182" y="184" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="206" y="184" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="230" y="184" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="254" y="184" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="278" y="184" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="302" y="184" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="326" y="184" width="20" height="20" rx="2"/>
+            <!-- Row 8 -->
+            <rect class="util-idle" x="110" y="208" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="134" y="208" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="158" y="208" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="182" y="208" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="206" y="208" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="230" y="208" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="254" y="208" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="278" y="208" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="302" y="208" width="20" height="20" rx="2"/>
+            <rect class="util-idle" x="326" y="208" width="20" height="20" rx="2"/>
+
+            <!-- Legend -->
+            <rect class="util-used" x="368" y="60" width="14" height="14" rx="2"/>
+            <text class="util-label" x="388" y="72">Used</text>
+            <text class="util-count" x="368" y="105">13%</text>
+
+            <rect class="util-idle" x="368" y="130" width="14" height="14" rx="2"/>
+            <text class="util-label" x="388" y="142">Idle</text>
+            <text class="util-count-dim" x="368" y="175">87%</text>
+
+            <text class="util-muted" x="368" y="210">Paying for 7.7x</text>
+            <text class="util-muted" x="368" y="223">what you use</text>
+
+            <text class="util-source" x="260" y="252" text-anchor="middle">Source: Datadog State of Kubernetes 2023</text>
+        </svg>
+
+        <p>Let that settle. For every euro of compute your application actually consumes,
+            you are paying &#x20AC;7.70. Not because the application requires it, but because
+            Kubernetes requires headroom, redundancy, node overhead, system daemons, and the
+            comforting illusion that autoscaling will handle the rest. The cloud provider,
+            understandably, does not object.</p>
+
+        <h2>The Service Mesh Surcharge</h2>
+
+        <p>Once the cluster is running, someone will suggest a service mesh. Istio, Linkerd,
+            Consul Connect &#x2014; the options are plentiful and the sales pitch is consistent:
+            observability, mTLS, traffic management, the full ecclesiastical vestments of modern
+            infrastructure.</p>
+
+        <p>What the pitch omits is the latency. According to
+            <a href="https://istio.io/latest/docs/ops/deployment/performance-and-scalability/" target="_blank" rel="noopener">Istio&#x2019;s own performance documentation</a>,
+            a service mesh adds 5 to 15 milliseconds of latency to every internal call. Every
+            service-to-service request now passes through a sidecar proxy that inspects, encrypts,
+            logs, and routes the traffic. This is not free. It is a per-request tax, and it
+            compounds with every hop in the call chain.</p>
+
+        <p>A request that traverses five services accumulates 25 to 75 milliseconds of mesh
+            overhead alone &#x2014; before any business logic has executed. The certificate
+            rotation that underpins the mTLS, meanwhile, fails silently at three in the morning.
+            Nobody notices until the dashboards go red, and by then the postmortem is already
+            writing itself.</p>
+
+        <h2>The Hidden Invoice</h2>
+
+        <p>The line items above are the ones that appear on spreadsheets. The hidden costs
+            are more insidious.</p>
+
+        <p><strong>Cognitive load.</strong> Kubernetes has
+            <a href="https://www.cncf.io/reports/cncf-annual-survey-2023/" target="_blank" rel="noopener">81 distinct resource types</a>.
+            Each type has its own API group, versioning scheme, and set of behaviours that are
+            documented, in the generous sense of the word, on kubernetes.io. A developer who
+            once needed to understand their application now needs to understand their application
+            <em>and</em> the orchestration platform, <em>and</em> the networking model, <em>and</em>
+            the storage provisioner, <em>and</em> the RBAC policy that determines whether they are
+            permitted to look at any of it.</p>
+
+        <p><strong>Tooling proliferation.</strong> Debugging a Kubernetes deployment requires
+            <code>kubectl</code> for cluster state, <code>stern</code> for log aggregation,
+            <code>k9s</code> for terminal-based cluster management, Lens for a graphical view,
+            Prometheus for metrics, Grafana for dashboards, and Jaeger for distributed tracing.
+            That is seven tools to diagnose what <code>journalctl -u myapp</code> would have
+            shown you in a single command.</p>
+
+        <p><strong>Opportunity cost.</strong> Every hour a senior engineer spends debugging a
+            <code>CrashLoopBackOff</code> is an hour not spent building the product that
+            justifies the infrastructure. The platform team does not generate revenue. It
+            maintains the conditions under which revenue generation is theoretically possible.
+            The distinction matters.</p>
+
+        <svg viewBox="0 0 520 340" aria-label="The annual Kubernetes cost breakdown: platform team salaries of 160 to 480 thousand euros, cloud compute waste at 87 per cent idle, and tooling overhead of seven debugging tools." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cost-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cost-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cost-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cost-bar { fill: var(--accent); rx: 3; }
+                .cost-bar-dim { fill: var(--border); opacity: 0.3; rx: 3; }
+                .cost-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+
+            <text class="cost-label" x="260" y="20" text-anchor="middle">The Annual Kubernetes Invoice</text>
+
+            <!-- Platform Team -->
+            <text class="cost-label" x="20" y="55">Platform Team</text>
+            <text class="cost-muted" x="20" y="70">2&#x2013;4 engineers &#x00D7; &#x20AC;80&#x2013;120k</text>
+            <rect class="cost-bar" x="20" y="80" width="400" height="24"/>
+            <text class="cost-value" x="430" y="97">&#x20AC;160&#x2013;480k/yr</text>
+
+            <!-- Cloud Compute -->
+            <text class="cost-label" x="20" y="130">Cloud Compute</text>
+            <text class="cost-muted" x="20" y="145">87% paid idle (7.7x overprovisioned)</text>
+            <rect class="cost-bar-dim" x="20" y="155" width="400" height="24"/>
+            <rect class="cost-bar" x="20" y="155" width="52" height="24"/>
+            <text class="cost-muted" x="80" y="172">used</text>
+            <text class="cost-muted" x="350" y="172">wasted</text>
+
+            <!-- Tooling -->
+            <text class="cost-label" x="20" y="210">Debugging Toolchain</text>
+            <text class="cost-muted" x="20" y="225">7 tools to replace journalctl</text>
+
+            <rect class="cost-bar" x="20" y="235" width="52" height="20" opacity="0.9"/>
+            <text class="cost-muted" x="46" y="249" text-anchor="middle" style="fill: var(--text); font-size: 8px;">kubectl</text>
+
+            <rect class="cost-bar" x="78" y="235" width="44" height="20" opacity="0.8"/>
+            <text class="cost-muted" x="100" y="249" text-anchor="middle" style="fill: var(--text); font-size: 8px;">stern</text>
+
+            <rect class="cost-bar" x="128" y="235" width="36" height="20" opacity="0.7"/>
+            <text class="cost-muted" x="146" y="249" text-anchor="middle" style="fill: var(--text); font-size: 8px;">k9s</text>
+
+            <rect class="cost-bar" x="170" y="235" width="40" height="20" opacity="0.6"/>
+            <text class="cost-muted" x="190" y="249" text-anchor="middle" style="fill: var(--text); font-size: 8px;">Lens</text>
+
+            <rect class="cost-bar" x="216" y="235" width="66" height="20" opacity="0.5"/>
+            <text class="cost-muted" x="249" y="249" text-anchor="middle" style="fill: var(--text); font-size: 8px;">Prometheus</text>
+
+            <rect class="cost-bar" x="288" y="235" width="52" height="20" opacity="0.4"/>
+            <text class="cost-muted" x="314" y="249" text-anchor="middle" style="fill: var(--text); font-size: 8px;">Grafana</text>
+
+            <rect class="cost-bar" x="346" y="235" width="46" height="20" opacity="0.3"/>
+            <text class="cost-muted" x="369" y="249" text-anchor="middle" style="fill: var(--text); font-size: 8px;">Jaeger</text>
+
+            <!-- Divider -->
+            <line class="cost-divider" x1="20" y1="275" x2="500" y2="275"/>
+
+            <!-- vs line -->
+            <text class="cost-label" x="20" y="298">Without Kubernetes</text>
+            <rect style="fill: var(--accent); rx: 3;" x="20" y="305" width="130" height="20"/>
+            <text class="cost-muted" x="85" y="319" text-anchor="middle" style="fill: var(--text); font-size: 9px;">VPS + systemd + journalctl</text>
+        </svg>
+
+        <h2>The Origin Story Nobody Reads</h2>
+
+        <p>Kubernetes descends from
+            <a href="https://research.google/pubs/pub43438/" target="_blank" rel="noopener">Borg</a>,
+            Google&#x2019;s internal cluster management system. Borg was designed for Google&#x2019;s
+            scale: millions of containers across global data centres, serving billions of requests,
+            managed by thousands of engineers. The paper makes this context abundantly clear. Google
+            open-sourced the concept, the
+            <a href="https://www.cncf.io/reports/cncf-annual-survey-2023/" target="_blank" rel="noopener">CNCF</a>
+            adopted it, and an industry that mostly runs a handful of services on a few machines
+            decided it needed the same tooling as one of the largest distributed systems operations
+            on Earth.</p>
+
+        <p>This is rather like observing that Formula One teams use telemetry and pit crews,
+            and concluding that the school run requires the same.</p>
+
+        <p>Ninety-nine point nine per cent of companies will never have Google&#x2019;s problems.
+            They will, however, have Google&#x2019;s infrastructure costs &#x2014; because they
+            adopted Google&#x2019;s tooling without Google&#x2019;s constraints, Google&#x2019;s
+            scale, or Google&#x2019;s budget.</p>
+
+        <h2>The Alternatives That Already Exist</h2>
+
+        <p>The uncomfortable truth is that the alternatives are not exotic. They are not
+            cutting-edge. They are, in many cases, older than Kubernetes itself and considerably
+            more battle-tested.</p>
+
+        <p>A <strong>VPS with <code>systemd</code></strong> handles deployment, process supervision,
+            log management, and automatic restarts. It has done so reliably since 2010. The
+            configuration is a single unit file, not a folder of YAML manifests. Scaling means
+            adding another VPS and a load balancer &#x2014; not another abstraction layer.</p>
+
+        <p><strong>Docker Compose</strong> orchestrates multi-container applications on a single
+            host with a clarity that Kubernetes has never managed. It is not suitable for global
+            scale. It is, however, perfectly suitable for the 95 per cent of applications that
+            do not operate at global scale and never will.</p>
+
+        <p><a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener"><strong>FreeBSD jails</strong></a>
+            have provided process isolation since the year 2000 &#x2014; twenty-four years before
+            the industry collectively decided that containers were a novelty. Jails are lightweight,
+            well-documented, and require no orchestration platform. They simply work, in the
+            profoundly unglamorous way that well-engineered systems tend to.</p>
+
+        <p>None of these alternatives have a foundation, a landscape diagram, or an annual
+            conference. They have something rather more useful: simplicity that scales to the
+            actual problem.</p>
+
+        <h2>The Verdict</h2>
+
+        <p>Kubernetes is a tool. A powerful one, designed for a specific class of problems at a
+            specific scale. The difficulty is that its adoption has been driven not by the presence
+            of those problems but by the fear of appearing to lack ambition. &#x201C;We use
+            Kubernetes&#x201D; has become a status marker, a signal of technical sophistication,
+            an item on the conference talk abstract. That it costs half a million euros in
+            platform engineering before a single feature ships is treated as the price of
+            modernity rather than what it actually is: waste.</p>
+
+        <blockquote>
+            <p>The best infrastructure is the one you do not notice. If you are spending
+                more time maintaining the platform than building the product, the platform
+                has become the product &#x2014; and nobody is buying it.</p>
+        </blockquote>
+
+        <p>Thirteen per cent utilisation. Two hundred lines of YAML. Half a million in platform
+            salaries. Seven debugging tools. And underneath it all, an application that once
+            started with a single command and ran for years without complaint.</p>
+
+        <p>The invoice is on the table. Whether anyone reads it is, as always, another matter
+            entirely.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,338 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Unit Tests for Everything &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 1994, Kent Beck wrote SUnit to test isolated units of logic. By 2015, the industry had turned his invention into a coverage KPI. 400 tests green, checkout broken. The mocks should have been the clue.">
+{( endslot )}
+
+{( slot canonical )}/blog/unit-tests-for-everything{( endslot )}
+
+{( slot og-title )}Unit Tests for Everything &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Kent Beck wrote SUnit to test isolated logic. The industry turned it into a coverage KPI. 400 tests green, checkout broken.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Unit Tests for Everything",
+    "datePublished": "2026-02-12",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/unit-tests-for-everything",
+    "description": "In 1994, Kent Beck wrote SUnit to test isolated units of logic. By 2015, the industry had turned his invention into a coverage KPI. 400 tests green, checkout broken. The mocks should have been the clue.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-12">12 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Unit Tests for Everything</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p>In 1994, Kent Beck wrote
+            <a href="https://web.archive.org/web/20150315073817/http://www.xprogramming.com/testfram.htm" target="_blank" rel="noopener">SUnit</a>
+            for Smalltalk. The idea was admirably precise: test isolated units of logic.
+            Pure functions. Parsers. Algorithms. Clear input, clear output, no ambiguity
+            about what went wrong or where.</p>
+
+        <p>It was a tool for a specific job. And it was rather good at that job.</p>
+
+        <p>Then the industry got hold of it.</p>
+
+        <h2>The Original</h2>
+
+        <p>SUnit tested <em>units</em> &#x2014; the clue, one might argue, is in the name.
+            A function takes arguments, performs computation, returns a result. No database.
+            No network. No filesystem. The test verifies that the computation is correct.
+            If it fails, you know precisely where the fault lies, because there is nowhere
+            else it could be.</p>
+
+        <p>This is the kind of code that rewards unit testing handsomely: a sorting
+            algorithm, a date parser, a currency converter. Deterministic input,
+            deterministic output. The test is a proof.</p>
+
+        <p>Beck himself was characteristically direct about the scope.
+            <a href="https://stackoverflow.com/questions/153234" target="_blank" rel="noopener">On StackOverflow in 2008</a>,
+            he wrote: &#x201C;I get paid for code that works, not for tests.&#x201D;
+            And later, with the kind of precision one wishes the industry had inherited:
+            &#x201C;Test as little as possible to reach a given level of confidence.&#x201D;</p>
+
+        <p>One does wonder whether anyone read that second sentence.</p>
+
+        <h2>The Copy</h2>
+
+        <p>By the mid-2000s, &#x201C;test everything&#x201D; had become doctrine. Coverage
+            targets appeared: 80%, then 90%. Build pipelines broke on insufficient coverage.
+            Code review checklists demanded unit tests for every function, every method,
+            every branch. The question was no longer &#x201C;does this code benefit from
+            a unit test?&#x201D; but &#x201C;where is the unit test for this code?&#x201D;</p>
+
+        <p>The distinction matters. The first is engineering. The second is compliance.</p>
+
+        <p>And here is where the pattern fractures. Library code &#x2014; the kind Beck
+            was testing &#x2014; has no side effects. That is rather the point. Application
+            code is nothing <em>but</em> side effects. An endpoint hits a database, calls
+            an external API, sends an email, writes to a queue, and returns HTML. There is
+            no &#x201C;isolated unit&#x201D; in that chain. It is a procession of side
+            effects pretending to be a function.</p>
+
+        <p>The industry&#x2019;s solution to this inconvenience was, with hindsight,
+            magnificently absurd.</p>
+
+        <h2>The Mock Epidemic</h2>
+
+        <p>If reality is too complicated to test, replace reality. Mock the database.
+            Mock the API. Mock the email service. Mock the queue. Now your unit test
+            tests &#x2026; the mocks.</p>
+
+        <p>Forty lines of mock setup. Two lines of assertion. The test does not verify
+            that the code works. It verifies that the code calls the things you told it
+            to call, in the order you told it to call them. It is a loyalty test for
+            your implementation details.</p>
+
+        <p>Refactor a method &#x2014; extract a helper, rename a parameter, change the
+            internal sequence &#x2014; and fifty tests break. The behaviour is unchanged.
+            The output is identical. The user notices nothing. But the mocks noticed
+            everything, because the mocks are not testing behaviour. They are testing
+            <em>how</em> the code works, not <em>what</em> it does.</p>
+
+        <p>This is not a safety net. It is a constraint on improvement.</p>
+
+        <svg viewBox="0 0 520 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The mock cascade: from needing unit tests for application code, through mocking every dependency, to 50 tests broken with behaviour unchanged." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .mc-label { font: 600 10.5px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .mc-note { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .mc-line { stroke: var(--accent); stroke-width: 1.5; }
+                .mc-dot { fill: var(--accent); }
+                .mc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .mc-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+            <line class="mc-line" x1="30" y1="20" x2="30" y2="380" opacity="0.2"/>
+            <circle class="mc-dot" cx="30" cy="28" r="3"/>
+            <rect class="mc-box" x="44" y="16" width="460" height="26"/>
+            <text class="mc-label" x="52" y="34">&#x201C;We need unit tests for everything&#x201D;</text>
+            <circle class="mc-dot" cx="30" cy="68" r="3"/>
+            <rect class="mc-box" x="44" y="56" width="460" height="26"/>
+            <text class="mc-label" x="52" y="74">Application code is all side effects</text>
+            <text class="mc-note" x="512" y="74" text-anchor="end">DB, API, email, queue</text>
+            <circle class="mc-dot" cx="30" cy="108" r="3"/>
+            <rect class="mc-box" x="44" y="96" width="460" height="26"/>
+            <text class="mc-label" x="52" y="114">&#x201C;Mock the dependencies&#x201D;</text>
+            <text class="mc-note" x="512" y="114" text-anchor="end">the prescribed remedy</text>
+            <circle class="mc-dot" cx="30" cy="148" r="3"/>
+            <rect class="mc-box" x="44" y="136" width="460" height="26"/>
+            <text class="mc-label" x="52" y="154">40 lines mock setup, 2 lines assertion</text>
+            <text class="mc-note" x="512" y="154" text-anchor="end">the ratio speaks for itself</text>
+            <circle class="mc-dot" cx="30" cy="188" r="3"/>
+            <rect class="mc-box" x="44" y="176" width="460" height="26"/>
+            <text class="mc-label" x="52" y="194">Tests verify HOW code works, not WHAT it does</text>
+            <circle class="mc-dot" cx="30" cy="228" r="3"/>
+            <rect class="mc-box" x="44" y="216" width="460" height="26"/>
+            <text class="mc-label" x="52" y="234">Refactor a method</text>
+            <text class="mc-note" x="512" y="234" text-anchor="end">behaviour unchanged</text>
+            <circle class="mc-dot" cx="30" cy="268" r="3"/>
+            <rect class="mc-box-accent" x="44" y="256" width="460" height="26"/>
+            <text class="mc-label" x="52" y="274">50 tests break</text>
+            <text class="mc-note" x="512" y="274" text-anchor="end">output identical, mocks disagree</text>
+            <!-- Punchline -->
+            <line class="mc-line" x1="30" y1="300" x2="30" y2="340" stroke-dasharray="4 3"/>
+            <text class="mc-label" x="44" y="340">The tests are not a safety net. They are a constraint on improvement.</text>
+        </svg>
+
+        <h2>The Kill Shot</h2>
+
+        <p>Four hundred unit tests. All green. The build pipeline glows a reassuring
+            shade of emerald. The team deploys with the confidence that only a perfect
+            test suite can provide.</p>
+
+        <p>The checkout is broken.</p>
+
+        <p>No test ran the actual flow. Every dependency was mocked. The database
+            mock returned what you told it to return. The payment API mock succeeded
+            because you told it to succeed. The email mock sent nothing to no one,
+            exactly as instructed. Four hundred tests, each one a small theatre
+            production in which every actor reads from the script you wrote, and the
+            audience applauds because nobody forgot their lines.</p>
+
+        <p>Meanwhile, on production, the curtain goes up and the stage is empty.</p>
+
+        <blockquote>
+            <p>Four hundred green lights. Zero confidence. The mocks should have
+                been the clue.</p>
+        </blockquote>
+
+        <h2>The Numbers Game</h2>
+
+        <p>100% code coverage means every line was executed during testing. Not that
+            every line works correctly. Not that the system functions. Not that a
+            single user journey completes. Merely that the test runner visited every
+            line, the way a tourist visits a cathedral &#x2014; technically present,
+            spiritually elsewhere.</p>
+
+        <p>The
+            <a href="https://martinfowler.com/articles/practical-test-pyramid.html" target="_blank" rel="noopener">testing pyramid</a>
+            &#x2014; many unit tests at the base, fewer integration tests in the middle,
+            a handful of end-to-end tests at the top &#x2014; was popularised by
+            <a href="https://testing.googleblog.com/" target="_blank" rel="noopener">Google&#x2019;s testing team</a>.
+            At Google, thousands of engineers share libraries that millions of projects
+            depend upon. Unit testing those libraries is not merely sensible; it is
+            essential. A broken utility function in a shared library cascades across
+            the entire organisation.</p>
+
+        <p>You have a team of four building a shop.</p>
+
+        <p>The context is not the same. The pyramid was never meant to be a universal
+            law. It was a strategy for a specific organisational structure at a specific
+            scale. Copying the shape without the context is the defining pattern of
+            this series.</p>
+
+        <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison: 40 lines of mock setup producing fragile assertions versus 3 lines of integration test producing real confidence." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cmp-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cmp-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cmp-value { font: 600 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cmp-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .cmp-bar { fill: var(--accent); opacity: 0.15; rx: 3; }
+                .cmp-bar-accent { fill: var(--accent); opacity: 0.6; rx: 3; }
+                .cmp-divider { stroke: var(--border); stroke-width: 1; stroke-dasharray: 4 3; }
+            </style>
+            <!-- Left: Mocked unit test -->
+            <text class="cmp-label" x="140" y="20" text-anchor="middle">Mocked Unit Test</text>
+            <rect class="cmp-box" x="20" y="32" width="240" height="220"/>
+            <rect class="cmp-bar" x="32" y="44" width="216" height="150"/>
+            <text class="cmp-sub" x="140" y="125" text-anchor="middle">Mock setup</text>
+            <text class="cmp-value" x="140" y="145" text-anchor="middle">40 lines</text>
+            <line class="cmp-divider" x1="32" y1="198" x2="248" y2="198"/>
+            <rect class="cmp-bar-accent" x="32" y="202" width="216" height="38"/>
+            <text class="cmp-sub" x="140" y="226" text-anchor="middle">Assertion: 2 lines</text>
+            <text class="cmp-sub" x="140" y="270" text-anchor="middle">Tests implementation details</text>
+            <text class="cmp-sub" x="140" y="286" text-anchor="middle">Breaks on refactor</text>
+            <!-- Right: Integration test -->
+            <text class="cmp-label" x="390" y="20" text-anchor="middle">Integration Test</text>
+            <rect class="cmp-box-accent" x="270" y="32" width="240" height="220"/>
+            <rect class="cmp-bar-accent" x="282" y="44" width="216" height="38"/>
+            <text class="cmp-sub" x="390" y="68" text-anchor="middle">Entire test: 3 lines</text>
+            <text class="cmp-value" x="390" y="140" text-anchor="middle">Real dependencies</text>
+            <text class="cmp-sub" x="390" y="162" text-anchor="middle">Real database</text>
+            <text class="cmp-sub" x="390" y="178" text-anchor="middle">Real API</text>
+            <text class="cmp-sub" x="390" y="194" text-anchor="middle">Real result</text>
+            <text class="cmp-sub" x="390" y="270" text-anchor="middle">Tests behaviour</text>
+            <text class="cmp-sub" x="390" y="286" text-anchor="middle">Survives refactor</text>
+            <!-- Verdict -->
+            <text class="cmp-value" x="140" y="310" text-anchor="middle">Fragile</text>
+            <text class="cmp-value" x="390" y="310" text-anchor="middle">Confident</text>
+        </svg>
+
+        <h2>The Timeline</h2>
+
+        <p>The drift from Beck&#x2019;s original intent to the industry&#x2019;s
+            interpretation is not a matter of opinion. It is a matter of record.</p>
+
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Testing timeline from 1994 to 2015: SUnit for isolated logic drifts to 100% coverage as a KPI, showing the progressive departure from Kent Beck's original intent." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .tl-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tl-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .tl-year { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .tl-line { stroke: var(--border); stroke-width: 1; }
+                .tl-dot { fill: var(--accent); }
+                .tl-zone-orig { fill: var(--accent); opacity: 0.06; }
+                .tl-zone-drift { fill: var(--accent); opacity: 0.03; }
+                .tl-zone-label { font: 600 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); opacity: 0.5; }
+            </style>
+            <!-- Zone indicators -->
+            <rect class="tl-zone-orig" x="45" y="15" width="470" height="75"/>
+            <text class="tl-zone-label" x="500" y="28" text-anchor="end">ORIGINAL INTENT</text>
+            <rect class="tl-zone-drift" x="45" y="155" width="470" height="170"/>
+            <text class="tl-zone-label" x="500" y="168" text-anchor="end">THE DRIFT</text>
+            <!-- Spine -->
+            <line class="tl-line" x1="60" y1="30" x2="60" y2="320"/>
+            <!-- 1994 -->
+            <circle class="tl-dot" cx="60" cy="40" r="5"/>
+            <text class="tl-year" x="80" y="44">1994</text>
+            <text class="tl-label" x="130" y="44">SUnit for Smalltalk</text>
+            <text class="tl-sub" x="130" y="60">Test isolated units. Pure functions. Clear input, clear output.</text>
+            <!-- 1998 -->
+            <circle class="tl-dot" cx="60" cy="90" r="5"/>
+            <text class="tl-year" x="80" y="94">1998</text>
+            <text class="tl-label" x="130" y="94">JUnit for Java</text>
+            <text class="tl-sub" x="130" y="110">Beck + Gamma. Unit testing enters the mainstream.</text>
+            <!-- 2003 -->
+            <circle class="tl-dot" cx="60" cy="140" r="5"/>
+            <text class="tl-year" x="80" y="144">2003</text>
+            <text class="tl-label" x="130" y="144">TDD by Example published</text>
+            <text class="tl-sub" x="130" y="160">Beck&#x2019;s book. Nuanced. Careful. Widely cited, seldom read.</text>
+            <!-- 2005 -->
+            <circle class="tl-dot" cx="60" cy="190" r="5"/>
+            <text class="tl-year" x="80" y="194">~2005</text>
+            <text class="tl-label" x="130" y="194">Coverage as CI gatekeeper</text>
+            <text class="tl-sub" x="130" y="210">80% minimum. Pipelines break on insufficient coverage.</text>
+            <!-- 2010 -->
+            <circle class="tl-dot" cx="60" cy="240" r="5"/>
+            <text class="tl-year" x="80" y="244">~2010</text>
+            <text class="tl-label" x="130" y="244">Mock frameworks everywhere</text>
+            <text class="tl-sub" x="130" y="260">Mockito, Sinon, Jest mocks. Reality replaced wholesale.</text>
+            <!-- 2015 -->
+            <circle class="tl-dot" cx="60" cy="290" r="5"/>
+            <text class="tl-year" x="80" y="294">~2015</text>
+            <text class="tl-label" x="130" y="294">100% coverage as KPI</text>
+            <text class="tl-sub" x="130" y="310">Management metric. Measures activity, not correctness.</text>
+        </svg>
+
+        <p>Twenty-one years from &#x201C;test isolated logic&#x201D; to &#x201C;100%
+            coverage as a key performance indicator.&#x201D; The inventor said
+            &#x201C;test as little as possible.&#x201D; The industry heard
+            &#x201C;test as much as possible&#x201D; and built a compliance
+            apparatus around the misunderstanding.</p>
+
+        <p>Kent Beck is the star witness against the dogmatisation of his own
+            invention.</p>
+
+        <h2>The Remedy</h2>
+
+        <p>Unit tests are for units. Isolated logic. Pure computation. Functions
+            where input determines output and nothing else intervenes. For these,
+            unit tests remain the correct tool &#x2014; fast, precise, and
+            genuinely informative when they fail.</p>
+
+        <p>For everything else &#x2014; the endpoints, the workflows, the chains
+            of side effects that constitute actual application behaviour &#x2014;
+            integration tests. Fewer of them. Slower, yes. But they test what
+            the user experiences, not what the mock framework expects.</p>
+
+        <p>Three lines. Real database. Real API. Real result. If it fails, the
+            checkout is broken. If it passes, the checkout works. No theatre.
+            No script. No audience applauding an empty stage.</p>
+
+        <blockquote>
+            <p>Unit tests are for units. Integration tests are for systems.
+                The mocks should have been the clue that you were testing
+                the wrong thing at the wrong level.</p>
+        </blockquote>
+
+        <aside>
+            <p><strong>The timeline in full:</strong> 1994 SUnit &#x2192; 1998
+                JUnit &#x2192; 2003 TDD by Example &#x2192; ~2005 coverage as CI
+                gatekeeper &#x2192; ~2010 mock frameworks everywhere &#x2192; ~2015
+                100% coverage as KPI. Kent Beck,
+                <a href="https://stackoverflow.com/questions/153234" target="_blank" rel="noopener">StackOverflow 2008</a>:
+                &#x201C;I get paid for code that works, not for tests, so my philosophy
+                is to test as little as possible to reach a given level of
+                confidence.&#x201D; Further reading:
+                <a href="https://martinfowler.com/articles/practical-test-pyramid.html" target="_blank" rel="noopener">Fowler on the testing pyramid</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

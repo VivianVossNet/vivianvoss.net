@@ -20,10 +20,15 @@ local pages = {
     { loc = "/blog/mvc-for-web",               priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/typescript-the-build-tax",  priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-pattern",               priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-cloud-native-tax",       priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-npm-tax",               priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-spa-tax",               priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-microservices-tax",     priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/shallow-errors",            priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-react-tax",              priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-kubernetes-tax",         priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-framework-tax",          priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/unit-tests-for-everything",  priority = "0.7", changefreq = "yearly" },
 }
 
 function route()

@@ -1,0 +1,458 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The React Tax — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="React ships 136 KB before you write a line. The Virtual DOM costs 30 percent vs vanilla JS. 95 percent of websites do not need it. The performance invoice, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-react-tax{( endslot )}
+
+{( slot og-title )}The React Tax — Vivian Voss{( endslot )}
+
+{( slot og-desc )}React ships 136 KB before you write a line. The Virtual DOM costs 30 percent vs vanilla JS. The performance invoice, itemised.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The React Tax",
+    "datePublished": "2025-12-15",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-react-tax",
+    "description": "React ships 136 KB before you write a line. The Virtual DOM costs 30 percent vs vanilla JS. 95 percent of websites do not need it. The performance invoice, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2025-12-15">15 December 2025</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The React Tax</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Performance-Fresser</em> &#x25A0; Episode 04</p>
+
+        <p>React 18 ships
+            <a href="https://bundlephobia.com/package/react-dom" target="_blank" rel="noopener">136 KB minified</a>
+            before you have written a single line of application code. That is
+            <code>react</code> plus <code>react-dom</code> &#x2014; the absolute minimum
+            to render a component. One hundred and thirty-six kilobytes of framework,
+            delivered to a browser that must parse every byte, just to say hello.</p>
+
+        <p>The industry quotes 42 KB. That is the gzipped transfer size &#x2014; the
+            number that travels over the wire. It is also, with respect, the wrong number.
+            Gzip is a transport optimisation. The browser does not execute gzipped code.
+            It decompresses the bundle and then parses 136 KB of JavaScript, character by
+            character, before your application can so much as mount a
+            <code>&lt;div&gt;</code>.</p>
+
+        <p>One does not measure the weight of a parcel by the size of the envelope.</p>
+
+        <h2>The Virtual DOM: Pure Overhead</h2>
+
+        <p>React&#x2019;s central architectural conceit is the Virtual DOM &#x2014; a
+            JavaScript copy of the actual DOM, maintained in memory, against which every
+            state change is diffed before the real DOM is updated. The pitch is compelling:
+            surgical updates, minimal reflows, maximum efficiency. The reality is rather
+            less flattering.</p>
+
+        <p>Rich Harris, creator of Svelte, put it with characteristic precision:</p>
+
+        <blockquote>
+            <p>&#x201C;Virtual DOM is pure overhead.&#x201D;</p>
+            <footer>&#x2014; Rich Harris,
+                <a href="https://svelte.dev/blog/virtual-dom-is-pure-overhead" target="_blank" rel="noopener">Svelte blog</a></footer>
+        </blockquote>
+
+        <p>The argument is structural, not polemical. Every state change triggers three
+            operations: build a new Virtual DOM tree, diff it against the previous tree,
+            and patch the real DOM with the delta. Two of those three steps exist solely
+            because the framework chose an indirection layer. A compiled framework &#x2014;
+            or vanilla JavaScript &#x2014; updates the DOM directly. One step. No diff.
+            No reconciliation. No overhead.</p>
+
+        <p>Benchmarks bear this out with tedious consistency. The Virtual DOM approach
+            carries roughly a
+            <strong>30% performance penalty</strong> compared to equivalent vanilla
+            JavaScript. Not on contrived micro-benchmarks, but on the bread-and-butter
+            operations that constitute a user interface: rendering lists, toggling
+            visibility, updating text content. Thirty per cent, on every interaction,
+            forever.</p>
+
+        <p>The standard rebuttal is that React is &#x201C;fast enough.&#x201D; This is
+            true in the same sense that a taxi is &#x201C;fast enough&#x201D; for a journey
+            you could walk. The question is not whether it arrives. The question is what
+            you are paying for the ride.</p>
+
+        <h2>The Cascade of Re-renders</h2>
+
+        <p>React&#x2019;s rendering model contains a default that is, to put it
+            diplomatically, surprising. When a parent component re-renders, every child
+            component re-renders as well. Not because the children&#x2019;s data changed.
+            Not because the children requested an update. Simply because the parent did,
+            and React&#x2019;s reconciler does not, by default, ask whether the children
+            care.</p>
+
+        <p>The framework provides escape hatches: <code>React.memo</code>,
+            <code>useMemo</code>, <code>useCallback</code>. These are performance
+            optimisations that exist to mitigate a performance problem the framework
+            created. The developer must identify which components re-render unnecessarily,
+            wrap them in memoisation, manage dependency arrays, and hope the closure
+            semantics do not introduce bugs more expensive than the re-renders they
+            prevented.</p>
+
+        <p>In a well-behaved rendering model, a component updates when its inputs change.
+            In React&#x2019;s rendering model, a component updates when its parent feels
+            like it. The distinction is the difference between a thermostat and a central
+            heating system that runs whenever someone opens the front door.</p>
+
+        <h2>Hydration: The Redundancy Engine</h2>
+
+        <p>Server-side rendering was supposed to solve React&#x2019;s initial load problem.
+            The server renders HTML, the browser displays it immediately, and the user sees
+            content before the JavaScript arrives. An elegant theory. Then hydration
+            happens.</p>
+
+        <p>Hydration is the process by which React downloads its 136 KB, parses it,
+            reconstructs the entire component tree in memory, walks every DOM node the
+            server already rendered, and attaches event handlers. The server sent perfectly
+            functional HTML. React then spends up to
+            <strong>30% of total page load time</strong> rebuilding it from scratch, not
+            to change what the user sees, but to make the framework aware of what is
+            already there.</p>
+
+        <p>The engineering team at
+            <a href="https://www.wix.engineering/post/40-faster-interaction-how-wix-solved-react-s-hydration-problem" target="_blank" rel="noopener">Wix measured this directly</a>
+            and achieved a 40% improvement in interaction time by optimising hydration
+            alone. Forty per cent faster, not by adding functionality, but by reducing
+            the cost of functionality they already had.</p>
+
+        <p>The absurdity is architectural. The server does the work. The browser displays
+            the result. Then React does the work again, on the client, with JavaScript,
+            so that it can take credit for what the server already produced. One might
+            call it due diligence. One might also call it a protection racket.</p>
+
+        <h2>The Pipeline</h2>
+
+        <p>Consider the journey of a single piece of markup in a React application.
+            It begins as HTML in a designer&#x2019;s mind, is expressed as JSX, transpiled
+            by Babel, bundled by Webpack, minified, shipped over the network, decompressed,
+            parsed by the JavaScript engine, executed to produce a Virtual DOM, diffed
+            against the previous Virtual DOM, and finally &#x2014; at last &#x2014;
+            rendered as HTML in the browser.</p>
+
+        <p>The output is what the input was.</p>
+
+        <svg viewBox="0 0 520 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The React pipeline: HTML is transformed through ten steps including JSX, Babel, Webpack, bundling, shipping, parsing, hydration, Virtual DOM diffing, and rendering, only to produce HTML again. A circular journey." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .pipe-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pipe-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .pipe-accent { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .pipe-line { stroke: var(--border); stroke-width: 1.5; fill: none; }
+                .pipe-line-accent { stroke: var(--accent); stroke-width: 2; fill: none; }
+                .pipe-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .pipe-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .pipe-dot { fill: var(--accent); }
+            </style>
+            <!-- Title -->
+            <text class="pipe-accent" x="260" y="20" text-anchor="middle">THE REACT PIPELINE</text>
+
+            <!-- Step 1: HTML (start) -->
+            <rect class="pipe-box-hl" x="195" y="35" width="130" height="30"/>
+            <text class="pipe-label" x="260" y="55" text-anchor="middle">HTML</text>
+            <text class="pipe-muted" x="260" y="80" text-anchor="middle">what you want</text>
+
+            <!-- Arrow down -->
+            <line class="pipe-line" x1="260" y1="65" x2="260" y2="95"/>
+            <circle class="pipe-dot" cx="260" cy="95" r="3"/>
+
+            <!-- Step 2: JSX -->
+            <rect class="pipe-box" x="195" y="100" width="130" height="28"/>
+            <text class="pipe-label" x="260" y="118" text-anchor="middle">JSX</text>
+
+            <!-- Arrow -->
+            <line class="pipe-line" x1="260" y1="128" x2="260" y2="140"/>
+            <circle class="pipe-dot" cx="260" cy="140" r="3"/>
+
+            <!-- Step 3: Babel -->
+            <rect class="pipe-box" x="195" y="145" width="130" height="28"/>
+            <text class="pipe-label" x="260" y="163" text-anchor="middle">Babel / Transpiler</text>
+
+            <!-- Arrow -->
+            <line class="pipe-line" x1="260" y1="173" x2="260" y2="185"/>
+            <circle class="pipe-dot" cx="260" cy="185" r="3"/>
+
+            <!-- Step 4: Webpack -->
+            <rect class="pipe-box" x="195" y="190" width="130" height="28"/>
+            <text class="pipe-label" x="260" y="208" text-anchor="middle">Webpack / Bundler</text>
+
+            <!-- Arrow -->
+            <line class="pipe-line" x1="260" y1="218" x2="260" y2="230"/>
+            <circle class="pipe-dot" cx="260" cy="230" r="3"/>
+
+            <!-- Step 5: Bundle / Ship -->
+            <rect class="pipe-box" x="195" y="235" width="130" height="28"/>
+            <text class="pipe-label" x="260" y="253" text-anchor="middle">Bundle &#x2192; Ship</text>
+
+            <!-- Arrow -->
+            <line class="pipe-line" x1="260" y1="263" x2="260" y2="275"/>
+            <circle class="pipe-dot" cx="260" cy="275" r="3"/>
+
+            <!-- Step 6: Parse -->
+            <rect class="pipe-box" x="195" y="280" width="130" height="28"/>
+            <text class="pipe-label" x="260" y="298" text-anchor="middle">Parse 136 KB</text>
+
+            <!-- Arrow -->
+            <line class="pipe-line" x1="260" y1="308" x2="260" y2="320"/>
+            <circle class="pipe-dot" cx="260" cy="320" r="3"/>
+
+            <!-- Step 7: Hydrate -->
+            <rect class="pipe-box" x="195" y="325" width="130" height="28"/>
+            <text class="pipe-label" x="260" y="343" text-anchor="middle">Hydrate</text>
+
+            <!-- Arrow -->
+            <line class="pipe-line" x1="260" y1="353" x2="260" y2="365"/>
+            <circle class="pipe-dot" cx="260" cy="365" r="3"/>
+
+            <!-- Step 8: HTML (end) -->
+            <rect class="pipe-box-hl" x="195" y="370" width="130" height="30"/>
+            <text class="pipe-label" x="260" y="390" text-anchor="middle">HTML</text>
+
+            <!-- Circular arrow back — right side -->
+            <path class="pipe-line-accent" d="M 330 385 C 420 385, 440 50, 330 50" marker-end="url(#pipe-arr)"/>
+            <defs>
+                <marker id="pipe-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <!-- Right-side annotation -->
+            <text class="pipe-accent" x="455" y="220" text-anchor="middle" transform="rotate(90 455 220)">same output</text>
+
+            <!-- Left-side step count -->
+            <text class="pipe-muted" x="180" y="55" text-anchor="end">1.</text>
+            <text class="pipe-muted" x="180" y="118" text-anchor="end">2.</text>
+            <text class="pipe-muted" x="180" y="163" text-anchor="end">3.</text>
+            <text class="pipe-muted" x="180" y="208" text-anchor="end">4.</text>
+            <text class="pipe-muted" x="180" y="253" text-anchor="end">5.</text>
+            <text class="pipe-muted" x="180" y="298" text-anchor="end">6.</text>
+            <text class="pipe-muted" x="180" y="343" text-anchor="end">7.</text>
+            <text class="pipe-muted" x="180" y="390" text-anchor="end">8.</text>
+        </svg>
+
+        <p>Eight steps to arrive where you started. The pipeline exists not because HTML
+            requires it, but because the framework requires it. Remove the framework and
+            the pipeline collapses to a single step: write HTML, serve HTML. The browser
+            has been rather good at that since 1993.</p>
+
+        <h2>The Market Delusion</h2>
+
+        <p>The
+            <a href="https://survey.stackoverflow.co/2024/" target="_blank" rel="noopener">Stack Overflow 2024 Developer Survey</a>
+            reports that 39.5% of developers use React. An impressive figure, until one
+            consults the other survey.
+            <a href="https://w3techs.com/technologies/details/js-react" target="_blank" rel="noopener">W3Techs</a>,
+            which measures actual website usage rather than developer self-reporting,
+            places React at 6% of all websites. Not 39.5%. Six.</p>
+
+        <p>The gap between these two numbers is the gap between what developers are
+            trained to use and what the web actually needs. And the web, for the
+            overwhelming majority of its surface area, needs documents. Not applications.
+            Documents.</p>
+
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart comparing React adoption: 39.5 percent of developers use React, but only 6 percent of websites use it, and an estimated 95 percent of websites do not need a Single Page Application." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .bar-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .bar-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .bar-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .bar-fill { fill: var(--accent); opacity: 0.7; }
+                .bar-fill-dim { fill: var(--muted); opacity: 0.25; }
+                .bar-outline { fill: none; stroke: var(--border); stroke-width: 1; }
+                .bar-axis { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <!-- Title -->
+            <text class="bar-value" x="260" y="20" text-anchor="middle">USAGE vs NEED</text>
+
+            <!-- Axis -->
+            <line class="bar-axis" x1="50" y1="240" x2="490" y2="240"/>
+
+            <!-- Bar 1: Developers who use React (39.5%) -->
+            <rect class="bar-fill" x="70" y="68" width="100" height="170" rx="2"/>
+            <text class="bar-value" x="120" y="58" text-anchor="middle">39.5%</text>
+            <text class="bar-label" x="120" y="258" text-anchor="middle">Developers</text>
+            <text class="bar-muted" x="120" y="272" text-anchor="middle">who use React</text>
+
+            <!-- Bar 2: Websites that use React (6%) -->
+            <rect class="bar-fill" x="210" y="212" width="100" height="26" rx="2"/>
+            <text class="bar-value" x="260" y="204" text-anchor="middle">6%</text>
+            <text class="bar-label" x="260" y="258" text-anchor="middle">Websites</text>
+            <text class="bar-muted" x="260" y="272" text-anchor="middle">that use React</text>
+
+            <!-- Bar 3: Websites that don't need SPAs (95%) -->
+            <rect class="bar-fill-dim" x="350" y="38" width="100" height="200" rx="2"/>
+            <text class="bar-value" x="400" y="28" text-anchor="middle">~95%</text>
+            <text class="bar-label" x="400" y="258" text-anchor="middle">Websites</text>
+            <text class="bar-muted" x="400" y="272" text-anchor="middle">that don&#x2019;t need SPAs</text>
+
+            <!-- Sources -->
+            <text class="bar-muted" x="490" y="22" text-anchor="end">Stack Overflow 2024 / W3Techs 2025</text>
+        </svg>
+
+        <p>An
+            <a href="https://dev.to/bholmesdev/before-building-your-next-static-site-with-react-consider-this-2b60" target="_blank" rel="noopener">estimated 95% of websites</a>
+            do not need the capabilities of a Single Page Application. They are marketing
+            sites, blogs, documentation portals, e-commerce catalogues &#x2014; documents
+            with the occasional interactive element. The browser handles documents natively.
+            It has done so for three decades. It is, one might venture, rather good at it.</p>
+
+        <p>Yet 39.5% of developers reach for React. The framework is not chosen because
+            the problem demands it. It is chosen because the developer knows it. The
+            recruitment pipeline selects for React experience. Bootcamps teach React
+            because companies require React because bootcamps teach React. The loop
+            is self-sustaining, economically rational for every participant, and
+            structurally detached from the question of whether the user needed 136 KB
+            of JavaScript to read a product description.</p>
+
+        <h2>The Netflix Evidence</h2>
+
+        <p>When the arguments are theoretical, they are easy to dismiss. When Netflix
+            runs the experiment, they are rather less so.</p>
+
+        <p>Netflix
+            <a href="https://medium.com/dev-channel/a-netflix-web-performance-case-study-c0bcde26a9d9" target="_blank" rel="noopener">removed React from their logged-out landing page</a>
+            and replaced it with vanilla JavaScript. The results were not ambiguous.</p>
+
+        <svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Netflix case study: removing React reduced bundle size by 200 KB and improved Time to Interactive by 50 percent." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .nf-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .nf-value { font: 700 22px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .nf-unit { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .nf-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .nf-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nf-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .nf-divider { stroke: var(--border); stroke-width: 1; stroke-dasharray: 4 3; }
+                .nf-bar { fill: var(--accent); opacity: 0.15; rx: 2; }
+                .nf-bar-accent { fill: var(--accent); opacity: 0.6; rx: 2; }
+            </style>
+            <!-- Title -->
+            <text class="nf-label" x="260" y="20" text-anchor="middle">NETFLIX: REACT REMOVED FROM LANDING PAGE</text>
+
+            <!-- Left card: Bundle size -->
+            <rect class="nf-box" x="30" y="40" width="220" height="170" rx="4"/>
+            <text class="nf-label" x="140" y="65" text-anchor="middle">Bundle Size</text>
+
+            <!-- Before bar -->
+            <rect class="nf-bar" x="55" y="85" width="170" height="24"/>
+            <text class="nf-muted" x="65" y="102">Before</text>
+            <text class="nf-label" x="215" y="102" text-anchor="end">~300 KB</text>
+
+            <!-- After bar -->
+            <rect class="nf-bar-accent" x="55" y="118" width="57" height="24"/>
+            <text class="nf-muted" x="65" y="135">After</text>
+            <text class="nf-label" x="215" y="135" text-anchor="end">~100 KB</text>
+
+            <!-- Delta -->
+            <text class="nf-value" x="140" y="178" text-anchor="middle">&#x2212;200 KB</text>
+            <text class="nf-muted" x="140" y="198" text-anchor="middle">bundle reduction</text>
+
+            <!-- Right card: TTI -->
+            <rect class="nf-box-hl" x="270" y="40" width="220" height="170" rx="4"/>
+            <text class="nf-label" x="380" y="65" text-anchor="middle">Time to Interactive</text>
+
+            <!-- Before bar -->
+            <rect class="nf-bar" x="295" y="85" width="170" height="24"/>
+            <text class="nf-muted" x="305" y="102">Before</text>
+            <text class="nf-label" x="455" y="102" text-anchor="end">~4.5 s</text>
+
+            <!-- After bar -->
+            <rect class="nf-bar-accent" x="295" y="118" width="85" height="24"/>
+            <text class="nf-muted" x="305" y="135">After</text>
+            <text class="nf-label" x="455" y="135" text-anchor="end">~2.2 s</text>
+
+            <!-- Delta -->
+            <text class="nf-value" x="380" y="178" text-anchor="middle">50%</text>
+            <text class="nf-muted" x="380" y="198" text-anchor="middle">faster interaction</text>
+
+            <!-- Source -->
+            <text class="nf-muted" x="260" y="232" text-anchor="middle">Source: Netflix Technology Blog, Addy Osmani</text>
+        </svg>
+
+        <p>Time to Interactive improved by 50%. The bundle dropped by 200 KB. The page
+            did the same thing it had always done &#x2014; display a hero image, a few
+            headings, a sign-up form &#x2014; except now it did so without waiting for
+            a framework to reconstruct what the server had already delivered.</p>
+
+        <p>Netflix did not remove React from their application. The logged-in experience
+            &#x2014; the streaming interface where users browse, search, and watch &#x2014;
+            still uses it. The distinction matters. The logged-in experience is an
+            application. Users stay for hours, interact hundreds of times, and the framework
+            cost amortises across a long session. The landing page is a document. Visitors
+            glance, decide, and either sign up or leave. The framework cost does not
+            amortise. It simply arrives, uninvited, and leaves with 200 KB of the
+            user&#x2019;s bandwidth.</p>
+
+        <h2>Where React Earns Its Keep</h2>
+
+        <p>This is not, to be clear, a call to abolish React. The framework genuinely
+            solves problems &#x2014; specific problems, for specific applications, under
+            specific conditions.</p>
+
+        <p>Gmail. Google Docs. Figma. Spotify&#x2019;s web player. Applications where
+            users remain for hours, where the interface is a dense, stateful, interactive
+            surface that changes constantly. Applications where the cost of 136 KB is
+            amortised across thousands of interactions. Applications where client-side
+            state management is not a luxury but a structural necessity.</p>
+
+        <p>These exist. They are real. And they represent, at a generous estimate,
+            perhaps 5% of what gets built with React.</p>
+
+        <p>The remaining 95% are documents dressed in application clothing. Marketing
+            sites. Blogs. Product catalogues. Landing pages. Content that the server
+            could have rendered as HTML, that the browser could have displayed natively,
+            that the user could have seen immediately &#x2014; had the team not decided
+            that a document needs a Virtual DOM, a reconciliation engine, and a hydration
+            ceremony before it is permitted to appear on screen.</p>
+
+        <h2>The Invoice</h2>
+
+        <p>Let us itemise.</p>
+
+        <p><strong>136 KB</strong> of framework, parsed on every visit.
+            <strong>30%</strong> performance overhead from Virtual DOM diffing.
+            <strong>30%</strong> of page load time consumed by hydration.
+            A rendering model that re-renders every child when a parent changes.
+            A pipeline of eight transformations to produce what the server could have
+            shipped directly. A market adoption rate six times higher among developers
+            than among actual websites.</p>
+
+        <p>Every one of these costs is documented. Every one is measurable. And every
+            one is paid, silently, by the user &#x2014; in loading time, in battery drain,
+            in data consumption, in the fraction of a second between tapping a link and
+            seeing content that determines whether they stay or leave.</p>
+
+        <blockquote>
+            <p>The fastest framework is the one you do not ship.</p>
+        </blockquote>
+
+        <p>React is a solution. An excellent one, for applications that justify its
+            weight. The question is not whether React works. The question is whether
+            your website is an application. If the answer requires more than a moment&#x2019;s
+            thought, it probably is not. And the 136 KB you just shipped to a user on a
+            3G connection in Lagos, or a budget Android in Jakarta, or a perfectly
+            adequate broadband line in Ludwigshafen &#x2014; that is not a framework
+            choice. That is a tax. And unlike most taxes, this one does not fund
+            anything the user asked for.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,411 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Framework Tax — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 2010, vanilla JavaScript built the web. In 2026, a React Hello World installs 2,839 packages. The supply chain, the bundle, and the native APIs that were there all along.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-framework-tax{( endslot )}
+
+{( slot og-title )}The Framework Tax — Vivian Voss{( endslot )}
+
+{( slot og-desc )}In 2010, vanilla JavaScript built the web. In 2026, React Hello World installs 2,839 packages. The supply chain cost and the native alternatives.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Framework Tax",
+    "datePublished": "2026-02-01",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-framework-tax",
+    "description": "In 2010, vanilla JavaScript built the web. In 2026, a React Hello World installs 2,839 packages. The supply chain, the bundle, and the native APIs that were there all along.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-01">1 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Framework Tax</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Performance-Fresser</em> &#x25A0; Episode 11</p>
+
+        <p>In 2010, a competent developer could build 95% of web applications with
+            vanilla JavaScript, a text editor, and the quiet confidence that the browser
+            would execute what was written. No compilation. No bundling. No dependency
+            tree sprawling into the thousands. The code you wrote was the code that ran.</p>
+
+        <p>In 2026, <a href="https://medium.com/frontendweb/find-how-many-packages-we-need-to-run-a-react-hello-world-app-695fbb755af7" target="_blank" rel="noopener">a
+            React Hello World application installs 2,839 packages</a>. Two thousand,
+            eight hundred and thirty-nine. For a function that returns a heading tag.</p>
+
+        <p>One might reasonably ask what happened in between. The answer is not
+            complicated. It is merely expensive.</p>
+
+        <h2>The Dependency Timeline</h2>
+
+        <p>The trajectory from self-sufficiency to structural dependency took roughly
+            fifteen years. It did not arrive all at once. It arrived in increments, each
+            one presented as an improvement, each one adding weight that would never be
+            removed.</p>
+
+        <svg viewBox="0 0 580 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dependency timeline from 2010 to 2026. In 2010, vanilla JavaScript required zero dependencies. By 2014, jQuery and a few plugins meant a handful. By 2018, React plus tooling reached hundreds. By 2022, the full modern stack demanded over a thousand. By 2026, a React Hello World installs 2,839 packages." style="max-width: 580px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .fw-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .fw-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .fw-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .fw-axis { stroke: var(--border); stroke-width: 1; }
+                .fw-bar { fill: var(--accent); opacity: 0.75; }
+                .fw-area { fill: var(--accent); opacity: 0.06; }
+                .fw-line { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+                .fw-dot { fill: var(--accent); }
+            </style>
+            <!-- Axes -->
+            <line class="fw-axis" x1="70" y1="20" x2="70" y2="240"/>
+            <line class="fw-axis" x1="70" y1="240" x2="550" y2="240"/>
+            <!-- Y-axis labels -->
+            <text class="fw-muted" x="65" y="240" text-anchor="end">0</text>
+            <text class="fw-muted" x="65" y="170" text-anchor="end">1,000</text>
+            <text class="fw-muted" x="65" y="100" text-anchor="end">2,000</text>
+            <text class="fw-muted" x="65" y="38" text-anchor="end">3,000</text>
+            <!-- Y-axis unit -->
+            <text class="fw-muted" x="12" y="140" text-anchor="start" transform="rotate(-90 12 140)">packages installed</text>
+            <!-- Grid lines -->
+            <line class="fw-axis" x1="70" y1="170" x2="550" y2="170" opacity="0.25"/>
+            <line class="fw-axis" x1="70" y1="100" x2="550" y2="100" opacity="0.25"/>
+            <line class="fw-axis" x1="70" y1="38" x2="550" y2="38" opacity="0.25"/>
+            <!-- Area fill -->
+            <polygon class="fw-area" points="110,240 230,238 350,180 470,120 530,34 530,240"/>
+            <!-- Data line: 2010=0, 2014=8, 2018=850, 2022=1700, 2026=2839 -->
+            <polyline class="fw-line" points="110,240 230,238 350,180 470,120 530,34"/>
+            <!-- Data points -->
+            <circle class="fw-dot" cx="110" cy="240" r="5"/>
+            <circle class="fw-dot" cx="230" cy="238" r="5"/>
+            <circle class="fw-dot" cx="350" cy="180" r="5"/>
+            <circle class="fw-dot" cx="470" cy="120" r="5"/>
+            <circle class="fw-dot" cx="530" cy="34" r="5"/>
+            <!-- Values -->
+            <text class="fw-value" x="110" y="232" text-anchor="middle">0</text>
+            <text class="fw-value" x="230" y="229" text-anchor="middle">~8</text>
+            <text class="fw-value" x="350" y="172" text-anchor="middle">~850</text>
+            <text class="fw-value" x="470" y="112" text-anchor="middle">~1,700</text>
+            <text class="fw-value" x="530" y="26" text-anchor="middle">2,839</text>
+            <!-- X-axis labels -->
+            <text class="fw-label" x="110" y="258" text-anchor="middle">2010</text>
+            <text class="fw-label" x="230" y="258" text-anchor="middle">2014</text>
+            <text class="fw-label" x="350" y="258" text-anchor="middle">2018</text>
+            <text class="fw-label" x="470" y="258" text-anchor="middle">2022</text>
+            <text class="fw-label" x="530" y="258" text-anchor="middle">2026</text>
+            <!-- Context annotations -->
+            <text class="fw-muted" x="110" y="275" text-anchor="middle">Vanilla JS</text>
+            <text class="fw-muted" x="230" y="275" text-anchor="middle">jQuery + plugins</text>
+            <text class="fw-muted" x="350" y="275" text-anchor="middle">React + tooling</text>
+            <text class="fw-muted" x="470" y="275" text-anchor="middle">Full modern stack</text>
+            <text class="fw-muted" x="530" y="275" text-anchor="middle">Hello World</text>
+            <!-- Source -->
+            <text class="fw-muted" x="550" y="295" text-anchor="end">Source: npm, bundlephobia.com</text>
+        </svg>
+
+        <p>Create React App &#x2014; the official starter template, the blessed path
+            for beginners &#x2014; produces a <code>node_modules</code> directory
+            exceeding 200 MB. For a starter template. For an application that renders
+            one line of text. The directory that contains your dependencies weighs more
+            than the operating system that ran the Apollo guidance computer, and one
+            suspects the Apollo computer was doing slightly more interesting work.</p>
+
+        <h2>2,839 Trust Decisions</h2>
+
+        <p>Each dependency is a trust decision. You are executing code written by a
+            stranger, on your machine, with your permissions. That is the transaction.
+            Dress it up however you like &#x2014; ecosystem, community, open source &#x2014;
+            but the mechanics are identical to downloading an executable from the
+            internet and running it without inspection.</p>
+
+        <p>A direct dependency is a trust decision you made. A transitive dependency
+            is a trust decision someone else made on your behalf, without your knowledge,
+            and quite possibly without theirs. When <code>npm install</code> pulls in
+            2,839 packages, you have consciously evaluated perhaps a dozen. The remaining
+            2,827 are running on faith.</p>
+
+        <blockquote>
+            <p><code>npm install</code> is remote code execution. Postinstall scripts
+                run with your permissions. The only difference between this and malware
+                is the presumption of good intent.</p>
+        </blockquote>
+
+        <p>And as it happens, the presumption of good intent has not held up
+            terribly well.</p>
+
+        <h2>The Casualty List</h2>
+
+        <p>Supply chain attacks against npm are not theoretical. They are not edge
+            cases. They are a recurring pattern with escalating ambition, and every
+            incident follows the same structural logic: find a package that thousands
+            of projects trust implicitly, and replace the trust with exploitation.</p>
+
+        <p><strong>event-stream, 2018.</strong> A package with
+            <a href="https://snyk.io/blog/npm-security-preventing-supply-chain-attacks/" target="_blank" rel="noopener">1.5 million
+            weekly downloads</a>. The original maintainer, exhausted, transferred
+            publishing rights to a stranger who asked politely. The new maintainer
+            injected Bitcoin-stealing malware. It went undetected for months. Not
+            days &#x2014; months. An entire quarter of the calendar year during which
+            production applications worldwide were silently compromised.</p>
+
+        <p><strong>ua-parser-js, 2021.</strong> Seven million weekly downloads. The
+            maintainer&#x2019;s account was
+            <a href="https://www.truesec.com/hub/blog/uaparser-js-npm-package-supply-chain-attack-impact-and-response" target="_blank" rel="noopener">hijacked</a>,
+            and the package was replaced with a version that installed a cryptominer
+            and a credential stealer. The original package parses user-agent strings.
+            The compromised version mined cryptocurrency and harvested passwords.
+            Detected after four hours &#x2014; which sounds fast until one considers
+            how many <code>npm install</code> commands execute in four hours across
+            the planet.</p>
+
+        <p><strong>node-ipc, 2022.</strong> A dependency of Vue.js. The maintainer
+            did not have his account stolen. He
+            <a href="https://snyk.io/blog/peacenotwar-malicious-npm-node-ipc-package-vulnerability/" target="_blank" rel="noopener">sabotaged
+            his own package</a> deliberately, deploying code that deleted files from
+            developer machines based on geolocation. Protestware, as the industry
+            has euphemistically labelled it. The supply chain weaponised not by an
+            external attacker but by the person you trusted to maintain it.</p>
+
+        <p><strong>colors.js and faker.js, 2022.</strong> The maintainer of two
+            enormously popular packages
+            <a href="https://www.rescana.com/post/in-depth-analysis-supply-chain-poisoning-of-popular-npm-packages" target="_blank" rel="noopener">intentionally
+            sabotaged both</a>, pushing updates that caused applications worldwide
+            to crash with infinite loops and garbled output. His motivation was
+            frustration that Fortune 500 companies were using his work without
+            compensation. One might sympathise with the sentiment whilst noting
+            that the remedy was indistinguishable from an attack.</p>
+
+        <svg viewBox="0 0 580 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Supply chain incident timeline from 2018 to 2022. Four major attacks: event-stream in 2018 affecting 1.5 million weekly downloads and undetected for months; ua-parser-js in 2021 affecting 7 million weekly downloads; node-ipc in 2022 as deliberate sabotage via a Vue.js dependency; colors.js and faker.js in 2022 causing worldwide application crashes." style="max-width: 580px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .sc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sc-detail { font: 400 9.5px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sc-impact { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sc-line { stroke: var(--border); stroke-width: 2; }
+                .sc-dot { fill: var(--accent); }
+                .sc-ring { fill: none; stroke: var(--accent); stroke-width: 1.5; opacity: 0.3; }
+                .sc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .sc-danger { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+            <!-- Timeline spine -->
+            <line class="sc-line" x1="60" y1="30" x2="60" y2="300"/>
+            <!-- 2018: event-stream -->
+            <circle class="sc-dot" cx="60" cy="50" r="6"/>
+            <circle class="sc-ring" cx="60" cy="50" r="14"/>
+            <rect class="sc-danger" x="90" y="28" width="460" height="52"/>
+            <text class="sc-label" x="105" y="46">event-stream (2018)</text>
+            <text class="sc-detail" x="105" y="60">1.5M weekly downloads &#x2022; maintainer access transferred &#x2022; Bitcoin-stealing malware</text>
+            <text class="sc-impact" x="105" y="74">Undetected for months</text>
+            <!-- 2021: ua-parser-js -->
+            <circle class="sc-dot" cx="60" cy="120" r="6"/>
+            <circle class="sc-ring" cx="60" cy="120" r="18"/>
+            <rect class="sc-box" x="90" y="98" width="460" height="52"/>
+            <text class="sc-label" x="105" y="116">ua-parser-js (2021)</text>
+            <text class="sc-detail" x="105" y="130">7M weekly downloads &#x2022; account hijacked &#x2022; cryptominer + credential stealer</text>
+            <text class="sc-impact" x="105" y="144">Detected after 4 hours</text>
+            <!-- 2022: node-ipc -->
+            <circle class="sc-dot" cx="60" cy="195" r="6"/>
+            <circle class="sc-ring" cx="60" cy="195" r="22"/>
+            <rect class="sc-danger" x="90" y="173" width="460" height="52"/>
+            <text class="sc-label" x="105" y="191">node-ipc (2022)</text>
+            <text class="sc-detail" x="105" y="205">Vue.js dependency &#x2022; maintainer sabotaged own package &#x2022; files deleted from dev machines</text>
+            <text class="sc-impact" x="105" y="219">Protestware &#x2014; the supply chain weaponised from within</text>
+            <!-- 2022: colors.js / faker.js -->
+            <circle class="sc-dot" cx="60" cy="270" r="6"/>
+            <circle class="sc-ring" cx="60" cy="270" r="26"/>
+            <rect class="sc-box" x="90" y="248" width="460" height="44"/>
+            <text class="sc-label" x="105" y="266">colors.js / faker.js (2022)</text>
+            <text class="sc-detail" x="105" y="280">Intentional sabotage &#x2022; infinite loops &#x2022; applications worldwide crashed</text>
+        </svg>
+
+        <p>Four incidents in four years. Account theft, social engineering,
+            deliberate sabotage, ideological protest. Four different vectors, one
+            shared root cause: the dependency tree is a trust chain, and every link
+            you did not personally inspect is a link that can be replaced.</p>
+
+        <h2>The Build Step Tax</h2>
+
+        <p>The framework does not merely add dependencies. It adds an entire
+            intermediate layer between the code you write and the code the browser
+            executes. Your source passes through Webpack, or Vite, or esbuild. It
+            is processed by Babel. Types are stripped by TypeScript. Styles are
+            transformed by PostCSS. The result is not your code. It is a derivative
+            of your code, produced by a pipeline whose individual components you
+            understand imperfectly and whose interactions you understand less.</p>
+
+        <p>When something breaks in production, you are not debugging your
+            application. You are debugging the output of a toolchain that has
+            opinions about how your application should look after transformation.
+            The stack trace points to minified identifiers. The line numbers
+            correspond to a generated file. The source map &#x2014; if it exists,
+            if it is current, if it has not drifted &#x2014; is your only bridge
+            back to what you actually wrote.</p>
+
+        <p>In 2010, the code you wrote was the code the browser ran. In 2026,
+            the code you write is a suggestion, and the toolchain decides what
+            arrives.</p>
+
+        <h2>The Bundle</h2>
+
+        <p>Before you write a single line of application code, the framework has
+            already committed you to a baseline payload. The user&#x2019;s browser must
+            download, parse, and execute the framework itself before your application
+            can render so much as a heading tag.</p>
+
+        <svg viewBox="0 0 580 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Framework bundle size comparison. React 18 ships 136 kilobytes (44 kilobytes gzipped). Vue 3 ships 126 kilobytes (33 kilobytes gzipped). Angular 17 ships 180 kilobytes (62 kilobytes gzipped). Native browser APIs: zero kilobytes. All sizes represent the framework alone, before any application code." style="max-width: 580px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .bnd-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .bnd-size { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .bnd-gz { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .bnd-bar { fill: var(--accent); opacity: 0.6; }
+                .bnd-bar-gz { fill: var(--accent); opacity: 0.9; }
+                .bnd-axis { stroke: var(--border); stroke-width: 1; }
+                .bnd-native { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 3; }
+                .bnd-native-label { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .bnd-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <!-- Title -->
+            <text class="bnd-muted" x="290" y="16" text-anchor="middle">Framework baseline &#x2014; before your code</text>
+            <!-- Axes -->
+            <line class="bnd-axis" x1="140" y1="35" x2="140" y2="230"/>
+            <line class="bnd-axis" x1="140" y1="230" x2="560" y2="230"/>
+            <!-- X-axis labels -->
+            <text class="bnd-muted" x="140" y="248" text-anchor="middle">0 KB</text>
+            <text class="bnd-muted" x="260" y="248" text-anchor="middle">50</text>
+            <text class="bnd-muted" x="380" y="248" text-anchor="middle">100</text>
+            <text class="bnd-muted" x="500" y="248" text-anchor="middle">150</text>
+            <!-- Grid lines -->
+            <line class="bnd-axis" x1="260" y1="35" x2="260" y2="230" opacity="0.2"/>
+            <line class="bnd-axis" x1="380" y1="35" x2="380" y2="230" opacity="0.2"/>
+            <line class="bnd-axis" x1="500" y1="35" x2="500" y2="230" opacity="0.2"/>
+            <!-- React 18: 136KB raw, 44KB gzipped -->
+            <text class="bnd-label" x="135" y="62" text-anchor="end">React 18</text>
+            <rect class="bnd-bar" x="140" y="48" width="326" height="14" rx="2"/>
+            <rect class="bnd-bar-gz" x="140" y="64" width="106" height="10" rx="2"/>
+            <text class="bnd-size" x="472" y="60">136 KB</text>
+            <text class="bnd-gz" x="252" y="72">44 KB gzip</text>
+            <!-- Vue 3: 126KB raw, 33KB gzipped -->
+            <text class="bnd-label" x="135" y="112" text-anchor="end">Vue 3</text>
+            <rect class="bnd-bar" x="140" y="98" width="302" height="14" rx="2"/>
+            <rect class="bnd-bar-gz" x="140" y="114" width="79" height="10" rx="2"/>
+            <text class="bnd-size" x="448" y="110">126 KB</text>
+            <text class="bnd-gz" x="225" y="122">33 KB gzip</text>
+            <!-- Angular 17: 180KB raw, 62KB gzipped -->
+            <text class="bnd-label" x="135" y="162" text-anchor="end">Angular 17</text>
+            <rect class="bnd-bar" x="140" y="148" width="432" height="14" rx="2"/>
+            <rect class="bnd-bar-gz" x="140" y="164" width="149" height="10" rx="2"/>
+            <text class="bnd-size" x="578" y="160">180 KB</text>
+            <text class="bnd-gz" x="295" y="172">62 KB gzip</text>
+            <!-- Native APIs: 0KB -->
+            <text class="bnd-label" x="135" y="210" text-anchor="end">Native APIs</text>
+            <line class="bnd-native" x1="140" y1="203" x2="142" y2="203"/>
+            <text class="bnd-native-label" x="158" y="210">0 KB</text>
+            <text class="bnd-gz" x="210" y="210">&#x2014; already in the browser</text>
+            <!-- Sources -->
+            <text class="bnd-muted" x="560" y="272" text-anchor="end">Source: bundlephobia.com</text>
+        </svg>
+
+        <p><a href="https://bundlephobia.com/package/react@18.2.0" target="_blank" rel="noopener">React 18</a>:
+            136 KB. <a href="https://bundlephobia.com/package/vue@3.4.0" target="_blank" rel="noopener">Vue 3</a>:
+            126 KB. <a href="https://bundlephobia.com/package/@angular/core@17.0.0" target="_blank" rel="noopener">Angular 17</a>:
+            180 KB. These are the framework sizes alone, before a single line of
+            application code. Gzipped, the numbers compress to 44, 33, and 62 KB
+            respectively &#x2014; which sounds more palatable until one remembers
+            that the browser must still decompress, parse, and execute the full
+            uncompressed payload. Gzip reduces transfer time. It does not reduce
+            parse time, and parse time is where mobile devices lose the argument.</p>
+
+        <h2>The Hydration Farce</h2>
+
+        <p>Server-side rendering was supposed to be the answer. The server renders
+            HTML. The browser displays it instantly. Fast. Accessible. Done.</p>
+
+        <p>Except it is not done. The framework must now &#x201C;hydrate&#x201D; the
+            page &#x2014; attach event listeners, reconstruct the component tree,
+            reconcile the virtual DOM with the actual DOM. The server rendered the
+            page. The client re-renders it. Two full render passes to achieve what a
+            <code>&lt;button onclick=&#x201C;handleClick()&#x201D;&gt;</code> achieves
+            natively, in one pass, with zero JavaScript framework overhead.</p>
+
+        <p>The industry has invented partial hydration, progressive hydration,
+            islands architecture, resumability &#x2014; an entire taxonomy of
+            workarounds for a problem that only exists because the framework
+            created it. One does not need a sophisticated solution to the hydration
+            problem if one does not have a hydration problem. And one does not
+            have a hydration problem if one does not insist on re-implementing the
+            browser&#x2019;s native capabilities in JavaScript.</p>
+
+        <h2>The Native Alternative</h2>
+
+        <p>The browser in 2026 is not the browser of 2010. It ships with an
+            extraordinary set of native APIs, all of them free, all of them
+            zero-dependency, none of them requiring a build step:</p>
+
+        <p><code>&lt;template&gt;</code> &#x2014; native HTML templating, parsed
+            but not rendered until explicitly stamped into the DOM. No virtual DOM
+            required.</p>
+
+        <p><strong>Web Components</strong> &#x2014; <code>customElements.define()</code>,
+            Shadow DOM, HTML slots. Encapsulated, reusable components with native
+            browser support. No framework required.</p>
+
+        <p><code>addEventListener()</code> &#x2014; event delegation has been
+            available since the DOM Level 2 specification. It handles click events
+            without downloading 136 KB of reconciliation logic.</p>
+
+        <p>The <strong>History API</strong> &#x2014; <code>pushState()</code> and
+            <code>popstate</code> provide client-side routing without a routing
+            library, without a framework, without a single additional byte.</p>
+
+        <p><code>MutationObserver</code> &#x2014; watches the DOM for changes
+            and reacts programmatically. The reactive pattern that frameworks
+            re-implement, available natively since 2012.</p>
+
+        <p>Every one of these has been supported in all major browsers for years.
+            Every one of them costs zero kilobytes. Every one of them runs without
+            a build step. The browser is not lacking in capability. The industry
+            is lacking in willingness to use what the browser already provides.</p>
+
+        <h2>The Compound Invoice</h2>
+
+        <p>The framework tax is not a single line item. It compounds. The framework
+            requires a bundler. The bundler requires configuration. The configuration
+            requires expertise. The expertise requires hiring. The hiring requires
+            salary. The salary requires revenue. The revenue requires users. And the
+            users &#x2014; the users are waiting for the 180 KB of Angular to finish
+            parsing on their mid-range Android device, wondering why a page that
+            contains six product cards takes four seconds to become interactive.</p>
+
+        <aside>
+            <p>The framework is not the product. The framework is a cost centre
+                that convinced an entire generation of developers it was a feature.</p>
+        </aside>
+
+        <p>In 2010, the web was a document platform that could do interactive things.
+            In 2026, it is an application platform that struggles to do document things.
+            The industry took a medium that was fast by default and made it slow by
+            choice, then spent fifteen years building tooling to claw back the
+            performance it had voluntarily surrendered.</p>
+
+        <p>Two thousand, eight hundred and thirty-nine packages. For Hello World.</p>
+
+        <p>The invoice is in your <code>node_modules</code> folder. You might want
+            to read it.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
