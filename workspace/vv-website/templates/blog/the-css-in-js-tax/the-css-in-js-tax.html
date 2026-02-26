@@ -1,0 +1,424 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The CSS-in-JS Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="CSS-in-JS writes CSS in JavaScript to generate CSS. The runtime overhead, the bundle tax, and the browser that understood you all along.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-css-in-js-tax{( endslot )}
+
+{( slot og-title )}The CSS-in-JS Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}CSS-in-JS writes CSS in JavaScript to generate CSS. The runtime overhead, the bundle tax, and the browser that understood you all along.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The CSS-in-JS Tax",
+    "datePublished": "2026-01-04",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-css-in-js-tax",
+    "description": "CSS-in-JS writes CSS in JavaScript to generate CSS. The runtime overhead, the bundle tax, and the browser that understood you all along.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-04">4 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The CSS-in-JS Tax</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Performance-Fresser</em> &#x25A0; Episode 07</p>
+
+        <p>CSS-in-JS is the practice of writing CSS inside JavaScript in order
+            to generate CSS. One writes a style declaration, hands it to a runtime
+            library, which parses it, hashes it, injects it into the DOM, and
+            produces &#x2014; CSS. The browser then reads the CSS. The same CSS one
+            could have written in the first place.</p>
+
+        <p>The engineering term for this is a translation layer. The colloquial
+            term is a detour. The accurate term, if one is feeling uncharitable,
+            is sending bananas to New Zealand so they can be reimported with a
+            more fashionable label.</p>
+
+        <h2>The Runtime Overhead</h2>
+
+        <p><a href="https://bundlephobia.com/package/styled-components" target="_blank"
+            rel="noopener">styled-components</a> &#x2014; the most popular CSS-in-JS
+            library &#x2014; operates at runtime. On every render, it parses template
+            literals, computes styles from props, generates unique class names via
+            hashing, and injects <code>&lt;style&gt;</code> tags into the document head.
+            Every render. Not once. Not on first mount. Every single time the component
+            renders.</p>
+
+        <p>This is not an implementation detail one can optimise away. It is the
+            architecture. The library must evaluate JavaScript to produce CSS because
+            the styles do not exist until the JavaScript executes. They are not in
+            a stylesheet. They are not in the document. They are in a template literal,
+            waiting for a runtime to translate them into something the browser already
+            knows how to read.</p>
+
+        <p>A static CSS file, by contrast, is parsed once, cached by the browser,
+            and applied without executing a single line of JavaScript. The runtime
+            cost is zero. Not low &#x2014; zero. The browser was built to do this.
+            It has been doing it since 1996. It is, one might venture, rather
+            practised.</p>
+
+        <h2>The Bundle Tax</h2>
+
+        <p>Before a single styled component can render, the browser must download,
+            parse, and execute the library itself. The admission fee is not trivial.</p>
+
+        <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart comparing CSS-in-JS library sizes. styled-components: approximately 13 kilobytes minified and gzipped. Emotion: approximately 11 kilobytes. Native CSS: zero kilobytes runtime." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .bnd-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .bnd-size { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .bnd-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .bnd-bar { fill: var(--accent); opacity: 0.6; }
+                .bnd-axis { stroke: var(--border); stroke-width: 1; }
+                .bnd-native { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 3; }
+                .bnd-native-label { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+            </style>
+            <!-- Title -->
+            <text class="bnd-muted" x="290" y="16" text-anchor="middle">Runtime library cost &#x2014; before your styles</text>
+            <!-- Axes -->
+            <line class="bnd-axis" x1="160" y1="35" x2="160" y2="180"/>
+            <line class="bnd-axis" x1="160" y1="180" x2="490" y2="180"/>
+            <!-- X-axis labels -->
+            <text class="bnd-muted" x="160" y="198" text-anchor="middle">0 KB</text>
+            <text class="bnd-muted" x="270" y="198" text-anchor="middle">5</text>
+            <text class="bnd-muted" x="380" y="198" text-anchor="middle">10</text>
+            <text class="bnd-muted" x="490" y="198" text-anchor="middle">15</text>
+            <!-- Grid lines -->
+            <line class="bnd-axis" x1="270" y1="35" x2="270" y2="180" opacity="0.2"/>
+            <line class="bnd-axis" x1="380" y1="35" x2="380" y2="180" opacity="0.2"/>
+            <line class="bnd-axis" x1="490" y1="35" x2="490" y2="180" opacity="0.2"/>
+            <!-- styled-components: ~13KB -->
+            <text class="bnd-label" x="155" y="60" text-anchor="end">styled-components</text>
+            <rect class="bnd-bar" x="160" y="46" width="286" height="20" rx="2"/>
+            <text class="bnd-size" x="454" y="61">~13 KB</text>
+            <!-- Emotion: ~11KB -->
+            <text class="bnd-label" x="155" y="105" text-anchor="end">Emotion</text>
+            <rect class="bnd-bar" x="160" y="91" width="242" height="20" rx="2"/>
+            <text class="bnd-size" x="410" y="106">~11 KB</text>
+            <!-- Native CSS: 0KB -->
+            <text class="bnd-label" x="155" y="152" text-anchor="end">Native CSS</text>
+            <line class="bnd-native" x1="160" y1="148" x2="162" y2="148"/>
+            <text class="bnd-native-label" x="178" y="152">0 KB</text>
+            <text class="bnd-muted" x="228" y="152">&#x2014; already in the browser</text>
+            <!-- Sources -->
+            <text class="bnd-muted" x="490" y="216" text-anchor="end">Source: bundlephobia.com</text>
+        </svg>
+
+        <p><a href="https://bundlephobia.com/package/styled-components" target="_blank"
+            rel="noopener">styled-components</a> adds roughly 13 KB minified and gzipped.
+            <a href="https://bundlephobia.com/package/@emotion/react" target="_blank"
+            rel="noopener">Emotion</a> adds roughly 11 KB. These are the transfer sizes.
+            The browser must decompress, parse, and execute considerably more. And for what?
+            To produce output that a <code>.css</code> file delivers for nothing.</p>
+
+        <p>Thirteen kilobytes of JavaScript whose sole purpose is to write CSS. Not to add
+            interactivity. Not to fetch data. Not to manage state. To write CSS. One
+            struggles to imagine a less efficient allocation of bytes.</p>
+
+        <h2>Hydration Roulette</h2>
+
+        <p>Server-side rendering with CSS-in-JS introduces an additional dimension
+            of entertainment. The server renders the component, generates the styles,
+            and injects them into the HTML. The browser displays the page. It looks
+            correct. Then the JavaScript arrives.</p>
+
+        <p>The client-side runtime now regenerates the styles from scratch. It hashes
+            the template literals again. If the hashes match &#x2014; and they usually
+            do, but &#x201C;usually&#x201D; is doing rather a lot of heavy lifting in
+            a production environment &#x2014; the styles survive. If they do not match,
+            the user sees a flash of unstyled content, or worse, the wrong styles
+            applied until the JavaScript finishes executing.</p>
+
+        <p>The browser already had the correct styles. The server sent them. They were
+            working. Then the runtime arrived and insisted on verifying the answer by
+            solving the equation again, and occasionally got a different result. One does
+            not normally applaud a system that introduces errors into previously correct
+            output, but the industry has been remarkably tolerant.</p>
+
+        <h2>DevTools Archaeology</h2>
+
+        <p>Open the browser&#x2019;s developer tools on a styled-components project.
+            Inspect an element. The class name reads <code>.sc-bdVaJa</code>. Or
+            <code>.sc-htpNat</code>. Or <code>.eFGRsN</code>. The name is a hash,
+            generated at runtime, different on every build, and it tells you precisely
+            nothing about what the element is, where the style is defined, or why it
+            looks the way it does.</p>
+
+        <p>In a standard CSS architecture, a class name is a contract.
+            <code>.button--primary</code> tells you what the element is and which
+            variation you are looking at. In CSS-in-JS, the class name is a hash. The
+            contract has been replaced with a fingerprint, and fingerprints are useful
+            for identification but rather less useful for comprehension.</p>
+
+        <p>Debugging becomes archaeology. You cannot search the codebase for
+            <code>.sc-bdVaJa</code> because the string does not appear in the source.
+            It was generated. You must trace the element back through the React component
+            tree, find the styled component definition, read the template literal, and
+            mentally reconstruct which CSS rules apply. In a static stylesheet, you would
+            press Ctrl+F. The distance between these two workflows is the distance between
+            engineering and excavation.</p>
+
+        <h2>The &#x201C;Dynamic Styles&#x201D; Defence</h2>
+
+        <p>The standard justification for the runtime is dynamic styling. Components
+            need to change their appearance based on props. The framework must evaluate
+            JavaScript to determine which styles apply. It sounds reasonable until one
+            examines what &#x201C;dynamic&#x201D; actually means in practice.</p>
+
+        <p>Here is the canonical example, in styled-components:</p>
+
+        <pre><code>const Button = styled.button`
+    color: ${props =&gt; props.primary ? 'blue' : 'grey'};
+`;</code></pre>
+
+        <p>A runtime library evaluates a JavaScript function on every render to select
+            between two colours. Here is the CSS equivalent:</p>
+
+        <pre><code>.button         { color: grey; }
+.button.primary { color: blue; }</code></pre>
+
+        <p>One requires a 13 KB library, a runtime parser, a hashing algorithm, and
+            DOM injection on every render cycle. The other requires the browser to do
+            what it has done since Netscape Navigator. The output is identical. The cost
+            is not.</p>
+
+        <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram comparing two approaches to conditional styling. CSS-in-JS requires five steps: evaluate JavaScript, parse template literal, compute hash, inject style tag, and apply CSS. Native CSS requires one step: apply CSS. Both produce the same visual result." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cmp-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cmp-accent { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cmp-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .cmp-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .cmp-line { stroke: var(--border); stroke-width: 1.5; fill: none; }
+                .cmp-dot { fill: var(--accent); }
+            </style>
+            <defs>
+                <marker id="cmp-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+                <marker id="cmp-arr-m" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+            </defs>
+            <!-- CSS-in-JS path -->
+            <text class="cmp-muted" x="260" y="18" text-anchor="middle">CSS-IN-JS</text>
+            <rect class="cmp-box" x="15" y="28" width="90" height="30"/>
+            <text class="cmp-label" x="60" y="48" text-anchor="middle">Evaluate JS</text>
+            <line class="cmp-line" x1="105" y1="43" x2="120" y2="43" marker-end="url(#cmp-arr-m)"/>
+            <rect class="cmp-box" x="122" y="28" width="90" height="30"/>
+            <text class="cmp-label" x="167" y="48" text-anchor="middle">Parse literal</text>
+            <line class="cmp-line" x1="212" y1="43" x2="227" y2="43" marker-end="url(#cmp-arr-m)"/>
+            <rect class="cmp-box" x="229" y="28" width="90" height="30"/>
+            <text class="cmp-label" x="274" y="48" text-anchor="middle">Hash class</text>
+            <line class="cmp-line" x1="319" y1="43" x2="334" y2="43" marker-end="url(#cmp-arr-m)"/>
+            <rect class="cmp-box" x="336" y="28" width="90" height="30"/>
+            <text class="cmp-label" x="381" y="48" text-anchor="middle">Inject style</text>
+            <line class="cmp-line" x1="426" y1="43" x2="441" y2="43" marker-end="url(#cmp-arr-m)"/>
+            <rect class="cmp-box-hl" x="443" y="28" width="65" height="30"/>
+            <text class="cmp-label" x="476" y="48" text-anchor="middle">CSS</text>
+            <text class="cmp-muted" x="260" y="78" text-anchor="middle">5 steps &#x25A0; runtime on every render &#x25A0; ~13 KB library</text>
+            <!-- Divider -->
+            <line x1="30" y1="100" x2="490" y2="100" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+            <!-- Native CSS path -->
+            <text class="cmp-accent" x="260" y="130" text-anchor="middle">NATIVE CSS</text>
+            <rect class="cmp-box-hl" x="165" y="140" width="90" height="30"/>
+            <text class="cmp-label" x="210" y="160" text-anchor="middle">.css file</text>
+            <line x1="255" y1="155" x2="340" y2="155" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#cmp-arr)"/>
+            <text class="cmp-accent" x="297" y="148" text-anchor="middle">apply</text>
+            <rect class="cmp-box-hl" x="342" y="140" width="65" height="30"/>
+            <text class="cmp-label" x="375" y="160" text-anchor="middle">CSS</text>
+            <text class="cmp-accent" x="260" y="192" text-anchor="middle">1 step &#x25A0; no runtime &#x25A0; 0 KB</text>
+            <!-- Same output annotation -->
+            <line x1="476" y1="62" x2="476" y2="132" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 2"/>
+            <line x1="375" y1="174" x2="375" y2="216" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 2"/>
+            <text class="cmp-muted" x="260" y="232" text-anchor="middle">Same visual output. Same specificity. Same cascade.</text>
+            <text class="cmp-accent" x="260" y="252" text-anchor="middle">One needs a runtime. The other does not.</text>
+        </svg>
+
+        <p>The vast majority of &#x201C;dynamic&#x201D; styles in production applications
+            are binary toggles. Active or inactive. Primary or secondary. Open or closed.
+            These are not computations. They are conditions. CSS has had conditional
+            application since the cascade was invented. A class on an element is a
+            condition. A specificity rule is a condition. The runtime is solving a
+            problem that was solved before JavaScript existed.</p>
+
+        <h2>The Solutions That Already Exist</h2>
+
+        <p>The scoping problem &#x2014; the genuine concern that CSS-in-JS claims to
+            address &#x2014; was solved years before styled-components shipped its
+            first release.</p>
+
+        <p><strong>BEM</strong> (Block Element Modifier) arrived in 2010. A naming
+            convention. <code>.block__element--modifier</code>. No tooling required.
+            No build step. No runtime. The class name is the scope. It works because
+            developers agree on a naming pattern, which is precisely how every other
+            naming problem in software has been solved since the invention of the
+            subroutine.</p>
+
+        <p><a href="https://github.com/css-modules/css-modules" target="_blank"
+            rel="noopener">CSS Modules</a> arrived in 2015. Locally scoped class
+            names, generated at build time. The output is a static stylesheet with
+            unique identifiers. Zero runtime. The scoping is resolved before the
+            code ships. The browser receives plain CSS, and plain CSS is what
+            browsers do best.</p>
+
+        <p>And then there are
+            <a href="https://caniuse.com/css-variables" target="_blank"
+            rel="noopener">CSS Custom Properties</a> &#x2014; native CSS variables,
+            supported by 98% of browsers worldwide. Dynamic values, in CSS, without
+            JavaScript. One sets a property on an element; the cascade does the rest.
+            The &#x201C;dynamic&#x201D; argument for CSS-in-JS collapses the moment
+            one acknowledges that CSS itself became dynamic in 2017.</p>
+
+        <pre><code>:root { --btn-colour: grey; }
+.button.primary { --btn-colour: blue; }
+.button { color: var(--btn-colour); }</code></pre>
+
+        <p>Dynamic. Cascading. Scoped. Zero runtime. Zero bytes of JavaScript. The
+            browser does it natively, has done for years, and does it faster than
+            any library can because the style engine is compiled C++, not interpreted
+            JavaScript.</p>
+
+        <h2>The Translation Paradox</h2>
+
+        <p>The fundamental absurdity is structural. Consider the pipeline.</p>
+
+        <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The CSS-in-JS pipeline: a developer writes CSS in JavaScript, which is parsed at runtime, hashed, injected into the DOM as CSS, and then read by the browser as CSS. A circular journey from CSS back to CSS through a JavaScript intermediary." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .pipe-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pipe-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .pipe-accent { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .pipe-line { stroke: var(--border); stroke-width: 1.5; fill: none; }
+                .pipe-line-accent { stroke: var(--accent); stroke-width: 2; fill: none; }
+                .pipe-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .pipe-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .pipe-dot { fill: var(--accent); }
+            </style>
+            <defs>
+                <marker id="pipe-arr-tax" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <!-- Title -->
+            <text class="pipe-accent" x="260" y="20" text-anchor="middle">THE CSS-IN-JS PIPELINE</text>
+            <!-- Step 1: CSS (what you want) -->
+            <rect class="pipe-box-hl" x="175" y="35" width="170" height="30"/>
+            <text class="pipe-label" x="260" y="55" text-anchor="middle">CSS</text>
+            <text class="pipe-muted" x="260" y="80" text-anchor="middle">what you want to express</text>
+            <!-- Arrow -->
+            <line class="pipe-line" x1="260" y1="65" x2="260" y2="95"/>
+            <circle class="pipe-dot" cx="260" cy="95" r="3"/>
+            <!-- Step 2: Template literal -->
+            <rect class="pipe-box" x="175" y="100" width="170" height="28"/>
+            <text class="pipe-label" x="260" y="118" text-anchor="middle">Template Literal in JS</text>
+            <!-- Arrow -->
+            <line class="pipe-line" x1="260" y1="128" x2="260" y2="140"/>
+            <circle class="pipe-dot" cx="260" cy="140" r="3"/>
+            <!-- Step 3: Runtime parse -->
+            <rect class="pipe-box" x="175" y="145" width="170" height="28"/>
+            <text class="pipe-label" x="260" y="163" text-anchor="middle">Runtime Parser</text>
+            <!-- Arrow -->
+            <line class="pipe-line" x1="260" y1="173" x2="260" y2="185"/>
+            <circle class="pipe-dot" cx="260" cy="185" r="3"/>
+            <!-- Step 4: Hash + inject -->
+            <rect class="pipe-box" x="175" y="190" width="170" height="28"/>
+            <text class="pipe-label" x="260" y="208" text-anchor="middle">Hash &#x2192; Inject into DOM</text>
+            <!-- Arrow -->
+            <line class="pipe-line" x1="260" y1="218" x2="260" y2="235"/>
+            <circle class="pipe-dot" cx="260" cy="235" r="3"/>
+            <!-- Step 5: CSS (output) -->
+            <rect class="pipe-box-hl" x="175" y="240" width="170" height="30"/>
+            <text class="pipe-label" x="260" y="260" text-anchor="middle">CSS</text>
+            <text class="pipe-muted" x="260" y="285" text-anchor="middle">what the browser reads</text>
+            <!-- Circular arrow -->
+            <path class="pipe-line-accent" d="M 350 265 C 430 265, 440 50, 350 50" marker-end="url(#pipe-arr-tax)"/>
+            <!-- Annotation -->
+            <text class="pipe-accent" x="430" y="160" text-anchor="middle" transform="rotate(90 430 160)">same language</text>
+            <!-- Step numbers -->
+            <text class="pipe-muted" x="160" y="55" text-anchor="end">1.</text>
+            <text class="pipe-muted" x="160" y="118" text-anchor="end">2.</text>
+            <text class="pipe-muted" x="160" y="163" text-anchor="end">3.</text>
+            <text class="pipe-muted" x="160" y="208" text-anchor="end">4.</text>
+            <text class="pipe-muted" x="160" y="260" text-anchor="end">5.</text>
+        </svg>
+
+        <p>The developer writes CSS. In JavaScript. The JavaScript is shipped to the
+            browser. The browser executes the JavaScript. The JavaScript generates CSS.
+            The browser reads the CSS. The input is CSS. The output is CSS. The
+            intermediary is JavaScript, a language the browser must download, parse, and
+            execute in order to produce something it could have received directly.</p>
+
+        <p>One would not write English, translate it to Mandarin, fax it to a
+            translation service, and have it translated back to English for delivery to
+            an English-speaking audience. Yet this is precisely the architecture CSS-in-JS
+            proposes for stylesheets. The browser speaks CSS. It has spoken CSS since
+            1996. Perhaps we should let it.</p>
+
+        <h2>The Invoice</h2>
+
+        <p>Let us itemise.</p>
+
+        <p><strong>~13 KB</strong> of runtime library, downloaded and parsed on every
+            page load, to produce output the browser handles natively.
+            <strong>Template literal parsing</strong> on every render cycle, turning
+            strings into style rules at a cost measured in milliseconds that compound
+            across interactions. <strong>Hash generation</strong> for class names that
+            tell the developer nothing and change on every build.
+            <strong>DOM injection</strong> of <code>&lt;style&gt;</code> tags at runtime,
+            a pattern browsers were not optimised for and frameworks were not designed
+            to throttle. <strong>Hydration mismatches</strong> when server and client
+            generate different hashes, producing visual artefacts on pages that were
+            correct before JavaScript arrived.</p>
+
+        <p>Every one of these costs exists because of the translation layer. Remove the
+            layer and every cost vanishes. The CSS file is parsed once, cached
+            indefinitely, and applied without a single line of JavaScript. The class
+            names are readable. The DevTools show what you expect. The server sends
+            styles; the browser applies styles; there is no intermediate negotiation.</p>
+
+        <aside>
+            <p>Browsers have understood CSS since 1996. The scoping problem was solved
+                by BEM in 2010 and CSS Modules in 2015, both at zero runtime cost. CSS
+                Custom Properties delivered dynamic values natively in 2017 with 98%
+                browser support. The arguments for CSS-in-JS have expired. The library
+                has not noticed.</p>
+        </aside>
+
+        <p>CSS-in-JS solved a workflow preference. It made styles co-located with
+            components, which some teams prefer, and that preference is not
+            unreasonable. But a workflow preference that costs 13 KB, a runtime parser,
+            hydration fragility, and opaque debugging &#x2014; when the alternative is
+            zero bytes, no runtime, and a language the browser already speaks &#x2014;
+            is a preference the user is paying for. And the user did not choose it.</p>
+
+        <blockquote>
+            <p>The fastest stylesheet is the one the browser does not have to generate.</p>
+        </blockquote>
+
+        <p>The browser understands CSS. It has understood CSS for nearly thirty years.
+            It will understand the CSS you write today, tomorrow, and a decade from now,
+            without a runtime, without a library, without a single kilobyte of
+            JavaScript standing between your styles and the screen. The tax is
+            voluntary. One simply has to stop paying it.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
