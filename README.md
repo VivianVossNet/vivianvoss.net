@@ -10,7 +10,7 @@ Built with [CASTD](https://castd.run), an ultralight full-stack web server in Ru
 - **Templates:** CAST template language
 - **Styling:** castd.css (OKLCH, @layer, light-dark())
 - **Reverse Proxy:** Caddy
-- **OS:** FreeBSD (BEAUNIX)
+- **OS:** FreeBSD
 
 ## Local Development
 
