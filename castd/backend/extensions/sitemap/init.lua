@@ -11,6 +11,7 @@ local pages = {
     { loc = "/blog",       priority = "0.9",  changefreq = "weekly"  },
     { loc = "/contact",    priority = "0.5",  changefreq = "yearly"  },
     -- blog articles
+    { loc = "/blog/the-kernel-question",          priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-mongodb-tax",           priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-docker-tax",            priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-javascript-tax",        priority = "0.7", changefreq = "yearly" },
