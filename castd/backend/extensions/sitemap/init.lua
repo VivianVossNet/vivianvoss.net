@@ -11,6 +11,7 @@ local pages = {
     { loc = "/blog",       priority = "0.9",  changefreq = "weekly"  },
     { loc = "/contact",    priority = "0.5",  changefreq = "yearly"  },
     -- blog articles
+    { loc = "/blog/containerise-everything",  priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/css-learns-to-think",       priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/why-every-byte-matters",    priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-original-microservices", priority = "0.7", changefreq = "yearly" },
