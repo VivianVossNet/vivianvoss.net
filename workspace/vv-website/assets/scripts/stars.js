@@ -299,6 +299,42 @@
         "   #  #   "
     ];
 
+    /* --- Thruster trail (Tron-style) ---------------------------------------- */
+    var trail = [];
+    var TRAIL_MAX = 12;
+
+    function updateTrail(x, y) {
+        var px = 3;
+        var sh = SHIP.length * px;
+        /* two exhaust points: the "#  #" gaps at row 7 (last row), columns 3 and 6 */
+        trail.unshift({ x1: x - 3 * px, y1: y + sh / 2, x2: x + 2 * px, y2: y + sh / 2 });
+        if (trail.length > TRAIL_MAX) trail.length = TRAIL_MAX;
+    }
+
+    function drawTrail(now) {
+        if (trail.length < 2) return;
+        var px = 3;
+        for (var i = 0; i < trail.length; i++) {
+            var t = trail[i];
+            var age = i / TRAIL_MAX;
+            var alpha = (1 - age) * 0.65;
+            if (alpha <= 0) continue;
+            /* flame gradient: red 10% → yellow 30% → white 60% (from ship outward) */
+            var color;
+            if (age < 0.1) {
+                color = "oklch(62% 0.22 25 / " + alpha + ")";
+            } else if (age < 0.4) {
+                color = "oklch(82% 0.18 85 / " + alpha + ")";
+            } else {
+                color = "oklch(95% 0.03 90 / " + alpha + ")";
+            }
+            ctx.fillStyle = color;
+            var spread = age * 2;
+            ctx.fillRect(t.x1 - spread, t.y1 + i * 1.5, px, px);
+            ctx.fillRect(t.x2 + spread, t.y2 + i * 1.5, px, px);
+        }
+    }
+
     function drawShip(x, y) {
         if (!hasMouse) return;
         var px = 3;
@@ -314,6 +350,82 @@
                 }
             }
         }
+    }
+
+    /* --- Shield bubble pickup (rotating Tron border) ----------------------- */
+    function drawBubblePickup(a, now) {
+        var dim = (paused || (gameOver && !isGamePage)) ? 0.3 : 1;
+        var radius = 12;
+        var angle = now * 0.003;
+
+        /* filled interior — subtle white glow */
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, radius - 2, 0, 6.28);
+        var glow = 0.15 + 0.1 * Math.sin(now * 0.005);
+        ctx.fillStyle = "oklch(95% 0.03 200 / " + (glow * dim) + ")";
+        ctx.fill();
+
+        /* rotating Tron border — draw as segmented arc with cycling hues */
+        var segments = 24;
+        var segAngle = 6.28 / segments;
+        ctx.lineWidth = 2.5;
+        for (var i = 0; i < segments; i++) {
+            var hue = (angle * 57.3 + i * (360 / segments)) % 360;
+            /* white base with green/pink/blue cycling */
+            var lightness = 85 + 10 * Math.sin(hue * 0.0174);
+            ctx.beginPath();
+            ctx.arc(a.x, a.y, radius, angle + i * segAngle, angle + (i + 0.7) * segAngle);
+            ctx.strokeStyle = "oklch(" + lightness + "% 0.2 " + hue + " / " + (0.8 * dim) + ")";
+            ctx.stroke();
+        }
+    }
+
+    /* --- Active shield around ship ---------------------------------------- */
+    function drawShield(x, y, now) {
+        if (!shieldActive) return;
+        var remaining = shieldEnd - now;
+        if (remaining <= 0) {
+            shieldActive = false;
+            return;
+        }
+
+        var px = 3;
+        var shipDiameter = SHIP[0].length * px; /* ~30px */
+        var shieldRadius = shipDiameter * 2; /* 4x ship diameter = 2x radius */
+        var angle = now * 0.004;
+
+        /* flicker warning in last 2 seconds */
+        var flicker = 1;
+        if (remaining < 2000) {
+            flicker = Math.floor(now / 100) % 2 === 0 ? 0.4 : 1;
+        }
+
+        /* rotating Tron border segments */
+        var segments = 32;
+        var segAngle = 6.28 / segments;
+        ctx.lineWidth = 3;
+        for (var i = 0; i < segments; i++) {
+            var hue = (angle * 57.3 + i * (360 / segments)) % 360;
+            var lightness = 85 + 10 * Math.sin(hue * 0.0174);
+            ctx.beginPath();
+            ctx.arc(x, y, shieldRadius, angle + i * segAngle, angle + (i + 0.7) * segAngle);
+            ctx.strokeStyle = "oklch(" + lightness + "% 0.22 " + hue + " / " + (0.6 * flicker) + ")";
+            ctx.stroke();
+        }
+
+        /* subtle inner glow fill */
+        ctx.beginPath();
+        ctx.arc(x, y, shieldRadius - 2, 0, 6.28);
+        ctx.fillStyle = "oklch(90% 0.05 200 / " + (0.06 * flicker) + ")";
+        ctx.fill();
+
+        /* countdown number above ship */
+        var secs = Math.ceil(remaining / 1000);
+        ctx.font = "8px " + ARCADE_FONT;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillStyle = "oklch(95% 0.02 0 / " + (0.85 * flicker) + ")";
+        ctx.fillText("" + secs, x, y - SHIP.length * px / 2 - 4);
     }
 
     /* --- Aliens (pixel art) ----------------------------------------------- */
@@ -354,6 +466,33 @@
         " #   # "
     ];
 
+    var NUKE = [
+        " ### ",
+        "#####",
+        "#####",
+        "#####",
+        " ### "
+    ];
+
+    /* Shield bubble — collectible orb, not shootable */
+    var BUBBLE = [
+        "  ###  ",
+        " #   # ",
+        "#     #",
+        "#     #",
+        "#     #",
+        " #   # ",
+        "  ###  "
+    ];
+
+    /* --- Shield state ----------------------------------------------------- */
+    var shieldActive = false;
+    var shieldEnd = 0;          /* timestamp when shield expires */
+    var SHIELD_DURATION = 10000; /* 10 seconds */
+    var lastBubble = 0;
+    var bubbleSpawnedThisLevel = false;
+    var lastBubbleLevel = 0;
+
     function getLevel() {
         return Math.floor(score / 50) + 1;
     }
@@ -372,10 +511,15 @@
     var SPAWN_INTERVAL = 3000;
     var ELITE_INTERVAL = 15000;
     var HEALER_INTERVAL = 45000;
+    var NUKE_INTERVAL = 20000;
     var lastSpawn = 0;
     var lastElite = 0;
     var lastHealer = 0;
     var lastGunner = 0;
+    var lastNuke = 0;
+    var nukeSpawnedThisLevel = false;
+    var lastNukeLevel = 0;
+    var screenFlash = 0;
     var enemyBullets = [];
 
     function gunnerInterval() {
@@ -425,6 +569,47 @@
                 t: Math.random() * 6.28
             });
         }
+        /* Nuke orb — spawns from level 10, at least once per level */
+        var lvl = getLevel();
+        if (lvl >= 10) {
+            if (lvl !== lastNukeLevel) {
+                nukeSpawnedThisLevel = false;
+                lastNukeLevel = lvl;
+            }
+            if (now - lastNuke >= NUKE_INTERVAL && !nukeSpawnedThisLevel) {
+                lastNuke = now;
+                nukeSpawnedThisLevel = true;
+                aliens.push({
+                    x: 40 + Math.random() * (w - 80),
+                    y: -20,
+                    speed: (0.4 + Math.random() * 0.5) * 1.1,
+                    drift: 0,
+                    alive: true,
+                    nuke: true,
+                    t: Math.random() * 6.28
+                });
+            }
+        }
+        /* Shield bubble — spawns from level 20, once every 2 levels */
+        if (lvl >= 20 && lvl % 2 === 0) {
+            if (lvl !== lastBubbleLevel) {
+                bubbleSpawnedThisLevel = false;
+                lastBubbleLevel = lvl;
+            }
+            if (!bubbleSpawnedThisLevel) {
+                bubbleSpawnedThisLevel = true;
+                lastBubble = now;
+                aliens.push({
+                    x: 40 + Math.random() * (w - 80),
+                    y: -25,
+                    speed: 0.35 + Math.random() * 0.3,
+                    drift: 0,
+                    alive: true,
+                    bubble: true,
+                    t: Math.random() * 6.28
+                });
+            }
+        }
         if (now - lastSpawn < spawnInterval()) return;
         lastSpawn = now;
         var count = Math.min(getLevel(), 21);
@@ -447,14 +632,23 @@
 
     function drawAlien(a, now) {
         if (!a.alive) return;
-        var sprite = a.healer ? HEART : a.gunner ? GUNNER : a.elite ? ELITE : ALIEN;
-        var px = a.healer ? 2 : a.gunner ? 3 : a.elite ? 2 : 3;
+        /* Bubble has special circular rendering */
+        if (a.bubble) {
+            drawBubblePickup(a, now);
+            return;
+        }
+        var sprite = a.nuke ? NUKE : a.healer ? HEART : a.gunner ? GUNNER : a.elite ? ELITE : ALIEN;
+        var px = a.nuke ? 3 : a.healer ? 2 : a.gunner ? 3 : a.elite ? 2 : 3;
         var aw = sprite[0].length * px;
         var ah = sprite.length * px;
         var ox = a.x - aw / 2;
         var oy = a.y - ah / 2;
         var dim = (paused || (gameOver && !isGamePage)) ? 0.3 : 1;
-        if (a.healer) {
+        if (a.nuke) {
+            var glow = 0.7 + 0.3 * Math.sin(now * 0.008);
+            var hue = 80 + 30 * Math.sin(now * 0.003);
+            ctx.fillStyle = "oklch(92% 0.15 " + hue + " / " + (glow * dim) + ")";
+        } else if (a.healer) {
             var blink = 0.3 + 0.5 * Math.abs(Math.sin(now * 0.004));
             ctx.fillStyle = "oklch(65% 0.2 25 / " + (blink * dim) + ")";
         } else if (a.gunner) {
@@ -504,6 +698,12 @@
                         });
                     }
                 }
+            } else if (a.nuke) {
+                a.t += 0.05;
+                a.x += Math.sin(a.t) * 2;
+            } else if (a.bubble) {
+                a.t += 0.03;
+                a.x += Math.sin(a.t) * 1.5;
             } else if (a.elite) {
                 a.t += 0.06;
                 a.x += Math.sin(a.t) * 2.5;
@@ -513,7 +713,7 @@
             if (a.x < 20) { a.x = 20; a.drift = Math.abs(a.drift || 0.3); }
             if (a.x > w - 20) { a.x = w - 20; a.drift = -Math.abs(a.drift || 0.3); }
             if (a.y > h + 40) {
-                if (a.healer) {
+                if (a.healer || a.nuke || a.bubble) {
                     aliens.splice(i, 1);
                 } else {
                     aliens.splice(i, 1);
@@ -590,6 +790,19 @@
 
     function checkEnemyBulletHits(now) {
         if (lives <= 0 || now < shipInvuln) return;
+        /* Shield absorbs enemy bullets */
+        if (shieldActive && now < shieldEnd) {
+            var shieldR = SHIP[0].length * 3 * 2;
+            for (var i = enemyBullets.length - 1; i >= 0; i--) {
+                var b = enemyBullets[i];
+                var dx = b.x - mx;
+                var dy = b.y - my;
+                if (dx * dx + dy * dy < shieldR * shieldR) {
+                    enemyBullets.splice(i, 1);
+                }
+            }
+            return;
+        }
         for (var i = enemyBullets.length - 1; i >= 0; i--) {
             var b = enemyBullets[i];
             if (Math.abs(b.x - mx) < 12 && Math.abs(b.y - my) < 10) {
@@ -656,6 +869,7 @@
                 lives: lives,
                 dualShot: dualShot,
                 powerShot: powerShot,
+                paused: paused,
                 aliens: []
             };
             for (var i = 0; i < aliens.length; i++) {
@@ -666,7 +880,13 @@
                         speed: aliens[i].speed,
                         drift: aliens[i].drift
                     };
-                    if (aliens[i].healer) {
+                    if (aliens[i].bubble) {
+                        sa.bubble = true;
+                        sa.t = aliens[i].t;
+                    } else if (aliens[i].nuke) {
+                        sa.nuke = true;
+                        sa.t = aliens[i].t;
+                    } else if (aliens[i].healer) {
                         sa.healer = true;
                         sa.t = aliens[i].t;
                         sa.t2 = aliens[i].t2;
@@ -702,6 +922,7 @@
             if (lives <= 0) enterGameOver();
             if (state.dualShot) dualShot = true;
             if (state.powerShot) powerShot = true;
+            if (state.paused) paused = true;
             if (state.aliens && state.aliens.length) {
                 for (var i = 0; i < state.aliens.length; i++) {
                     var a = state.aliens[i];
@@ -710,9 +931,15 @@
                         speed: a.speed, drift: a.drift || 0,
                         alive: true, elite: !!a.elite,
                         healer: !!a.healer,
-                        gunner: !!a.gunner
+                        gunner: !!a.gunner,
+                        nuke: !!a.nuke,
+                        bubble: !!a.bubble
                     };
-                    if (a.healer) {
+                    if (a.bubble) {
+                        restored.t = a.t || 0;
+                    } else if (a.nuke) {
+                        restored.t = a.t || 0;
+                    } else if (a.healer) {
                         restored.t = a.t || 0;
                         restored.t2 = a.t2 || 0;
                     } else if (a.gunner) {
@@ -754,6 +981,8 @@
         lastElite = now;
         lastHealer = now;
         lastGunner = now;
+        lastNuke = now;
+        lastBubble = now;
     }
 
     function resetGame() {
@@ -761,6 +990,7 @@
         bullets = [];
         enemyBullets = [];
         explosions = [];
+        trail = [];
         initTimers();
         score = 0;
         lives = MAX_LIVES;
@@ -768,6 +998,13 @@
         powerShot = false;
         paused = false;
         gameOver = false;
+        nukeSpawnedThisLevel = false;
+        lastNukeLevel = 0;
+        screenFlash = 0;
+        shieldActive = false;
+        shieldEnd = 0;
+        bubbleSpawnedThisLevel = false;
+        lastBubbleLevel = 0;
         showLeaderboard = false;
         leaderboardFetched = false;
         playerQualified = false;
@@ -781,16 +1018,44 @@
         saveState();
     }
 
+    /* --- Nuke -------------------------------------------------------------- */
+    function triggerNuke(nukeX, nukeY) {
+        screenFlash = 1;
+        sfxHit();
+        addExplosion(nukeX, nukeY);
+        var nukePoints = 0;
+        for (var i = aliens.length - 1; i >= 0; i--) {
+            if (!aliens[i].alive) continue;
+            if (aliens[i].nuke || aliens[i].bubble) continue;
+            if (aliens[i].healer) { aliens[i].alive = false; continue; }
+            addExplosion(aliens[i].x, aliens[i].y);
+            var pts = aliens[i].elite ? 10 : aliens[i].gunner ? 5 : 1;
+            nukePoints += pts;
+            aliens[i].alive = false;
+        }
+        enemyBullets = [];
+        score += nukePoints;
+        if (scoreEl) scoreEl.textContent = score;
+        updateLevel();
+        saveState();
+    }
+
     /* --- Collision -------------------------------------------------------- */
     function checkCollisions() {
         for (var i = bullets.length - 1; i >= 0; i--) {
             for (var j = aliens.length - 1; j >= 0; j--) {
-                if (!aliens[j].alive) continue;
+                if (!aliens[j].alive || aliens[j].bubble) continue;
                 var dx = bullets[i].x - aliens[j].x;
                 var dy = bullets[i].y - aliens[j].y;
-                var hitW = aliens[j].healer ? 7 : aliens[j].gunner ? 12 : aliens[j].elite ? 8 : 14;
-                var hitH = aliens[j].healer ? 6 : aliens[j].gunner ? 10 : aliens[j].elite ? 6 : 12;
+                var hitW = aliens[j].nuke ? 8 : aliens[j].healer ? 7 : aliens[j].gunner ? 12 : aliens[j].elite ? 8 : 14;
+                var hitH = aliens[j].nuke ? 8 : aliens[j].healer ? 6 : aliens[j].gunner ? 10 : aliens[j].elite ? 6 : 12;
                 if (Math.abs(dx) < hitW && Math.abs(dy) < hitH) {
+                    if (aliens[j].nuke) {
+                        aliens[j].alive = false;
+                        bullets.splice(i, 1);
+                        triggerNuke(aliens[j].x, aliens[j].y);
+                        break;
+                    }
                     addExplosion(aliens[j].x, aliens[j].y);
                     if (aliens[j].healer) {
                         lives = Math.min(MAX_LIVES, lives + 1);
@@ -819,24 +1084,63 @@
         if (lives <= 0) return;
         var shipW = 15;
         var shipH = 12;
-        /* Collect healer hearts on touch (always, even during invuln) */
+        /* Collect healer hearts and nuke orbs on touch (always, even during invuln) */
         for (var i = aliens.length - 1; i >= 0; i--) {
             var a = aliens[i];
-            if (!a.alive || !a.healer) continue;
-            var dx = Math.abs(a.x - mx);
-            var dy = Math.abs(a.y - my);
-            if (dx < (shipW + 7) / 2 && dy < (shipH + 6) / 2) {
-                addExplosion(a.x, a.y);
-                a.alive = false;
-                lives = Math.min(MAX_LIVES, lives + 1);
-                updateLivesDisplay();
-                saveState();
+            if (!a.alive) continue;
+            if (a.healer) {
+                var dx = Math.abs(a.x - mx);
+                var dy = Math.abs(a.y - my);
+                if (dx < (shipW + 7) / 2 && dy < (shipH + 6) / 2) {
+                    addExplosion(a.x, a.y);
+                    a.alive = false;
+                    lives = Math.min(MAX_LIVES, lives + 1);
+                    updateLivesDisplay();
+                    saveState();
+                }
+            } else if (a.nuke) {
+                var dx = Math.abs(a.x - mx);
+                var dy = Math.abs(a.y - my);
+                if (dx < (shipW + 8) / 2 && dy < (shipH + 8) / 2) {
+                    a.alive = false;
+                    triggerNuke(a.x, a.y);
+                }
+            } else if (a.bubble) {
+                var dx = Math.abs(a.x - mx);
+                var dy = Math.abs(a.y - my);
+                if (dx < (shipW + 14) / 2 && dy < (shipH + 14) / 2) {
+                    a.alive = false;
+                    shieldActive = true;
+                    shieldEnd = now + SHIELD_DURATION;
+                    sfxHit();
+                }
             }
+        }
+        /* Shield ramming — kill aliens within shield radius */
+        if (shieldActive && now < shieldEnd) {
+            var shieldR = SHIP[0].length * 3 * 2; /* 4x ship diameter / 2 */
+            for (var i = aliens.length - 1; i >= 0; i--) {
+                var a = aliens[i];
+                if (!a.alive || a.healer || a.nuke || a.bubble) continue;
+                var dx = a.x - mx;
+                var dy = a.y - my;
+                if (dx * dx + dy * dy < shieldR * shieldR) {
+                    addExplosion(a.x, a.y);
+                    var pts = a.elite ? 10 : a.gunner ? 5 : 1;
+                    score += pts;
+                    a.alive = false;
+                    sfxHit();
+                }
+            }
+            if (scoreEl) scoreEl.textContent = score;
+            updateLevel();
+            saveState();
+            return; /* shield active — skip normal damage check */
         }
         if (now < shipInvuln) return;
         for (var i = aliens.length - 1; i >= 0; i--) {
             var a = aliens[i];
-            if (!a.alive || a.healer) continue;
+            if (!a.alive || a.healer || a.nuke || a.bubble) continue;
             var dx = Math.abs(a.x - mx);
             var dy = Math.abs(a.y - my);
             var aW = a.elite ? 5 : a.gunner ? 12 : 14;
@@ -886,6 +1190,9 @@
             lastElite += elapsed;
             lastHealer += elapsed;
             lastGunner += elapsed;
+            lastNuke += elapsed;
+            lastBubble += elapsed;
+            if (shieldEnd > 0) shieldEnd += elapsed;
             if (shipInvuln > 0) shipInvuln += elapsed;
             for (var gi = 0; gi < aliens.length; gi++) {
                 if (aliens[gi].gunner && aliens[gi].lastShot) aliens[gi].lastShot += elapsed;
@@ -897,6 +1204,7 @@
             pauseEl.style.fontSize = paused ? "calc(var(--unit) * 8)" : "";
         }
         if (pauseHintEl) pauseHintEl.textContent = paused ? "Space Resume" : "Space Pause";
+        saveState();
     }
 
     /* --- Game over -------------------------------------------------------- */
@@ -1409,8 +1717,11 @@
                 drawEnemyBullets();
                 drawExplosions();
                 if (lives > 0) {
+                    updateTrail(mx, my);
+                    drawTrail(now);
                     drawShip(mx, my);
-                    if (now < shipInvuln) {
+                    drawShield(mx, my, now);
+                    if (!shieldActive && now < shipInvuln) {
                         ctx.fillStyle = "oklch(75% 0.12 230 / " + (0.15 + 0.15 * Math.sin(now * 0.02)) + ")";
                         ctx.fillRect(mx - 18, my - 14, 36, 28);
                     }
@@ -1420,6 +1731,14 @@
                     saveTimer = now;
                     saveState();
                 }
+            }
+
+            /* Screen flash from nuke */
+            if (screenFlash > 0) {
+                ctx.fillStyle = "oklch(95% 0.08 85 / " + (screenFlash * 0.7) + ")";
+                ctx.fillRect(0, 0, w, h);
+                screenFlash -= 0.04;
+                if (screenFlash < 0) screenFlash = 0;
             }
         }
 
@@ -1441,7 +1760,19 @@
             hasMouse = true;
             updateLivesDisplay();
             if (isGamePage && audioEl) audioEl.style.display = "";
-            if (isGamePage && !gameOver) {
+            if (isGamePage && !gameOver && paused) {
+                /* Restore paused state — skip countdown, show HUD */
+                pausedAt = performance.now();
+                if (pauseWrapEl) pauseWrapEl.style.display = "";
+                if (pauseEl) {
+                    pauseEl.innerHTML = "&#x25B6;";
+                    pauseEl.style.fontSize = "calc(var(--unit) * 8)";
+                }
+                if (pauseHintEl) pauseHintEl.textContent = "Space Resume";
+                if (scoreEl) scoreEl.parentElement.style.display = "";
+                if (livesEl) livesEl.style.display = "";
+                if (restartEl) restartEl.style.display = "";
+            } else if (isGamePage && !gameOver) {
                 startCountdown();
             } else if (gameOver) {
                 /* Game over active — HUD stays hidden, canvas draws overlay */
@@ -1450,6 +1781,14 @@
                 if (livesEl) livesEl.style.display = "";
                 if (pauseWrapEl) pauseWrapEl.style.display = "";
                 if (restartEl) restartEl.style.display = "";
+                if (paused) {
+                    pausedAt = performance.now();
+                    if (pauseEl) {
+                        pauseEl.innerHTML = "&#x25B6;";
+                        pauseEl.style.fontSize = "calc(var(--unit) * 8)";
+                    }
+                    if (pauseHintEl) pauseHintEl.textContent = "Space Resume";
+                }
             }
         }
     });
