@@ -20,6 +20,25 @@
 
     var STORAGE_KEY = "vv-invaders";
 
+    /* --- Reading Mode ------------------------------------------------------ */
+    var readingMode = localStorage.getItem("vv-reading-mode") === "true";
+    var readingBtn = document.querySelector(".reading-toggle");
+
+    function applyReadingMode(on) {
+        readingMode = on;
+        document.documentElement.classList.toggle("reading-mode", on);
+        if (readingBtn) readingBtn.setAttribute("aria-pressed", on ? "true" : "false");
+        localStorage.setItem("vv-reading-mode", on ? "true" : "false");
+    }
+
+    if (readingMode) applyReadingMode(true);
+
+    if (readingBtn) {
+        readingBtn.addEventListener("click", function () {
+            applyReadingMode(!readingMode);
+        });
+    }
+
     /* --- Audio (8-bit chiptune, Web Audio API) ----------------------------- */
     var audioCtx = null;
     var musicGain = null;
