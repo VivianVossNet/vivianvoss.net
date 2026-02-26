@@ -1,0 +1,370 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The CI/CD Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="45-minute pipelines, 20 per cent of the work week lost to YAML, and a supply chain that leaked 23,000 repositories of secrets. The CI/CD invoice, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-cicd-tax{( endslot )}
+
+{( slot og-title )}The CI/CD Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}45-minute pipelines, 20 per cent of the work week lost to YAML, and a supply chain compromise that leaked 23,000 repos. The CI/CD invoice.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "CI/CD Pipelines: What You Actually Pay",
+    "datePublished": "2026-01-23",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-cicd-tax",
+    "description": "45-minute pipelines, 20 per cent of the work week lost to YAML, and a supply chain that leaked 23,000 repositories of secrets. The CI/CD invoice, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-23">23 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>CI/CD Pipelines: What You Actually Pay</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> &#x25A0; Episode 06</p>
+
+        <blockquote>
+            <p>&#x201C;git commit -m &#x2018;fix ci&#x2019;&#x201D;</p>
+        </blockquote>
+
+        <p>The most honest commit message in software engineering. Not &#x201C;refactor authentication
+            module&#x201D; or &#x201C;improve performance of dashboard query.&#x201D; Just: the pipeline
+            broke, and I am fixing the pipeline. Again. The code was correct. The YAML was not. Or
+            rather, the YAML was correct but the indentation was wrong, which in a whitespace-sensitive
+            configuration language amounts to the same thing.</p>
+
+        <p>CI/CD &#x2014; Continuous Integration, Continuous Deployment &#x2014; is the industry&#x2019;s
+            answer to the question &#x201C;how do we ship software reliably?&#x201D; The answer, it
+            turns out, is a forty-five-minute pipeline that runs on every pull request, consumes six
+            developer-hours per day in waiting time, and costs
+            <a href="https://blog.jetbrains.com/teamcity/2026/01/the-roi-of-dev-experience/" target="_blank" rel="noopener">$13,445 per developer per year</a>
+            in lost productivity. Let us examine the invoice.</p>
+
+        <h2>The Waiting Tax</h2>
+
+        <p>A developer opens a pull request. The pipeline begins. Forty-five minutes later, it
+            finishes &#x2014; or fails on a flaky test that passed locally, or times out on a
+            Docker layer cache that was evicted overnight, or discovers that a transitive
+            dependency released a patch version that breaks the build in a way nobody could
+            have predicted because nobody reads changelogs for packages four levels deep.</p>
+
+        <p>While the pipeline runs, the developer context-switches. Picks up another ticket.
+            Loses the mental model of the code they just wrote. When the pipeline finally reports
+            back &#x2014; red, naturally &#x2014; the developer must reload that mental model,
+            diagnose the failure, fix it, push again, and wait another forty-five minutes. Two
+            cycles of this, and the morning is gone.</p>
+
+        <svg viewBox="0 0 520 280" aria-label="Developer time breakdown: a typical day with CI/CD pipelines. 6 hours spent waiting for pipelines, context-switching, and fixing YAML. Only 4 hours of actual feature development remain." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .ci-title { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ci-label { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 11px; }
+                .ci-value { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .ci-muted { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 10px; }
+                .ci-bar { fill: var(--accent); opacity: 0.7; rx: 2; }
+                .ci-bar-dim { fill: var(--border); opacity: 0.3; rx: 2; }
+                .ci-axis { stroke: var(--border); stroke-width: 1; }
+                .ci-pct { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 20px; font-weight: 700; }
+            </style>
+            <text x="260" y="20" class="ci-title" text-anchor="middle">The Developer Day (8 hours)</text>
+            <!-- Axis -->
+            <line class="ci-axis" x1="170" y1="40" x2="170" y2="230"/>
+            <!-- Pipeline waiting -->
+            <text x="165" y="68" class="ci-label" text-anchor="end">Pipeline wait</text>
+            <rect x="170" y="54" width="188" height="24" class="ci-bar"/>
+            <text x="366" y="71" class="ci-value">3 hrs</text>
+            <!-- Context switching -->
+            <text x="165" y="108" class="ci-label" text-anchor="end">Context switch</text>
+            <rect x="170" y="94" width="125" height="24" class="ci-bar" style="opacity: 0.55;"/>
+            <text x="303" y="111" class="ci-value">2 hrs</text>
+            <!-- YAML fixing -->
+            <text x="165" y="148" class="ci-label" text-anchor="end">Fix CI/YAML</text>
+            <rect x="170" y="134" width="63" height="24" class="ci-bar" style="opacity: 0.4;"/>
+            <text x="241" y="151" class="ci-value">1 hr</text>
+            <!-- Separator -->
+            <line x1="170" y1="175" x2="490" y2="175" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4"/>
+            <!-- Actual coding -->
+            <text x="165" y="208" class="ci-label" text-anchor="end">Feature work</text>
+            <rect x="170" y="194" width="125" height="24" class="ci-bar-dim"/>
+            <text x="303" y="211" class="ci-value" style="fill: var(--muted);">2 hrs</text>
+            <!-- Summary -->
+            <text x="260" y="258" class="ci-pct" text-anchor="middle">20% of the week</text>
+            <text x="260" y="275" class="ci-muted" text-anchor="middle">lost to the pipeline, not the product</text>
+        </svg>
+
+        <p>Six hours per day. Twenty per cent of the working week. Not writing features. Not fixing
+            bugs. Not thinking about architecture. Waiting for a machine to tell you what you already
+            knew: the code works. According to JetBrains&#x2019; 2026 analysis of developer experience
+            ROI, that waiting time costs $13,445 per developer per year. For a team of twenty, that is
+            a quarter of a million dollars annually, spent watching progress bars.</p>
+
+        <h2>The YAML Problem</h2>
+
+        <p>The pipeline is defined in YAML. This is the first structural error. YAML is a
+            serialisation format that was never designed to be a programming language, yet CI/CD
+            platforms have collectively decided it should be one. It is whitespace-sensitive, which
+            means a single misplaced space can invalidate the entire pipeline &#x2014; silently,
+            because YAML does not throw syntax errors so much as reinterpret your intent.</p>
+
+        <p>It is not locally testable. The feedback loop for pipeline configuration is: edit YAML,
+            commit, push, wait for the runner to pick it up, wait for the execution to reach your
+            change, discover the error, repeat. This is not development. This is debugging by
+            deployment, which the industry spent two decades condemning before enshrining it as
+            standard practice for infrastructure configuration.</p>
+
+        <p>The file grows. Conditionals appear. Matrix builds. Caching strategies. Secrets management.
+            Environment-specific overrides. What began as a ten-line build script is now a
+            three-hundred-line YAML document that nobody fully understands, nobody dares refactor,
+            and everyone quietly hopes will not break on the next merge to main. It is the
+            <code>Makefile</code> of the cloud generation, except that <code>make</code> at
+            least runs locally.</p>
+
+        <h2>The Supply Chain</h2>
+
+        <p>The pipeline does not merely run your code. It runs everyone else&#x2019;s. The modern
+            CI/CD pipeline is a composition of third-party actions, orbs, templates, and plugins
+            &#x2014; a marketplace of executable infrastructure, maintained by strangers, pinned
+            (if you are fortunate) to a specific version, and granted access to your build environment,
+            your secrets, and your deployment credentials.</p>
+
+        <p>In March 2025, this arrangement produced its inevitable consequence.</p>
+
+        <p><a href="https://github.com/advisories/GHSA-mrrh-fwg8-r2c3" target="_blank" rel="noopener">CVE-2025-30066</a>:
+            <code>tj-actions/changed-files</code>, a widely used GitHub Action, was compromised.
+            The attack injected code that extracted CI/CD secrets &#x2014; API keys, deployment tokens,
+            cloud credentials &#x2014; from the runner environment and wrote them to the build log.
+            According to
+            <a href="https://unit42.paloaltonetworks.com/github-actions-supply-chain-attack/" target="_blank" rel="noopener">Palo Alto&#x2019;s Unit 42</a>,
+            23,000 repositories were affected. Twenty-three thousand codebases, each trusting a
+            third-party action with their secrets, each discovering that the trust was misplaced.</p>
+
+        <svg viewBox="0 0 520 310" aria-label="CI/CD supply chain attack: a third-party action compromise flows from the marketplace through the pipeline runner into your secrets, credentials, and deployment tokens. 23,000 repositories affected." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .sc-title { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .sc-label { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 11px; font-weight: 600; }
+                .sc-item { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 10px; }
+                .sc-muted { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 10px; }
+                .sc-accent { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .sc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .sc-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .sc-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#sc-arrowhead); }
+                .sc-arrow-dim { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#sc-arrowhead-dim); }
+                .sc-count { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 22px; font-weight: 700; }
+            </style>
+            <defs>
+                <marker id="sc-arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+                </marker>
+                <marker id="sc-arrowhead-dim" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--muted)"/>
+                </marker>
+            </defs>
+            <text x="260" y="20" class="sc-title" text-anchor="middle">The Supply Chain Attack</text>
+            <!-- Marketplace -->
+            <rect x="15" y="40" width="130" height="80" class="sc-box"/>
+            <text x="80" y="62" class="sc-label" text-anchor="middle">Marketplace</text>
+            <text x="80" y="80" class="sc-item" text-anchor="middle">tj-actions/</text>
+            <text x="80" y="94" class="sc-item" text-anchor="middle">changed-files</text>
+            <text x="80" y="112" class="sc-muted" text-anchor="middle">compromised</text>
+            <!-- Arrow 1 -->
+            <line x1="147" y1="80" x2="192" y2="80" class="sc-arrow"/>
+            <!-- Pipeline Runner -->
+            <rect x="195" y="40" width="130" height="80" class="sc-box-accent"/>
+            <text x="260" y="62" class="sc-label" text-anchor="middle">Pipeline Runner</text>
+            <text x="260" y="80" class="sc-item" text-anchor="middle">Executes action</text>
+            <text x="260" y="94" class="sc-item" text-anchor="middle">in your environment</text>
+            <text x="260" y="112" class="sc-muted" text-anchor="middle">with your permissions</text>
+            <!-- Arrow 2 -->
+            <line x1="327" y1="80" x2="372" y2="80" class="sc-arrow"/>
+            <!-- Secrets -->
+            <rect x="375" y="40" width="130" height="80" class="sc-box"/>
+            <text x="440" y="62" class="sc-label" text-anchor="middle">Your Secrets</text>
+            <text x="440" y="80" class="sc-item" text-anchor="middle">API keys</text>
+            <text x="440" y="94" class="sc-item" text-anchor="middle">Deploy tokens</text>
+            <text x="440" y="112" class="sc-item" text-anchor="middle">Cloud credentials</text>
+            <!-- Exfiltration arrow -->
+            <line x1="440" y1="122" x2="440" y2="162" class="sc-arrow"/>
+            <!-- Leaked -->
+            <rect x="375" y="165" width="130" height="40" class="sc-box-accent"/>
+            <text x="440" y="185" class="sc-accent" text-anchor="middle">Leaked to logs</text>
+            <text x="440" y="200" class="sc-muted" text-anchor="middle">publicly readable</text>
+            <!-- Impact -->
+            <text x="260" y="250" class="sc-count" text-anchor="middle">23,000 repos</text>
+            <text x="260" y="268" class="sc-muted" text-anchor="middle">CVE-2025-30066 &#x2014; tj-actions/changed-files</text>
+            <text x="260" y="300" class="sc-muted" text-anchor="middle">Source: Palo Alto Unit 42, github.com/advisories</text>
+        </svg>
+
+        <p>The marketplace model is npm for infrastructure. The same structural defect, the same
+            implicit trust model, the same inevitable breach &#x2014; except that npm packages merely
+            have access to your application. CI/CD actions have access to your deployment credentials,
+            your cloud accounts, and the keys to every environment you have ever configured.</p>
+
+        <h2>The Lock-In</h2>
+
+        <p>GitHub Actions is not GitLab CI. GitLab CI is not CircleCI. CircleCI is not Jenkins.
+            Jenkins is not Buildkite. Each platform has its own configuration format, its own
+            runner model, its own marketplace of plugins, and its own set of limitations that
+            you discover approximately six months after committing to the platform.</p>
+
+        <p>The migration path between any two of these systems is a full rewrite. Not of your
+            application &#x2014; the application, mercifully, does not care &#x2014; but of your
+            entire build, test, and deployment infrastructure. Every conditional, every cache
+            strategy, every environment variable mapping, every secret reference. The YAML is
+            not portable. The ecosystem is not interoperable. The abstractions do not abstract.</p>
+
+        <p>The CI/CD market is projected to grow from
+            <a href="https://www.mordorintelligence.com/industry-reports/continuous-integration-tools-market" target="_blank" rel="noopener">$1.73 billion to $4.53 billion by 2030</a>.
+            That growth is not driven by new capability. It is driven by lock-in. Once your pipeline
+            is written in a vendor&#x2019;s dialect of YAML, the switching cost exceeds the pain of
+            staying. The vendor knows this. The pricing reflects it.</p>
+
+        <h2>The Root Cause</h2>
+
+        <p>The CI/CD pipeline does not exist because deployment is inherently complex. It exists
+            because the stack beneath it is fragile. A pipeline that takes forty-five minutes is
+            not protecting you from deployment risk. It is compensating for a build system that
+            cannot be trusted, a test suite that cannot be relied upon, and a dependency chain
+            that nobody has audited since the project began.</p>
+
+        <p>The pipeline is a ventilator for a patient that poisoned itself.</p>
+
+        <p>Consider what the pipeline actually does: it installs dependencies (because the
+            application cannot declare them deterministically), it compiles (because the language
+            requires a build step), it runs linters (because the language permits ambiguity), it
+            executes tests (because the type system does not guarantee correctness), and it deploys
+            (because the server cannot pull code on its own). Each step compensates for a weakness
+            elsewhere. The pipeline is not the solution. It is the symptom.</p>
+
+        <svg viewBox="0 0 520 290" aria-label="The pipeline as ventilator: each pipeline stage compensates for a weakness in the stack. Install compensates for non-deterministic dependencies, compile for interpreted-to-compiled toolchains, lint for language ambiguity, test for weak type systems, deploy for servers that cannot self-update." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .vent-title { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .vent-stage { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 11px; font-weight: 600; }
+                .vent-reason { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 10px; }
+                .vent-box { fill: var(--accent); opacity: 0.12; rx: 3; }
+                .vent-arrow { stroke: var(--border); stroke-width: 1; fill: none; marker-end: url(#vent-arr); }
+                .vent-connector { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 4; }
+                .vent-label { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 10px; font-weight: 600; }
+            </style>
+            <defs>
+                <marker id="vent-arr" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+                    <polygon points="0 0, 6 2.5, 0 5" fill="var(--border)"/>
+                </marker>
+            </defs>
+            <text x="260" y="20" class="vent-title" text-anchor="middle">The Pipeline as Ventilator</text>
+            <text x="130" y="50" class="vent-label" text-anchor="middle">PIPELINE STAGE</text>
+            <text x="390" y="50" class="vent-label" text-anchor="middle">COMPENSATES FOR</text>
+            <!-- Install -->
+            <rect x="30" y="62" width="200" height="30" class="vent-box"/>
+            <text x="130" y="82" class="vent-stage" text-anchor="middle">npm install</text>
+            <line x1="232" y1="77" x2="278" y2="77" class="vent-connector"/>
+            <text x="390" y="82" class="vent-reason" text-anchor="middle">Non-deterministic deps</text>
+            <!-- Compile -->
+            <rect x="30" y="100" width="200" height="30" class="vent-box"/>
+            <text x="130" y="120" class="vent-stage" text-anchor="middle">tsc / webpack / vite</text>
+            <line x1="232" y1="115" x2="278" y2="115" class="vent-connector"/>
+            <text x="390" y="120" class="vent-reason" text-anchor="middle">Build step as language tax</text>
+            <!-- Lint -->
+            <rect x="30" y="138" width="200" height="30" class="vent-box"/>
+            <text x="130" y="158" class="vent-stage" text-anchor="middle">eslint / prettier</text>
+            <line x1="232" y1="153" x2="278" y2="153" class="vent-connector"/>
+            <text x="390" y="158" class="vent-reason" text-anchor="middle">Language permits ambiguity</text>
+            <!-- Test -->
+            <rect x="30" y="176" width="200" height="30" class="vent-box"/>
+            <text x="130" y="196" class="vent-stage" text-anchor="middle">jest / vitest / cypress</text>
+            <line x1="232" y1="191" x2="278" y2="191" class="vent-connector"/>
+            <text x="390" y="196" class="vent-reason" text-anchor="middle">Type system lacks guarantees</text>
+            <!-- Deploy -->
+            <rect x="30" y="214" width="200" height="30" class="vent-box"/>
+            <text x="130" y="234" class="vent-stage" text-anchor="middle">deploy script</text>
+            <line x1="232" y1="229" x2="278" y2="229" class="vent-connector"/>
+            <text x="390" y="234" class="vent-reason" text-anchor="middle">Server cannot self-update</text>
+            <!-- Flow arrows between stages -->
+            <line x1="130" y1="92" x2="130" y2="100" class="vent-arrow"/>
+            <line x1="130" y1="130" x2="130" y2="138" class="vent-arrow"/>
+            <line x1="130" y1="168" x2="130" y2="176" class="vent-arrow"/>
+            <line x1="130" y1="206" x2="130" y2="214" class="vent-arrow"/>
+            <!-- Bottom label -->
+            <text x="260" y="272" class="vent-reason" text-anchor="middle">Each stage is a plaster. The wound is the stack.</text>
+        </svg>
+
+        <h2>When It Is Legitimate</h2>
+
+        <p>Fairness requires the concession. CI/CD pipelines earn their keep in specific
+            circumstances, and pretending otherwise would be dishonest.</p>
+
+        <p><strong>Regulated industries</strong> &#x2014; finance, healthcare, aerospace &#x2014; where
+            an auditable, reproducible build process is not merely desirable but legally mandated.
+            The pipeline becomes a compliance artefact, and the cost is the cost of doing regulated
+            business. Nobody disputes this.</p>
+
+        <p><strong>Large teams</strong> &#x2014; fifty developers or more, where the coordination
+            problem genuinely exceeds what human review and trust can manage. At that scale, automated
+            gates prevent the kind of integration conflicts that would otherwise consume entire
+            sprint cycles.</p>
+
+        <p><strong>Complex monorepos</strong> &#x2014; where a change in one module can break twelve
+            others, and the dependency graph is too dense for manual reasoning. The pipeline becomes
+            a safety net, and the net is worth its weight.</p>
+
+        <p>For the remaining majority &#x2014; the team of eight, the service with four endpoints,
+            the application that deploys once a day to a single server &#x2014; the pipeline is
+            overhead dressed as best practice.</p>
+
+        <h2>The Alternative</h2>
+
+        <p><code>git push</code>. A webhook fires. The server pulls. Two shell scripts &#x2014; one
+            to build, one to deploy. The entire process completes in seconds, not minutes. No YAML.
+            No marketplace. No third-party actions with access to your secrets. No forty-five-minute
+            wait. No $13,445 per developer per year in lost productivity.</p>
+
+        <p>This is not a theoretical alternative. It is how software was deployed before the industry
+            decided that deployment required a platform, a marketplace, and a configuration language
+            that breaks on whitespace. It is how software is still deployed by teams that value
+            their time more than their tooling.</p>
+
+        <p>The pipeline stabilises a fragile stack. If the stack were not fragile, the pipeline
+            would not be necessary. Fix the disease, and the ventilator becomes redundant.</p>
+
+        <h2>The Verdict</h2>
+
+        <p>CI/CD is a $1.73 billion industry projected to reach $4.53 billion by 2030. That
+            growth is funded by developer hours &#x2014; twenty per cent of the working week,
+            across millions of engineers, spent waiting for pipelines, debugging YAML, and
+            trusting a marketplace that has already demonstrated it cannot be trusted.</p>
+
+        <blockquote>
+            <p>The pipeline is not the solution. It is the longest-running workaround in
+                the industry &#x2014; a forty-five-minute confession that the stack beneath
+                it was never reliable enough to deploy with confidence.</p>
+        </blockquote>
+
+        <p>Forty-five minutes per pipeline. Six hours per day. Twenty per cent of every
+            working week. Twenty-three thousand repositories compromised through a single
+            action. And underneath it all, a deployment that could have been two shell
+            scripts and a webhook.</p>
+
+        <p>The invoice is on the table. The ventilator is humming. Whether anyone
+            asks what the patient is actually ill with is, as always, another matter
+            entirely.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

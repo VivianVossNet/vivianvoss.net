@@ -1,0 +1,390 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Docker: The Capitulation &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Docker did not solve a technical problem. It monetised a political one. Linux could not agree on a base system, so the industry shipped the entire OS with every application.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-docker-tax{( endslot )}
+
+{( slot og-title )}Docker: The Capitulation &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Docker did not solve a technical problem. It monetised a political one. Linux fragmentation, base image bloat, and the technology that existed decades earlier.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Docker: The Capitulation",
+    "datePublished": "2026-02-06",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-docker-tax",
+    "description": "Docker did not solve a technical problem. It monetised a political one. Linux could not agree on a base system, so the industry shipped the entire OS with every application.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-06">6 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Docker: The Capitulation</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> &#x25A0; Episode 08</p>
+
+        <blockquote>
+            <p>&#x201C;Ship the entire operating system with your application, because
+                the operating system could not agree on how to install one.&#x201D;</p>
+        </blockquote>
+
+        <p>That is the pitch, stripped of its marketing. Docker did not arrive because
+            the technology was missing &#x2014; process isolation had existed since 1979.
+            Docker arrived because Linux fragmented so thoroughly that deploying a binary
+            across distributions became an exercise in diplomatic negotiation. The industry
+            did not solve the fragmentation. It surrendered to it, wrapped the surrender
+            in a <code>Dockerfile</code>, and called it innovation.</p>
+
+        <h2>The Fragmentation</h2>
+
+        <p>Linux is not one operating system. It is a kernel with opinions &#x2014;
+            hundreds of them, organised into distributions that agree on remarkably little.
+            <code>apt</code> or <code>pacman</code> or <code>dnf</code> or <code>apk</code>.
+            <a href="https://systemd.io/" target="_blank" rel="noopener">systemd</a> or
+            OpenRC or runit. glibc or musl.
+            <code>/usr/lib</code> or <code>/usr/lib64</code>. Configuration in
+            <code>/etc</code>, except when it is in <code>/usr/share</code>, except when
+            it is compiled in, except when a flag changes everything.</p>
+
+        <p>A binary compiled on Debian may not run on Alpine. A service file written for
+            systemd is meaningless on Void. A package built for Fedora requires a different
+            set of shared libraries than the same package on Ubuntu, despite both claiming
+            to be Linux.</p>
+
+        <p>This is not a bug. This is the culture &#x2014; a community that values choice
+            over coherence, which is a perfectly respectable philosophical position right
+            up until the moment you need to ship software to someone else&#x2019;s machine.</p>
+
+        <h2>The Surrender</h2>
+
+        <p>Docker&#x2019;s solution to Linux fragmentation was not to fix it. It was to
+            bypass it entirely. Ship the <em>entire userland</em> &#x2014; libraries, tools,
+            init scripts, the lot &#x2014; bundled alongside your application. The host
+            kernel provides isolation. Everything above the kernel comes in the image.</p>
+
+        <p>A 28 MB Node.js runtime becomes a 1.1 GB container image because the image
+            includes Debian. Not because Debian is needed. Because the alternative &#x2014;
+            trusting the host to provide a consistent environment &#x2014; had been tried
+            and found wanting. Docker is what happens when an ecosystem gives up on
+            compatibility and decides that duplication is cheaper than coordination.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Linux fragmentation diagram: five distributions with incompatible package managers, init systems, and C libraries. Docker's answer is to ship the entire userland per application." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .frag-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .frag-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .frag-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .frag-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .frag-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .frag-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+                .frag-fill { fill: var(--accent); opacity: 0.10; rx: 3; }
+            </style>
+            <text class="frag-label" x="260" y="18" text-anchor="middle">The Linux Fragmentation</text>
+            <!-- Column headers -->
+            <text class="frag-sub" x="58" y="42" text-anchor="middle">Debian</text>
+            <text class="frag-sub" x="152" y="42" text-anchor="middle">Fedora</text>
+            <text class="frag-sub" x="246" y="42" text-anchor="middle">Alpine</text>
+            <text class="frag-sub" x="340" y="42" text-anchor="middle">Arch</text>
+            <text class="frag-sub" x="434" y="42" text-anchor="middle">Void</text>
+            <!-- Row: Package Manager -->
+            <text class="frag-accent" x="8" y="68" transform="rotate(-90 8 68)" text-anchor="end" style="font-size: 9px;">Packages</text>
+            <rect class="frag-fill" x="18" y="50" width="80" height="26"/>
+            <text class="frag-label" x="58" y="68" text-anchor="middle">apt</text>
+            <rect class="frag-fill" x="112" y="50" width="80" height="26"/>
+            <text class="frag-label" x="152" y="68" text-anchor="middle">dnf</text>
+            <rect class="frag-fill" x="206" y="50" width="80" height="26"/>
+            <text class="frag-label" x="246" y="68" text-anchor="middle">apk</text>
+            <rect class="frag-fill" x="300" y="50" width="80" height="26"/>
+            <text class="frag-label" x="340" y="68" text-anchor="middle">pacman</text>
+            <rect class="frag-fill" x="394" y="50" width="80" height="26"/>
+            <text class="frag-label" x="434" y="68" text-anchor="middle">xbps</text>
+            <!-- Row: Init -->
+            <text class="frag-accent" x="8" y="100" transform="rotate(-90 8 100)" text-anchor="end" style="font-size: 9px;">Init</text>
+            <rect class="frag-fill" x="18" y="84" width="80" height="26"/>
+            <text class="frag-label" x="58" y="102" text-anchor="middle">systemd</text>
+            <rect class="frag-fill" x="112" y="84" width="80" height="26"/>
+            <text class="frag-label" x="152" y="102" text-anchor="middle">systemd</text>
+            <rect class="frag-fill" x="206" y="84" width="80" height="26"/>
+            <text class="frag-label" x="246" y="102" text-anchor="middle">OpenRC</text>
+            <rect class="frag-fill" x="300" y="84" width="80" height="26"/>
+            <text class="frag-label" x="340" y="102" text-anchor="middle">systemd</text>
+            <rect class="frag-fill" x="394" y="84" width="80" height="26"/>
+            <text class="frag-label" x="434" y="102" text-anchor="middle">runit</text>
+            <!-- Row: libc -->
+            <text class="frag-accent" x="8" y="134" transform="rotate(-90 8 134)" text-anchor="end" style="font-size: 9px;">libc</text>
+            <rect class="frag-fill" x="18" y="118" width="80" height="26"/>
+            <text class="frag-label" x="58" y="136" text-anchor="middle">glibc</text>
+            <rect class="frag-fill" x="112" y="118" width="80" height="26"/>
+            <text class="frag-label" x="152" y="136" text-anchor="middle">glibc</text>
+            <rect class="frag-fill" x="206" y="118" width="80" height="26"/>
+            <text class="frag-label" x="246" y="136" text-anchor="middle">musl</text>
+            <rect class="frag-fill" x="300" y="118" width="80" height="26"/>
+            <text class="frag-label" x="340" y="136" text-anchor="middle">glibc</text>
+            <rect class="frag-fill" x="394" y="118" width="80" height="26"/>
+            <text class="frag-label" x="434" y="136" text-anchor="middle">musl</text>
+            <!-- Divider -->
+            <line class="frag-divider" x1="18" y1="158" x2="502" y2="158"/>
+            <!-- Docker answer -->
+            <text class="frag-accent" x="260" y="180" text-anchor="middle">Docker&#x2019;s answer</text>
+            <text class="frag-sub" x="260" y="196" text-anchor="middle">Ship the entire userland per application</text>
+            <!-- Stacked images -->
+            <rect class="frag-box-accent" x="80" y="210" width="360" height="28"/>
+            <text class="frag-label" x="260" y="229" text-anchor="middle">Your Application (28 MB)</text>
+            <rect class="frag-box" x="80" y="240" width="360" height="28"/>
+            <text class="frag-sub" x="260" y="259" text-anchor="middle">+ Entire OS Userland (1,072 MB)</text>
+            <text class="frag-accent" x="260" y="290" text-anchor="middle">= 1.1 GB to run 28 MB of code</text>
+        </svg>
+
+        <p>The elegant irony: Docker replaced distribution fragmentation with
+            <em>base image</em> fragmentation. <code>FROM debian:bookworm</code> or
+            <code>FROM alpine:3.19</code> or <code>FROM ubuntu:24.04</code>. The same
+            incompatibilities, the same library mismatches, the same arguments about
+            glibc versus musl &#x2014; now happening inside the container instead of
+            outside it. The boundary moved. The problem did not.</p>
+
+        <h2>The Three-OS Problem</h2>
+
+        <p>Docker uses Linux kernel features &#x2014;
+            <a href="https://man7.org/linux/man-pages/man7/namespaces.7.html" target="_blank" rel="noopener">namespaces</a>
+            and
+            <a href="https://man7.org/linux/man-pages/man7/cgroups.7.html" target="_blank" rel="noopener">cgroups</a>
+            &#x2014; that exist nowhere else. On a Linux server, this is seamless. The
+            container shares the host kernel. Overhead is negligible.</p>
+
+        <p>On macOS and Windows, Docker cannot run natively. It requires a Linux virtual
+            machine.
+            <a href="https://docs.docker.com/desktop/setup/install/mac-install/" target="_blank" rel="noopener">Docker Desktop</a>
+            on a Mac means: macOS runs a hypervisor, the hypervisor runs Linux, Linux
+            runs the Docker engine, the Docker engine runs the container image &#x2014;
+            which contains <em>another</em> Linux distribution. Four layers. Three
+            operating systems. Roughly 4 GB of RAM reserved before a single container
+            starts.</p>
+
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Docker on macOS: four nested layers from macOS through hypervisor through Linux VM through Docker engine to the container image. Three operating systems, 4 GB RAM overhead." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .layer-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .layer-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .layer-accent { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .layer-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .layer-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .layer-arrow { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#layer-arrowhead); }
+                .layer-os { font: 700 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+            </style>
+            <defs>
+                <marker id="layer-arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--muted)"/>
+                </marker>
+            </defs>
+            <!-- Title -->
+            <text class="layer-label" x="170" y="20" text-anchor="middle">Docker on Linux</text>
+            <text class="layer-label" x="400" y="20" text-anchor="middle">Docker on macOS</text>
+            <!-- Linux: simple stack -->
+            <rect class="layer-box-accent" x="60" y="35" width="220" height="42"/>
+            <text class="layer-label" x="170" y="55" text-anchor="middle">Container (your app)</text>
+            <text class="layer-os" x="282" y="55">OS 1</text>
+            <line class="layer-arrow" x1="170" y1="77" x2="170" y2="95"/>
+            <rect class="layer-box" x="60" y="95" width="220" height="42"/>
+            <text class="layer-label" x="170" y="115" text-anchor="middle">Linux Kernel</text>
+            <text class="layer-sub" x="170" y="160" text-anchor="middle">Direct. Near-zero overhead.</text>
+            <!-- macOS: four layers -->
+            <rect class="layer-box-accent" x="310" y="35" width="200" height="42"/>
+            <text class="layer-label" x="410" y="50" text-anchor="middle">Container</text>
+            <text class="layer-sub" x="410" y="64" text-anchor="middle">(image Linux)</text>
+            <text class="layer-os" x="512" y="55">OS 3</text>
+            <line class="layer-arrow" x1="410" y1="77" x2="410" y2="95"/>
+            <rect class="layer-box" x="310" y="95" width="200" height="42"/>
+            <text class="layer-label" x="410" y="110" text-anchor="middle">Docker Engine</text>
+            <text class="layer-sub" x="410" y="124" text-anchor="middle">(in Linux VM)</text>
+            <line class="layer-arrow" x1="410" y1="137" x2="410" y2="155"/>
+            <rect class="layer-box" x="310" y="155" width="200" height="42"/>
+            <text class="layer-label" x="410" y="175" text-anchor="middle">Linux VM</text>
+            <text class="layer-os" x="512" y="175">OS 2</text>
+            <line class="layer-arrow" x1="410" y1="197" x2="410" y2="215"/>
+            <rect class="layer-box" x="310" y="215" width="200" height="42"/>
+            <text class="layer-label" x="410" y="235" text-anchor="middle">macOS / Hypervisor</text>
+            <text class="layer-os" x="512" y="235">OS 1</text>
+            <!-- Summary -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="20" y1="278" x2="520" y2="278"/>
+            <text class="layer-sub" x="170" y="300" text-anchor="middle">1 layer, 1 OS</text>
+            <text class="layer-accent" x="410" y="300" text-anchor="middle">4 layers, 3 OSes</text>
+            <text class="layer-sub" x="410" y="320" text-anchor="middle">~4 GB RAM before first container</text>
+        </svg>
+
+        <p>The word &#x201C;portable&#x201D; does rather a lot of work in the Docker
+            documentation. What it means, precisely, is: portable between Linux kernels.
+            Everywhere else, it is virtualisation wearing the costume of containerisation.
+            The performance penalty &#x2014; bind mounts 2.5 times slower, I/O crossing
+            a VM boundary, RAM consumed by a guest OS that exists solely to run the
+            tool that was supposed to simplify things &#x2014; is the cover charge for
+            the illusion.</p>
+
+        <h2>The Prior Art</h2>
+
+        <p>The technology Docker is credited with popularising was not new. It was not
+            even particularly young. The timeline is instructive:</p>
+
+        <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline of containerisation: chroot 1979, FreeBSD Jails 2000, Solaris Zones 2005, LXC 2008, Docker 2013. The technology existed for decades; the marketing was new." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .hist-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .hist-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .hist-year { font: 600 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .hist-line { stroke: var(--border); stroke-width: 1; }
+                .hist-dot { fill: var(--accent); }
+                .hist-dot-dim { fill: var(--border); }
+                .hist-note { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+            </style>
+            <!-- Spine -->
+            <line class="hist-line" x1="80" y1="20" x2="80" y2="300"/>
+            <!-- chroot -->
+            <circle class="hist-dot" cx="80" cy="36" r="5"/>
+            <text class="hist-year" x="100" y="40">1979</text>
+            <text class="hist-label" x="150" y="34">chroot</text>
+            <text class="hist-sub" x="150" y="50">Unix V7. Process root isolation.</text>
+            <!-- Jails -->
+            <circle class="hist-dot" cx="80" cy="92" r="5"/>
+            <text class="hist-year" x="100" y="96">2000</text>
+            <text class="hist-label" x="150" y="90"><a href="https://wiki.freebsd.org/Jails" target="_blank" rel="noopener" style="fill: var(--text); text-decoration: none;">FreeBSD Jails</a></text>
+            <text class="hist-sub" x="150" y="106">Full process isolation, networking, filesystem.</text>
+            <text class="hist-note" x="150" y="120">21 years before Docker needed a conference talk.</text>
+            <!-- Zones -->
+            <circle class="hist-dot" cx="80" cy="152" r="5"/>
+            <text class="hist-year" x="100" y="156">2005</text>
+            <text class="hist-label" x="150" y="150">Solaris Zones</text>
+            <text class="hist-sub" x="150" y="166">Resource controls, branded zones, ZFS integration.</text>
+            <!-- LXC -->
+            <circle class="hist-dot" cx="80" cy="210" r="5"/>
+            <text class="hist-year" x="100" y="214">2008</text>
+            <text class="hist-label" x="150" y="208">LXC</text>
+            <text class="hist-sub" x="150" y="224">Linux Containers. Namespaces + cgroups.</text>
+            <text class="hist-sub" x="150" y="238">Docker&#x2019;s original backend.</text>
+            <!-- Docker -->
+            <circle class="hist-dot" cx="80" cy="272" r="5"/>
+            <text class="hist-year" x="100" y="276">2013</text>
+            <text class="hist-label" x="150" y="270">Docker</text>
+            <text class="hist-sub" x="150" y="286">LXC + image format + registry + marketing.</text>
+            <text class="hist-note" x="150" y="302">The technology existed. The branding did not.</text>
+        </svg>
+
+        <p><a href="https://wiki.freebsd.org/Jails" target="_blank" rel="noopener">FreeBSD Jails</a>
+            shipped in March 2000 &#x2014; full process isolation, separate networking stacks,
+            independent filesystems. Solaris Zones followed in 2005 with resource controls
+            and ZFS integration. LXC arrived in 2008 and became Docker&#x2019;s original
+            backend before Docker replaced it with <code>libcontainer</code> in 2014.</p>
+
+        <p>Docker&#x2019;s contribution was not the container. It was the image format,
+            the registry, and &#x2014; critically &#x2014; the narrative. A five-minute
+            lightning talk at PyCon 2013, a company that understood developer experience
+            better than any Unix vendor before it, and an industry that was tired of
+            fighting with <code>apt-get</code> on twelve different distributions. The
+            technology was thirty-four years old. The marketing was new.</p>
+
+        <h2>The FreeBSD Contrast</h2>
+
+        <p>The comparison is illuminating not because FreeBSD is perfect, but because
+            it demonstrates what happens when a project chooses coherence over choice.</p>
+
+        <p>FreeBSD has one base system. One package manager: <code>pkg</code>. One
+            init system: <code>rc</code>. One libc. Packages compiled for FreeBSD 14
+            run on any FreeBSD 14 installation &#x2014; because there is only one
+            FreeBSD 14. There are no distributions. There is no fragmentation. A binary
+            built on one machine runs on every machine with the same major version.</p>
+
+        <p><a href="https://wiki.freebsd.org/Jails" target="_blank" rel="noopener">Jails</a>
+            provide isolation that is native, lightweight, and requires no virtualisation
+            on any platform FreeBSD supports. No hypervisor. No guest OS. No 4 GB of
+            RAM sacrificed to the abstraction. A jail starts in milliseconds and shares
+            the host kernel directly, because the host kernel was designed for it &#x2014;
+            not retrofitted with it.</p>
+
+        <p>This is not a philosophical preference. It is an engineering decision with
+            measurable consequences. When your base system is coherent, you do not need
+            to ship the entire OS alongside your application. You ship the application.
+            The operating system is already there, and it is the same everywhere.</p>
+
+        <h2>The Invoice</h2>
+
+        <p>The monetary costs are well-documented, if seldom totalled.</p>
+
+        <p><a href="https://www.docker.com/pricing/" target="_blank" rel="noopener">Docker Desktop</a>:
+            free for personal use, &#x20AC;9 per user per month for teams, &#x20AC;21 per
+            user per month for business. For a company of 250 developers &#x2014; the
+            threshold at which Docker Desktop
+            <a href="https://www.docker.com/blog/updating-product-subscriptions/" target="_blank" rel="noopener">requires a paid subscription</a>
+            &#x2014; the annual bill starts at &#x20AC;27,000 and climbs to &#x20AC;63,000.
+            For the privilege of running a Linux VM on hardware that does not need one.</p>
+
+        <p>Image sizes compound the cost. A typical microservices deployment pulls dozens
+            of images, each carrying its own copy of an operating system. Registry storage,
+            network transfer, CI build minutes, layer cache invalidation &#x2014; all of it
+            scales with the bloat. Two gigabytes per image is not unusual. The bandwidth
+            bill for pulling fresh images across a fleet is the line item nobody audits
+            until it appears on the quarterly report.</p>
+
+        <p>And then there are the CVEs. A base image frozen in a <code>Dockerfile</code>
+            does not update itself. Every unpatched library in that image is a vulnerability
+            that persists until someone rebuilds the image, pushes it to the registry, and
+            redeploys. The mean time between &#x201C;CVE published&#x201D; and
+            &#x201C;container actually patched&#x201D; is, in most organisations, measured
+            in weeks. In some, it is measured in the passive voice: &#x201C;it will be
+            addressed.&#x201D;</p>
+
+        <h2>The Verdict</h2>
+
+        <p>Docker is a useful tool. It solved a real deployment problem on Linux servers
+            and solved it well. The <code>Dockerfile</code> format is elegant. The
+            registry model is sound. The developer experience was, for its era,
+            genuinely excellent.</p>
+
+        <p>But the problem it solved was not a technology problem. It was a politics
+            problem. Linux distributions could not agree on a base system, a package
+            format, an init system, or a C library. Rather than fix the fragmentation,
+            the industry accepted it and built a workaround that ships the entire
+            operating system alongside every application.</p>
+
+        <p>On macOS and Windows &#x2014; where the majority of developers actually
+            work &#x2014; that workaround requires a virtual machine, consuming
+            gigabytes of RAM to simulate the operating system whose fragmentation
+            created the need for the tool in the first place. The recursion is
+            almost poetic.</p>
+
+        <blockquote>
+            <p>Docker did not solve a technical problem. It monetised a political one.
+                The technology had existed since 1979. The fragmentation had existed
+                since the first Linux distribution fork. Docker packaged the capitulation
+                into a product, gave it a whale logo, and sold it back to the engineers
+                whose ecosystem created the problem.</p>
+        </blockquote>
+
+        <p>FreeBSD has one base system. Packages work everywhere. Jails have provided
+            isolation since the year 2000. No VM required. No subscription fee. No
+            whale.</p>
+
+        <p>The invoice is &#x20AC;27,000 to &#x20AC;63,000 per year, plus 4 GB of
+            RAM per developer machine, plus 2 GB per image, plus the CVEs nobody
+            patches, plus the I/O overhead nobody measures. All of it payable to a
+            company whose product exists because an operating system could not agree
+            with itself.</p>
+
+        <p>That is not engineering. That is capitulation with a subscription model.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

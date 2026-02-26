@@ -1,0 +1,395 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Serverless: What You Actually Pay &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Serverless is not serverless. It is MicroVMs with amnesia, vendor lock-in with four incompatible dialects, and cold starts that cost more than the server you were trying to avoid.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-serverless-tax{( endslot )}
+
+{( slot og-title )}Serverless: What You Actually Pay &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Serverless is not serverless. MicroVMs with amnesia, four incompatible vendor dialects, and cold starts that cost more than the server you replaced.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Serverless: What You Actually Pay",
+    "datePublished": "2026-01-30",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-serverless-tax",
+    "description": "Serverless is not serverless. It is MicroVMs with amnesia, vendor lock-in with four incompatible dialects, and cold starts that cost more than the server you were trying to avoid.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-30">30 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Serverless: What You Actually Pay</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> &#x25A0; Episode 07</p>
+
+        <blockquote>
+            <p>&#x201C;No servers to manage.&#x201D;</p>
+        </blockquote>
+
+        <p>A sentence of admirable marketing precision. No servers <em>to manage</em>.
+            The servers are very much present. They boot, they execute your function,
+            they die. They are
+            <a href="https://firecracker-microvm.github.io/" target="_blank" rel="noopener">Firecracker MicroVMs</a>
+            &#x2014; lightweight virtual machines that spin up in under 125 milliseconds,
+            run your code in a sandboxed environment, and are destroyed the moment the
+            invocation completes. Servers with amnesia. The hardware did not disappear.
+            The responsibility for naming it did.</p>
+
+        <p>One does not eliminate infrastructure by rebranding it. One relocates the
+            complexity &#x2014; from your operations team to your cloud provider&#x2019;s
+            pricing spreadsheet, from your deployment pipeline to four incompatible
+            vendor APIs, from your monitoring dashboard to a distributed log system
+            that charges per gigabyte ingested. The servers are still there. They simply
+            have better public relations now.</p>
+
+        <h2>Four Providers, Four Dialects, Zero Portability</h2>
+
+        <p>Lambda. Azure Functions. Cloud Run. Cloudflare Workers. Four platforms, four
+            event formats, four deployment models, four completely incompatible APIs.
+            Your function does not run on &#x201C;the cloud.&#x201D; It runs on a
+            specific vendor&#x2019;s interpretation of what a function invocation should
+            look like, wrapped in a proprietary event schema that is portable in exactly
+            the way a Betamax tape is compatible with a VHS player.</p>
+
+        <p>The lock-in is not contractual. It is architectural. Your code is not
+            merely deployed on AWS &#x2014; it is <em>written in AWS</em>. The event
+            object, the context object, the handler signature, the deployment packaging,
+            the IAM role assumption, the layer system, the cold start mitigation strategies
+            &#x2014; all of it is Lambda-specific. Moving to Azure Functions is not a migration.
+            It is a rewrite. The vendor did not trap you. You trapped yourself, one
+            <code>event.Records[0].s3.bucket.name</code> at a time.</p>
+
+        <svg viewBox="0 0 520 300" aria-label="Vendor lock-in comparison. Four serverless providers: AWS Lambda, Azure Functions, Google Cloud Run, and Cloudflare Workers. Each has its own event format, handler signature, deployment model, and runtime constraints. Zero shared API surface." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .sl-title { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .sl-head { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .sl-item { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 10px; }
+                .sl-muted { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 9px; }
+                .sl-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .sl-cross { fill: var(--muted); font-size: 14px; font-family: 'Oxanium', ui-monospace, monospace; }
+                .sl-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+                .sl-verdict { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 12px; font-weight: 700; }
+            </style>
+            <text x="260" y="22" class="sl-title" text-anchor="middle">4 Providers, 4 Dialects</text>
+            <!-- Lambda -->
+            <rect x="15" y="40" width="115" height="200" class="sl-box"/>
+            <text x="72" y="60" class="sl-head" text-anchor="middle">Lambda</text>
+            <line x1="25" y1="68" x2="120" y2="68" class="sl-divider"/>
+            <text x="72" y="86" class="sl-item" text-anchor="middle">event, context</text>
+            <text x="72" y="102" class="sl-item" text-anchor="middle">handler()</text>
+            <text x="72" y="118" class="sl-item" text-anchor="middle">ZIP / Layer</text>
+            <text x="72" y="134" class="sl-item" text-anchor="middle">IAM roles</text>
+            <text x="72" y="154" class="sl-muted" text-anchor="middle">Max 15 min</text>
+            <text x="72" y="168" class="sl-muted" text-anchor="middle">10 GB RAM</text>
+            <text x="72" y="220" class="sl-muted" text-anchor="middle">$0.20/M req</text>
+            <!-- Azure Functions -->
+            <rect x="140" y="40" width="115" height="200" class="sl-box"/>
+            <text x="197" y="60" class="sl-head" text-anchor="middle">Azure Func</text>
+            <line x1="150" y1="68" x2="245" y2="68" class="sl-divider"/>
+            <text x="197" y="86" class="sl-item" text-anchor="middle">req, context</text>
+            <text x="197" y="102" class="sl-item" text-anchor="middle">main()</text>
+            <text x="197" y="118" class="sl-item" text-anchor="middle">func.json</text>
+            <text x="197" y="134" class="sl-item" text-anchor="middle">Managed ID</text>
+            <text x="197" y="154" class="sl-muted" text-anchor="middle">Max 10 min</text>
+            <text x="197" y="168" class="sl-muted" text-anchor="middle">14 GB RAM</text>
+            <text x="197" y="220" class="sl-muted" text-anchor="middle">$0.20/M req</text>
+            <!-- Cloud Run -->
+            <rect x="265" y="40" width="115" height="200" class="sl-box"/>
+            <text x="322" y="60" class="sl-head" text-anchor="middle">Cloud Run</text>
+            <line x1="275" y1="68" x2="370" y2="68" class="sl-divider"/>
+            <text x="322" y="86" class="sl-item" text-anchor="middle">HTTP request</text>
+            <text x="322" y="102" class="sl-item" text-anchor="middle">Container</text>
+            <text x="322" y="118" class="sl-item" text-anchor="middle">Dockerfile</text>
+            <text x="322" y="134" class="sl-item" text-anchor="middle">Service acct</text>
+            <text x="322" y="154" class="sl-muted" text-anchor="middle">Max 60 min</text>
+            <text x="322" y="168" class="sl-muted" text-anchor="middle">32 GB RAM</text>
+            <text x="322" y="220" class="sl-muted" text-anchor="middle">$0.40/M req</text>
+            <!-- Cloudflare Workers -->
+            <rect x="390" y="40" width="115" height="200" class="sl-box"/>
+            <text x="447" y="60" class="sl-head" text-anchor="middle">CF Workers</text>
+            <line x1="400" y1="68" x2="495" y2="68" class="sl-divider"/>
+            <text x="447" y="86" class="sl-item" text-anchor="middle">Request obj</text>
+            <text x="447" y="102" class="sl-item" text-anchor="middle">fetch()</text>
+            <text x="447" y="118" class="sl-item" text-anchor="middle">wrangler.toml</text>
+            <text x="447" y="134" class="sl-item" text-anchor="middle">Service bind</text>
+            <text x="447" y="154" class="sl-muted" text-anchor="middle">Max 30 s CPU</text>
+            <text x="447" y="168" class="sl-muted" text-anchor="middle">128 MB RAM</text>
+            <text x="447" y="220" class="sl-muted" text-anchor="middle">$0.50/M req</text>
+            <!-- Cross marks between columns -->
+            <text x="133" y="195" class="sl-cross">&#x2717;</text>
+            <text x="258" y="195" class="sl-cross">&#x2717;</text>
+            <text x="383" y="195" class="sl-cross">&#x2717;</text>
+            <!-- Bottom verdict -->
+            <text x="260" y="270" class="sl-verdict" text-anchor="middle">Shared API surface: 0</text>
+            <text x="260" y="290" class="sl-muted" text-anchor="middle">Migration = rewrite</text>
+        </svg>
+
+        <p>The industry calls this &#x201C;multi-cloud strategy.&#x201D; In practice it means
+            choosing which vendor dialect to write your code in, then living with the
+            consequences. The Esperanto of serverless does not exist. Each provider is a
+            walled garden with excellent documentation for the wall.</p>
+
+        <h2>The Work Relocated</h2>
+
+        <p>Serverless eliminates operations, they said. Let us examine what it actually
+            eliminated and what it quietly relocated.</p>
+
+        <p><strong>Eliminated:</strong> SSH-ing into a box to restart a process. Patching
+            the operating system. Rotating certificates manually. Fair enough. These are
+            genuine improvements. Nobody misses <code>sudo apt-get upgrade</code> at
+            three in the morning.</p>
+
+        <p><strong>Relocated:</strong> Everything else. The work did not vanish. It changed
+            shape. Instead of configuring nginx, you configure API Gateway. Instead of
+            reading syslog, you read CloudWatch &#x2014; at $0.50 per gigabyte ingested.
+            Instead of tuning process memory, you tune function memory in 128 MB increments
+            while a pricing calculator runs in the adjacent browser tab. Instead of monitoring
+            a server, you monitor cold starts, concurrency limits, timeout thresholds,
+            reserved capacity, provisioned throughput, and the twelve other dials that
+            replaced the one server you were trying to avoid.</p>
+
+        <p>The operational complexity did not decrease. It was redistributed across a
+            larger surface area, each fragment billable, each fragment requiring its own
+            expertise, its own documentation, its own certification. You did not eliminate
+            the sysadmin. You replaced one sysadmin with a FinOps engineer, a solutions
+            architect, and a CloudWatch bill.</p>
+
+        <h2>The Scale Nobody Needs</h2>
+
+        <p>&#x201C;But it scales to millions of requests!&#x201D; &#x2014; a defence so
+            popular it deserves the arithmetic it never receives.</p>
+
+        <p><a href="https://www.similarweb.com/" target="_blank" rel="noopener">SimilarWeb</a>
+            publishes traffic estimates. Let us look at two German e-commerce operations
+            that are not small by any reasonable measure.</p>
+
+        <p><strong>Otto.de</strong> &#x2014; Germany&#x2019;s second-largest online retailer.
+            Approximately 50 million monthly visits. That is roughly 19 requests per second
+            on average. Nineteen. Not nineteen thousand. Nineteen.</p>
+
+        <p><strong>Alternate.de</strong> &#x2014; a major electronics retailer. Approximately
+            4 million monthly visits. That translates to 1.5 requests per second. One and
+            a half.</p>
+
+        <p>An <a href="https://nginx.org/" target="_blank" rel="noopener">nginx</a> instance
+            on a single core handles 10,000 or more requests per second without breaking a
+            sweat, without scaling to zero, without cold starts, without an auto-scaling
+            policy, without a pricing calculator. The scale argument for serverless falls
+            apart the moment you divide monthly traffic by the seconds in a month and
+            compare the result to what commodity hardware has handled since 2004.</p>
+
+        <svg viewBox="0 0 520 310" aria-label="Scale reality check. Otto.de averages 19 requests per second. Alternate.de averages 1.5 requests per second. A single nginx instance handles over 10,000 requests per second. Serverless auto-scaling is solving a problem that does not exist for the vast majority of web traffic." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .sc-title { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .sc-label { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 12px; font-weight: 600; }
+                .sc-value { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .sc-bar { fill: var(--accent); opacity: 0.7; }
+                .sc-bar-full { fill: var(--accent); }
+                .sc-muted { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 10px; }
+                .sc-axis { stroke: var(--border); stroke-width: 1; }
+                .sc-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+                .sc-cap { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 11px; }
+            </style>
+            <text x="260" y="22" class="sc-title" text-anchor="middle">Requests per Second (avg)</text>
+            <!-- Axis -->
+            <line class="sc-axis" x1="130" y1="40" x2="130" y2="240"/>
+            <!-- Alternate.de -->
+            <text x="125" y="68" class="sc-label" text-anchor="end">Alternate.de</text>
+            <rect x="130" y="54" width="1" height="24" rx="1" class="sc-bar"/>
+            <text x="142" y="71" class="sc-value">1.5 req/s</text>
+            <text x="240" y="71" class="sc-muted">~4M visits/mo</text>
+            <!-- Otto.de -->
+            <text x="125" y="118" class="sc-label" text-anchor="end">Otto.de</text>
+            <rect x="130" y="104" width="7" height="24" rx="1" class="sc-bar"/>
+            <text x="145" y="121" class="sc-value">19 req/s</text>
+            <text x="240" y="121" class="sc-muted">~50M visits/mo</text>
+            <!-- Separator -->
+            <line x1="130" y1="150" x2="500" y2="150" class="sc-divider"/>
+            <!-- nginx -->
+            <text x="125" y="182" class="sc-label" text-anchor="end">nginx</text>
+            <rect x="130" y="168" width="360" height="24" rx="2" class="sc-bar-full"/>
+            <text x="378" y="185" class="sc-value" text-anchor="middle">10,000+ req/s</text>
+            <text x="378" y="210" class="sc-muted" text-anchor="middle">single core, no auto-scaling</text>
+            <!-- Bottom note -->
+            <text x="260" y="250" class="sc-cap" text-anchor="middle">Otto.de = 0.19% of nginx capacity</text>
+            <text x="500" y="295" class="sc-muted" text-anchor="end">Sources: similarweb.com, nginx.org</text>
+        </svg>
+
+        <h2>The Cold Start Tax</h2>
+
+        <p>A function that has not been invoked recently is &#x201C;cold.&#x201D; The next
+            invocation must provision a MicroVM, load the runtime, initialise the function,
+            and execute. According to
+            <a href="https://maxday.github.io/lambda-perf/" target="_blank" rel="noopener">lambda-perf</a>,
+            the community benchmark for Lambda cold starts, the numbers are instructive:</p>
+
+        <p>Python, Node.js: 100 to 300 milliseconds. A quarter of a second before your
+            function runs. Manageable, provided you do not mind your users waiting for a
+            VM to boot every time traffic dips and recovers.</p>
+
+        <p>Java with Spring: up to 6 seconds. Six seconds of a user staring at a spinner
+            because a virtual machine had to load a dependency injection framework inside a
+            MicroVM inside a hypervisor inside a data centre. The layers of abstraction have
+            their own geological strata at this point.</p>
+
+        <p>The mitigations are revealing. Provisioned Concurrency &#x2014; AWS&#x2019;s
+            solution to cold starts &#x2014; keeps functions warm by running them
+            continuously. You pay for compute that is always on, waiting for requests. The
+            industry term for a function that is always on, waiting for requests, is
+            a <em>server</em>. The circle is complete.</p>
+
+        <h2>The Pricing Illusion</h2>
+
+        <p><a href="https://aws.amazon.com/lambda/pricing/" target="_blank" rel="noopener">Lambda pricing</a>
+            looks seductive: $0.20 per million requests, plus $0.0000166667 per GB-second of
+            compute. Fractions of a cent. Pennies for millions. The back-of-napkin arithmetic
+            is irresistible until you apply it to constant traffic.</p>
+
+        <p>A modest API handling 100 requests per second &#x2014; a workload that a single
+            Caddy process handles while checking its email &#x2014; generates 8.64 million
+            requests per day. 259 million per month. At 256 MB and 200 ms average duration:
+            roughly $220 per month in compute, plus $52 in request fees, plus CloudWatch,
+            plus API Gateway, plus the egress that nobody remembers to include until the
+            invoice arrives. Call it $350 per month, conservatively, for a workload that
+            runs comfortably on a &#x20AC;5 VPS.</p>
+
+        <p>The pricing model rewards intermittent, bursty workloads &#x2014; a webhook that
+            fires twice a day, a cron job that runs at midnight, a prototype with twelve
+            users. For anything resembling constant traffic, you are paying a premium for
+            the privilege of not owning a server that would have cost less than the
+            monitoring bill.</p>
+
+        <h2>The Environmental Footnote</h2>
+
+        <p>Each invocation boots a MicroVM. Each MicroVM consumes CPU cycles to initialise,
+            allocate memory, load the runtime, execute, and terminate. For a function invoked
+            a million times a day, that is a million boot sequences, a million teardowns,
+            a million allocations. The overhead is not free. The electricity is not free.
+            The cooling for the data centre running a million ephemeral VMs is not free.</p>
+
+        <p>A single server, idling at 10 watts, handles the same workload continuously.
+            It does not boot. It does not die. It does not require a hypervisor to babysit
+            its lifecycle. It simply runs, in the profoundly boring way that efficient
+            systems have always run.</p>
+
+        <p>Nobody audits the carbon footprint of a million cold starts. Perhaps they should.</p>
+
+        <h2>The Alternative</h2>
+
+        <p>Two <a href="https://www.freebsd.org/doc/handbook/jails/" target="_blank" rel="noopener">FreeBSD</a>
+            servers. <a href="https://caddyserver.com/" target="_blank" rel="noopener">Caddy</a> in front.
+            Jails for isolation. &#x20AC;40 per month. No cold starts. No vendor lock-in. No
+            four incompatible event formats. No FinOps specialist decoding the invoice.
+            No provisioned concurrency pretending not to be a server.</p>
+
+        <p>10,000 or more requests per second. Logs in one place. Deployments via
+            <code>scp</code> and a process restart. The entire operational model fits
+            in a single paragraph because there is nothing to explain &#x2014; the
+            complexity was never added in the first place.</p>
+
+        <svg viewBox="0 0 520 320" aria-label="Cost comparison. The serverless stack: Lambda plus API Gateway plus CloudWatch plus egress at approximately 350 dollars per month for 100 requests per second. The alternative: two FreeBSD servers with Caddy and jails at 40 euros per month, handling over 10,000 requests per second with zero cold starts and zero vendor lock-in." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .ct-title { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ct-head { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .ct-item { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 11px; }
+                .ct-muted { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 10px; }
+                .ct-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ct-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ct-check { fill: var(--accent); font-size: 12px; }
+                .ct-cross { fill: var(--muted); font-size: 12px; opacity: 0.6; }
+                .ct-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+                .ct-price { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 20px; font-weight: 700; }
+            </style>
+            <text x="260" y="22" class="ct-title" text-anchor="middle">Monthly Cost &#x00D7; 100 req/s</text>
+            <!-- Serverless column -->
+            <rect x="15" y="38" width="235" height="270" class="ct-box"/>
+            <text x="132" y="62" class="ct-head" text-anchor="middle">Serverless Stack</text>
+            <line x1="30" y1="72" x2="235" y2="72" class="ct-divider"/>
+            <text x="38" y="94" class="ct-cross">&#x2717;</text>
+            <text x="55" y="94" class="ct-item">Lambda compute</text>
+            <text x="38" y="116" class="ct-cross">&#x2717;</text>
+            <text x="55" y="116" class="ct-item">API Gateway</text>
+            <text x="38" y="138" class="ct-cross">&#x2717;</text>
+            <text x="55" y="138" class="ct-item">CloudWatch logs</text>
+            <text x="38" y="160" class="ct-cross">&#x2717;</text>
+            <text x="55" y="160" class="ct-item">Egress: metered</text>
+            <text x="38" y="182" class="ct-cross">&#x2717;</text>
+            <text x="55" y="182" class="ct-item">Cold starts: 100ms&#x2013;6s</text>
+            <text x="38" y="204" class="ct-cross">&#x2717;</text>
+            <text x="55" y="204" class="ct-item">Vendor lock-in: total</text>
+            <text x="38" y="226" class="ct-cross">&#x2717;</text>
+            <text x="55" y="226" class="ct-item">Portability: none</text>
+            <text x="132" y="264" class="ct-price" text-anchor="middle">~$350/mo</text>
+            <text x="132" y="282" class="ct-muted" text-anchor="middle">100 req/s constant</text>
+            <!-- FreeBSD column -->
+            <rect x="270" y="38" width="235" height="270" class="ct-box-accent"/>
+            <text x="387" y="62" class="ct-head" text-anchor="middle">2&#x00D7; FreeBSD + Caddy</text>
+            <line x1="285" y1="72" x2="490" y2="72" class="ct-divider"/>
+            <text x="293" y="94" class="ct-check">&#x2713;</text>
+            <text x="310" y="94" class="ct-item">Dedicated hardware</text>
+            <text x="293" y="116" class="ct-check">&#x2713;</text>
+            <text x="310" y="116" class="ct-item">Caddy (auto-TLS)</text>
+            <text x="293" y="138" class="ct-check">&#x2713;</text>
+            <text x="310" y="138" class="ct-item">Logs: local, free</text>
+            <text x="293" y="160" class="ct-check">&#x2713;</text>
+            <text x="310" y="160" class="ct-item">Egress: included</text>
+            <text x="293" y="182" class="ct-check">&#x2713;</text>
+            <text x="310" y="182" class="ct-item">Cold starts: 0 ms</text>
+            <text x="293" y="204" class="ct-check">&#x2713;</text>
+            <text x="310" y="204" class="ct-item">Vendor lock-in: none</text>
+            <text x="293" y="226" class="ct-check">&#x2713;</text>
+            <text x="310" y="226" class="ct-item">10,000+ req/s</text>
+            <text x="387" y="264" class="ct-price" text-anchor="middle">&#x20AC;40/mo</text>
+            <text x="387" y="282" class="ct-muted" text-anchor="middle">zero caveats</text>
+        </svg>
+
+        <p>Netflix serves 700,000 or more requests per second to a quarter of a billion
+            subscribers. Their delivery infrastructure &#x2014;
+            <a href="https://openconnect.netflix.com/" target="_blank" rel="noopener">Open Connect</a>
+            &#x2014; runs on FreeBSD, bare metal, jails. Not Lambda. Not serverless. Not
+            MicroVMs booting and dying per request. The company that defines scale at its
+            most extreme chose the opposite of serverless for the work that matters.</p>
+
+        <h2>The Verdict</h2>
+
+        <p>Serverless has a context. A webhook that fires six times a day. A prototype
+            with a handful of users. A data pipeline that runs at 2 a.m. and sleeps until
+            next Tuesday. In these contexts, paying per invocation is rational, even elegant.</p>
+
+        <p>For the other 90 per cent &#x2014; the API with steady traffic, the web application
+            that serves actual users, the service that runs continuously because that is what
+            services do &#x2014; serverless is managed hosting with exceptional marketing. You
+            are renting MicroVMs that boot and die per request, writing code in a vendor
+            dialect that goes nowhere else, debugging distributed logs that charge by the
+            gigabyte, and calling it progress.</p>
+
+        <blockquote>
+            <p>Serverless did not eliminate the server. It eliminated your ability to see it,
+                control it, and compare the price to what a &#x20AC;20 VPS would have cost.</p>
+        </blockquote>
+
+        <p>The server is still there. It simply sends a more complicated invoice now.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
