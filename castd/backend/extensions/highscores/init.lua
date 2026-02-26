@@ -106,7 +106,7 @@ function route()
         else
             -- new entry — check if qualifies for top 5
             local top = get_top()
-            if #top >= MAX_ENTRIES and score_val <= (top[MAX_ENTRIES].score or 0) then
+            if #top >= MAX_ENTRIES and score_val < (top[MAX_ENTRIES].score or 0) then
                 cn.res.status(200)
                 return cn.res.json({ scores = top, qualified = false })
             end
