@@ -1,0 +1,337 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Containerise Everything — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Docker solved deployment. Then the industry decided it also solved development. On macOS, that means running a Linux VM to execute a process that runs natively. The engineering equivalent of driving to your neighbour's via Heathrow.">
+{( endslot )}
+
+{( slot canonical )}/blog/containerise-everything{( endslot )}
+
+{( slot og-title )}Containerise Everything — Vivian Voss{( endslot )}
+
+{( slot og-desc )}Docker solved deployment. Then the industry decided it also solved development. On a Mac, that means a Linux VM to run what already runs natively.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Containerise Everything",
+    "datePublished": "2026-02-26",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/containerise-everything",
+    "description": "Docker solved deployment. Then the industry decided it also solved development. On macOS, that means running a Linux VM to execute a process that runs natively on the machine.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-26">26 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Containerise Everything</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p>15 March 2013. PyCon, Santa Clara. Solomon Hykes steps onto the stage for a
+            <a href="https://pyvideo.org/pycon-us-2013/the-future-of-linux-containers.html" target="_blank" rel="noopener">five-minute lightning talk</a>
+            entitled &#x201C;The Future of Linux Containers.&#x201D;</p>
+
+        <p>The problem was genuine. Shipping code between environments broke things.
+            Different library versions, different kernel configurations, different ideas
+            of what <code>/usr/local</code> was for. Docker wrapped Linux containers into
+            a portable format: build once, ship anywhere. For deployment, it was &#x2014;
+            and remains &#x2014; genuinely brilliant.</p>
+
+        <p>Then the industry decided it was equally brilliant for development.</p>
+
+        <p>One does wish they had checked.</p>
+
+        <h2>The Original</h2>
+
+        <p>Package your application. Ship the image. The server runs precisely what you
+            built. No surprises from the host, no dependency drift, no &#x201C;works on my
+            machine&#x201D; followed by the predictable silence of someone who knows it
+            does not work on anyone else&#x2019;s.</p>
+
+        <p>Key assumption: the target is a Linux server. Docker uses kernel features
+            &#x2014; <a href="https://man7.org/linux/man-pages/man7/namespaces.7.html" target="_blank" rel="noopener">namespaces</a>,
+            <a href="https://man7.org/linux/man-pages/man7/cgroups.7.html" target="_blank" rel="noopener">cgroups</a>
+            &#x2014; that exist natively in the Linux kernel. Runs directly on the host.
+            No overhead worth mentioning.</p>
+
+        <h2>The Copy</h2>
+
+        <p>By 2016, <code>docker-compose up</code> had become the default onboarding
+            instruction. Clone the repo. Run compose. Make tea. Wait rather longer than
+            the tea requires.</p>
+
+        <p>Docker was no longer for shipping to servers. Docker was for developing on
+            your MacBook. Which does not run Linux.</p>
+
+        <h2>The Missing Context</h2>
+
+        <p>This is where the pattern fractures. The original context &#x2014; a Linux
+            server &#x2014; and the copied context &#x2014; a developer&#x2019;s laptop
+            running macOS &#x2014; are architecturally incompatible in ways that compound
+            with every layer of abstraction.</p>
+
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison: Docker on Linux runs natively with nanosecond filesystem latency. Docker on macOS runs inside a Linux VM with 2.5x slower bind mounts." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .ctx-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .ctx-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .ctx-value { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .ctx-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ctx-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ctx-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#ctx-arrow); }
+            </style>
+            <defs>
+                <marker id="ctx-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <!-- Left: Linux Server -->
+            <text class="ctx-label" x="130" y="20" text-anchor="middle">Linux Server</text>
+            <rect class="ctx-box-accent" x="30" y="30" width="200" height="40"/>
+            <text class="ctx-label" x="130" y="55" text-anchor="middle">Application</text>
+            <path class="ctx-arrow" d="M 130 70 L 130 90"/>
+            <rect class="ctx-box" x="30" y="90" width="200" height="40"/>
+            <text class="ctx-label" x="130" y="115" text-anchor="middle">Docker (native)</text>
+            <path class="ctx-arrow" d="M 130 130 L 130 150"/>
+            <rect class="ctx-box" x="30" y="150" width="200" height="40"/>
+            <text class="ctx-label" x="130" y="175" text-anchor="middle">Linux Kernel</text>
+            <text class="ctx-value" x="130" y="210" text-anchor="middle">Direct. No overhead.</text>
+            <text class="ctx-sub" x="130" y="228" text-anchor="middle">Filesystem: nanosecond latency</text>
+            <!-- Right: macOS -->
+            <text class="ctx-label" x="390" y="20" text-anchor="middle">macOS (Developer Laptop)</text>
+            <rect class="ctx-box-accent" x="290" y="30" width="200" height="40"/>
+            <text class="ctx-label" x="390" y="55" text-anchor="middle">Application</text>
+            <path class="ctx-arrow" d="M 390 70 L 390 90"/>
+            <rect class="ctx-box" x="290" y="90" width="200" height="40"/>
+            <text class="ctx-label" x="390" y="115" text-anchor="middle">Docker Engine</text>
+            <path class="ctx-arrow" d="M 390 130 L 390 150"/>
+            <rect class="ctx-box" x="290" y="150" width="200" height="40"/>
+            <text class="ctx-label" x="390" y="175" text-anchor="middle">Linux VM</text>
+            <path class="ctx-arrow" d="M 390 190 L 390 210"/>
+            <rect class="ctx-box" x="290" y="210" width="200" height="40"/>
+            <text class="ctx-label" x="390" y="235" text-anchor="middle">macOS / Apple Silicon</text>
+            <text class="ctx-value" x="390" y="268" text-anchor="middle">VM boundary. 2.5x slower.</text>
+        </svg>
+
+        <p>On Linux, Docker runs natively. The filesystem is local. Latency is measured
+            in nanoseconds. On macOS, Docker runs a
+            <a href="https://docs.docker.com/desktop/settings-and-maintenance/settings/" target="_blank" rel="noopener">Linux virtual machine</a>
+            &#x2014; first HyperKit, then Apple Virtualisation Framework, now Docker VMM.
+            Bind mounts cross a virtualisation boundary. The filesystem is no longer local;
+            it is negotiated.</p>
+
+        <p>The numbers, courtesy of
+            <a href="https://www.paolomainardi.com/posts/docker-performance-macos-2025/" target="_blank" rel="noopener">Paolo Mainardi&#x2019;s 2025 benchmarks</a>
+            on an M4 Pro:</p>
+
+        <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bind mount performance: native macOS 3.4 seconds, Docker VMM 8.5 seconds, Docker VZ 9.5 seconds for npm install." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .perf-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .perf-value { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .perf-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .perf-bar { fill: var(--accent); opacity: 0.7; rx: 2; }
+                .perf-bar-native { fill: var(--accent); rx: 2; }
+                .perf-axis { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text class="perf-muted" x="260" y="18" text-anchor="middle">npm install &#x2014; bind mount (M4 Pro, 2025)</text>
+            <!-- Bars -->
+            <text class="perf-label" x="145" y="55" text-anchor="end">Native macOS</text>
+            <rect class="perf-bar-native" x="150" y="42" width="128" height="20"/>
+            <text class="perf-value" x="286" y="57">3.4s</text>
+            <text class="perf-label" x="145" y="95" text-anchor="end">Docker VMM</text>
+            <rect class="perf-bar" x="150" y="82" width="321" height="20"/>
+            <text class="perf-value" x="479" y="97">8.5s (2.5x)</text>
+            <text class="perf-label" x="145" y="135" text-anchor="end">Docker VZ</text>
+            <rect class="perf-bar" x="150" y="122" width="358" height="20"/>
+            <text class="perf-value" x="516" y="137">9.5s (2.8x)</text>
+            <!-- Axis -->
+            <line class="perf-axis" x1="150" y1="155" x2="520" y2="155"/>
+            <text class="perf-muted" x="150" y="172">0s</text>
+            <text class="perf-muted" x="335" y="172">5s</text>
+            <text class="perf-muted" x="520" y="172" text-anchor="end">10s</text>
+            <text class="perf-muted" x="335" y="200" text-anchor="middle">Source: paolomainardi.com</text>
+        </svg>
+
+        <p>And then there is the matter of what you are actually downloading.</p>
+
+        <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Image sizes: node:20 full is 1.1 GB, slim is 200 MB, Alpine is 130 MB, Node.js tarball from nodejs.org is 28 MB." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .size-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .size-value { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .size-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .size-bar { fill: var(--accent); opacity: 0.5; rx: 2; }
+                .size-bar-actual { fill: var(--accent); rx: 2; }
+            </style>
+            <text class="size-muted" x="260" y="18" text-anchor="middle">node:20 image sizes vs actual runtime</text>
+            <text class="size-label" x="115" y="52" text-anchor="end">Full (Debian)</text>
+            <rect class="size-bar" x="120" y="38" width="380" height="20"/>
+            <text class="size-value" x="508" y="53">1.1 GB</text>
+            <text class="size-label" x="115" y="82" text-anchor="end">Slim</text>
+            <rect class="size-bar" x="120" y="68" width="69" height="20"/>
+            <text class="size-value" x="197" y="83">200 MB</text>
+            <text class="size-label" x="115" y="112" text-anchor="end">Alpine</text>
+            <rect class="size-bar" x="120" y="98" width="45" height="20"/>
+            <text class="size-value" x="173" y="113">130 MB</text>
+            <text class="size-label" x="115" y="142" text-anchor="end">Node.js tarball</text>
+            <rect class="size-bar-actual" x="120" y="128" width="10" height="20"/>
+            <text class="size-value" x="138" y="143">28 MB</text>
+            <text class="size-muted" x="260" y="178" text-anchor="middle">Source: snyk.io, nodejs.org</text>
+        </svg>
+
+        <p><code>node:20</code> ships an
+            <a href="https://snyk.io/blog/choosing-the-best-node-js-docker-image/" target="_blank" rel="noopener">entire Debian installation</a>
+            at 1.1 GB. The Node.js tarball from
+            <a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a> is 28 MB.
+            An entire operating system to run JavaScript. On your own machine. Where
+            JavaScript already runs.</p>
+
+        <h2>The Cascade</h2>
+
+        <p>The truly instructive part is not any single cost. It is the sequence &#x2014;
+            each step presented as the natural, reasonable consequence of the one before,
+            each one adding friction that was not in the original estimate.</p>
+
+        <svg viewBox="0 0 460 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Docker-for-development cascade: ten escalating steps from consistent environments to paying for alternatives to the alternative." style="max-width: 460px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cas-label { font: 600 10.5px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cas-note { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cas-line { stroke: var(--accent); stroke-width: 1.5; }
+                .cas-dot { fill: var(--accent); }
+                .cas-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+            </style>
+            <line class="cas-line" x1="30" y1="20" x2="30" y2="440" opacity="0.2"/>
+            <circle class="cas-dot" cx="30" cy="28" r="3"/>
+            <rect class="cas-box" x="44" y="16" width="400" height="26"/>
+            <text class="cas-label" x="52" y="34">"Use Docker for consistent environments"</text>
+            <circle class="cas-dot" cx="30" cy="68" r="3"/>
+            <rect class="cas-box" x="44" y="56" width="400" height="26"/>
+            <text class="cas-label" x="52" y="74">"Also for local development"</text>
+            <circle class="cas-dot" cx="30" cy="108" r="3"/>
+            <rect class="cas-box" x="44" y="96" width="400" height="26"/>
+            <text class="cas-label" x="52" y="114">"On macOS, it runs a Linux VM"</text>
+            <text class="cas-note" x="452" y="114" text-anchor="end">architecturally required</text>
+            <circle class="cas-dot" cx="30" cy="148" r="3"/>
+            <rect class="cas-box" x="44" y="136" width="400" height="26"/>
+            <text class="cas-label" x="52" y="154">"The VM reserves 50% of RAM by default"</text>
+            <text class="cas-note" x="452" y="154" text-anchor="end">4 GB idle, zero containers</text>
+            <circle class="cas-dot" cx="30" cy="188" r="3"/>
+            <rect class="cas-box" x="44" y="176" width="400" height="26"/>
+            <text class="cas-label" x="52" y="194">"Bind mounts are 2.5x slower"</text>
+            <text class="cas-note" x="452" y="194" text-anchor="end">hot reload requires patience</text>
+            <circle class="cas-dot" cx="30" cy="228" r="3"/>
+            <rect class="cas-box" x="44" y="216" width="400" height="26"/>
+            <text class="cas-label" x="52" y="234">"Images are 1.1 GB"</text>
+            <text class="cas-note" x="452" y="234" text-anchor="end">the internet, downloaded twice</text>
+            <circle class="cas-dot" cx="30" cy="268" r="3"/>
+            <rect class="cas-box" x="44" y="256" width="400" height="26"/>
+            <text class="cas-label" x="52" y="274">"Use Alpine to shrink them"</text>
+            <text class="cas-note" x="452" y="274" text-anchor="end">musl breaks native modules</text>
+            <circle class="cas-dot" cx="30" cy="308" r="3"/>
+            <rect class="cas-box" x="44" y="296" width="400" height="26"/>
+            <text class="cas-label" x="52" y="314">"Use multi-stage builds"</text>
+            <text class="cas-note" x="452" y="314" text-anchor="end">40 lines of workarounds</text>
+            <circle class="cas-dot" cx="30" cy="348" r="3"/>
+            <rect class="cas-box" x="44" y="336" width="400" height="26"/>
+            <text class="cas-label" x="52" y="354">"Docker Desktop is now paid"</text>
+            <text class="cas-note" x="452" y="354" text-anchor="end">250+ employees, August 2021</text>
+            <circle class="cas-dot" cx="30" cy="388" r="3"/>
+            <rect class="cas-box" x="44" y="376" width="400" height="26"/>
+            <text class="cas-label" x="52" y="394">"Switch to Podman / OrbStack"</text>
+            <text class="cas-note" x="452" y="394" text-anchor="end">alternatives to the alternative</text>
+            <!-- Punchline -->
+            <line class="cas-line" x1="30" y1="410" x2="30" y2="440" stroke-dasharray="4 3"/>
+            <text class="cas-label" x="44" y="440">You are driving to your neighbour's house via Heathrow.</text>
+        </svg>
+
+        <p>You are running a Linux VM on your Mac to execute a process that runs
+            natively on your Mac. The engineering equivalent of driving to your
+            neighbour&#x2019;s house via Heathrow.</p>
+
+        <h2>The Timeline</h2>
+
+        <p>Context matters not merely technically, but historically. Docker did not arrive
+            as a development tool. It arrived as a deployment tool and was gradually
+            reinterpreted &#x2014; a pattern this series has encountered
+            <a href="/blog/mvc-for-web">rather frequently</a>.</p>
+
+        <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Docker timeline: 2013 PyCon announcement, 2014 Docker Compose, 2017 multi-stage builds, 2018 Hykes departs, 2021 licensing change." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .tl-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tl-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .tl-year { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .tl-line { stroke: var(--border); stroke-width: 1; }
+                .tl-dot { fill: var(--accent); }
+            </style>
+            <!-- Spine -->
+            <line class="tl-line" x1="60" y1="30" x2="60" y2="240"/>
+            <!-- 2013 -->
+            <circle class="tl-dot" cx="60" cy="40" r="5"/>
+            <text class="tl-year" x="80" y="44">2013</text>
+            <text class="tl-label" x="130" y="44">PyCon lightning talk. Five minutes.</text>
+            <!-- 2014 -->
+            <circle class="tl-dot" cx="60" cy="80" r="5"/>
+            <text class="tl-year" x="80" y="84">2014</text>
+            <text class="tl-label" x="130" y="84">Docker acquires Orchard. Fig becomes Compose.</text>
+            <!-- 2017 -->
+            <circle class="tl-dot" cx="60" cy="120" r="5"/>
+            <text class="tl-year" x="80" y="124">2017</text>
+            <text class="tl-label" x="130" y="124">Multi-stage builds.</text>
+            <text class="tl-sub" x="130" y="140">A patch for image bloat.</text>
+            <!-- 2018 -->
+            <circle class="tl-dot" cx="60" cy="170" r="5"/>
+            <text class="tl-year" x="80" y="174">2018</text>
+            <text class="tl-label" x="130" y="174">Solomon Hykes leaves Docker.</text>
+            <!-- 2021 -->
+            <circle class="tl-dot" cx="60" cy="210" r="5"/>
+            <text class="tl-year" x="80" y="214">2021</text>
+            <text class="tl-label" x="130" y="214">Docker Desktop licensing change.</text>
+            <text class="tl-sub" x="130" y="230">Paid for 250+ employees.</text>
+        </svg>
+
+        <h2>The Irony</h2>
+
+        <p>Nobody questioned whether the tool for shipping to servers was also the
+            right tool for writing code on a laptop. It said &#x201C;consistent
+            environments&#x201D; on the tin. That was apparently sufficient.</p>
+
+        <p><a href="https://semaphore.io/blog/kelsey-hightower" target="_blank" rel="noopener">Kelsey Hightower</a>
+            put it rather well: &#x201C;You haven&#x2019;t mastered a tool until you
+            understand when it should not be used.&#x201D;</p>
+
+        <p>Docker for deployment: genuine solution, genuine problem. Docker for local
+            development on non-Linux machines: a deployment tool cosplaying as a
+            development environment.</p>
+
+        <h2>The README That Could Have Been</h2>
+
+        <p>The README could say:</p>
+
+        <pre><code>npm install &amp;&amp; npm start</code></pre>
+
+        <p>But that would require trusting developers to install software on their
+            own machines. And we stopped doing that the moment &#x201C;consistency&#x201D;
+            became more important than &#x201C;working.&#x201D;</p>
+
+        <blockquote>
+            <p>Docker is a marvellous deployment tool. The critique is not Docker
+                itself. It is the assumption that a deployment tool is automatically
+                a development tool. Use Docker for what it was designed for: shipping
+                to Linux servers. For local development: install your runtime. Run
+                your code. Trust your machine.</p>
+        </blockquote>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
