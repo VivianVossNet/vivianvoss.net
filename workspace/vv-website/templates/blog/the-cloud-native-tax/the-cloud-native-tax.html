@@ -1,0 +1,397 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Cloud-Native Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Pay only what you use, they said. The bill is 47 pages and requires a FinOps specialist to decode. The real costs of cloud-native, from egress fees to Kubernetes maintenance.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-cloud-native-tax{( endslot )}
+
+{( slot og-title )}The Cloud-Native Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Pay only what you use. The bill is 47 pages. The real costs of cloud-native, from egress fees to Kubernetes maintenance.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Cloud-Native Tax",
+    "datePublished": "2026-01-09",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-cloud-native-tax",
+    "description": "Pay only what you use, they said. The bill is 47 pages and requires a FinOps specialist to decode. The real costs of cloud-native, from egress fees to Kubernetes maintenance.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-09">9 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Cloud-Native Tax</h1>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> &#x25A0; Episode 04</p>
+
+        <blockquote>
+            <p>&#x201C;Pay only what you use.&#x201D;</p>
+        </blockquote>
+
+        <p>A sentence of admirable brevity. The invoice it produces is not. Forty-seven pages,
+            cross-referenced across three billing dimensions, denominated in units that change
+            meaning depending on the service, the region, and the phase of the moon. Decoding
+            it requires a specialist &#x2014; a <em>FinOps engineer</em> &#x2014; a role that
+            did not exist before 2019 because the problem it solves did not exist before the
+            cloud created it.</p>
+
+        <p>The <a href="https://www.finops.org/about/" target="_blank" rel="noopener">FinOps Foundation</a>
+            was established that year. An entire professional discipline, complete with
+            certifications and conferences, born from the singular achievement of making
+            infrastructure pricing deliberately incomprehensible. The Ferengi Rules of
+            Acquisition could not have engineered it better.</p>
+
+        <h2>The Five Promises</h2>
+
+        <p>Cloud-native arrives with five promises. Let us examine each one, then the invoice
+            that follows.</p>
+
+        <p><strong>&#x201C;Infinite scalability.&#x201D;</strong> &#x2014; And infinite invoices to
+            match. Multi-AZ deployment triples the bill. Multi-region multiplies it further.
+            The scalability is real; the constraint was never technical. It was financial.
+            Nobody mentions this at the conference keynote.</p>
+
+        <p><strong>&#x201C;No hardware maintenance.&#x201D;</strong> &#x2014; Traded, with
+            remarkable efficiency, for Kubernetes maintenance. The
+            <a href="https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/" target="_blank" rel="noopener">Certified Kubernetes Administrator</a>
+            exam costs &#x20AC;395 and expires in three years. One does not eliminate
+            operational complexity by rebranding it.</p>
+
+        <p><strong>&#x201C;Focus on code.&#x201D;</strong> &#x2014; Have you read a Helm chart?
+            That is infrastructure dressed in YAML, pretending to be configuration. The
+            average Helm chart for a production deployment contains more lines than the
+            application it deploys. Focus on code, indeed.</p>
+
+        <p><strong>&#x201C;Vendor agnostic.&#x201D;</strong> &#x2014; Lambda, Azure Functions,
+            and Cloud Run are as compatible as three languages that share an alphabet.
+            The syntax differs. The semantics differ. The billing model differs. The lock-in
+            is architectural, not contractual, which makes it considerably harder to escape.</p>
+
+        <p><strong>&#x201C;Pay only what you use.&#x201D;</strong> &#x2014; According to
+            <a href="https://www.gartner.com/en/newsroom/press-releases" target="_blank" rel="noopener">Gartner</a>,
+            30 per cent of cloud spend is waste. The
+            <a href="https://www.flexera.com/blog/cloud/cloud-computing-trends-flexera-2024-state-of-the-cloud-report/" target="_blank" rel="noopener">Flexera 2024 State of the Cloud Report</a>
+            puts actual spend at 20 per cent higher than expected. You pay what you use &#x2014;
+            plus what you forgot to turn off, plus what you did not know was running, plus what
+            auto-scaled at 3 a.m. because a bot crawled your staging environment.</p>
+
+        <h2>The Egress Racket</h2>
+
+        <p>Data enters the cloud for free. Leaving costs money. This is not a pricing model.
+            It is a hostage situation with better marketing.</p>
+
+        <p>The numbers, for those who enjoy reading invoices:</p>
+
+        <svg viewBox="0 0 520 310" aria-label="Egress pricing comparison: AWS charges $0.09 per gigabyte, Azure $0.087, Google Cloud $0.12. Hetzner and OVH charge nothing &#x2014; egress is included." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .eg-label { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 12px; font-weight: 600; }
+                .eg-value { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .eg-bar { fill: var(--accent); opacity: 0.7; }
+                .eg-bar-free { fill: var(--text); opacity: 0.15; }
+                .eg-muted { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 10px; }
+                .eg-title { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .eg-axis { stroke: var(--border); stroke-width: 1; }
+                .eg-zero { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 12px; font-weight: 700; }
+            </style>
+            <text x="260" y="20" class="eg-title" text-anchor="middle">Egress per GB</text>
+            <!-- Axis -->
+            <line class="eg-axis" x1="120" y1="40" x2="120" y2="270"/>
+            <!-- GCP -->
+            <text x="115" y="68" class="eg-label" text-anchor="end">GCP</text>
+            <rect x="120" y="54" width="312" height="24" rx="2" class="eg-bar"/>
+            <text x="440" y="71" class="eg-value">$0.12/GB</text>
+            <!-- AWS -->
+            <text x="115" y="112" class="eg-label" text-anchor="end">AWS</text>
+            <rect x="120" y="98" width="234" height="24" rx="2" class="eg-bar"/>
+            <text x="362" y="115" class="eg-value">$0.09/GB</text>
+            <!-- Azure -->
+            <text x="115" y="156" class="eg-label" text-anchor="end">Azure</text>
+            <rect x="120" y="142" width="226" height="24" rx="2" class="eg-bar"/>
+            <text x="354" y="159" class="eg-value">$0.087/GB</text>
+            <!-- Separator -->
+            <line x1="120" y1="185" x2="480" y2="185" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4"/>
+            <!-- Hetzner -->
+            <text x="115" y="214" class="eg-label" text-anchor="end">Hetzner</text>
+            <rect x="120" y="200" width="8" height="24" rx="2" class="eg-bar-free"/>
+            <text x="140" y="217" class="eg-zero">included</text>
+            <!-- OVH -->
+            <text x="115" y="254" class="eg-label" text-anchor="end">OVH</text>
+            <rect x="120" y="240" width="8" height="24" rx="2" class="eg-bar-free"/>
+            <text x="140" y="257" class="eg-zero">included</text>
+            <!-- Source -->
+            <text x="480" y="295" class="eg-muted" text-anchor="end">Sources: aws.amazon.com, azure.microsoft.com, cloud.google.com</text>
+        </svg>
+
+        <p><a href="https://aws.amazon.com/ec2/pricing/on-demand/" target="_blank" rel="noopener">AWS</a>:
+            $0.09 per gigabyte.
+            <a href="https://azure.microsoft.com/en-us/pricing/details/bandwidth/" target="_blank" rel="noopener">Azure</a>:
+            $0.087.
+            <a href="https://cloud.google.com/vpc/network-pricing" target="_blank" rel="noopener">Google Cloud</a>:
+            $0.12. Ingress is free &#x2014; getting your data in costs nothing. Getting it out
+            costs enough to fund a small department. At scale, egress alone can exceed the
+            cost of the compute that produced it.</p>
+
+        <p><a href="https://www.hetzner.com/dedicated-rootserver/ax41-nvme" target="_blank" rel="noopener">Hetzner</a>,
+            OVH, Netcup: egress included. No metering. No surprises. No forty-seven-page
+            invoice explaining why your bandwidth bill tripled because marketing ran a
+            campaign.</p>
+
+        <h2>The &#x20AC;100 Comparison</h2>
+
+        <p>What does &#x20AC;100 per month actually buy?</p>
+
+        <svg viewBox="0 0 520 340" aria-label="What &#x20AC;100 per month buys. Hetzner: two dedicated servers with Ryzen 5 processors, 64 gigabytes of RAM each, 512 gigabyte NVMe drives, ZFS replication, and no egress fees. A comparable cloud setup: one modest virtual machine, limited bandwidth, metered storage, and a FinOps consultant on speed dial." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .cmp-title { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cmp-head { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .cmp-item { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 11px; }
+                .cmp-muted { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 10px; }
+                .cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cmp-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .cmp-check { fill: var(--accent); font-size: 12px; }
+                .cmp-cross { fill: var(--muted); font-size: 12px; opacity: 0.6; }
+                .cmp-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+            <text x="260" y="22" class="cmp-title" text-anchor="middle">&#x20AC;100/month</text>
+            <!-- Hetzner column -->
+            <rect x="15" y="38" width="235" height="290" class="cmp-box-accent"/>
+            <text x="132" y="62" class="cmp-head" text-anchor="middle">2&#x00D7; Hetzner AX41</text>
+            <text x="132" y="78" class="cmp-muted" text-anchor="middle">&#x20AC;50 each</text>
+            <line x1="30" y1="88" x2="235" y2="88" class="cmp-divider"/>
+            <text x="38" y="110" class="cmp-check">&#x2713;</text>
+            <text x="55" y="110" class="cmp-item">Ryzen 5, 6 cores</text>
+            <text x="38" y="132" class="cmp-check">&#x2713;</text>
+            <text x="55" y="132" class="cmp-item">64 GB RAM (each)</text>
+            <text x="38" y="154" class="cmp-check">&#x2713;</text>
+            <text x="55" y="154" class="cmp-item">512 GB NVMe (each)</text>
+            <text x="38" y="176" class="cmp-check">&#x2713;</text>
+            <text x="55" y="176" class="cmp-item">Egress: unlimited</text>
+            <text x="38" y="198" class="cmp-check">&#x2713;</text>
+            <text x="55" y="198" class="cmp-item">FreeBSD + ZFS</text>
+            <text x="38" y="220" class="cmp-check">&#x2713;</text>
+            <text x="55" y="220" class="cmp-item">ZFS replication</text>
+            <text x="38" y="242" class="cmp-check">&#x2713;</text>
+            <text x="55" y="242" class="cmp-item">Full root access</text>
+            <text x="38" y="264" class="cmp-check">&#x2713;</text>
+            <text x="55" y="264" class="cmp-item">No FinOps team needed</text>
+            <text x="132" y="310" class="cmp-muted" text-anchor="middle">Stable since 2006 (ZFS)</text>
+            <!-- Cloud column -->
+            <rect x="270" y="38" width="235" height="290" class="cmp-box"/>
+            <text x="387" y="62" class="cmp-head" text-anchor="middle">Cloud VM (comparable)</text>
+            <text x="387" y="78" class="cmp-muted" text-anchor="middle">&#x20AC;100 budget</text>
+            <line x1="285" y1="88" x2="490" y2="88" class="cmp-divider"/>
+            <text x="293" y="110" class="cmp-cross">&#x2717;</text>
+            <text x="310" y="110" class="cmp-item">2&#x2013;4 shared vCPUs</text>
+            <text x="293" y="132" class="cmp-cross">&#x2717;</text>
+            <text x="310" y="132" class="cmp-item">8&#x2013;16 GB RAM</text>
+            <text x="293" y="154" class="cmp-cross">&#x2717;</text>
+            <text x="310" y="154" class="cmp-item">Storage: metered</text>
+            <text x="293" y="176" class="cmp-cross">&#x2717;</text>
+            <text x="310" y="176" class="cmp-item">Egress: $0.09/GB</text>
+            <text x="293" y="198" class="cmp-cross">&#x2717;</text>
+            <text x="310" y="198" class="cmp-item">OS: vendor image</text>
+            <text x="293" y="220" class="cmp-cross">&#x2717;</text>
+            <text x="310" y="220" class="cmp-item">Backups: extra cost</text>
+            <text x="293" y="242" class="cmp-cross">&#x2717;</text>
+            <text x="310" y="242" class="cmp-item">Root: limited</text>
+            <text x="293" y="264" class="cmp-cross">&#x2717;</text>
+            <text x="310" y="264" class="cmp-item">FinOps: recommended</text>
+            <text x="387" y="310" class="cmp-muted" text-anchor="middle">Pricing changes quarterly</text>
+        </svg>
+
+        <p>Two <a href="https://www.hetzner.com/dedicated-rootserver/ax41-nvme" target="_blank" rel="noopener">Hetzner AX41</a>
+            servers. &#x20AC;50 each. Ryzen 5 processor, 64 GB RAM, 512 GB NVMe. Dedicated
+            hardware &#x2014; not shared, not virtualised, not subject to noisy-neighbour
+            throttling at 2 a.m. Run FreeBSD. Run
+            <a href="https://openzfs.github.io/openzfs-docs/man/8/zfs-send.8.html" target="_blank" rel="noopener">ZFS replication</a>
+            between the two &#x2014; incremental, checksummed, compressed, encryptable,
+            stable since 2006. No egress fees. No FinOps team. No forty-seven-page invoice.</p>
+
+        <p>For the same &#x20AC;100 in the cloud, you receive a modest virtual machine with
+            shared vCPUs, a fraction of the RAM, metered storage, metered bandwidth, and the
+            quiet understanding that next quarter&#x2019;s pricing might differ from this
+            quarter&#x2019;s.</p>
+
+        <h2>The Netflix Paradox</h2>
+
+        <p>Netflix is the crown jewel of cloud-native marketing. &#x201C;Netflix runs on AWS&#x201D;
+            is the sentence that launches a thousand migration projects.</p>
+
+        <p>It is also, in the most important sense, untrue.</p>
+
+        <p>Netflix uses AWS for internal tooling &#x2014; the recommendation engine, A/B testing,
+            content management. The back office. For the part that actually matters &#x2014;
+            delivering video to 260 million subscribers worldwide &#x2014; Netflix built
+            <a href="https://openconnect.netflix.com/" target="_blank" rel="noopener">Open Connect</a>:
+            custom appliances running
+            <a href="https://netflixtechblog.com/serving-100-gbps-from-an-open-connect-appliance-cdb51dda3b99" target="_blank" rel="noopener">FreeBSD on bare metal</a>,
+            deployed at ISPs across the globe. Jails for isolation. No containers. No
+            Kubernetes. No cloud.</p>
+
+        <svg viewBox="0 0 520 280" aria-label="The Netflix paradox. What conference slides show: Netflix runs on AWS. What actually delivers video to 260 million subscribers: FreeBSD, jails, bare metal, deployed at ISPs worldwide via Open Connect." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
+            <style>
+                .nf-title { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .nf-head { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .nf-item { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--text); font-size: 11px; }
+                .nf-muted { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 10px; }
+                .nf-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nf-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .nf-arrow { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#nf-arrowhead); }
+                .nf-pct { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--accent); font-size: 28px; font-weight: 700; }
+                .nf-pct-label { font-family: 'Oxanium', ui-monospace, monospace; fill: var(--muted); font-size: 10px; }
+            </style>
+            <defs>
+                <marker id="nf-arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--muted)"/>
+                </marker>
+            </defs>
+            <text x="260" y="22" class="nf-title" text-anchor="middle">The Netflix Paradox</text>
+            <!-- Left: What they tell you -->
+            <rect x="15" y="40" width="220" height="220" class="nf-box"/>
+            <text x="125" y="62" class="nf-head" text-anchor="middle">WHAT THEY TELL YOU</text>
+            <line x1="30" y1="72" x2="220" y2="72" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4"/>
+            <text x="125" y="96" class="nf-item" text-anchor="middle">&#x201C;Netflix runs on AWS&#x201D;</text>
+            <text x="125" y="130" class="nf-muted" text-anchor="middle">Internal tooling:</text>
+            <text x="125" y="148" class="nf-muted" text-anchor="middle">Recommendations</text>
+            <text x="125" y="164" class="nf-muted" text-anchor="middle">A/B testing</text>
+            <text x="125" y="180" class="nf-muted" text-anchor="middle">Content management</text>
+            <text x="125" y="218" class="nf-muted" text-anchor="middle">The back office</text>
+            <!-- Right: What delivers the video -->
+            <rect x="285" y="40" width="220" height="220" class="nf-box-accent"/>
+            <text x="395" y="62" class="nf-head" text-anchor="middle">WHAT DELIVERS THE VIDEO</text>
+            <line x1="300" y1="72" x2="490" y2="72" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4"/>
+            <text x="395" y="96" class="nf-item" text-anchor="middle">Open Connect</text>
+            <text x="395" y="130" class="nf-item" text-anchor="middle">FreeBSD</text>
+            <text x="395" y="150" class="nf-item" text-anchor="middle">Jails</text>
+            <text x="395" y="170" class="nf-item" text-anchor="middle">Bare metal</text>
+            <text x="395" y="190" class="nf-item" text-anchor="middle">At ISPs worldwide</text>
+            <text x="395" y="228" class="nf-pct" text-anchor="middle">100 Gbps</text>
+            <text x="395" y="244" class="nf-pct-label" text-anchor="middle">per appliance</text>
+            <!-- Arrow -->
+            <line x1="237" y1="150" x2="282" y2="150" class="nf-arrow"/>
+            <text x="260" y="142" class="nf-muted" text-anchor="middle">but</text>
+        </svg>
+
+        <p>When the task is serving 100 Gbps from a single appliance to a quarter of a billion
+            users, Netflix chose Unix, bare metal, and the filesystem that has been quietly
+            doing its job since Sun Microsystems. The cloud is for the paperwork. The real
+            work runs on hardware they own.</p>
+
+        <p>The company held up as the greatest argument for cloud-native is, in fact, the
+            greatest argument against it.</p>
+
+        <h2>The Abstraction Tax</h2>
+
+        <p>Peel back the abstraction layer of any cloud service and you find: Linux.
+            Containers. Block storage. Networking. Commodity infrastructure &#x2014; the same
+            hardware Hetzner sells for &#x20AC;50 a month &#x2014; wrapped in proprietary APIs,
+            dressed in a management console, and sold back to you at a markup that would make
+            a luxury goods manufacturer blush.</p>
+
+        <p>The 100x is not hyperbole. A gigabyte of block storage on a bare-metal server costs
+            fractions of a cent. The same gigabyte on EBS costs orders of magnitude more, not
+            because the storage is better, but because the API around it is billable.</p>
+
+        <p>This is the fundamental mechanism: take commodity infrastructure, add a proprietary
+            interface, charge for the interface. Repeat across compute, storage, networking,
+            DNS, load balancing, message queues, and every other building block that Unix
+            provided forty years ago.</p>
+
+        <h2>The Jobs That Should Not Exist</h2>
+
+        <p>FinOps. SRE. Platform Engineering. Cloud Architect. These are not roles that emerged
+            from new capability. They are roles that emerged from new complexity &#x2014;
+            complexity that was sold to you as simplification.</p>
+
+        <p>A FinOps engineer exists because cloud pricing is incomprehensible by design. An SRE
+            exists because distributed systems fail in ways monoliths never could. A Platform
+            Engineer exists because Kubernetes requires a team to manage the tool that manages
+            your tools. A Cloud Architect exists because choosing between 247 AWS services
+            requires someone with a certification that expires before the architecture is
+            deployed.</p>
+
+        <p>These are intelligent, capable people solving problems that would not exist if the
+            infrastructure had not been deliberately complicated. The talent is real. The
+            necessity is manufactured.</p>
+
+        <h2>The Root Cause</h2>
+
+        <p>How did well-trained engineers fall for this?</p>
+
+        <p>Amazon &#x2014; a retailer &#x2014; became an infrastructure provider. A company
+            whose core competency is logistics and marketplace arbitrage convinced an entire
+            industry to outsource its technical foundation to a shop. The profit margins must
+            be spectacular. They are: AWS generated $90 billion in revenue in 2023 with
+            operating margins north of 30 per cent. Thirty per cent margins on commodity
+            infrastructure. That number tells you everything about the markup and nothing
+            about the value.</p>
+
+        <p>The cloud did not emerge from a technical need. It emerged from a business model:
+            take excess capacity, productise it, then make the pricing complex enough that
+            customers cannot easily compare it to alternatives. The
+            <a href="https://www.finops.org/about/" target="_blank" rel="noopener">FinOps Foundation</a>
+            is not the cure. It is the symptom. An entire profession exists because a pricing
+            model was designed to resist comprehension.</p>
+
+        <h2>The Alternative</h2>
+
+        <p>Two <a href="https://www.hetzner.com/dedicated-rootserver/ax41-nvme" target="_blank" rel="noopener">Hetzner servers</a>.
+            &#x20AC;50 per month each. FreeBSD.
+            <a href="https://openzfs.github.io/openzfs-docs/man/8/zfs-send.8.html" target="_blank" rel="noopener">ZFS send</a>
+            for replication &#x2014; incremental, checksummed, compressed, encryptable. No
+            egress fees. No FinOps team. No forty-seven-page invoice. No certification that
+            expires before you have finished reading it.</p>
+
+        <p>&#x20AC;100 per month. Two machines. 128 GB RAM total. A terabyte of NVMe. Full root
+            access. An operating system that has been stable since the last century. A
+            filesystem whose replication protocol has not changed since 2006 because it
+            did not need to.</p>
+
+        <p>This is not nostalgia. This is arithmetic.</p>
+
+        <h2>The Verdict</h2>
+
+        <p>The cloud is a tool. Like all tools, it has a context in which it is appropriate.
+            Burst capacity for unpredictable workloads. Rapid prototyping where time-to-deploy
+            outweighs cost-per-unit. Global distribution where you genuinely need presence in
+            thirty regions simultaneously.</p>
+
+        <p>For the other 90 per cent &#x2014; the web application, the API, the database, the
+            service that handles ten thousand requests per second and calls it a good day &#x2014;
+            you are renting commodity hardware at luxury prices, hiring specialists to
+            understand the bill, and calling it progress.</p>
+
+        <blockquote>
+            <p>Underneath the abstraction: Linux, containers, block storage, networking.
+                Commodity infrastructure wrapped in proprietary APIs, sold back at 100&#x00D7;.</p>
+        </blockquote>
+
+        <p>The cloud-native tax is not a line item. It is the entire invoice &#x2014; the
+            egress fees, the FinOps team, the Kubernetes certification, the platform engineers,
+            the SREs, the forty-seven pages of billing that nobody reads and everyone pays.
+            All of it flowing from the moment someone decided that owning a server was
+            old-fashioned and renting one from a retailer was the future.</p>
+
+        <p>The server has not changed. Only the invoice has.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
