@@ -1395,7 +1395,7 @@
                     if (existingEntry) {
                         qualifies = finalScore > existingEntry.score;
                     } else {
-                        qualifies = leaderboard.length < 5 || finalScore > leaderboard[leaderboard.length - 1].score;
+                        qualifies = leaderboard.length < 5 || finalScore >= leaderboard[leaderboard.length - 1].score;
                     }
                 }
                 if (qualifies && isGamePage) {
