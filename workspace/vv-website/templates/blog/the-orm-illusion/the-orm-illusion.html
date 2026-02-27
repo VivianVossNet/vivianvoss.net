@@ -1,0 +1,360 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}ORM: The Illusion of Portability &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="ORMs hide complexity instead of eliminating it. They promise database portability you will never use and obscure queries you should understand. SQL has worked since 1974. Your ORM will be deprecated before your queries are.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-orm-illusion{( endslot )}
+
+{( slot og-title )}ORM: The Illusion of Portability &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}ORMs promise database portability you will never use and hide queries you should understand. SQL has worked since 1974. Your ORM will be deprecated before your queries are.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "ORM: The Illusion of Portability",
+    "datePublished": "2026-02-07",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-orm-illusion",
+    "description": "ORMs hide complexity instead of eliminating it. They promise database portability you will never use and obscure queries you should understand. SQL has worked since 1974. Your ORM will be deprecated before your queries are.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-07">07 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>ORM: The Illusion of Portability</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">sql</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Replacement</em> &#x25A0; Episode 9</p>
+
+        <blockquote>
+            <p>&#x201C;Write once, run on any database!&#x201D;</p>
+        </blockquote>
+
+        <p>A marvellous promise. One rather spoilt by a single follow-up question:
+            when did you last switch databases?</p>
+
+        <p>Not &#x201C;considered switching.&#x201D; Not &#x201C;discussed switching in
+            a meeting that ran forty minutes over.&#x201D; Actually switched. Migrated
+            the schema, rewritten the queries, verified the data, deployed to production,
+            gone home. The answer, for the overwhelming majority of projects, is never.
+            You chose PostgreSQL three years ago. You use
+            <a href="https://www.postgresql.org/docs/current/datatype-json.html" target="_blank" rel="noopener">JSONB</a>,
+            array fields,
+            <a href="https://www.postgresql.org/docs/current/textsearch.html" target="_blank" rel="noopener">full-text search</a>.
+            You are not switching. The ORM&#x2019;s headline feature &#x2014; database
+            portability &#x2014; is insurance against an event that will not occur.</p>
+
+        <h2>The Pitch</h2>
+
+        <p>The Object-Relational Mapper arrives with four promises, each delivered
+            with the quiet confidence of a salesman who has memorised the brochure
+            but never driven the car:</p>
+
+        <p><strong>No SQL knowledge required.</strong> You learn a domain-specific
+            language instead. A DSL that works with this ORM and this ORM alone.
+            Prisma&#x2019;s syntax is not Sequelize&#x2019;s syntax is not
+            TypeORM&#x2019;s syntax is not SQLAlchemy&#x2019;s syntax. SQL, meanwhile,
+            is SQL everywhere. It has been the same language since
+            <a href="https://dl.acm.org/doi/10.1145/362384.362685" target="_blank" rel="noopener">Chamberlin and Boyce published SEQUEL in 1974</a>.
+            You learn it once. It works in every relational database on the planet.</p>
+
+        <p><strong>Database-agnostic.</strong> See above. You are not switching.</p>
+
+        <p><strong>Safer queries.</strong> Parameterised queries prevent SQL injection.
+            This is true &#x2014; and it is also true of every modern database driver
+            without an ORM. The
+            <a href="https://github.com/porsager/postgres" target="_blank" rel="noopener">postgres.js</a>
+            tagged template literal parameterises automatically. Safety is not an ORM
+            feature. It is a driver feature.</p>
+
+        <p><strong>Less code.</strong> This one deserves a diagram.</p>
+
+        <svg viewBox="0 0 520 340" role="img" aria-label="Code volume comparison: a single-table query takes 8 lines in Prisma versus 3 lines in raw SQL. A two-table query with a relation takes 15 lines in Prisma versus 7 lines in raw SQL. The ORM grows faster in complexity." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .orm-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .orm-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .orm-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 600; }
+                .orm-count { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .orm-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; }
+                .orm-bar-orm { fill: var(--accent); opacity: 0.25; rx: 3; }
+                .orm-bar-sql { fill: var(--accent); rx: 3; }
+                .orm-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+                .orm-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="260" y="22" class="orm-title" text-anchor="middle">Lines of Code: ORM vs Raw SQL</text>
+            <!-- Single table -->
+            <text x="30" y="60" class="orm-head">1 Table (simple find)</text>
+            <rect x="30" y="72" width="280" height="24" class="orm-bar-orm"/>
+            <text x="40" y="89" class="orm-label">Prisma</text>
+            <text x="316" y="89" class="orm-count">8 lines</text>
+            <rect x="30" y="102" width="105" height="24" class="orm-bar-sql"/>
+            <text x="40" y="119" class="orm-label" style="fill: var(--bg, #fff);">SQL</text>
+            <text x="141" y="119" class="orm-count">3 lines</text>
+            <text x="380" y="95" class="orm-muted">model + schema</text>
+            <text x="380" y="111" class="orm-muted">+ generate client</text>
+            <!-- Divider -->
+            <line x1="30" y1="142" x2="490" y2="142" class="orm-divider"/>
+            <!-- Two tables with relation -->
+            <text x="30" y="170" class="orm-head">2 Tables + Relation (JOIN)</text>
+            <rect x="30" y="182" width="420" height="24" class="orm-bar-orm"/>
+            <text x="40" y="199" class="orm-label">Prisma</text>
+            <text x="456" y="199" class="orm-count">15 lines</text>
+            <rect x="30" y="212" width="196" height="24" class="orm-bar-sql"/>
+            <text x="40" y="229" class="orm-label" style="fill: var(--bg, #fff);">SQL</text>
+            <text x="232" y="229" class="orm-count">7 lines</text>
+            <text x="380" y="199" class="orm-muted">+ tooling chain</text>
+            <!-- Bottom note -->
+            <line x1="30" y1="258" x2="490" y2="258" class="orm-divider"/>
+            <rect x="30" y="272" width="460" height="52" class="orm-box"/>
+            <text x="260" y="292" class="orm-muted" text-anchor="middle">The ORM grows faster in complexity.</text>
+            <text x="260" y="312" class="orm-muted" text-anchor="middle">At some point you write raw SQL anyway &#x2014; via .raw() calls.</text>
+        </svg>
+
+        <p>Eight lines for a single table lookup in Prisma &#x2014; the model definition,
+            the schema file, the generated client. Three lines in raw SQL. Add a relation
+            and the ORM balloons to fifteen lines plus tooling; the SQL grows to seven.
+            &#x201C;Less code&#x201D; is less code only if you do not count the code the
+            ORM generates, the code the ORM requires you to configure, and the code you
+            will eventually write in <code>.raw()</code> when the abstraction fails.</p>
+
+        <h2>The Abstraction Leak</h2>
+
+        <p>Every ORM follows the same trajectory. The first week is beautiful. Simple
+            queries, clean syntax, no SQL in sight. The second week, you need a JOIN.
+            The ORM handles it, with some additional ceremony. The third week, you need
+            a subquery. The documentation grows vague. The fourth week, you need a
+            window function, a recursive CTE, or a database-specific feature. The ORM
+            offers <code>.raw()</code> &#x2014; a method whose existence is an admission
+            that the abstraction has limits, and whose usage grows monotonically with
+            the complexity of your application.</p>
+
+        <svg viewBox="0 0 520 310" role="img" aria-label="Layered abstraction diagram showing an ORM wrapping a query builder wrapping a database driver wrapping SQL. Each layer adds overhead and opacity. The raw query at the centre is a simple SELECT statement." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .abs-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .abs-layer { fill: none; stroke: var(--border); stroke-width: 1; rx: 8; }
+                .abs-layer-inner { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 6; }
+                .abs-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 600; }
+                .abs-detail { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; }
+                .abs-sql { font-family: ui-monospace, monospace; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .abs-note { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .abs-arrow { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#abs-arrowhead); }
+            </style>
+            <defs>
+                <marker id="abs-arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--muted)"/>
+                </marker>
+            </defs>
+            <text x="260" y="22" class="abs-title" text-anchor="middle">What You See vs What Runs</text>
+            <!-- Outer: ORM -->
+            <rect x="30" y="38" width="460" height="230" class="abs-layer"/>
+            <text x="50" y="58" class="abs-label">ORM (Prisma, Sequelize, TypeORM&#x2026;)</text>
+            <text x="50" y="72" class="abs-detail">DSL, model definitions, migrations, code generation</text>
+            <!-- Middle: Query Builder -->
+            <rect x="60" y="84" width="400" height="160" class="abs-layer"/>
+            <text x="80" y="104" class="abs-label">Query Builder</text>
+            <text x="80" y="118" class="abs-detail">Method chains, parameter binding, dialect translation</text>
+            <!-- Inner: Driver -->
+            <rect x="90" y="130" width="340" height="92" class="abs-layer"/>
+            <text x="110" y="150" class="abs-label">Database Driver</text>
+            <text x="110" y="164" class="abs-detail">Connection pool, protocol, parameterisation</text>
+            <!-- Core: SQL -->
+            <rect x="120" y="176" width="280" height="32" class="abs-layer-inner"/>
+            <text x="260" y="197" class="abs-sql" text-anchor="middle">SELECT id, name FROM users WHERE active = $1</text>
+            <!-- Arrow + note -->
+            <line x1="260" y1="272" x2="260" y2="285" class="abs-arrow"/>
+            <text x="260" y="300" class="abs-note" text-anchor="middle">Three layers of indirection. The database only sees the innermost line.</text>
+        </svg>
+
+        <p>The diagram is not metaphorical. This is the actual execution path. Three
+            layers of indirection sit between your code and the query the database
+            actually runs. Each layer adds overhead &#x2014; cognitive and computational.
+            Each layer obscures what is happening. And the database, blissfully unaware
+            of your architectural preferences, sees only the SQL at the centre.</p>
+
+        <h2>The Hidden Costs</h2>
+
+        <p>An ORM does not merely abstract the query. It abstracts the consequences.</p>
+
+        <p><strong>N+1 queries.</strong> The most common ORM performance problem, and
+            the most invisible. You fetch a list of orders. For each order, the ORM
+            lazily fetches the customer. One query becomes one hundred and one queries.
+            The code looks clean. The database logs tell a different story. An
+            <a href="https://www.postgresql.org/docs/current/sql-explain.html" target="_blank" rel="noopener"><code>EXPLAIN ANALYZE</code></a>
+            would have caught it instantly &#x2014; but you are not writing SQL, so you
+            are not running <code>EXPLAIN ANALYZE</code>.</p>
+
+        <p><strong>Missing indices.</strong> The ORM generates queries you did not write.
+            You cannot optimise queries you have not seen. A missing index on a
+            foreign key column turns a millisecond lookup into a full table scan, and
+            nothing in the ORM&#x2019;s API tells you this is happening.</p>
+
+        <p><strong>Full table scans.</strong> Abstracted away behind a method call that
+            looks identical whether it touches ten rows or ten million. The ORM treats
+            <code>.findAll()</code> the same regardless of table size. The database does
+            not.</p>
+
+        <p>These are not edge cases. They are the ordinary, predictable consequences
+            of hiding the query from the person responsible for its performance.</p>
+
+        <h2>The Portability Lie</h2>
+
+        <p>Let us examine the central claim with the respect it deserves, which is
+            to say: briefly.</p>
+
+        <p>Database portability assumes you are writing database-agnostic SQL. You
+            are not. You are using PostgreSQL&#x2019;s JSONB operators. You are using
+            its array fields. You are using <code>ILIKE</code>, <code>RETURNING</code>,
+            <code>ON CONFLICT</code>, and half a dozen other PostgreSQL-specific
+            features that your ORM either wraps imperfectly or exposes through
+            dialect-specific escape hatches.</p>
+
+        <p>The ORM&#x2019;s portability layer works precisely until you need a feature
+            that differentiates one database from another &#x2014; which is to say, precisely
+            until you need a feature worth having. At that point, you write raw SQL
+            inside the ORM, defeating the portability that justified the ORM&#x2019;s
+            existence.</p>
+
+        <svg viewBox="0 0 520 280" role="img" aria-label="ORM complexity growth curve. At project start, ORM and SQL effort are similar. As complexity increases, ORM effort grows steeply as abstractions leak, while SQL effort grows linearly. The crossover point is labelled the .raw() threshold." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .crv-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .crv-axis { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; }
+                .crv-label-orm { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 11px; font-weight: 600; }
+                .crv-label-sql { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .crv-note { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 600; }
+                .crv-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .crv-line-orm { stroke: var(--muted); stroke-width: 2; fill: none; stroke-dasharray: 6 3; }
+                .crv-line-sql { stroke: var(--accent); stroke-width: 2; fill: none; }
+                .crv-grid { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 2 4; }
+                .crv-threshold { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 4 2; }
+            </style>
+            <text x="260" y="22" class="crv-title" text-anchor="middle">Effort Over Time</text>
+            <!-- Axes -->
+            <line x1="60" y1="240" x2="490" y2="240" stroke="var(--border)" stroke-width="1"/>
+            <line x1="60" y1="240" x2="60" y2="44" stroke="var(--border)" stroke-width="1"/>
+            <text x="275" y="268" class="crv-axis" text-anchor="middle">Project Complexity &#x2192;</text>
+            <text x="24" y="142" class="crv-axis" text-anchor="middle" transform="rotate(-90 24 142)">Effort &#x2192;</text>
+            <!-- Grid lines -->
+            <line x1="60" y1="190" x2="490" y2="190" class="crv-grid"/>
+            <line x1="60" y1="140" x2="490" y2="140" class="crv-grid"/>
+            <line x1="60" y1="90" x2="490" y2="90" class="crv-grid"/>
+            <!-- SQL line (linear) -->
+            <path d="M 60 230 L 490 110" class="crv-line-sql"/>
+            <text x="490" y="104" class="crv-label-sql" text-anchor="end">SQL</text>
+            <!-- ORM line (exponential-ish) -->
+            <path d="M 60 225 C 160 215, 230 190, 280 160 S 380 80, 490 48" class="crv-line-orm"/>
+            <text x="490" y="44" class="crv-label-orm" text-anchor="end">ORM</text>
+            <!-- .raw() threshold -->
+            <line x1="240" y1="240" x2="240" y2="44" class="crv-threshold"/>
+            <text x="246" y="56" class="crv-note">.raw() threshold</text>
+            <text x="246" y="70" class="crv-muted">Abstraction breaks.</text>
+            <text x="246" y="82" class="crv-muted">You write SQL anyway.</text>
+        </svg>
+
+        <p>The curve is not speculative. Every ORM project follows it. The abstraction
+            holds for simple CRUD. The moment complexity arrives &#x2014; and complexity
+            always arrives &#x2014; the ORM&#x2019;s effort curve steepens while SQL&#x2019;s
+            remains linear. Past the <code>.raw()</code> threshold, you are maintaining
+            two query languages: the ORM&#x2019;s DSL for the simple bits, and SQL for
+            the bits that actually matter.</p>
+
+        <h2>The Replacement</h2>
+
+        <p>SQL. That is the replacement. Not a framework. Not a library. Not a DSL
+            that generates what you could have written directly.</p>
+
+        <p><a href="https://www.postgresql.org/docs/current/sql-explain.html" target="_blank" rel="noopener"><code>EXPLAIN ANALYZE</code></a>
+            works. You see the query plan. You see the sequential scans. You see the
+            index hits, the row estimates, the actual execution time. Nothing is hidden.
+            Nothing is abstracted. The database tells you exactly what it is doing, and
+            you make informed decisions based on evidence rather than hope.</p>
+
+        <p>Modern database drivers have made raw SQL ergonomic.
+            <a href="https://github.com/porsager/postgres" target="_blank" rel="noopener">postgres.js</a>
+            uses tagged template literals for automatic parameterisation:</p>
+
+<pre><code>const users = await sql`
+  SELECT id, name, email
+  FROM users
+  WHERE active = ${true}
+`</code></pre>
+
+        <p>Three lines. Parameterised. Type-safe at the protocol level. No model
+            definition. No schema file. No code generation step. No build tooling.
+            No migration framework that generates SQL you then have to debug anyway.
+            Just the query, visible, auditable, and running exactly as written.</p>
+
+        <p>For migrations,
+            <a href="https://github.com/amacneil/dbmate" target="_blank" rel="noopener">dbmate</a>
+            handles schema versioning in plain SQL files. For connection pooling,
+            <a href="https://www.pgbouncer.org/" target="_blank" rel="noopener">PgBouncer</a>
+            has done the job for two decades. The Unix philosophy applies: small tools,
+            each doing one thing well, composed as needed. The ORM bundles all of these
+            into one tool that does each of them less well.</p>
+
+        <h2>The Fair Concession</h2>
+
+        <p>ORMs reduce boilerplate for CRUD-heavy applications with simple data models.
+            If your application is a todo list with five tables and no joins beyond
+            a foreign key, an ORM will serve you adequately. The abstraction holds
+            because the complexity never arrives.</p>
+
+        <p>The problem is scope. ORMs are not marketed as &#x201C;suitable for simple
+            CRUD applications with predictable query patterns.&#x201D; They are marketed
+            as database abstraction layers for production applications &#x2014; applications
+            that will, inevitably, outgrow the abstraction. The ORM does not scale down
+            gracefully. It accumulates <code>.raw()</code> calls like barnacles on a hull,
+            each one a quiet confession that the abstraction was not sufficient.</p>
+
+        <h2>The Verdict</h2>
+
+        <p>ORMs hide complexity instead of eliminating it. They promise database
+            portability you will never use. They obscure queries you should understand.
+            They generate code you cannot optimise. They introduce N+1 problems you
+            cannot see. They grow in effort faster than the SQL they replace.</p>
+
+        <p>SQL has been the interface to relational data since 1974. It is declarative,
+            portable across every relational database, and understood by every database
+            tool ever written. <code>EXPLAIN ANALYZE</code> works. The query plan is
+            visible. The performance is measurable. The language is stable.</p>
+
+        <p>Your ORM will be deprecated before your queries are.</p>
+
+        <aside class="vv-aside">
+            <p>The code comparison, for those who appreciate specificity. A
+                <a href="https://www.prisma.io/docs" target="_blank" rel="noopener">Prisma</a>
+                model definition for a single table: five lines of schema, a
+                <code>prisma generate</code> step, then a three-line query call &#x2014;
+                eight lines total, plus tooling. The
+                <a href="https://github.com/porsager/postgres" target="_blank" rel="noopener">postgres.js</a>
+                equivalent: three lines. With a relation, Prisma grows to fifteen lines
+                plus the migration framework. The SQL grows to seven, all of them
+                visible. The pattern holds: the ORM&#x2019;s complexity grows
+                super-linearly. The SQL&#x2019;s grows linearly. At some point &#x2014;
+                and that point arrives sooner than any ORM documentation suggests &#x2014;
+                you write raw SQL anyway.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

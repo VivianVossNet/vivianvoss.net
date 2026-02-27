@@ -1,0 +1,422 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Vanilla JS: The Framework You Already Have &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="React ships 142 KB before your code runs. The browser ships querySelector, addEventListener, Web Components, Proxy, and fetch. Zero kilobytes. The framework was always there.">
+{( endslot )}
+
+{( slot canonical )}/blog/vanilla-js-the-framework-you-have{( endslot )}
+
+{( slot og-title )}Vanilla JS: The Framework You Already Have &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}React ships 142 KB. The browser ships querySelector, addEventListener, Web Components, Proxy, and fetch. Zero kilobytes. The framework was always there.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Vanilla JS: The Framework You Already Have",
+    "datePublished": "2026-01-07",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/vanilla-js-the-framework-you-have",
+    "description": "React ships 142 KB before your code runs. The browser ships querySelector, addEventListener, Web Components, Proxy, and fetch. Zero kilobytes. The framework was always there.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-07">07 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Vanilla JS: The Framework You Already Have</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Lean Web</em> &#x25A0; Episode 6</p>
+
+        <p>&#x201C;We need React for this.&#x201D;</p>
+
+        <p>One hears the sentence in stand-ups, architecture reviews, sprint plannings, and
+            that particularly charged moment when a project lead opens a whiteboard and draws
+            boxes. It arrives with the quiet confidence of a fact. It is, in most cases,
+            nothing of the sort.</p>
+
+        <p>DOM manipulation. Event handling. State updates. HTTP requests. JavaScript solved
+            every one of these in 2015. Not with a framework. Not with a library. With the
+            language itself and the
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API" target="_blank" rel="noopener">browser
+            APIs</a> that ship in every browser on every device, at zero cost, with no build
+            step, no transpilation, and no dependency tree.</p>
+
+        <p>The question is not whether React works. The question is what precisely it does
+            that the browser does not already do for free.</p>
+
+        <h2>Five Methods</h2>
+
+        <p>The browser&#x2019;s native API surface is vast. But for the overwhelming majority
+            of interactive websites &#x2014; not applications, websites &#x2014; the daily
+            work reduces to five methods:</p>
+
+        <p><code>document.querySelector()</code> &#x2014; find an element.<br>
+            <code>element.addEventListener()</code> &#x2014; respond to an event.<br>
+            <code>element.classList.toggle()</code> &#x2014; change appearance.<br>
+            <code>fetch()</code> &#x2014; make an HTTP request.<br>
+            <code>new WebSocket()</code> &#x2014; maintain a persistent connection.</p>
+
+        <p>Five methods. No imports. No configuration. No <code>package.json</code>. No
+            <code>node_modules</code>. No build pipeline. The browser understands them
+            natively, executes them immediately, and has done so, reliably, for over a
+            decade.</p>
+
+        <p>React, by contrast, requires JSX transpilation, a bundler (Webpack, Vite, or
+            similar), Node.js as a build dependency, a <code>package.json</code> with
+            a median of 47 direct dependencies, a <code>node_modules</code> directory
+            containing roughly 1,200 folders, a build step that produces a bundle, and
+            a hydration phase that reconstructs on the client what the server already
+            rendered.</p>
+
+        <p>The output of this ceremony is a DOM update. The same DOM update that five
+            native methods perform without ceremony at all.</p>
+
+        <svg viewBox="0 0 520 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dependency tree comparison: React requires JSX, Babel, Webpack, Node, package.json, 1200 node_modules folders, build step, and hydration. Vanilla JS requires nothing. Both produce the same DOM update." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .vjs-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .vjs-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .vjs-sub { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .vjs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .vjs-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .vjs-box-dim { fill: var(--muted); opacity: 0.08; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .vjs-line { stroke: var(--border); stroke-width: 1; fill: none; }
+                .vjs-line-hl { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+                .vjs-dot { fill: var(--accent); }
+                .vjs-vs { font: 700 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .vjs-result { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+            </style>
+
+            <!-- Titles -->
+            <text class="vjs-title" x="120" y="20" text-anchor="middle">REACT</text>
+            <text class="vjs-title" x="400" y="20" text-anchor="middle">VANILLA JS</text>
+
+            <!-- React chain (left) -->
+            <rect class="vjs-box-dim" x="40" y="35" width="160" height="26"/>
+            <text class="vjs-label" x="120" y="52" text-anchor="middle">JSX</text>
+
+            <line class="vjs-line" x1="120" y1="61" x2="120" y2="72"/>
+            <circle class="vjs-dot" cx="120" cy="72" r="2"/>
+
+            <rect class="vjs-box-dim" x="40" y="76" width="160" height="26"/>
+            <text class="vjs-label" x="120" y="93" text-anchor="middle">Babel / Transpiler</text>
+
+            <line class="vjs-line" x1="120" y1="102" x2="120" y2="113"/>
+            <circle class="vjs-dot" cx="120" cy="113" r="2"/>
+
+            <rect class="vjs-box-dim" x="40" y="117" width="160" height="26"/>
+            <text class="vjs-label" x="120" y="134" text-anchor="middle">Webpack / Vite</text>
+
+            <line class="vjs-line" x1="120" y1="143" x2="120" y2="154"/>
+            <circle class="vjs-dot" cx="120" cy="154" r="2"/>
+
+            <rect class="vjs-box-dim" x="40" y="158" width="160" height="26"/>
+            <text class="vjs-label" x="120" y="175" text-anchor="middle">Node.js</text>
+
+            <line class="vjs-line" x1="120" y1="184" x2="120" y2="195"/>
+            <circle class="vjs-dot" cx="120" cy="195" r="2"/>
+
+            <rect class="vjs-box-dim" x="40" y="199" width="160" height="26"/>
+            <text class="vjs-label" x="120" y="216" text-anchor="middle">package.json (47 deps)</text>
+
+            <line class="vjs-line" x1="120" y1="225" x2="120" y2="236"/>
+            <circle class="vjs-dot" cx="120" cy="236" r="2"/>
+
+            <rect class="vjs-box-dim" x="40" y="240" width="160" height="26"/>
+            <text class="vjs-label" x="120" y="257" text-anchor="middle">node_modules (1,200)</text>
+
+            <line class="vjs-line" x1="120" y1="266" x2="120" y2="277"/>
+            <circle class="vjs-dot" cx="120" cy="277" r="2"/>
+
+            <rect class="vjs-box-dim" x="40" y="281" width="160" height="26"/>
+            <text class="vjs-label" x="120" y="298" text-anchor="middle">Build &#x2192; Bundle &#x2192; Ship</text>
+
+            <line class="vjs-line" x1="120" y1="307" x2="120" y2="318"/>
+            <circle class="vjs-dot" cx="120" cy="318" r="2"/>
+
+            <rect class="vjs-box" x="40" y="322" width="160" height="26"/>
+            <text class="vjs-result" x="120" y="339" text-anchor="middle">DOM Update</text>
+
+            <!-- VS -->
+            <text class="vjs-vs" x="260" y="195" text-anchor="middle">vs</text>
+
+            <!-- Vanilla JS (right) — just the script tag, then DOM -->
+            <rect class="vjs-box-hl" x="320" y="158" width="160" height="46"/>
+            <text class="vjs-label" x="400" y="178" text-anchor="middle">&lt;script&gt;</text>
+            <text class="vjs-sub" x="400" y="194" text-anchor="middle">querySelector, fetch, etc.</text>
+
+            <line class="vjs-line-hl" x1="400" y1="204" x2="400" y2="318"/>
+            <circle class="vjs-dot" cx="400" cy="318" r="3"/>
+
+            <rect class="vjs-box" x="320" y="322" width="160" height="26"/>
+            <text class="vjs-result" x="400" y="339" text-anchor="middle">DOM Update</text>
+
+            <!-- Footnotes -->
+            <text class="vjs-sub" x="120" y="358" text-anchor="middle">8 steps, 142 KB framework</text>
+            <text class="vjs-sub" x="400" y="358" text-anchor="middle">1 step, 0 KB framework</text>
+        </svg>
+
+        <h2>&#x201C;But Components!&#x201D;</h2>
+
+        <p>The first objection arrives like clockwork. &#x201C;React gives us components.
+            Reusable, encapsulated, composable.&#x201D; This is true. It is also true that
+            the browser has offered precisely the same capability since 2020, without React,
+            without a build step, and without a single line of JSX.</p>
+
+        <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components" target="_blank" rel="noopener">Web
+            Components</a> &#x2014; specifically Custom Elements &#x2014; are a browser-native
+            standard. A class extending <code>HTMLElement</code>, a
+            <code>connectedCallback</code>, and <code>customElements.define()</code>. Three
+            constructs. Native encapsulation via Shadow DOM. Native lifecycle hooks. Native
+            attribute observation. No transpiler required. No virtual DOM. No reconciliation
+            engine.</p>
+
+        <p><a href="https://caniuse.com/custom-elementsv1" target="_blank" rel="noopener">Browser
+            support stands at 98%</a> globally, which is higher than the support for several
+            CSS features that nobody hesitates to ship.</p>
+
+        <p>The distinction is important. React components are a React abstraction. They exist
+            inside React, render through React, and cannot escape React without a wrapper.
+            Web Components are a platform primitive. They work in React. They work in Vue.
+            They work in a static HTML file served from a cupboard. They work because the
+            browser understands them, not because a framework permits them.</p>
+
+        <h2>&#x201C;But Reactivity!&#x201D;</h2>
+
+        <p>The second objection follows promptly. &#x201C;React gives us reactivity.
+            Change the state, the view updates automatically.&#x201D; This is, once again,
+            correct. It is also achievable in eight lines of vanilla JavaScript.</p>
+
+        <p>The
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy" target="_blank" rel="noopener">Proxy</a>
+            object, standardised in ES2015 and
+            <a href="https://caniuse.com/proxy" target="_blank" rel="noopener">supported in
+            every modern browser</a>, intercepts property access and mutation on any
+            JavaScript object. Wrap your state in a Proxy, define a <code>set</code> trap
+            that calls a render function, and you have reactivity. Real reactivity. Not
+            virtual-DOM-diffing reactivity. Direct, surgical DOM updates triggered by the
+            actual mutation, with no intermediate tree comparison.</p>
+
+        <p>React&#x2019;s reactivity model builds a new Virtual DOM tree on every state
+            change, diffs it against the previous tree, calculates the delta, and patches the
+            real DOM. Four operations to achieve what a Proxy achieves in one. The overhead is
+            not theoretical. It is measured in milliseconds, in CPU cycles, and in the battery
+            life of every mobile device that must perform the calculation.</p>
+
+        <h2>The Numbers</h2>
+
+        <p>Let us be specific about what ships to the user.</p>
+
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bundle size comparison: React plus ReactDOM is 142 KB minified and gzipped, while Vanilla JS, Web Components, and Proxy are all 0 KB because they are built into the browser." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .bs-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .bs-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .bs-value { font: 700 18px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .bs-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .bs-bar { fill: var(--accent); opacity: 0.6; rx: 2; }
+                .bs-bar-zero { fill: var(--accent); opacity: 0.15; rx: 2; }
+                .bs-axis { stroke: var(--border); stroke-width: 1; }
+            </style>
+
+            <text class="bs-title" x="260" y="20" text-anchor="middle">WHAT SHIPS TO THE USER</text>
+            <text class="bs-muted" x="260" y="36" text-anchor="middle">minified + gzipped transfer size</text>
+
+            <!-- Axis -->
+            <line class="bs-axis" x1="170" y1="56" x2="170" y2="252"/>
+
+            <!-- React -->
+            <text class="bs-label" x="160" y="82" text-anchor="end">React + ReactDOM</text>
+            <rect class="bs-bar" x="180" y="68" width="280" height="22"/>
+            <text class="bs-value" x="470" y="85" text-anchor="start">142 KB</text>
+
+            <!-- Vanilla JS -->
+            <text class="bs-label" x="160" y="128" text-anchor="end">Vanilla JS</text>
+            <rect class="bs-bar-zero" x="180" y="114" width="4" height="22"/>
+            <text class="bs-value" x="194" y="131" text-anchor="start">0 KB</text>
+
+            <!-- Web Components -->
+            <text class="bs-label" x="160" y="174" text-anchor="end">Web Components</text>
+            <rect class="bs-bar-zero" x="180" y="160" width="4" height="22"/>
+            <text class="bs-value" x="194" y="177" text-anchor="start">0 KB</text>
+
+            <!-- Proxy -->
+            <text class="bs-label" x="160" y="220" text-anchor="end">Proxy</text>
+            <rect class="bs-bar-zero" x="180" y="206" width="4" height="22"/>
+            <text class="bs-value" x="194" y="223" text-anchor="start">0 KB</text>
+
+            <!-- Source -->
+            <text class="bs-muted" x="260" y="268" text-anchor="middle">Source: bundlephobia.com/package/react-dom &#x25A0; caniuse.com</text>
+        </svg>
+
+        <p><a href="https://bundlephobia.com/package/react-dom" target="_blank" rel="noopener">React
+            plus ReactDOM: 142 KB</a>, minified and gzipped. That is the transfer size &#x2014;
+            the browser decompresses and parses considerably more. Before your application
+            renders a single <code>&lt;div&gt;</code>, 142 kilobytes of framework must
+            arrive, decompress, parse, and execute.</p>
+
+        <p>Vanilla JavaScript: 0 KB. It is already in the browser. It shipped with the
+            browser. It <em>is</em> the browser.</p>
+
+        <p>Web Components: 0 KB. Same reason. Custom Elements are a browser specification,
+            not a library.</p>
+
+        <p>Proxy: 0 KB. It has been part of the JavaScript engine since 2015.</p>
+
+        <p>Zero is a compelling bundle size. It is difficult to optimise further. Tree-shaking
+            zero kilobytes yields, one imagines, zero kilobytes. Code-splitting zero kilobytes
+            produces, remarkably, zero kilobytes. The performance budget for the browser&#x2019;s
+            native APIs is settled before the conversation begins.</p>
+
+        <h2>The Ecosystem Paradox</h2>
+
+        <p>React&#x2019;s ecosystem is enormous. Redux, React Router, React Hook Form,
+            Formik, React Query, Zustand, Jotai, Recoil &#x2014; the constellation of
+            libraries is vast, well-maintained, and deeply impressive. It is also, structurally,
+            a consequence of what React <em>does not do</em>.</p>
+
+        <p>React does not manage global state. So the ecosystem produced Redux, Zustand,
+            Jotai, Recoil, MobX, and Valtio. React does not handle routing. So the ecosystem
+            produced React Router, TanStack Router, and Next.js. React does not manage forms
+            natively. So the ecosystem produced React Hook Form, Formik, and Final Form.
+            React does not animate. So the ecosystem produced Framer Motion and React Spring.</p>
+
+        <p>Each library solves a real problem. The question is who created the problem.</p>
+
+        <p>The browser has <code>addEventListener</code> for events, the
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API" target="_blank" rel="noopener">History
+            API</a> for routing,
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData" target="_blank" rel="noopener">FormData</a>
+            for form handling, the
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API" target="_blank" rel="noopener">Web
+            Animations API</a> for animation, and
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" target="_blank" rel="noopener">CustomEvent</a>
+            for cross-component communication. These are not experimental features behind
+            a flag. They are shipping standards, implemented in every major browser, with
+            years of stability behind them.</p>
+
+        <p>React&#x2019;s ecosystem does not extend the platform. It <em>replaces</em> the
+            platform. And the replacement costs 142 KB before it begins to function, plus
+            whatever the ecosystem libraries add on top.</p>
+
+        <h2>The jQuery Parallel</h2>
+
+        <p>The industry has been here before. In 2006, jQuery arrived and solved genuine
+            problems: inconsistent DOM APIs across browsers, missing selector engines,
+            unreliable event handling. It dominated for a decade. Then the browsers
+            caught up. <code>querySelector</code> replaced Sizzle.
+            <code>addEventListener</code> replaced <code>$.on()</code>.
+            <code>fetch</code> replaced <code>$.ajax()</code>. The gap closed.
+            jQuery became unnecessary.</p>
+
+        <p>Not overnight. Not dramatically. Gradually, and then completely.
+            <a href="https://w3techs.com/technologies/history_overview/javascript_library" target="_blank" rel="noopener">W3Techs
+            still reports jQuery on 77% of websites</a>, but the trajectory is unambiguous
+            and the direction is down. New projects do not start with jQuery. The library
+            persists because legacy persists, not because the need persists.</p>
+
+        <p>React&#x2019;s trajectory is structurally identical. It solved real problems in
+            2013: the DOM API was verbose, state synchronisation was manual, and component
+            encapsulation required discipline the platform did not enforce. In 2026, the
+            browser offers <code>querySelector</code>, Proxy, Web Components,
+            <code>fetch</code>,
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/AbortController" target="_blank" rel="noopener">AbortController</a>,
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver" target="_blank" rel="noopener">MutationObserver</a>,
+            and the Web Animations API. The gap is closing. The same gap, the same direction,
+            the same conclusion.</p>
+
+        <p>The only question is the timeline. jQuery took roughly a decade. React may take
+            longer &#x2014; its integration into build tooling, hiring pipelines, and
+            university curricula creates a structural inertia that jQuery never achieved.
+            But inertia is not necessity. And &#x201C;We have always used React&#x201D;
+            is not an architectural argument. It is a habit dressed in a tech stack.</p>
+
+        <h2>Where React Earns Its Keep</h2>
+
+        <p>This is not, to be tediously clear, a call to abolish React. The framework
+            solves genuine problems for genuine applications. Google Docs. Figma.
+            Spotify&#x2019;s web player. Dense, stateful, interactive surfaces where
+            users remain for hours and the framework cost amortises across thousands of
+            interactions. Where client-side state management is not a convenience but a
+            structural necessity. Where the Virtual DOM&#x2019;s reconciliation model
+            earns its overhead by managing complexity that would be unmanageable without
+            it.</p>
+
+        <p>These applications exist. They represent, at a generous estimate, perhaps
+            5% of what gets built with React. The remaining 95% are marketing sites,
+            blogs, documentation portals, product catalogues, and landing pages &#x2014;
+            documents with the occasional interactive element, served to browsers that
+            handle documents natively and have done so for three decades.</p>
+
+        <h2>The Invoice</h2>
+
+        <p>What you pay for React: 142 KB of framework. A build pipeline (JSX, Babel,
+            Webpack/Vite, Node.js). A <code>node_modules</code> directory with 1,200
+            folders. A hydration phase that rebuilds what the server already rendered.
+            A Virtual DOM that diffs what the real DOM already knows. An ecosystem of
+            libraries that replaces what the browser already provides.</p>
+
+        <p>What the browser provides for free:
+            <code>querySelector</code>,
+            <code>addEventListener</code>,
+            <code>classList</code>,
+            <code>fetch</code>,
+            <code>WebSocket</code>,
+            <code>CustomEvent</code>,
+            <code>FormData</code>,
+            <code>AbortController</code>,
+            <code>MutationObserver</code>,
+            <code>Proxy</code>,
+            Web Components,
+            the Web Animations API,
+            and the History API.
+            All native. All without a build step. All shipping in every browser since
+            at least 2020.</p>
+
+        <blockquote>
+            <p>React &#x201C;Hello World&#x201D; loads 142 KB before your code.
+                Browser &#x201C;Hello World&#x201D; loads your code.</p>
+        </blockquote>
+
+        <p>The fastest framework is the one you do not ship. And the most reliable
+            dependency is the one that shipped with the browser.</p>
+
+        <aside class="vv-aside">
+            <p><strong>From the first comment</strong></p>
+            <p>Browser APIs that React &#x201C;replaces&#x201D;:
+                <code>querySelector</code>,
+                <code>addEventListener</code>,
+                <code>CustomEvent</code>,
+                Web Components,
+                <code>Proxy</code>,
+                <code>MutationObserver</code>,
+                <code>fetch</code>,
+                <code>AbortController</code>,
+                <code>FormData</code>,
+                Web Animations API.
+                All native. All without a build step. React &#x201C;Hello World&#x201D;
+                loads 142 KB before your code executes. The browser&#x2019;s &#x201C;Hello
+                World&#x201D; loads nothing. Because the browser <em>is</em> the runtime.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

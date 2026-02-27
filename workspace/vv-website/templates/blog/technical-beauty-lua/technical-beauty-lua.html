@@ -1,0 +1,439 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: Lua &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="25,000 lines of C. A 200 KB binary. Embedded in World of Warcraft, Lightroom, nginx, Redis, Neovim, Roblox, Nmap. Born from trade barriers in Brazil. MIT licence. Include one header, link one library, call lua_pcall(). Technical beauty, episode 18.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-lua{( endslot )}
+
+{( slot og-title )}Technical Beauty: Lua &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}25,000 lines of C. A 200 KB binary. Embedded in World of Warcraft, Lightroom, nginx, Redis, Neovim, Roblox, Nmap. Born from trade barriers in Brazil. MIT licence.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: Lua",
+    "datePublished": "2026-01-23",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-lua",
+    "description": "25,000 lines of C. A 200 KB binary. Embedded in World of Warcraft, Lightroom, nginx, Redis, Neovim, Roblox, Nmap. Born from trade barriers in Brazil. MIT licence. Include one header, link one library, call lua_pcall(). Technical beauty, episode 18.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-23">23 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: Lua</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">lua</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 18</p>
+
+        <blockquote>
+            <p>&#x201C;We could have imported software. Brazil decided we could not.
+                So we wrote our own.&#x201D;</p>
+        </blockquote>
+
+        <p>In 1984, Brazil&#x2019;s military government enforced the
+            <em>Pol&#x00ED;tica Nacional de Inform&#x00E1;tica</em> &#x2014; a market
+            reserve policy that banned the import of foreign software where a domestic
+            equivalent existed, or might conceivably exist, or could be imagined to
+            exist on a sufficiently optimistic afternoon. The intent was to foster a
+            national technology industry. The immediate effect was that three
+            researchers at the
+            <a href="https://www.puc-rio.br/" target="_blank" rel="noopener">Pontifical Catholic University of Rio de Janeiro</a>
+            could not obtain the tools they needed. They were consulting for
+            Petrobras, the state oil company, and the data-entry language they
+            required was simply unavailable. Import licence: denied.</p>
+
+        <p>So
+            <a href="https://www.lua.org/authors.html" target="_blank" rel="noopener">Roberto Ierusalimschy, Luiz Henrique de Figueiredo, and Waldemar Celes</a>
+            did what engineers do when bureaucracy blocks the obvious path. They
+            built two data-description languages: SOL (Simple Object Language) and
+            DEL (Data Entry Language). By 1993, the two had converged into a single,
+            general-purpose embeddable scripting language. They named it
+            <a href="https://www.lua.org/" target="_blank" rel="noopener">Lua</a>
+            &#x2014; Portuguese for &#x201C;moon&#x201D; &#x2014; because it orbited
+            the host application rather than standing alone. SOL means &#x201C;sun&#x201D;
+            in Portuguese. The moon orbits the sun. Naming things, it turns out, is
+            not always the hardest problem in computer science.</p>
+
+        <h2>The Constraints</h2>
+
+        <p>The numbers are worth stating plainly, because they sound like misprints.
+            The <a href="https://www.lua.org/" target="_blank" rel="noopener">Lua 5.4</a>
+            reference implementation is approximately 25,000 lines of ANSI C. The
+            compiled binary is around 200 KB. The runtime memory footprint begins at
+            roughly 300 KB. These are not targets the team aimed for and
+            approximately hit. These are the natural consequence of a design
+            philosophy that treats every line of code as a liability and every
+            kilobyte as an extravagance.</p>
+
+        <p>For context: the
+            <a href="https://www.python.org/" target="_blank" rel="noopener">Python</a>
+            runtime is approximately 50 MB. Google&#x2019;s
+            <a href="https://v8.dev/" target="_blank" rel="noopener">V8</a> JavaScript engine
+            &#x2014; the engine, not the browser &#x2014; comprises roughly two million
+            lines of C++. Both are excellent tools. Neither can be embedded in a
+            game engine without the game engine noticing.</p>
+
+        <!-- Embedding size comparison -->
+        <svg viewBox="0 0 520 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Embedding footprint comparison. Lua: 200 KB binary, 25,000 lines of C, 300 KB RAM. Python: 50 MB runtime, 400,000+ lines. V8: 30+ MB binary, 2,000,000 lines of C++. Lua fits where nothing else will." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .lua-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .lua-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .lua-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .lua-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .lua-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .lua-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .lua-bar { fill: var(--accent); opacity: 0.7; rx: 2; }
+                .lua-bar-dim { fill: var(--muted); opacity: 0.3; rx: 2; }
+                .lua-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+
+            <text class="lua-title" x="260" y="20" text-anchor="middle">Embedding Footprint</text>
+            <text class="lua-sub" x="260" y="36" text-anchor="middle">Binary size (lower is better)</text>
+
+            <!-- Lua -->
+            <text class="lua-label" x="100" y="72" text-anchor="end">Lua 5.4</text>
+            <rect class="lua-bar" x="108" y="58" width="8" height="22"/>
+            <text class="lua-value" x="124" y="74">200 KB</text>
+            <text class="lua-sub" x="190" y="74">25,000 lines C</text>
+
+            <!-- Python -->
+            <text class="lua-label" x="100" y="112" text-anchor="end">Python</text>
+            <rect class="lua-bar-dim" x="108" y="98" width="360" height="22"/>
+            <text class="lua-value" x="476" y="114">~50 MB</text>
+            <text class="lua-sub" x="108" y="134">400,000+ lines</text>
+
+            <!-- V8 -->
+            <text class="lua-label" x="100" y="168" text-anchor="end">V8</text>
+            <rect class="lua-bar-dim" x="108" y="154" width="300" height="22"/>
+            <text class="lua-value" x="416" y="170">~30 MB</text>
+            <text class="lua-sub" x="108" y="190">2,000,000 lines C++</text>
+
+            <line class="lua-divider" x1="30" y1="210" x2="490" y2="210"/>
+
+            <!-- RAM comparison -->
+            <text class="lua-title" x="260" y="232" text-anchor="middle">Minimum RAM</text>
+
+            <text class="lua-label" x="100" y="258" text-anchor="end">Lua</text>
+            <rect class="lua-bar" x="108" y="244" width="6" height="20"/>
+            <text class="lua-value" x="122" y="259">~300 KB</text>
+
+            <text class="lua-label" x="100" y="286" text-anchor="end">Python / V8</text>
+            <rect class="lua-bar-dim" x="108" y="272" width="260" height="20"/>
+            <text class="lua-value" x="376" y="287">20&#x2013;50 MB</text>
+
+            <text class="lua-accent" x="260" y="308" text-anchor="middle">Lua fits where nothing else will.</text>
+        </svg>
+
+        <h2>The Embedding</h2>
+
+        <p>To embed Lua in a C application, one includes a single header file,
+            links a single library, and calls
+            <code>lua_pcall()</code>. That is the complete integration story. There
+            is no package manager. There is no build system dependency. There is no
+            initialisation ritual involving twelve configuration objects, a factory
+            pattern, and a prayer. The
+            <a href="https://www.lua.org/manual/5.4/manual.html#4" target="_blank" rel="noopener">C API</a>
+            communicates through a virtual stack: push values, call functions, pop
+            results. The stack is the interface. The interface is the stack.</p>
+
+        <pre><code>#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+
+lua_State *L = luaL_newstate();
+luaL_openlibs(L);
+luaL_dostring(L, "print('hello')");
+lua_close(L);</code></pre>
+
+        <p>Eight lines. A complete, functioning embedded scripting environment.
+            Compare this with embedding Python, which requires initialising the
+            interpreter, configuring the module search path, managing the Global
+            Interpreter Lock, and navigating a reference-counting API that has
+            produced more memory leaks than contributions to human knowledge. Or
+            embedding V8, which requires understanding isolates, contexts, handles,
+            handle scopes, and a compilation pipeline that would make a petrochemical
+            refinery look straightforward.</p>
+
+        <p>Lua&#x2019;s C API is small because the language is small. The language
+            is small because the designers understood that an embeddable language
+            must be smaller than the thing it is embedded in. A scripting engine
+            that dwarfs its host has confused the roles of moon and planet.</p>
+
+        <h2>The Adopters</h2>
+
+        <p>The roster of software that embeds Lua reads less like a technology
+            list and more like a cross-section of computing itself.</p>
+
+        <p><a href="https://wowpedia.fandom.com/wiki/Lua" target="_blank" rel="noopener">World of Warcraft</a>
+            exposes its entire user interface to Lua. Every addon &#x2014; every
+            damage meter, every raid frame, every auction house extension that
+            has consumed more human hours than some national infrastructure projects
+            &#x2014; is written in Lua. Blizzard chose it in 2004 because it was
+            small enough to ship with the client, fast enough to run during combat,
+            and sandboxable enough that twelve-year-olds writing addons could not
+            crash the server.</p>
+
+        <p>Adobe <a href="https://www.adobe.com/products/photoshop-lightroom.html" target="_blank" rel="noopener">Lightroom</a>
+            is substantially written in Lua. Not merely scripted by it &#x2014;
+            written in it. The cataloguing, the UI logic, the preset system.
+            When a photographer imports 40,000 RAW files and the application
+            remains responsive, Lua is the reason the architecture holds.</p>
+
+        <p><a href="https://openresty.org/" target="_blank" rel="noopener">OpenResty</a>
+            embeds Lua in <a href="https://nginx.org/" target="_blank" rel="noopener">nginx</a>,
+            turning a web server into a programmable application server. Non-blocking
+            I/O. Coroutines mapped to nginx&#x2019;s event loop. Request processing
+            in microseconds, not milliseconds. Cloudflare runs its edge network on
+            this. When your DNS query resolves, there is a reasonable chance Lua
+            touched it.</p>
+
+        <p><a href="https://redis.io/docs/interact/programmability/eval-intro/" target="_blank" rel="noopener">Redis</a>
+            embeds Lua for server-side scripting. The <code>EVAL</code> command
+            executes Lua scripts atomically &#x2014; no other command can interleave
+            during execution. This turns Redis from a data structure server into a
+            programmable transaction engine. Without adding a transaction protocol.
+            Without adding a query language. Without adding anything except 200 KB
+            of Lua.</p>
+
+        <p><a href="https://neovim.io/doc/user/lua.html" target="_blank" rel="noopener">Neovim</a>
+            replaced Vimscript with Lua as its primary extension language. The
+            plugin ecosystem responded by producing configuration frameworks that
+            are, in some cases, more elaborate than the applications they configure.
+            But the core insight stands: Lua is fast enough for an editor that must
+            respond within a single frame of screen refresh.</p>
+
+        <p><a href="https://create.roblox.com/docs/luau" target="_blank" rel="noopener">Roblox</a>
+            created Luau, a typed dialect of Lua. Every game on the platform &#x2014;
+            and there are millions &#x2014; runs on it. The next generation of
+            programmers is learning to code in a language descended from a Brazilian
+            trade dispute.</p>
+
+        <p><a href="https://nmap.org/book/nse.html" target="_blank" rel="noopener">Nmap</a>
+            uses the Nmap Scripting Engine, powered by Lua, to extend network
+            scanning with custom probes and vulnerability checks. Security
+            researchers write detection scripts in a language that adds negligible
+            overhead to the scan.</p>
+
+        <!-- Adopters diagram -->
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lua embedding map showing domains: gaming (WoW, Roblox), creative tools (Lightroom), infrastructure (nginx/OpenResty, Redis), development tools (Neovim, Nmap). One language, every domain." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .lua-map-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .lua-map-cat { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
+                .lua-map-item { font: 400 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .lua-map-detail { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .lua-map-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .lua-map-box-a { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .lua-map-fill { fill: var(--accent); opacity: 0.06; }
+                .lua-map-fill-a { fill: var(--accent); opacity: 0.12; }
+                .lua-map-line { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 4 3; }
+                .lua-map-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <text class="lua-map-title" x="260" y="20" text-anchor="middle">One Language, Every Domain</text>
+
+            <!-- Centre: Lua -->
+            <rect class="lua-map-fill-a" x="210" y="116" width="100" height="40" rx="4"/>
+            <rect class="lua-map-box-a" x="210" y="116" width="100" height="40"/>
+            <text class="lua-map-cat" x="260" y="133" text-anchor="middle" style="fill: var(--accent); font-size: 12px;">Lua</text>
+            <text class="lua-map-detail" x="260" y="148" text-anchor="middle">200 KB &#x25A0; 25K LoC</text>
+
+            <!-- Gaming (top-left) -->
+            <rect class="lua-map-fill" x="20" y="36" width="140" height="60" rx="4"/>
+            <rect class="lua-map-box" x="20" y="36" width="140" height="60"/>
+            <text class="lua-map-cat" x="90" y="52" text-anchor="middle">Gaming</text>
+            <text class="lua-map-item" x="90" y="68" text-anchor="middle">World of Warcraft</text>
+            <text class="lua-map-item" x="90" y="84" text-anchor="middle">Roblox (Luau)</text>
+            <line class="lua-map-line" x1="160" y1="76" x2="210" y2="126"/>
+
+            <!-- Creative (top-right) -->
+            <rect class="lua-map-fill" x="360" y="36" width="140" height="60" rx="4"/>
+            <rect class="lua-map-box" x="360" y="36" width="140" height="60"/>
+            <text class="lua-map-cat" x="430" y="52" text-anchor="middle">Creative</text>
+            <text class="lua-map-item" x="430" y="68" text-anchor="middle">Adobe Lightroom</text>
+            <text class="lua-map-detail" x="430" y="84" text-anchor="middle">UI + catalogue logic</text>
+            <line class="lua-map-line" x1="360" y1="76" x2="310" y2="126"/>
+
+            <!-- Infrastructure (bottom-left) -->
+            <rect class="lua-map-fill" x="20" y="180" width="140" height="60" rx="4"/>
+            <rect class="lua-map-box" x="20" y="180" width="140" height="60"/>
+            <text class="lua-map-cat" x="90" y="196" text-anchor="middle">Infrastructure</text>
+            <text class="lua-map-item" x="90" y="212" text-anchor="middle">nginx / OpenResty</text>
+            <text class="lua-map-item" x="90" y="228" text-anchor="middle">Redis</text>
+            <line class="lua-map-line" x1="160" y1="200" x2="210" y2="150"/>
+
+            <!-- Dev Tools (bottom-right) -->
+            <rect class="lua-map-fill" x="360" y="180" width="140" height="60" rx="4"/>
+            <rect class="lua-map-box" x="360" y="180" width="140" height="60"/>
+            <text class="lua-map-cat" x="430" y="196" text-anchor="middle">Dev Tools</text>
+            <text class="lua-map-item" x="430" y="212" text-anchor="middle">Neovim</text>
+            <text class="lua-map-item" x="430" y="228" text-anchor="middle">Nmap</text>
+            <line class="lua-map-line" x1="360" y1="200" x2="310" y2="150"/>
+
+            <text class="lua-map-note" x="260" y="272" text-anchor="middle">Same 200 KB binary. Same C API. Same lua_pcall().</text>
+        </svg>
+
+        <h2>The Design</h2>
+
+        <p>Lua achieves its size not by omitting features but by choosing the
+            right primitive. The language has one data structure: the
+            <strong>table</strong>. A table is an associative array that also serves
+            as an array, a record, an object, a module, a namespace, and &#x2014;
+            through metatables &#x2014; a class hierarchy. There is no array type
+            because a table with integer keys <em>is</em> an array. There is no
+            class keyword because a table with a metatable <em>is</em> a class.
+            There is no module system beyond tables because a module <em>is</em>
+            a table.</p>
+
+        <p>This is not laziness. It is the same insight that gave Unix the
+            file descriptor: one abstraction, universally applied, is more powerful
+            than twelve abstractions, each special-cased. The table is Lua&#x2019;s
+            file descriptor. Everything is a table. Everything composes.</p>
+
+        <p>The language has first-class functions, lexical scoping, closures,
+            coroutines, and a mark-and-sweep garbage collector &#x2014; in 25,000
+            lines. It supports tail-call optimisation. It has a register-based
+            virtual machine (not stack-based, like Java or Python), which produces
+            fewer instructions and better cache locality. The bytecode compiler
+            and the virtual machine share the same codebase, the same memory
+            allocator, and the same error-handling model. There is no seam
+            between compilation and execution because the designers refused to
+            create one.</p>
+
+        <h2>The Origin</h2>
+
+        <p>The
+            <a href="https://www.lua.org/doc/hopl.pdf" target="_blank" rel="noopener">history</a>,
+            published in the <em>Proceedings of the ACM on Programming Languages</em>,
+            makes instructive reading. The trade barriers were lifted in 1991, but
+            by then Ierusalimschy, Figueiredo, and Celes had already built something
+            that no imported tool could match. Not because Brazilian engineering was
+            superior to American engineering, but because the constraint itself &#x2014;
+            build something embeddable, small, portable, with no external dependencies
+            &#x2014; was the right constraint. The market reserve forced them to solve
+            the right problem.</p>
+
+        <p>This is a recurring pattern in technical history. The
+            <a href="https://cacm.acm.org/research/a-look-at-the-design-of-lua/" target="_blank" rel="noopener">CACM retrospective</a>
+            notes that Lua&#x2019;s design was shaped not by academic fashion but by
+            the practical needs of Brazilian industry &#x2014; oil companies,
+            steelworks, geological surveys. These clients did not want a language.
+            They wanted a configuration system that could grow into a language if
+            it needed to. Lua grew. It never stopped being a configuration system.
+            That dual nature &#x2014; simultaneously trivial to embed and powerful
+            enough to build applications &#x2014; is why it survived.</p>
+
+        <h2>The Licence</h2>
+
+        <p>Lua is released under the
+            <a href="https://www.lua.org/license.html" target="_blank" rel="noopener">MIT licence</a>.
+            Not the LGPL. Not the GPL. Not the Apache licence with its patent
+            clauses. The MIT licence. Two paragraphs. Use it, modify it, sell it,
+            embed it, forget to credit us if you must. This is not idealism; it is
+            strategy. An embeddable language succeeds by being embedded. Every
+            licence restriction is a reason not to embed. Every legal clause is
+            a procurement department saying &#x201C;no&#x201D;. Lua has no such
+            clauses. Lua has no such problems.</p>
+
+        <p>The result is that Lua ships in products whose legal teams would
+            never approve a copyleft dependency. Game consoles. Medical devices.
+            Defence systems. Adobe&#x2019;s creative suite. The MIT licence is not
+            merely a legal document. It is a deployment mechanism.</p>
+
+        <h2>The Longevity</h2>
+
+        <p>Lua was first released in 1993. It is now 33 years old. In programming
+            language terms, this places it comfortably in middle age &#x2014; younger
+            than C (1972), older than Java (1995), roughly contemporary with Python
+            (1991) and Ruby (1993). But where Python has grown from 12,000 lines to
+            a multi-megabyte ecosystem with a standard library the size of a small
+            encyclopaedia, Lua 5.4 remains 25,000 lines. The growth rate, across
+            three decades, has been approximately linear and approximately flat.</p>
+
+        <p>This is not stagnation. The language has added coroutines (5.0),
+            incremental garbage collection (5.1), goto (5.2), integers (5.3),
+            and generational garbage collection (5.4). Each feature was added only
+            when the use cases demanded it and only after extensive deliberation.
+            The Lua mailing list archives reveal a team that says &#x201C;no&#x201D;
+            far more often than &#x201C;yes&#x201D;. The inbox is full of feature
+            requests. The language is full of restraint.</p>
+
+        <p>This is the hallmark of mature engineering. Adding a feature is easy.
+            Refusing to add a feature that would make the language 0.5 per cent
+            more convenient and 2 per cent larger requires an understanding of
+            compound growth that most projects lack. Twenty features at 2 per cent
+            each, and you have doubled your codebase. Lua has not doubled in
+            thirty-three years.</p>
+
+        <h2>The Proof</h2>
+
+        <p>The ultimate test of an embeddable language is not whether it can be
+            embedded, but whether the host application forgets it is there.
+            When a World of Warcraft player opens the auction house, they are
+            not aware of Lua. When a photographer adjusts exposure in Lightroom,
+            they are not aware of Lua. When Cloudflare routes a request through
+            OpenResty, the latency does not reveal Lua&#x2019;s presence. When
+            Redis executes an <code>EVAL</code> script, the atomicity guarantee
+            holds without the caller knowing the mechanism.</p>
+
+        <p>This is the deepest form of technical beauty: a tool so well-designed
+            that it disappears into its purpose. The user sees the host application.
+            The developer sees a clean C API. The language sees 25,000 lines of
+            carefully reasoned code and a binary that fits in the L2 cache of a
+            modern processor.</p>
+
+        <p>Three researchers in Rio de Janeiro could not import software. So they
+            built a language that would be imported by everyone else. 25,000 lines.
+            200 KB. Three decades. The constraint was not the obstacle. The constraint
+            was the design.</p>
+
+        <blockquote>
+            <p>Technical beauty is not achieved when there is nothing more to add,
+                but when there is nothing left to take away. Lua has been taking things
+                away for thirty-three years. The binary is still 200 KB.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The numbers, for those who scrolled here first</strong></p>
+            <p>300 KB memory footprint at startup. Games love it &#x2014; Lua&#x2019;s
+                fast iteration cycle means designers can tweak behaviour without
+                recompiling the engine.
+                <a href="https://redis.io/docs/interact/programmability/eval-intro/" target="_blank" rel="noopener">Redis</a>
+                uses it for atomic transactions: <code>EVAL</code> scripts execute
+                without interleaving.
+                <a href="https://openresty.org/" target="_blank" rel="noopener">nginx/OpenResty</a>
+                maps Lua coroutines to non-blocking I/O, handling thousands of
+                concurrent connections in microseconds.
+                <a href="https://create.roblox.com/docs/luau" target="_blank" rel="noopener">Roblox&#x2019;s Luau</a>
+                adds gradual typing. <a href="https://neovim.io/doc/user/lua.html" target="_blank" rel="noopener">Neovim</a>
+                replaced Vimscript entirely. <a href="https://nmap.org/book/nse.html" target="_blank" rel="noopener">Nmap&#x2019;s NSE</a>
+                extends scanning with custom probes. Sources:
+                <a href="https://www.lua.org/" target="_blank" rel="noopener">lua.org</a>,
+                <a href="https://www.lua.org/doc/hopl.pdf" target="_blank" rel="noopener">HOPL paper</a>,
+                <a href="https://cacm.acm.org/research/a-look-at-the-design-of-lua/" target="_blank" rel="noopener">CACM retrospective</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

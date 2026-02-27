@@ -1,0 +1,395 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: sed &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A psychologist at Bell Labs writes a text editor that never opens a file. 53 years later, sed runs everywhere. 25 commands, two buffers, one pass. Turing complete. The substitution syntax became internet grammar.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-sed{( endslot )}
+
+{( slot og-title )}Technical Beauty: sed &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}A psychologist at Bell Labs writes a text editor that never opens a file. 53 years later, sed runs everywhere. 25 commands, two buffers, one pass. Turing complete.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: sed",
+    "datePublished": "2026-02-17",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-sed",
+    "description": "A psychologist at Bell Labs writes a text editor that never opens a file. 53 years later, sed runs everywhere. 25 commands, two buffers, one pass. Turing complete. The substitution syntax became internet grammar.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-17">17 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: sed</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">sed</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 23</p>
+
+        <blockquote>
+            <p>&#x201C;In no case is the output to be considered an improvement
+                on Coleridge.&#x201D;</p>
+        </blockquote>
+
+        <p>That footnote appears in a 1978 technical memorandum from Bell Labs.
+            The memorandum describes a stream editor. The test text is Samuel
+            Taylor Coleridge&#x2019;s <cite>Kubla Khan</cite>. The author is a
+            psychologist. His name is Lee E. McMahon, and the tool he built that
+            year is still running on your machine right now.</p>
+
+        <h2>The Psychologist</h2>
+
+        <p>McMahon&#x2019;s path to Bell Labs does not begin in a computer science
+            department, because in 1960 there were precious few of those. It begins
+            at Harvard, where he completed a PhD in psychology. His thesis:
+            <em>&#x201C;Grammatical analysis as a part of understanding a
+            sentence.&#x201D;</em> He studied how human beings parse grammar &#x2014;
+            how the mind disassembles a sentence into structure, extracts meaning
+            from sequence, resolves ambiguity through context. Then he built tools
+            that do the same thing to text files.</p>
+
+        <p>The connection between the disciplines is not incidental. It is the
+            entire point. McMahon understood language as structure before he
+            understood it as data. When he arrived at Bell Labs &#x2014; initially
+            to work on a statistical analysis of the
+            <a href="https://en.wikipedia.org/wiki/Federalist_Papers" target="_blank" rel="noopener">Federalist Papers</a>,
+            determining disputed authorship through word frequency patterns &#x2014;
+            he found an environment that took text seriously. Bell Labs in the 1970s
+            was the place where text processing was not a means to an end. It was
+            the end. Unix was built on the premise that text is the universal
+            interface, and McMahon was the rare person who understood both sides
+            of that interface: the human grammar and the machine grammar.</p>
+
+        <p>He stayed. He built <code>sed</code>. He built
+            <a href="https://en.wikipedia.org/wiki/Grep" target="_blank" rel="noopener"><code>grep</code></a>.
+            He built <code>comm</code>. He contributed to <code>qsort</code> and
+            the Bell Labs Datakit network. On the side, he invented the
+            <a href="https://en.wikipedia.org/wiki/McMahon_system" target="_blank" rel="noopener">McMahon pairing system</a>
+            for Go tournaments &#x2014; a Swiss-style bracket algorithm still used
+            in competitive play today. He died on 15 February 1989, aged 57. The
+            tools outlived him by decades. They will outlive us all.</p>
+
+        <h2>The Architecture</h2>
+
+        <p>The design of <code>sed</code> is so economical that describing it
+            takes longer than understanding it. There are two buffers: the
+            <strong>pattern space</strong> and the <strong>hold space</strong>.
+            There is one loop: read a line into the pattern space, apply the
+            command script, output the result, advance to the next line. There
+            is no file loading. A one-gigabyte log file and a one-kilobyte
+            configuration file consume the same amount of memory. One line at
+            a time, one pass through the input, no going back.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="sed architecture: input lines flow into the pattern space, commands are applied, output is produced. The hold space provides auxiliary storage. One line at a time, one pass, constant memory." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .sed-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sed-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sed-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sed-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sed-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--accent); }
+                .sed-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .sed-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .sed-fill { fill: var(--accent); opacity: 0.08; }
+                .sed-fill-accent { fill: var(--accent); opacity: 0.15; }
+                .sed-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#sed-head); }
+                .sed-arrow-muted { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#sed-head-m); stroke-dasharray: 4 3; }
+            </style>
+            <defs>
+                <marker id="sed-head" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+                </marker>
+                <marker id="sed-head-m" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--muted)"/>
+                </marker>
+            </defs>
+            <text class="sed-title" x="260" y="20" text-anchor="middle">sed: The Stream Architecture</text>
+            <!-- Input -->
+            <rect class="sed-fill" x="30" y="44" width="100" height="42" rx="4"/>
+            <rect class="sed-box" x="30" y="44" width="100" height="42"/>
+            <text class="sed-label" x="80" y="62" text-anchor="middle">Input</text>
+            <text class="sed-sub" x="80" y="78" text-anchor="middle">stdin / file</text>
+            <!-- Arrow: Input -> Pattern Space -->
+            <line class="sed-arrow" x1="130" y1="65" x2="176" y2="65"/>
+            <!-- Pattern Space -->
+            <rect class="sed-fill-accent" x="180" y="38" width="160" height="54" rx="4"/>
+            <rect class="sed-box-accent" x="180" y="38" width="160" height="54"/>
+            <text class="sed-accent" x="260" y="58" text-anchor="middle">Pattern Space</text>
+            <text class="sed-sub" x="260" y="78" text-anchor="middle">Current line lives here</text>
+            <!-- Arrow: Pattern Space -> Output -->
+            <line class="sed-arrow" x1="340" y1="65" x2="386" y2="65"/>
+            <!-- Output -->
+            <rect class="sed-fill" x="390" y="44" width="100" height="42" rx="4"/>
+            <rect class="sed-box" x="390" y="44" width="100" height="42"/>
+            <text class="sed-label" x="440" y="62" text-anchor="middle">Output</text>
+            <text class="sed-sub" x="440" y="78" text-anchor="middle">stdout</text>
+            <!-- Command Script -->
+            <rect class="sed-fill" x="180" y="120" width="160" height="54" rx="4"/>
+            <rect class="sed-box" x="180" y="120" width="160" height="54"/>
+            <text class="sed-label" x="260" y="140" text-anchor="middle">Command Script</text>
+            <text class="sed-mono" x="260" y="162" text-anchor="middle">s/old/new/g  d  p  ...</text>
+            <!-- Arrow: Commands -> Pattern Space -->
+            <line class="sed-arrow" x1="260" y1="120" x2="260" y2="96"/>
+            <text class="sed-sub" x="270" y="112" text-anchor="start">apply</text>
+            <!-- Hold Space -->
+            <rect class="sed-fill" x="180" y="206" width="160" height="54" rx="4"/>
+            <rect class="sed-box" x="180" y="206" width="160" height="54"/>
+            <text class="sed-label" x="260" y="226" text-anchor="middle">Hold Space</text>
+            <text class="sed-sub" x="260" y="246" text-anchor="middle">Auxiliary buffer (h/g/x)</text>
+            <!-- Bidirectional arrows: Hold <-> Pattern -->
+            <line class="sed-arrow-muted" x1="230" y1="174" x2="230" y2="202"/>
+            <line class="sed-arrow-muted" x1="290" y1="206" x2="290" y2="178"/>
+            <!-- Loop arrow: Output back to Input -->
+            <path class="sed-arrow-muted" d="M 80 86 L 80 280 L 440 280 L 440 90" />
+            <text class="sed-sub" x="260" y="294" text-anchor="middle">Next line &#x2192; repeat until EOF</text>
+        </svg>
+
+        <p>That is the entire execution model. Twenty-five commands operate on
+            these two buffers. <code>s</code> substitutes. <code>d</code> deletes.
+            <code>p</code> prints. <code>h</code> copies the pattern space to the
+            hold space. <code>g</code> copies it back. <code>x</code> swaps them.
+            <code>q</code> quits. The rest are variations on addressing, branching,
+            and flow control. There is no <code>malloc</code>. There is no parse
+            tree. There is no abstract syntax tree. There is a line, a handful of
+            commands, and a destination.</p>
+
+        <p>The consequence of this design is that <code>sed</code> scales to
+            arbitrary input size without scaling in resource consumption. It does
+            not care whether the input is ten lines or ten billion. It has already
+            forgotten line one by the time it reaches line two. This is not an
+            optimisation. It is the architecture. McMahon did not make
+            <code>sed</code> memory-efficient. He made the concept of memory
+            irrelevant to the problem.</p>
+
+        <h2>The Implementation</h2>
+
+        <p>The most telling metric for any long-lived tool is not how much code
+            it required at birth, but how much it required half a century later.
+            The original <code>sed</code> in Version 7 Unix (1979) was 1,600
+            lines of C. BusyBox&#x2019;s embedded implementation is 1,299 lines.
+            FreeBSD&#x2019;s is 2,100. GNU sed 4.9 &#x2014; the most feature-rich
+            variant, with multibyte character support, in-place editing, and
+            POSIX compliance &#x2014; is 5,000 lines.</p>
+
+        <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Implementation size comparison across decades. V7 Unix 1979: 1,600 lines. BusyBox: 1,299 lines. FreeBSD: 2,100 lines. GNU sed 4.9: 5,000 lines. In 47 years the codebase tripled. Modern software triples every 3 years." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .sed-sz-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sed-sz-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sed-sz-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sed-sz-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sed-sz-bar { fill: var(--accent); opacity: 0.7; rx: 2; }
+                .sed-sz-bar-dim { fill: var(--accent); opacity: 0.3; rx: 2; }
+                .sed-sz-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sed-sz-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+            <text class="sed-sz-title" x="260" y="20" text-anchor="middle">Lines of C Across 47 Years</text>
+            <!-- V7 Unix -->
+            <text class="sed-sz-label" x="140" y="56" text-anchor="end">V7 Unix (1979)</text>
+            <rect class="sed-sz-bar" x="148" y="42" width="128" height="20"/>
+            <text class="sed-sz-value" x="284" y="57">1,600</text>
+            <!-- BusyBox -->
+            <text class="sed-sz-label" x="140" y="90" text-anchor="end">BusyBox</text>
+            <rect class="sed-sz-bar-dim" x="148" y="76" width="104" height="20"/>
+            <text class="sed-sz-value" x="260" y="91">1,299</text>
+            <!-- FreeBSD -->
+            <text class="sed-sz-label" x="140" y="124" text-anchor="end">FreeBSD</text>
+            <rect class="sed-sz-bar" x="148" y="110" width="168" height="20"/>
+            <text class="sed-sz-value" x="324" y="125">2,100</text>
+            <!-- GNU sed 4.9 -->
+            <text class="sed-sz-label" x="140" y="158" text-anchor="end">GNU sed 4.9</text>
+            <rect class="sed-sz-bar" x="148" y="144" width="400" height="20"/>
+            <text class="sed-sz-value" x="414" y="159">5,000</text>
+            <text class="sed-sz-sub" x="414" y="175">+multibyte, -i, POSIX</text>
+            <!-- Divider -->
+            <line class="sed-sz-divider" x1="30" y1="198" x2="490" y2="198"/>
+            <!-- Bottom note -->
+            <text class="sed-sz-note" x="260" y="220" text-anchor="middle">47 years. Tripled. With multibyte Unicode and in-place editing.</text>
+            <text class="sed-sz-note" x="260" y="238" text-anchor="middle">Modern software triples every 3 years. Without adding features.</text>
+        </svg>
+
+        <p>In forty-seven years, the codebase tripled. And that tripling bought
+            Unicode, in-place file editing, and full POSIX compliance &#x2014;
+            genuine features, not refactoring for the sake of refactoring. Modern
+            software, by comparison, triples every three years, typically without
+            adding anything the user requested. GNU sed 4.9 has seen 51 commits
+            in the last three years. Seventeen commits per year. After half a
+            century of service, the maintenance burden is approximately one
+            commit per fortnight. That is not stagnation. That is completion.</p>
+
+        <h2>Turing Complete</h2>
+
+        <p>In 2001, Christophe Blaess
+            <a href="https://catonmat.net/proof-that-sed-is-turing-complete" target="_blank" rel="noopener">proved</a>
+            that <code>sed</code> is Turing complete. Twenty-five commands, two
+            buffers, and a loop are sufficient to compute anything computable.
+            The proof is not merely theoretical. People have written
+            <a href="https://aurelio.net/projects/sedsokoban/" target="_blank" rel="noopener">Sokoban</a>
+            in <code>sed</code>. They have written Tetris. They have written
+            chess engines. Not because these are practical applications of a
+            stream editor, but because the architecture McMahon designed in 1973
+            is so fundamentally sound that it accidentally became a general-purpose
+            computation engine.</p>
+
+        <p>This is the hallmark of technical beauty: a tool designed to solve one
+            problem so cleanly that it turns out to solve a much larger class of
+            problems. McMahon did not set out to build a Turing-complete language.
+            He set out to edit text without opening a file. The Turing completeness
+            is a consequence of getting the primitives right.</p>
+
+        <h2>The Performance</h2>
+
+        <p>One might expect a tool from 1973 to have aged into irrelevance on
+            modern hardware. One would be mistaken. David Lyness&#x2019;s
+            <a href="https://blog.davidlyness.com/the-unix-workbench" target="_blank" rel="noopener">benchmark</a>
+            &#x2014; processing two billion base64-encoded characters &#x2014;
+            measured <code>sed</code> at 82.1 million characters per second.
+            <code>awk</code> managed 69.8 million. Python: 69.0 million. PHP:
+            21.2 million. The tool with the smallest codebase, the simplest
+            architecture, and the oldest lineage is also the fastest. This is
+            not a coincidence. It is a consequence. When there is nothing
+            between the input and the output except twenty-five commands and
+            two buffers, there is nothing to slow down.</p>
+
+        <svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Performance benchmark: processing 2 billion base64 characters. sed 82.1 million chars per second, awk 69.8 million, Python 69.0 million, PHP 21.2 million. The simplest tool is the fastest." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .sed-bm-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sed-bm-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sed-bm-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sed-bm-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sed-bm-bar-top { fill: var(--accent); opacity: 0.8; rx: 2; }
+                .sed-bm-bar { fill: var(--accent); opacity: 0.4; rx: 2; }
+                .sed-bm-bar-dim { fill: var(--muted); opacity: 0.3; rx: 2; }
+                .sed-bm-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <text class="sed-bm-title" x="260" y="20" text-anchor="middle">Throughput: 2B Base64 Characters</text>
+            <text class="sed-bm-sub" x="260" y="36" text-anchor="middle">Million characters per second (higher is better)</text>
+            <!-- sed -->
+            <text class="sed-bm-label" x="80" y="72" text-anchor="end">sed</text>
+            <rect class="sed-bm-bar-top" x="88" y="58" width="370" height="22"/>
+            <text class="sed-bm-value" x="466" y="74">82.1M</text>
+            <!-- awk -->
+            <text class="sed-bm-label" x="80" y="108" text-anchor="end">awk</text>
+            <rect class="sed-bm-bar" x="88" y="94" width="314" height="22"/>
+            <text class="sed-bm-value" x="410" y="110">69.8M</text>
+            <!-- Python -->
+            <text class="sed-bm-label" x="80" y="144" text-anchor="end">Python</text>
+            <rect class="sed-bm-bar" x="88" y="130" width="311" height="22"/>
+            <text class="sed-bm-value" x="407" y="146">69.0M</text>
+            <!-- PHP -->
+            <text class="sed-bm-label" x="80" y="180" text-anchor="end">PHP</text>
+            <rect class="sed-bm-bar-dim" x="88" y="166" width="96" height="22"/>
+            <text class="sed-bm-value" x="192" y="182">21.2M</text>
+            <!-- Note -->
+            <text class="sed-bm-note" x="260" y="218" text-anchor="middle">Lyness benchmark. The simplest tool is the fastest.</text>
+        </svg>
+
+        <h2>The Grammar of the Internet</h2>
+
+        <p>McMahon&#x2019;s most enduring contribution may not be <code>sed</code>
+            itself but a six-character syntax he embedded within it:
+            <code>s/old/new/</code>. The substitution command. Pattern, delimiter,
+            replacement, delimiter. It is so intuitive that it escaped the terminal
+            entirely.</p>
+
+        <p>On Reddit, correcting someone&#x2019;s spelling is done with
+            <code>s/teh/the/</code>. On IRC, it has been the grammar of correction
+            since the 1990s. On Slack, on Discord, on Mastodon &#x2014; the syntax
+            persists, understood by people who have never opened a terminal, never
+            heard of <code>sed</code>, never considered that the shorthand they are
+            using was invented by a psychologist at a telephone company in New
+            Jersey.</p>
+
+        <p>McMahon the linguist would appreciate the irony. He studied how humans
+            parse grammar. Then he created a grammar that humans adopted without
+            parsing. <code>s/pattern/replacement/</code> is not taught. It is
+            absorbed. It is the closest thing computing has produced to a natural
+            idiom &#x2014; a piece of machine syntax so well-designed that it
+            passed into common usage without anyone noticing the transition.</p>
+
+        <h2>Ninety One-Liners</h2>
+
+        <p>Eric Pement compiled a collection of
+            <a href="https://pement.org/sed/sed1line.txt" target="_blank" rel="noopener">ninety <code>sed</code> one-liners</a>,
+            each solving a real text-processing problem in sixty-five characters
+            or fewer. Double-spacing a file. Removing blank lines. Reversing line
+            order. Converting DOS line endings. Extracting the <em>n</em>th line.
+            Each is a complete program. Each fits in a tweet. The collection has
+            been translated into eight programming languages, and in every
+            translation the solution is longer.</p>
+
+        <p>That is the test of a well-designed tool: not whether it can solve
+            the problem, but whether the solution is shorter than the problem
+            statement. Pement&#x2019;s one-liners pass that test ninety times.</p>
+
+        <h2>The Footnote</h2>
+
+        <p>McMahon&#x2019;s
+            <a href="https://wolfram.schneider.org/bsd/7thEdManVol2/sed/sed.pdf" target="_blank" rel="noopener">original paper</a>
+            demonstrates <code>sed</code>&#x2019;s capabilities using Coleridge&#x2019;s
+            <cite>Kubla Khan</cite> as test input. He rearranges stanzas, substitutes
+            words, deletes lines, transforms the poem through a sequence of commands.
+            And then, in a footnote that reveals everything about the man&#x2019;s
+            character, he writes: &#x201C;In no case is the output to be considered
+            an improvement on Coleridge.&#x201D;</p>
+
+        <p>That footnote is the soul of good engineering. Build a tool powerful
+            enough to rearrange a masterpiece. Have the humility to note that
+            you should not. McMahon understood that the tool is in service of the
+            text, not the other way round. The editor does not improve the content.
+            The editor enables the human to do so. This distinction &#x2014;
+            between tool and purpose, between capability and judgement &#x2014;
+            is one that modern software development has largely forgotten.</p>
+
+        <p>Twenty-five commands. Two buffers. One pass. No file loading. Turing
+            complete. A substitution syntax that became internet grammar. A
+            codebase that tripled in half a century while the software around it
+            tripled annually. A tool so complete that seventeen commits per year
+            suffice to maintain it.</p>
+
+        <p>A psychologist built that. In 1973. At a telephone company.</p>
+
+        <blockquote>
+            <p>Technical beauty is not a function of complexity. It is a function
+                of how little complexity remains after you have solved the problem
+                completely.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The data, for those who scrolled here first</strong></p>
+            <p>Performance (Lyness benchmark, 2 billion base64 characters):
+                <code>sed</code> 82.1M chars/sec, <code>awk</code> 69.8M,
+                Python 69.0M, PHP 21.2M.
+                <a href="https://pement.org/sed/sed1line.txt" target="_blank" rel="noopener">Eric Pement&#x2019;s 90 one-liners</a>,
+                each 65 characters or fewer, translated into 8 languages.
+                McMahon also contributed to <code>grep</code>, <code>comm</code>,
+                <code>qsort</code>, and the Bell Labs
+                <a href="https://en.wikipedia.org/wiki/Datakit" target="_blank" rel="noopener">Datakit</a>
+                network. He died 15 February 1989, aged 57. Sources:
+                <a href="https://wolfram.schneider.org/bsd/7thEdManVol2/sed/sed.pdf" target="_blank" rel="noopener">original paper</a>,
+                <a href="https://catonmat.net/proof-that-sed-is-turing-complete" target="_blank" rel="noopener">Turing completeness proof</a>,
+                <a href="https://blog.davidlyness.com/the-unix-workbench" target="_blank" rel="noopener">Lyness benchmark</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

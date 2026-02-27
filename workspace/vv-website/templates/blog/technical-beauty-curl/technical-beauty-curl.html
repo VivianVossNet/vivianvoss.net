@@ -1,0 +1,388 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: curl &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Daniel Stenberg released curl in 1998. 26 years, zero breaking changes, one dependency: libc. Runs on 10+ billion devices. 180,000 lines of C, 30+ protocols. Every HTTP library wraps libcurl.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-curl{( endslot )}
+
+{( slot og-title )}Technical Beauty: curl &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Daniel Stenberg released curl in 1998. 26 years, zero breaking changes, one dependency: libc. 10+ billion devices. 180,000 lines of C. Every HTTP library wraps libcurl.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: curl",
+    "datePublished": "2025-12-26",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-curl",
+    "description": "Daniel Stenberg released curl in 1998. 26 years, zero breaking changes, one dependency: libc. Runs on 10+ billion devices. 180,000 lines of C, 30+ protocols. Every HTTP library wraps libcurl.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2025-12-26">26 December 2025</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: curl</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">curl</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 8</p>
+
+        <p>In 1998,
+            <a href="https://daniel.haxx.se/" target="_blank" rel="noopener">Daniel Stenberg</a>
+            released a command-line tool for transferring data with URLs.
+            Twenty-six years later, it runs on more than ten billion devices.
+            It has never shipped a breaking change. It depends on one external
+            library: libc. The rest of the industry ships breaking changes
+            between minor versions and considers this a feature they call
+            &#x201C;moving fast.&#x201D;</p>
+
+        <p>curl did not move fast. curl moved <em>correctly</em>.</p>
+
+        <h2>The Man</h2>
+
+        <p>Stenberg is a Swedish developer who began the project as
+            <code>httpget</code> in 1996 &#x2014; a small tool to fetch
+            currency exchange rates for an IRC bot. It became
+            <code>urlget</code>. Then, in March 1998, it became
+            <a href="https://github.com/curl/curl" target="_blank" rel="noopener">curl</a>.
+            The name stands for &#x201C;Client for URLs,&#x201D; though one
+            suspects the real reason is that it fits in four characters and
+            sounds rather good in a shell pipeline.</p>
+
+        <p>Stenberg has maintained the project for twenty-eight years. He
+            answers <a href="https://github.com/curl/curl/issues" target="_blank" rel="noopener">GitHub issues</a>
+            personally. He reviews pull requests. He publishes detailed
+            post-mortems for every
+            <a href="https://curl.se/docs/security.html" target="_blank" rel="noopener">security vulnerability</a>.
+            He wrote
+            <a href="https://everything.curl.dev/" target="_blank" rel="noopener"><cite>Everything curl</cite></a>
+            &#x2014; over 300 pages about a command-line tool &#x2014; and
+            published it free online. One does not typically write a
+            monograph about one&#x2019;s own software unless one has rather a
+            lot to say about the decisions behind it. Stenberg has rather a
+            lot to say.</p>
+
+        <h2>The Numbers</h2>
+
+        <p>180,000 lines of C. Over
+            <a href="https://curl.se/docs/protdocs.html" target="_blank" rel="noopener">30 protocols</a>
+            &#x2014; HTTP, HTTPS, FTP, FTPS, SCP, SFTP, TFTP, LDAP, MQTT,
+            IMAP, POP3, SMB, SMTP, RTSP, and a dozen more that most
+            developers have never heard of and will one day need at three
+            in the morning. One external dependency. Zero breaking changes
+            in twenty-six years. Code written against libcurl in 2003 still
+            compiles and runs in 2026.</p>
+
+        <p>Ten billion installations is not a marketing estimate. Every
+            Linux distribution ships curl. Every macOS installation includes
+            it. Every Windows 10 and 11 machine has it. AWS, Azure, and
+            Google Cloud ship curl in their base images. Every Docker container
+            that has ever run <code>apt-get</code> has curl. Every HTTP client
+            library in Python, Ruby, PHP, and Node.js that claims to be its
+            own implementation is, on closer inspection, a wrapper around
+            libcurl with a more fashionable API. The number ten billion is
+            conservative. It may be considerably larger. Nobody can count
+            accurately because curl is everywhere, in the same way that
+            oxygen is everywhere &#x2014; present in quantities that make
+            measurement feel slightly absurd.</p>
+
+        <!-- Geological strata diagram: curl stability vs framework churn -->
+        <svg viewBox="0 0 520 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Geological strata diagram comparing curl&#x2019;s 26-year stability to the churn of HTTP libraries and frameworks above it. curl and libc form bedrock. Above: libcurl wrappers, HTTP libraries, framework HTTP clients, each with shorter lifespans." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .curl-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .curl-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .curl-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .curl-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .curl-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                .curl-age { font: 700 10px/1 ui-monospace, monospace; fill: var(--accent); }
+                .curl-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .curl-stratum { stroke: var(--border); stroke-width: 0.5; }
+                .curl-bedrock { fill: var(--accent); opacity: 0.12; }
+                .curl-stable { fill: var(--accent); opacity: 0.08; }
+                .curl-mid { fill: var(--muted); opacity: 0.06; }
+                .curl-churn { fill: var(--muted); opacity: 0.03; }
+            </style>
+
+            <text class="curl-title" x="260" y="20" text-anchor="middle">The Geological Record</text>
+            <text class="curl-sub" x="260" y="36" text-anchor="middle">Stability measured in decades, not sprints</text>
+
+            <!-- Stratum 5: Framework HTTP clients (topsoil, eroding) -->
+            <rect class="curl-churn" x="40" y="52" width="440" height="52" rx="2"/>
+            <line class="curl-stratum" x1="40" y1="52" x2="480" y2="52"/>
+            <text class="curl-label" x="60" y="72">Framework HTTP Clients</text>
+            <text class="curl-sub" x="60" y="86">Angular HttpClient, Axios, ky, got, undici, ofetch...</text>
+            <text class="curl-age" x="460" y="80" text-anchor="end">~3 yr</text>
+
+            <!-- Stratum 4: HTTP libraries -->
+            <rect class="curl-mid" x="40" y="104" width="440" height="52" rx="2"/>
+            <line class="curl-stratum" x1="40" y1="104" x2="480" y2="104"/>
+            <text class="curl-label" x="60" y="124">HTTP Libraries</text>
+            <text class="curl-sub" x="60" y="138">requests, urllib3, http.rb, Guzzle, node-fetch...</text>
+            <text class="curl-age" x="460" y="132" text-anchor="end">~8 yr</text>
+
+            <!-- Stratum 3: libcurl wrappers -->
+            <rect class="curl-stable" x="40" y="156" width="440" height="52" rx="2"/>
+            <line class="curl-stratum" x1="40" y1="156" x2="480" y2="156"/>
+            <text class="curl-label" x="60" y="176">libcurl Wrappers</text>
+            <text class="curl-sub" x="60" y="190">pycurl, PHP/cURL, curb (Ruby), curl-rust...</text>
+            <text class="curl-age" x="460" y="184" text-anchor="end">~15 yr</text>
+
+            <!-- Stratum 2: curl / libcurl -->
+            <rect class="curl-bedrock" x="40" y="208" width="440" height="56" rx="2"/>
+            <line class="curl-stratum" x1="40" y1="208" x2="480" y2="208" stroke="var(--accent)" stroke-width="1"/>
+            <text class="curl-accent" x="60" y="230">curl / libcurl</text>
+            <text class="curl-sub" x="60" y="244">180K lines C. 30+ protocols. Zero breaking changes.</text>
+            <text class="curl-age" x="460" y="238" text-anchor="end">28 yr</text>
+
+            <!-- Stratum 1: libc (bedrock) -->
+            <rect class="curl-bedrock" x="40" y="264" width="440" height="44" rx="2"/>
+            <line class="curl-stratum" x1="40" y1="264" x2="480" y2="264" stroke="var(--accent)" stroke-width="1"/>
+            <text class="curl-accent" x="60" y="286">libc</text>
+            <text class="curl-sub" x="60" y="298">The one dependency. POSIX. Kernel interface.</text>
+            <text class="curl-age" x="460" y="290" text-anchor="end">52 yr</text>
+
+            <!-- Bottom annotation -->
+            <line x1="40" y1="322" x2="480" y2="322" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="curl-note" x="260" y="342" text-anchor="middle">The deeper the stratum, the longer it lasts.</text>
+            <text class="curl-note" x="260" y="356" text-anchor="middle">The topsoil churns. The bedrock does not.</text>
+        </svg>
+
+        <h2>The Dependency</h2>
+
+        <p>180,000 lines of C is not a small codebase. It is not minimal in
+            the sense of <code>sed</code> or <code>make</code>. The reduction
+            is elsewhere. curl has <em>one</em> external dependency: libc. The
+            C standard library. The interface to the kernel. Everything else
+            &#x2014; the protocol parsers, the TLS bindings, the connection
+            pooling, the cookie engine, the redirect logic, the proxy support,
+            the authentication mechanisms &#x2014; is inside the project. Under
+            one maintainer&#x2019;s vision. Under one project&#x2019;s quality
+            control.</p>
+
+        <p>In a world where a JavaScript &#x201C;Hello World&#x201D; installs
+            2,839 packages from a registry that anyone can publish to, the
+            discipline of one dependency is not minimalism. It is a security
+            architecture. Every dependency you do not have is a supply chain
+            attack that cannot reach you, a licence change that cannot break
+            your build, a maintainer burnout that cannot orphan your
+            transitive graph.</p>
+
+        <p>Stenberg chose to write 180,000 lines rather than depend on
+            someone else&#x2019;s 180 packages. The industry considers this
+            approach &#x201C;not invented here syndrome.&#x201D; Stenberg
+            considers it &#x201C;knowing what your software does.&#x201D;
+            Ten billion devices suggest he may have a point.</p>
+
+        <h2>The Contract</h2>
+
+        <p>curl&#x2019;s
+            <a href="https://curl.se/dev/deprecate.html" target="_blank" rel="noopener">deprecation policy</a>
+            is a masterclass in what backwards compatibility actually means
+            when someone means it. Features are not removed. Behaviours are
+            not changed. Flags are not renamed because someone on the team
+            read a blog post about API ergonomics. Code that called libcurl
+            in 2003 still compiles against the 2026 release. Not approximately.
+            Not with a compatibility shim. Not with a migration guide. Exactly.</p>
+
+        <p>This is not stubbornness. This is the recognition that software
+            which runs on ten billion devices cannot afford to break any of
+            them. Every shell script in every CI pipeline, every PHP backend
+            calling <code>curl_exec()</code>, every IoT device with a firmware
+            update mechanism, every embedded system that phones home once a
+            day &#x2014; they all depend on curl behaving tomorrow exactly as
+            it behaved yesterday. Breaking changes are not a product decision.
+            They are a breach of contract with ten billion counterparties.</p>
+
+        <!-- Protocol coverage diagram -->
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="curl protocol coverage: 30+ protocols across application layer, mail, file transfer, directory, IoT, and streaming categories. One binary covers what the industry solves with dozens of specialised libraries." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .curl-p-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .curl-p-cat { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .curl-p-item { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                .curl-p-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .curl-p-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .curl-p-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                .curl-p-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .curl-p-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+            </style>
+
+            <text class="curl-p-title" x="260" y="20" text-anchor="middle">Protocol Coverage: One Binary</text>
+
+            <!-- Row 1: Web -->
+            <rect class="curl-p-fill" x="20" y="38" width="236" height="62"/>
+            <rect class="curl-p-box" x="20" y="38" width="236" height="62"/>
+            <text class="curl-p-cat" x="32" y="54">WEB</text>
+            <text class="curl-p-item" x="32" y="72">HTTP  HTTPS  HTTP/2  HTTP/3</text>
+            <text class="curl-p-item" x="32" y="88">WS  WSS</text>
+
+            <!-- Row 1: Mail -->
+            <rect class="curl-p-fill" x="268" y="38" width="232" height="62"/>
+            <rect class="curl-p-box" x="268" y="38" width="232" height="62"/>
+            <text class="curl-p-cat" x="280" y="54">MAIL</text>
+            <text class="curl-p-item" x="280" y="72">SMTP  SMTPS  POP3  POP3S</text>
+            <text class="curl-p-item" x="280" y="88">IMAP  IMAPS</text>
+
+            <!-- Row 2: File Transfer -->
+            <rect class="curl-p-fill" x="20" y="112" width="236" height="62"/>
+            <rect class="curl-p-box" x="20" y="112" width="236" height="62"/>
+            <text class="curl-p-cat" x="32" y="128">FILE TRANSFER</text>
+            <text class="curl-p-item" x="32" y="146">FTP  FTPS  SCP  SFTP</text>
+            <text class="curl-p-item" x="32" y="162">TFTP  FILE</text>
+
+            <!-- Row 2: Directory & Auth -->
+            <rect class="curl-p-fill" x="268" y="112" width="232" height="62"/>
+            <rect class="curl-p-box" x="268" y="112" width="232" height="62"/>
+            <text class="curl-p-cat" x="280" y="128">DIRECTORY &amp; AUTH</text>
+            <text class="curl-p-item" x="280" y="146">LDAP  LDAPS</text>
+            <text class="curl-p-item" x="280" y="162">Kerberos  NTLM  Bearer</text>
+
+            <!-- Row 3: IoT & Streaming -->
+            <rect class="curl-p-fill" x="20" y="186" width="236" height="46"/>
+            <rect class="curl-p-box" x="20" y="186" width="236" height="46"/>
+            <text class="curl-p-cat" x="32" y="202">IoT &amp; MESSAGING</text>
+            <text class="curl-p-item" x="32" y="220">MQTT  TELNET  DICT  GOPHER</text>
+
+            <!-- Row 3: Streaming -->
+            <rect class="curl-p-fill" x="268" y="186" width="232" height="46"/>
+            <rect class="curl-p-box" x="268" y="186" width="232" height="46"/>
+            <text class="curl-p-cat" x="280" y="202">STREAMING</text>
+            <text class="curl-p-item" x="280" y="220">RTSP  RTMP  SMB  SMBS</text>
+
+            <!-- Bottom annotation -->
+            <line x1="20" y1="252" x2="500" y2="252" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="curl-p-note" x="260" y="272" text-anchor="middle">30+ protocols. One binary. One dependency.</text>
+            <text class="curl-p-accent" x="260" y="290" text-anchor="middle">The protocol you will need at 3 AM is already compiled in.</text>
+        </svg>
+
+        <h2>The Transparency</h2>
+
+        <p>Every software project claims to take security seriously. curl
+            demonstrates it. Every CVE &#x2014; and there have been
+            <a href="https://curl.se/docs/security.html" target="_blank" rel="noopener">over 150</a>
+            &#x2014; receives a public post-mortem. Not a vague advisory. Not
+            a corporate statement reviewed by legal. A technical explanation of
+            what went wrong, how it was discovered, what the fix is, and which
+            versions are affected. Written by the maintainer. Published
+            immediately.</p>
+
+        <p>This is not a common practice. Most projects disclose
+            vulnerabilities in the minimum format required by the CVE database
+            and hope nobody reads the diff. Stenberg publishes the diff, the
+            timeline, the root cause analysis, and the commit that introduced
+            the bug. He treats security disclosure as engineering documentation,
+            not damage control. The result is a project with 150+ CVEs and a
+            reputation for being one of the most trustworthy pieces of software
+            on earth. The paradox is not a paradox at all: transparency is the
+            mechanism by which trust is manufactured.</p>
+
+        <h2>The Book</h2>
+
+        <p>Stenberg wrote
+            <a href="https://everything.curl.dev/" target="_blank" rel="noopener"><cite>Everything curl</cite></a>.
+            Over three hundred pages. About a command-line tool. Free online.
+            It covers the project&#x2019;s history, the protocol implementations,
+            the API design, the build system, the release process, and the
+            philosophy that holds the entire edifice together. It is, as far
+            as this author is aware, the most comprehensive documentation ever
+            written for a single Unix utility.</p>
+
+        <p>Three hundred pages about a tool whose core usage is
+            <code>curl&nbsp;URL</code>. That ratio &#x2014; two words of
+            interface, three hundred pages of reasoning &#x2014; is the
+            signature of software that took the hard problems seriously.
+            Simple interfaces are not simple to build. They are simple
+            because someone spent three hundred pages&#x2019; worth of
+            thought ensuring that the complexity stays behind the surface,
+            where the user never has to see it.</p>
+
+        <h2>The Layer Beneath</h2>
+
+        <p>The tool most people know is <code>curl</code> the command. The
+            tool that actually runs the world is <code>libcurl</code> &#x2014;
+            the library. PHP&#x2019;s <code>curl_*</code> functions are libcurl.
+            Python&#x2019;s <code>pycurl</code> is libcurl. Ruby&#x2019;s
+            <code>curb</code> is libcurl. When your programming language
+            advertises its own HTTP client, there is a reasonable chance that
+            somewhere beneath the abstraction layers, beneath the promises and
+            the async/await syntax and the ergonomic builder patterns, libcurl
+            is doing the actual work of speaking to the network.</p>
+
+        <p>This is not a criticism of those languages. It is the highest
+            compliment a library can receive: the entire industry uses your
+            code and pretends it wrote its own. libcurl is the session
+            musician of the internet &#x2014; uncredited on the album,
+            present on every track.</p>
+
+        <h2>The Discipline</h2>
+
+        <p>What makes curl technically beautiful is not any single decision.
+            It is the accumulation of correct decisions over twenty-eight
+            years. The decision to depend on nothing. The decision to break
+            nothing. The decision to support every protocol that matters and
+            several that do not yet. The decision to document everything. The
+            decision to disclose everything. The decision, made once and
+            honoured ten thousand times, that the people who depend on your
+            software matter more than your desire to refactor the API.</p>
+
+        <p>Stenberg could have rewritten curl in Rust. He could have
+            introduced a v2 API. He could have dropped FTP support because
+            &#x201C;nobody uses FTP any more&#x201D; &#x2014; a claim that
+            is always made by people who have never maintained infrastructure
+            at scale. He did none of these things. He maintained the contract.
+            He added features without removing guarantees. He wrote 180,000
+            lines of C that ten billion devices trust with their network
+            traffic, and he answered the GitHub issues personally.</p>
+
+        <p>The industry calls this &#x201C;boring technology.&#x201D; The
+            industry is correct, in the same way that gravity is boring. It
+            is boring because it works. It is boring because it has always
+            worked. It is boring because nobody has to think about it, which
+            is precisely the point.</p>
+
+        <blockquote>
+            <p>One dependency. Zero breaking changes. Twenty-eight years.
+                Ten billion devices. The protocol you will need at three in
+                the morning is already compiled in. That is not boring. That
+                is beautiful.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>On the nature of the reduction</strong></p>
+            <p>180,000 lines is not minimal code. The reduction is
+                elsewhere: one external dependency (libc), one maintainer
+                with unbroken vision, zero breaking changes in twenty-six
+                years. Stenberg wrote
+                <a href="https://everything.curl.dev/" target="_blank" rel="noopener"><cite>Everything curl</cite></a>
+                &#x2014; over 300 pages about a CLI tool, free online. That
+                a single person can hold the entire architecture in their
+                head and document it completely is the reduction. Not fewer
+                lines. Fewer assumptions. Sources:
+                <a href="https://curl.se/docs/security.html" target="_blank" rel="noopener">security disclosures</a>,
+                <a href="https://daniel.haxx.se/blog/" target="_blank" rel="noopener">Stenberg&#x2019;s blog</a>,
+                <a href="https://curl.se/docs/protdocs.html" target="_blank" rel="noopener">protocol documentation</a>,
+                <a href="https://curl.se/dev/deprecate.html" target="_blank" rel="noopener">deprecation policy</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,391 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The SSH Replacement &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="SSH plus shell replaces Ansible, Python, YAML, Jinja2, inventory files, role dependencies, and Galaxy collections. OpenSSH since 1999. Shell since 1971. Both outlive every automation tool.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-ssh-replacement{( endslot )}
+
+{( slot og-title )}The SSH Replacement &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}SSH plus shell replaces Ansible, Python, YAML, Jinja2, inventory files, and Galaxy collections. OpenSSH since 1999. Shell since 1971. Both outlive every automation tool.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The SSH Replacement",
+    "datePublished": "2026-01-17",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-ssh-replacement",
+    "description": "SSH plus shell replaces Ansible, Python, YAML, Jinja2, inventory files, role dependencies, and Galaxy collections. OpenSSH since 1999. Shell since 1971. Both outlive every automation tool.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-17">17 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The SSH Replacement</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">ssh</span>
+            <span class="vv-pill">wireguard</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Replacement</em> &#x25A0; Episode 02</p>
+
+        <blockquote>
+            <p>&#x201C;You maintain an automation framework to avoid writing
+                forty lines of shell.&#x201D;</p>
+        </blockquote>
+
+        <p>Here is a deployment script:</p>
+
+        <pre><code>#!/bin/sh
+for host in web1 web2 web3; do
+    ssh "$host" 'cd /app && git pull && make restart'
+done</code></pre>
+
+        <p>Three servers. Four lines. Zero dependencies beyond
+            <a href="https://www.openssh.com/history.html" target="_blank" rel="noopener">OpenSSH</a>,
+            which has shipped with every Unix-like operating system since 1999,
+            and the
+            <a href="https://en.wikipedia.org/wiki/Bourne_shell" target="_blank" rel="noopener">Bourne shell</a>,
+            which has existed since 1971. The script will work in twenty years.
+            It will work on a machine you have not purchased yet. It will work
+            after every automation tool currently in fashion has been deprecated,
+            rewritten, or quietly abandoned.</p>
+
+        <p>The alternative is
+            <a href="https://docs.ansible.com/ansible/latest/installation_guide/" target="_blank" rel="noopener">Ansible</a>.
+            Which requires Python. Which requires YAML. Which requires Jinja2 templates.
+            Which requires inventory files. Which requires role dependencies. Which
+            requires Galaxy collections. Which requires a control node running
+            a compatible Python version. Which requires you to remember whether
+            <code>become: yes</code> goes at the play level or the task level.
+            All of this, to run commands on remote servers.</p>
+
+        <h2>The Dependency Stack</h2>
+
+        <p>Let us be precise about what each approach actually requires on
+            the machine that initiates the deployment.</p>
+
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dependency comparison: Ansible requires Python, YAML parser, Jinja2, inventory files, role dependencies, Galaxy collections, and a compatible control node. SSH plus shell requires OpenSSH and a POSIX shell. Seven layers versus two." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .ssh-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .ssh-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .ssh-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .ssh-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .ssh-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .ssh-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .ssh-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                .ssh-fill-accent { fill: var(--accent); opacity: 0.15; rx: 3; }
+                .ssh-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#ssh-head); }
+                .ssh-year { font: 700 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); opacity: 0.7; }
+            </style>
+            <defs>
+                <marker id="ssh-head" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text class="ssh-title" x="260" y="18" text-anchor="middle">THE DEPENDENCY STACK</text>
+            <!-- Left: Ansible -->
+            <text class="ssh-sub" x="120" y="44" text-anchor="middle">Ansible</text>
+            <rect class="ssh-fill" x="20" y="54" width="200" height="32"/>
+            <rect class="ssh-box" x="20" y="54" width="200" height="32"/>
+            <text class="ssh-label" x="120" y="74" text-anchor="middle">Python runtime</text>
+
+            <rect class="ssh-fill" x="20" y="90" width="200" height="32"/>
+            <rect class="ssh-box" x="20" y="90" width="200" height="32"/>
+            <text class="ssh-label" x="120" y="110" text-anchor="middle">YAML parser</text>
+
+            <rect class="ssh-fill" x="20" y="126" width="200" height="32"/>
+            <rect class="ssh-box" x="20" y="126" width="200" height="32"/>
+            <text class="ssh-label" x="120" y="146" text-anchor="middle">Jinja2 templates</text>
+
+            <rect class="ssh-fill" x="20" y="162" width="200" height="32"/>
+            <rect class="ssh-box" x="20" y="162" width="200" height="32"/>
+            <text class="ssh-label" x="120" y="182" text-anchor="middle">Inventory files</text>
+
+            <rect class="ssh-fill" x="20" y="198" width="200" height="32"/>
+            <rect class="ssh-box" x="20" y="198" width="200" height="32"/>
+            <text class="ssh-label" x="120" y="218" text-anchor="middle">Role dependencies</text>
+
+            <rect class="ssh-fill" x="20" y="234" width="200" height="32"/>
+            <rect class="ssh-box" x="20" y="234" width="200" height="32"/>
+            <text class="ssh-label" x="120" y="254" text-anchor="middle">Galaxy collections</text>
+
+            <rect class="ssh-fill" x="20" y="270" width="200" height="32"/>
+            <rect class="ssh-box" x="20" y="270" width="200" height="32"/>
+            <text class="ssh-label" x="120" y="290" text-anchor="middle">ansible.cfg</text>
+
+            <text class="ssh-sub" x="120" y="322" text-anchor="middle">7 layers, N config files</text>
+
+            <!-- Arrow -->
+            <line class="ssh-arrow" x1="232" y1="175" x2="286" y2="175"/>
+
+            <!-- Right: SSH + shell -->
+            <text class="ssh-sub" x="390" y="44" text-anchor="middle">ssh + shell</text>
+            <rect class="ssh-fill-accent" x="290" y="130" width="200" height="92"/>
+            <rect class="ssh-box-accent" x="290" y="130" width="200" height="92"/>
+            <text class="ssh-accent" x="390" y="162" text-anchor="middle" style="font-size: 14px; font-weight: 700;">OpenSSH + sh</text>
+            <text class="ssh-year" x="390" y="180" text-anchor="middle">1999 + 1971</text>
+            <text class="ssh-sub" x="390" y="200" text-anchor="middle">In base. On every Unix. Already there.</text>
+
+            <text class="ssh-accent" x="390" y="322" text-anchor="middle">2 tools, 0 dependencies</text>
+
+            <!-- Bottom -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="20" y1="336" x2="500" y2="336"/>
+        </svg>
+
+        <p>Ansible uses SSH under the hood. It connects to your servers via
+            <a href="https://tools.ietf.org/html/rfc4253" target="_blank" rel="noopener">the same
+            SSH protocol</a> your four-line script uses. The difference is
+            that Ansible wraps that connection in a Python application, a
+            YAML-based DSL, a templating engine borrowed from Flask, and
+            an ecosystem of community-maintained roles that may or may not
+            be compatible with the version you installed last Tuesday.</p>
+
+        <p>The shell script wraps it in nothing. It calls <code>ssh</code>.
+            That is the entire architecture.</p>
+
+        <h2>What You Lose</h2>
+
+        <p>Honesty first. Abandoning Ansible means abandoning several things
+            that have genuine value.</p>
+
+        <p><strong>Idempotency guarantees.</strong> Ansible&#x2019;s modules
+            are designed to be idempotent &#x2014; running the same playbook
+            twice produces the same state. A shell script that runs
+            <code>git pull &amp;&amp; make restart</code> is idempotent by
+            accident, not by contract. If your deployment involves creating
+            users, setting permissions, or configuring services, you must
+            write your own guards. <code>id -u deploy || useradd deploy</code>
+            is not difficult, but it is your responsibility. Ansible makes it
+            the framework&#x2019;s.</p>
+
+        <p><strong>Declarative state management.</strong> Ansible describes
+            the desired state: &#x201C;this package is installed, this file
+            has these contents, this service is running.&#x201D; Shell describes
+            actions: &#x201C;install this, write that, start the other.&#x201D;
+            The declarative model is conceptually cleaner. It is also the
+            reason your playbooks require a templating language, a variable
+            precedence hierarchy with
+            <a href="https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence" target="_blank" rel="noopener">22 levels of override</a>,
+            and a debugging flag that goes up to <code>-vvvvv</code>. Five
+            v&#x2019;s. The letter v, five times. One imagines the developers
+            considered <code>-vvvvvv</code> but feared it would look sarcastic.</p>
+
+        <p><strong>2,000 Galaxy roles.</strong> Ansible Galaxy is a package
+            registry of community-contributed roles for installing software,
+            configuring services, and provisioning infrastructure. Some of
+            these roles are excellent. Some were last updated in 2019. Some
+            depend on roles that depend on roles that depend on a Python
+            library that requires a specific version of <code>setuptools</code>.
+            The experience is not entirely dissimilar to <code>node_modules</code>,
+            except with more YAML and fewer memes.</p>
+
+        <h2>What You Gain</h2>
+
+        <p><strong>Zero dependencies beyond OpenSSH.</strong> No Python
+            version conflicts. No <code>pip install --user</code> dance.
+            No virtualenv for your deployment tool. No &#x201C;ansible
+            requires Python 3.10 but the control node ships 3.8&#x201D;
+            conversations at half past four on a Friday. The shell is
+            there. SSH is there. They have been there since before most
+            automation tools were conceived.</p>
+
+        <p><strong>Scripts that work in twenty years.</strong> A shell script
+            written in 2006 still runs. Unchanged. Unmodified. The
+            <a href="https://pubs.opengroup.org/onlinepubs/9699919799/utilities/sh.html" target="_blank" rel="noopener">POSIX
+            shell specification</a> is stable in the way that geological
+            formations are stable. Ansible 2.9 playbooks do not run on
+            Ansible 8. The migration guide is longer than most shell scripts.</p>
+
+        <p><strong>Debugging with <code>echo</code>.</strong> When a shell
+            script fails, you add <code>set -x</code> and read the output.
+            When an Ansible playbook fails, you add <code>-vvvv</code> and
+            receive several hundred lines of JSON describing the internal
+            state of a Python application that connected to your server via
+            SSH to run the command you could have typed yourself. The signal-
+            to-noise ratio is not in Ansible&#x2019;s favour.</p>
+
+        <svg viewBox="0 0 520 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Debugging comparison: shell script debugging with set -x and echo produces direct output. Ansible debugging with -vvvv produces hundreds of lines of JSON wrapper around the actual command." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .ssh-dbg-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .ssh-dbg-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .ssh-dbg-code { font: 400 10px/1 'Oxanium', monospace; fill: var(--muted); }
+                .ssh-dbg-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .ssh-dbg-accent { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .ssh-dbg-box { fill: var(--surface); stroke: var(--border); stroke-width: 1; rx: 3; }
+                .ssh-dbg-box-hl { fill: var(--surface); stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+            <text class="ssh-dbg-title" x="260" y="18" text-anchor="middle">DEBUGGING</text>
+
+            <!-- Left: Ansible -->
+            <text class="ssh-dbg-label" x="130" y="44" text-anchor="middle">ansible-playbook -vvvv</text>
+            <rect class="ssh-dbg-box" x="20" y="54" width="220" height="160"/>
+            <text class="ssh-dbg-code" x="30" y="72">TASK [deploy] ***</text>
+            <text class="ssh-dbg-code" x="30" y="86">&lt;web1&gt; SSH: EXEC ssh -C -o</text>
+            <text class="ssh-dbg-code" x="30" y="100">ControlMaster=auto -o</text>
+            <text class="ssh-dbg-code" x="30" y="114">ControlPersist=60s ...</text>
+            <text class="ssh-dbg-code" x="30" y="128">&lt;web1&gt; (0, '{&#x201C;changed&#x201D;:</text>
+            <text class="ssh-dbg-code" x="30" y="142">true, &#x201C;stdout&#x201D;: &#x201C;Already</text>
+            <text class="ssh-dbg-code" x="30" y="156">up to date.\\n&#x201D;, &#x201C;stderr&#x201D;:</text>
+            <text class="ssh-dbg-code" x="30" y="170">&#x201C;&#x201D;, &#x201C;rc&#x201D;: 0, ...</text>
+            <text class="ssh-dbg-code" x="30" y="184">&#x201C;stdout_lines&#x201D;: [...]</text>
+            <text class="ssh-dbg-code" x="30" y="198">}', '')</text>
+            <text class="ssh-dbg-sub" x="130" y="232" text-anchor="middle">~200 lines of JSON per task</text>
+
+            <!-- Right: Shell -->
+            <text class="ssh-dbg-label" x="390" y="44" text-anchor="middle">set -x</text>
+            <rect class="ssh-dbg-box-hl" x="280" y="54" width="220" height="100"/>
+            <text class="ssh-dbg-code" x="290" y="72">+ ssh web1 'cd /app &&</text>
+            <text class="ssh-dbg-code" x="290" y="86">  git pull && make restart'</text>
+            <text class="ssh-dbg-code" x="290" y="100">Already up to date.</text>
+            <text class="ssh-dbg-code" x="290" y="114">make: restarting app</text>
+            <text class="ssh-dbg-code" x="290" y="128">+ ssh web2 'cd /app &&</text>
+            <text class="ssh-dbg-code" x="290" y="142">  git pull && make restart'</text>
+            <text class="ssh-dbg-accent" x="390" y="182" text-anchor="middle">The command. The output. Done.</text>
+
+            <!-- Bottom -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="20" y1="248" x2="500" y2="248"/>
+            <text class="ssh-dbg-sub" x="260" y="266" text-anchor="middle">When something breaks at 3 AM, clarity is not optional.</text>
+        </svg>
+
+        <h2>The Fifty-Server Line</h2>
+
+        <p>There is a threshold, and it is worth drawing precisely. Below
+            roughly fifty servers, shell scripts are trivially sufficient.
+            The deployment loop is a <code>for</code> statement. The
+            configuration is a list of hostnames. The error handling is
+            <code>set -e</code>. The entire orchestration fits in a file
+            shorter than most Ansible inventories.</p>
+
+        <p>Above fifty servers &#x2014; particularly in heterogeneous
+            environments with strict compliance requirements, mixed operating
+            systems, and infrastructure that changes weekly &#x2014; Ansible
+            earns its keep. The declarative model scales. The idempotency
+            guarantees prevent drift. The role system manages complexity that
+            a flat shell script cannot. Nobody disputes this.</p>
+
+        <p>The dispute is with the vast majority of projects that fall
+            well below that line. Most teams manage three to twenty servers.
+            The servers run the same operating system. The deployment is
+            <code>git pull</code> and a service restart. And yet: Ansible.
+            Inventory files. Group variables. Role directories with eight
+            mandatory subdirectories. A <code>requirements.yml</code> that
+            pins Galaxy collection versions. A CI pipeline that installs
+            Ansible before it can install your application.</p>
+
+        <p>The question is not whether Ansible is a good tool. It is an
+            excellent tool. The question is whether you are using it to solve
+            a problem you actually have, or one you might have someday, on
+            servers you have not yet bought, for a scale you have not yet
+            reached.</p>
+
+        <h2>The Longevity Argument</h2>
+
+        <p>Shell scripts checked into Git have a property that playbooks
+            do not: they are <em>complete</em>. The script contains the
+            commands. The commands use tools that ship with the operating
+            system. There is no external registry, no version compatibility
+            matrix, no &#x201C;this module was removed in Ansible 7&#x201D;
+            surprise during an upgrade you did not ask for.</p>
+
+        <p>Consider the historical record. SSH has maintained backward
+            compatibility across 27 years. The Bourne shell syntax has been
+            stable for 55 years. The <code>for</code> loop, the
+            <code>if</code> statement, the pipe &#x2014; these constructs
+            predate Ansible by four decades. They will outlive it by at
+            least as many.</p>
+
+        <p>Ansible, by contrast, has broken backward compatibility between
+            every major version. Playbooks written for 2.9 require migration
+            for 8.0. Modules are deprecated, renamed, moved to collections,
+            or silently removed. The upgrade path is documented, which is
+            the polite way of saying the upgrade path is necessary.</p>
+
+        <p>A shell script that deploys your application in 2026 will deploy
+            your application in 2046. An Ansible playbook that deploys your
+            application in 2026 will require a migration guide, a Python
+            version upgrade, and a Friday afternoon by 2030.</p>
+
+        <h2>The Version File</h2>
+
+        <p>Every Unix administrator can read a shell script. It is the
+            lingua franca of systems work. The <code>for</code> loop is
+            taught in the first week. The <code>ssh</code> command is
+            taught in the first hour. There is no framework to learn, no
+            DSL to memorise, no module index to consult.</p>
+
+        <p>Ansible playbooks require Ansible knowledge. The YAML syntax
+            is YAML, but the semantics are Ansible &#x2014; <code>when</code>
+            clauses, <code>register</code> variables, <code>with_items</code>
+            versus <code>loop</code>, <code>become</code> versus
+            <code>become_user</code>, and the perennial question of whether
+            the variable goes in <code>group_vars</code>,
+            <code>host_vars</code>, the playbook, or the role defaults.
+            The learning curve is not steep. It is wide. And it is
+            specific to a tool that may not be the tool you use next year.</p>
+
+        <p>Shell is the tool you will use every year.</p>
+
+        <h2>The Replacement</h2>
+
+        <p>SSH plus a shell script does not add features to server
+            automation. It removes intermediaries from it. There is no
+            templating engine because your configuration files are files.
+            There is no inventory format because your servers are in a
+            variable. There is no role system because your commands are
+            commands. There is no Galaxy because you do not need a
+            package manager for twenty lines of shell.</p>
+
+        <p>The Ansible project is a remarkable piece of engineering.
+            It solved real problems for real infrastructure at real scale.
+            It continues to do so, and will continue to do so, for the
+            environments that genuinely require it.</p>
+
+        <p>But for the majority of deployments &#x2014; three servers,
+            five servers, twenty servers, all running the same operating
+            system, all deploying the same application &#x2014; the
+            replacement has been sitting in <code>/usr/bin/ssh</code>
+            since 1999. Waiting patiently. Requiring nothing. Breaking
+            nothing. Outliving everything.</p>
+
+        <blockquote>
+            <p>You do not need Ansible, Python, YAML, Jinja2, inventory
+                files, and Galaxy collections. You need SSH and a shell.
+                Both have been there since before the problem was invented.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The scale caveat, for the infrastructure engineers who scrolled here first</strong></p>
+            <p>Ansible is excellent for 100+ servers, heterogeneous environments,
+                and strict compliance regimes where declarative state management
+                and audit trails are non-negotiable. Nobody is arguing otherwise.
+                But most projects have 3 to 20 servers. Shell scripts live
+                trivially in Git. They require no inventory files, no role
+                directories, no Galaxy dependencies. Every Unix administrator
+                can read them, modify them, and debug them without consulting
+                a framework&#x2019;s documentation. The edge case has been
+                writing the playbooks for the entire room.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,339 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Event Sourcing: The Archaeology Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Complete audit trail! Time travel! Never lose data! A shopping cart with 10 items produces 10+ events. A 3 TB replay takes 10 hours. The event sourcing invoice, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-event-sourcing-tax{( endslot )}
+
+{( slot og-title )}Event Sourcing: The Archaeology Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Complete audit trail! Time travel! Never lose data! A shopping cart with 10 items produces 10+ events. A 3 TB replay takes 10 hours. The event sourcing invoice, itemised.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Event Sourcing: The Archaeology Tax",
+    "datePublished": "2026-01-17",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-event-sourcing-tax",
+    "description": "Complete audit trail! Time travel! Never lose data! A shopping cart with 10 items produces 10+ events. A 3 TB replay takes 10 hours. The event sourcing invoice, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-17">17 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Event Sourcing: The Archaeology Tax</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">sql</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> &#x25A0; Episode 5</p>
+
+        <blockquote>
+            <p>&#x201C;Complete audit trail! Time travel! Never lose data!&#x201D;</p>
+            <p>Marvellous. Let us examine the invoice.</p>
+        </blockquote>
+
+        <p>Event sourcing is one of those architectural patterns that sounds
+            unobjectionable in a conference talk and becomes progressively less
+            charming once it meets production data. The pitch is elegant: instead
+            of storing the current state, store every event that led to it. The
+            system becomes a ledger. You can reconstruct any past state by replaying
+            the event history. Audit trails emerge for free. Time travel is built in.</p>
+
+        <p>The pitch is not wrong. It is merely incomplete. Rather dramatically so.</p>
+
+        <h2>The Storage Invoice</h2>
+
+        <p>In a traditional database, a shopping cart with ten items is one row.
+            Ten columns, or a JSONB array, or a normalised set of line items.
+            The state is the state. When the customer removes item seven, you
+            update the row. Storage cost: constant.</p>
+
+        <p>In an event-sourced system, that same shopping cart is a sequence
+            of events: <code>CartCreated</code>, <code>ItemAdded</code> (ten times),
+            <code>ItemRemoved</code>, <code>QuantityChanged</code>,
+            <code>CouponApplied</code>. Thirteen events to represent a cart that
+            currently contains nine items. The customer&#x2019;s browsing indecision
+            is now a permanent part of your storage infrastructure.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Storage comparison: traditional database stores a 10-item shopping cart as 1 row. Event sourcing stores 13 or more events for the same cart. At scale, real-world systems accumulate 3 TB of events requiring replay." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .es-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .es-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .es-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .es-accent-lg { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .es-num { font: 700 28px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .es-bar-trad { fill: var(--accent); opacity: 0.7; rx: 2; }
+                .es-bar-event { fill: var(--accent); opacity: 0.25; rx: 2; }
+                .es-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .es-box-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                .es-line { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+            <text class="es-label" x="260" y="18" text-anchor="middle">Shopping Cart: Storage Cost</text>
+            <!-- Traditional -->
+            <text class="es-sub" x="60" y="48">Traditional (PostgreSQL)</text>
+            <rect class="es-bar-trad" x="60" y="56" width="30" height="28"/>
+            <text class="es-accent" x="100" y="75">1 row</text>
+            <text class="es-sub" x="150" y="75">Current state. Done.</text>
+            <!-- Event sourced -->
+            <text class="es-sub" x="60" y="112">Event Sourced</text>
+            <rect class="es-bar-event" x="60" y="120" width="28" height="22"/>
+            <rect class="es-bar-event" x="92" y="120" width="28" height="22"/>
+            <rect class="es-bar-event" x="124" y="120" width="28" height="22"/>
+            <rect class="es-bar-event" x="156" y="120" width="28" height="22"/>
+            <rect class="es-bar-event" x="188" y="120" width="28" height="22"/>
+            <rect class="es-bar-event" x="220" y="120" width="28" height="22"/>
+            <rect class="es-bar-event" x="252" y="120" width="28" height="22"/>
+            <rect class="es-bar-event" x="284" y="120" width="28" height="22"/>
+            <rect class="es-bar-event" x="316" y="120" width="28" height="22"/>
+            <rect class="es-bar-event" x="348" y="120" width="28" height="22"/>
+            <rect class="es-bar-event" x="380" y="120" width="28" height="22"/>
+            <rect class="es-bar-event" x="412" y="120" width="28" height="22"/>
+            <rect class="es-bar-event" x="444" y="120" width="16" height="22"/>
+            <text class="es-accent" x="60" y="160">13+ events</text>
+            <text class="es-sub" x="142" y="160">CartCreated, ItemAdded &#xD7;10, ItemRemoved, CouponApplied &#x2026;</text>
+            <!-- Scale comparison -->
+            <line class="es-line" x1="60" y1="182" x2="460" y2="182"/>
+            <text class="es-label" x="260" y="206" text-anchor="middle">At Scale</text>
+            <rect class="es-box-fill" x="40" y="218" width="200" height="66"/>
+            <rect class="es-box" x="40" y="218" width="200" height="66"/>
+            <text class="es-num" x="140" y="252" text-anchor="middle">1 row</text>
+            <text class="es-sub" x="140" y="274" text-anchor="middle">per entity &#x2014; constant</text>
+            <rect class="es-box-fill" x="280" y="218" width="200" height="66"/>
+            <rect class="es-box" x="280" y="218" width="200" height="66"/>
+            <text class="es-num" x="380" y="252" text-anchor="middle">3 TB</text>
+            <text class="es-sub" x="380" y="274" text-anchor="middle">replay for one balance</text>
+        </svg>
+
+        <p>Scale this to a real system. Every user action, every state transition,
+            every correction &#x2014; all preserved, all immutable, all growing. A
+            <a href="https://kitemetric.com/blogs/event-sourcing-fails-5-real-world-lessons" target="_blank" rel="noopener">real-world case study</a>
+            reports 3 TB of events to reconstruct a single account balance. Query
+            times measured in minutes, not milliseconds. The database is not slow.
+            It is doing exactly what you asked: reading three terabytes of history
+            to answer a question about the present.</p>
+
+        <h2>The Replay Invoice</h2>
+
+        <p>The recovery story is the centrepiece of every event sourcing talk.
+            System corrupted? Replay from the event log. State lost? Rebuild from
+            events. It sounds like a superpower until you do the arithmetic.</p>
+
+        <p>Millions of events. Sequential replay. No shortcuts &#x2014; events
+            must be applied in order, because that is the entire point. A
+            <a href="https://kitemetric.com/blogs/event-sourcing-fails-5-real-world-lessons" target="_blank" rel="noopener">production replay</a>
+            of a moderately sized system: ten hours. Your system is down.
+            Your customers are waiting. Your on-call engineer is watching a
+            progress bar that moves with the urgency of a civil servant on a
+            Friday afternoon.</p>
+
+        <p>The solution, inevitably, is snapshots. Periodically capture the
+            current state so you only need to replay events since the last
+            snapshot. Sensible enough. But consider what you have just done: you
+            have introduced a second storage system &#x2014; one that stores
+            current state &#x2014; to compensate for the fact that your primary
+            storage system does not.</p>
+
+        <p>Snapshots are an admission that the architecture does not scale.
+            If storing every event were sufficient, you would not need periodic
+            photographs of the result. The snapshot is not a feature of event
+            sourcing. It is a workaround for event sourcing.</p>
+
+        <h2>The Schema Evolution Invoice</h2>
+
+        <p>Events are immutable. That is the contract. Once written, they never
+            change. Splendid &#x2014; until your domain model evolves, which it
+            will, because domains evolve, because the business evolves, because
+            the world is not a versioned API.</p>
+
+        <p>Version 1 of your <code>OrderPlaced</code> event:</p>
+        <blockquote><p><code>{ price: 100 }</code></p></blockquote>
+
+        <p>Version 2, six months later:</p>
+        <blockquote><p><code>{ price: 100, currency: &#x201C;EUR&#x201D; }</code></p></blockquote>
+
+        <p>Every event written before version 2 lacks a currency field. They
+            cannot be updated &#x2014; immutability is the rule. They cannot be
+            ignored &#x2014; the replay depends on them. They must be handled,
+            forever, by every consumer that reads the event stream.</p>
+
+        <p><a href="https://event-driven.io/en/simple_events_versioning_patterns/" target="_blank" rel="noopener">Five patterns exist</a>
+            to manage this: versioning, upcasting, weak schemas, in-place
+            migration, and copy-and-transform. Each adds complexity. Each
+            introduces its own failure modes. Each requires that every developer
+            on the team understands not just the current schema, but the entire
+            history of every schema that has ever existed.</p>
+
+        <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schema evolution iceberg: above the waterline is the pitch (immutable events, complete history, time travel). Below the waterline: versioning, upcasting, weak schemas, in-place migration, copy-and-transform, snapshot maintenance, replay testing." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .ice-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .ice-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .ice-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .ice-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .ice-water { stroke: var(--accent); stroke-width: 1.5; opacity: 0.5; }
+                .ice-above { fill: var(--accent); opacity: 0.12; }
+                .ice-below { fill: var(--accent); opacity: 0.06; }
+                .ice-border { fill: none; stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text class="ice-title" x="260" y="18" text-anchor="middle">The Event Sourcing Iceberg</text>
+            <!-- Waterline -->
+            <line class="ice-water" x1="30" y1="120" x2="490" y2="120"/>
+            <text class="ice-sub" x="492" y="116" text-anchor="end">waterline</text>
+            <!-- Above: the pitch -->
+            <polygon class="ice-above" points="260,32 340,116 180,116"/>
+            <polygon class="ice-border" points="260,32 340,116 180,116"/>
+            <text class="ice-label" x="260" y="66" text-anchor="middle">The Pitch</text>
+            <text class="ice-sub" x="260" y="82" text-anchor="middle">Immutable events</text>
+            <text class="ice-sub" x="260" y="96" text-anchor="middle">Complete history</text>
+            <text class="ice-sub" x="260" y="110" text-anchor="middle">Time travel</text>
+            <!-- Below: the invoice -->
+            <polygon class="ice-below" points="180,124 340,124 420,280 100,280"/>
+            <polygon class="ice-border" points="180,124 340,124 420,280 100,280"/>
+            <text class="ice-accent" x="260" y="150" text-anchor="middle">The Invoice</text>
+            <text class="ice-sub" x="260" y="170" text-anchor="middle">Schema versioning (5 patterns)</text>
+            <text class="ice-sub" x="260" y="186" text-anchor="middle">Upcasting old events forever</text>
+            <text class="ice-sub" x="260" y="202" text-anchor="middle">Snapshot maintenance</text>
+            <text class="ice-sub" x="260" y="218" text-anchor="middle">Replay testing</text>
+            <text class="ice-sub" x="260" y="234" text-anchor="middle">Eventual consistency (200 ms lag)</text>
+            <text class="ice-sub" x="260" y="250" text-anchor="middle">Doubled onboarding time</text>
+            <text class="ice-sub" x="260" y="266" text-anchor="middle">Debugging as archaeology</text>
+            <!-- Bottom note -->
+            <text class="ice-sub" x="260" y="304" text-anchor="middle">The top sells the pattern. The bottom is the invoice.</text>
+        </svg>
+
+        <p><a href="https://leanpub.com/esversioning" target="_blank" rel="noopener">Greg Young</a>
+            &#x2014; the person who popularised event sourcing &#x2014; wrote an entire
+            book about versioning alone. When the inventor needs a book-length
+            treatment for a single sub-problem of the pattern, that is not
+            documentation. That is a warning label.</p>
+
+        <h2>The Consistency Invoice</h2>
+
+        <p>Event sourcing typically separates the write model (event store) from
+            the read model (projections). Commands produce events. Projections
+            consume events and build queryable views. The read store is
+            &#x201C;eventually consistent&#x201D; &#x2014; industry shorthand for
+            &#x201C;not consistent yet.&#x201D;</p>
+
+        <p>The typical lag: 200 milliseconds. In conference talks, this sounds
+            negligible. In production, it means a customer places an order, the
+            confirmation page loads, and the order is not there. The customer
+            refreshes. Still not there. They place the order again. Now you have
+            two orders and a support ticket.</p>
+
+        <p>&#x201C;The read store is 200 ms behind.&#x201D; Try explaining that
+            to a customer who has just entered their credit card details. Try
+            explaining it to the product owner. Try explaining it to yourself
+            at two in the morning when the pager goes off and the answer is
+            &#x201C;the system is working as designed.&#x201D;</p>
+
+        <h2>The Team Invoice</h2>
+
+        <p>Every developer must think in events. Not in state, not in entities,
+            not in the mental model that every database textbook, every ORM, and
+            every line-of-business application has used for the past forty years.
+            Events. Sequences of facts that, when replayed, produce the current
+            state &#x2014; provided you handle every schema version correctly,
+            apply the upcasters in order, and remember that the read model is
+            200 milliseconds behind.</p>
+
+        <p>Onboarding doubles. Debugging becomes archaeology. A bug report
+            does not say &#x201C;the balance is wrong.&#x201D; It says
+            &#x201C;somewhere in the 47,000 events for this account, an event was
+            projected incorrectly, possibly by an upcaster that was written
+            eighteen months ago by someone who has since left.&#x201D;</p>
+
+        <p><a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/event-sourcing.html" target="_blank" rel="noopener">AWS itself</a>
+            warns in its own prescriptive guidance: event sourcing
+            &#x201C;should not be the default choice due to its complexity.&#x201D;
+            When the platform that would directly profit from you using more
+            infrastructure tells you to reconsider, the polite thing to do is
+            listen.</p>
+
+        <h2>When It Earns Its Keep</h2>
+
+        <p>Event sourcing is not universally wrong. It is specifically right
+            in domains where the event history <em>is</em> the business value.
+            Banking: every transaction must be auditable, reversible, and
+            reconstructable by regulation. Accounting: the ledger is literally
+            a sequence of events, and has been since double-entry bookkeeping
+            was formalised in 1494. Regulated industries where
+            <a href="https://martinfowler.com/eaaDev/EventSourcing.html" target="_blank" rel="noopener">Martin Fowler&#x2019;s original description</a>
+            applies: the audit trail is not a feature &#x2014; it is the product.</p>
+
+        <p>In these domains, the cost is justified because the cost of
+            <em>not</em> having a complete event history is higher: regulatory
+            fines, legal exposure, compliance failures. The complexity is the
+            same. The calculus is different.</p>
+
+        <h2>The Alternative</h2>
+
+        <p>PostgreSQL. An audit table. A trigger that logs every INSERT,
+            UPDATE, and DELETE with the old values, the new values, the
+            timestamp, and the user. Five lines of SQL. No event store. No
+            projections. No eventual consistency. No replay. No snapshots.
+            No five versioning patterns. No book-length treatment of a
+            sub-problem.</p>
+
+        <p>You get a complete audit trail. You get the current state in one
+            query. You get consistency measured in microseconds, not the
+            200-millisecond prayer of eventual convergence. You get a system
+            that every developer on the team already understands, because it
+            is a database doing what databases do.</p>
+
+        <p>The audit table is not as theoretically elegant. It does not permit
+            time travel or state reconstruction from first principles. It does,
+            however, answer the question that actually matters &#x2014;
+            &#x201C;who changed what, and when?&#x201D; &#x2014; without requiring
+            a specialist team, a snapshot strategy, and a versioning book.</p>
+
+        <h2>The Verdict</h2>
+
+        <p>Event sourcing stores every state transition to avoid storing state.
+            It introduces snapshots to compensate for the cost of not storing
+            state. It adds projections to provide the queryable state it
+            declined to store in the first place. It demands five versioning
+            patterns to handle the immutable events that inevitably need to
+            change. It splits consistency into &#x201C;eventual,&#x201D; which
+            is a polite way of saying &#x201C;not yet.&#x201D;</p>
+
+        <p>The alternative is a database and an audit table.</p>
+
+        <blockquote>
+            <p>The invoice is not the event store. It is everything you build
+                around it to make it usable.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>First comment</strong></p>
+            <p>Greg Young &#x2014; the person who
+                <a href="https://leanpub.com/esversioning" target="_blank" rel="noopener">popularised event sourcing</a>
+                &#x2014; wrote an entire book dedicated solely to versioning. Not
+                event sourcing as a whole. Just the versioning sub-problem. If the
+                inventor requires a book-length treatment for one aspect of the
+                pattern, perhaps the pattern&#x2019;s complexity deserves more
+                scrutiny than its conference slides suggest.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
