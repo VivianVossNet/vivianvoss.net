@@ -1,0 +1,396 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}OKLCH: The Colour System That Does Not Lie &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="For three decades, CSS colour models lied about lightness. HEX told you nothing. HSL promised perceptual uniformity and delivered optical illusion. OKLCH, light-dark(), and Relative Color Syntax fix the problem. No JavaScript. No media queries.">
+{( endslot )}
+
+{( slot canonical )}/blog/oklch-colour-system{( endslot )}
+
+{( slot og-title )}OKLCH: The Colour System That Does Not Lie &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}HSL promised perceptual uniformity and lied. OKLCH delivers it. Combined with light-dark() and Relative Color Syntax, CSS finally handles colour properly. No JavaScript required.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "OKLCH: The Colour System That Does Not Lie",
+    "datePublished": "2026-01-29",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/oklch-colour-system",
+    "description": "For three decades, CSS colour models lied about lightness. HEX told you nothing. HSL promised perceptual uniformity and delivered optical illusion. OKLCH, light-dark(), and Relative Color Syntax fix the problem.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-29">29 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>OKLCH: The Colour System That Does Not Lie</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">css</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 01</p>
+
+        <blockquote>
+            <p>&#x201C;For thirty years, CSS has been lying to you about colour.
+                It was doing it with a straight face the entire time.&#x201D;</p>
+        </blockquote>
+
+        <p>In 1993, HEX arrived. <code>#FF6600</code>. Six characters that
+            tell a human being precisely nothing about what the colour looks like.
+            It is a memory address for a pixel. Useful for machines. Useless for
+            designers. The industry adopted it immediately and has been squinting
+            at it ever since.</p>
+
+        <p>RGB followed the same logic with decimal courtesy:
+            <code>rgb(255, 102, 0)</code>. Three channels, zero intuition. To make
+            a colour &#x201C;a bit lighter,&#x201D; you increment all three values by
+            some amount and hope for the best. It is colour by spreadsheet.</p>
+
+        <p>Then came
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/hsl" target="_blank" rel="noopener">HSL</a>,
+            and the industry exhaled. Hue, Saturation, Lightness &#x2014; finally,
+            a model that speaks human. Rotate the hue wheel, adjust saturation,
+            slide the lightness. Intuitive. Elegant. And, as it happens,
+            fundamentally dishonest.</p>
+
+        <h2>The HSL Lie</h2>
+
+        <p>HSL promises that the &#x201C;L&#x201D; channel represents perceived
+            lightness. Set two colours to the same lightness value, and they should
+            appear equally bright to the human eye. This is the contract. HSL
+            violates it spectacularly.</p>
+
+        <p>Consider: <code>hsl(60, 100%, 50%)</code> is yellow.
+            <code>hsl(240, 100%, 50%)</code> is blue. Same saturation. Same
+            &#x201C;lightness.&#x201D; Same L value of 50%. One blinds you. The other
+            is barely visible against a dark background. They are, according to
+            HSL, identically bright. Your retina has a rather different opinion.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison of HSL versus OKLCH lightness. HSL claims yellow and blue at 50% lightness are equally bright. The human eye disagrees. OKLCH corrects this by making lightness perceptually uniform." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .clr-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .clr-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .clr-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .clr-code { font: 400 10px/1 ui-monospace, monospace; fill: var(--muted); }
+                .clr-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .clr-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .clr-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .clr-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                .clr-warn { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: oklch(65% 0.25 25); }
+                .clr-ok { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .clr-line { stroke: var(--border); stroke-width: 0.5; }
+                .clr-bar-y { fill: oklch(90% 0.18 100); rx: 2; }
+                .clr-bar-b { fill: oklch(35% 0.18 265); rx: 2; }
+                .clr-bar-yo { fill: oklch(90% 0.16 100); opacity: 0.8; rx: 2; }
+                .clr-bar-bo { fill: oklch(45% 0.16 265); opacity: 0.8; rx: 2; }
+            </style>
+
+            <text class="clr-title" x="260" y="18" text-anchor="middle">HSL LIGHTNESS vs OKLCH LIGHTNESS</text>
+            <text class="clr-sub" x="260" y="36" text-anchor="middle">Same &#x201C;lightness&#x201D; value &#x2014; vastly different perceived brightness</text>
+
+            <!-- HSL Section -->
+            <text class="clr-label" x="30" y="64">HSL</text>
+            <text class="clr-sub" x="65" y="64">&#x2014; mathematical lightness</text>
+
+            <rect class="clr-bar-y" x="30" y="76" width="200" height="32"/>
+            <text class="clr-code" x="40" y="96">hsl(60, 100%, 50%)</text>
+
+            <rect class="clr-bar-b" x="30" y="116" width="200" height="32"/>
+            <text class="clr-code" x="40" y="136" fill="oklch(80% 0 0)">hsl(240, 100%, 50%)</text>
+
+            <text class="clr-sub" x="245" y="92">Yellow &#x2192; L = 50%</text>
+            <text class="clr-sub" x="245" y="132">Blue &#x2192; L = 50%</text>
+
+            <text class="clr-warn" x="410" y="92">&#x2718; blindingly bright</text>
+            <text class="clr-warn" x="410" y="132">&#x2718; barely visible</text>
+
+            <!-- Divider -->
+            <line class="clr-line" x1="30" y1="164" x2="490" y2="164"/>
+
+            <!-- OKLCH Section -->
+            <text class="clr-label" x="30" y="186">OKLCH</text>
+            <text class="clr-sub" x="80" y="186">&#x2014; perceptual lightness</text>
+
+            <rect class="clr-bar-yo" x="30" y="198" width="200" height="32"/>
+            <text class="clr-code" x="40" y="218">oklch(90% 0.18 100)</text>
+
+            <rect class="clr-bar-bo" x="30" y="238" width="200" height="32"/>
+            <text class="clr-code" x="40" y="258" fill="oklch(80% 0 0)">oklch(45% 0.16 265)</text>
+
+            <text class="clr-sub" x="245" y="214">Yellow &#x2192; L = 90%</text>
+            <text class="clr-sub" x="245" y="254">Blue &#x2192; L = 45%</text>
+
+            <text class="clr-ok" x="410" y="214">&#x2713; honestly bright</text>
+            <text class="clr-ok" x="410" y="254">&#x2713; honestly dark</text>
+
+            <text class="clr-accent" x="260" y="292" text-anchor="middle">10% L difference = 10% perceived difference</text>
+        </svg>
+
+        <p>The reason is that HSL&#x2019;s lightness is a mathematical
+            transformation of RGB, not a perceptual measurement. It divides the
+            colour space evenly by numbers, not by how the human visual system
+            processes those numbers. Yellow reflects far more light than blue at
+            the same mathematical &#x201C;lightness.&#x201D; HSL does not account
+            for this. It does not try. It simply lies, politely and consistently,
+            and hopes nobody compares the swatches.</p>
+
+        <h2>Enter OKLCH</h2>
+
+        <p>In 2020,
+            <a href="https://bottosson.github.io/posts/oklab/" target="_blank" rel="noopener">Bj&#x00F6;rn Ottosson</a>
+            published Oklab, a perceptual colour space designed from first
+            principles to match human vision. OKLCH is its cylindrical
+            representation &#x2014; the same colour space expressed as Lightness,
+            Chroma, and Hue rather than Cartesian coordinates. Three axes, each
+            doing exactly what it claims:</p>
+
+        <p><strong>L &#x2014; Lightness.</strong> Perceptually uniform. When you
+            change L by 10%, the colour actually <em>looks</em> 10% brighter or
+            darker to the human eye. Not &#x201C;10% brighter according to a
+            formula that ignores the human eye.&#x201D; Actually brighter. This
+            is the promise HSL made and could not keep.</p>
+
+        <p><strong>C &#x2014; Chroma.</strong> Colour intensity, from grey to
+            vivid. Unlike HSL&#x2019;s saturation, chroma in OKLCH is absolute.
+            A chroma of 0.12 means the same intensity regardless of hue. You can
+            desaturate by reducing C without side effects on perceived lightness.</p>
+
+        <p><strong>H &#x2014; Hue.</strong> The hue angle, 0&#x2013;360 degrees.
+            Rotating the hue changes the colour without affecting lightness or
+            chroma. This sounds obvious. In HSL, rotating from yellow to blue at
+            constant S and L produces a dramatic perceived brightness shift. In
+            OKLCH, it does not.</p>
+
+        <p>The practical consequence: you can build an entire colour palette by
+            fixing L and C, then rotating H. Every colour in the palette will
+            have the same perceived brightness and intensity. No manual
+            adjustment. No optical illusions. No squinting at swatches and
+            wondering why the blue feels heavier than the green.</p>
+
+        <h2>Beyond sRGB</h2>
+
+        <p>There is a second advantage, and it is not subtle.
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch" target="_blank" rel="noopener">OKLCH in CSS</a>
+            supports colour gamuts beyond sRGB. Display P3 &#x2014; the wide
+            gamut that modern Apple, Samsung, and flagship displays have shipped
+            for years &#x2014; offers roughly 50% more colours than sRGB. Rec2020
+            goes further still. HEX and RGB are physically incapable of
+            addressing these colours. They are locked to the sRGB gamut, which
+            was defined in 1996 for CRT monitors that no longer exist.</p>
+
+        <p>OKLCH addresses the full range. If the display supports it, the
+            colour renders. If the display does not, the browser
+            <a href="https://www.w3.org/TR/css-color-4/#css-gamut-mapping" target="_blank" rel="noopener">gamut-maps</a>
+            to the nearest displayable colour automatically. No fallback stacks.
+            No <code>@supports</code> queries for colour. The specification
+            handles the degradation.</p>
+
+        <h2>The Syntax</h2>
+
+        <p>Define a brand colour once:</p>
+
+        <pre><code>--brand: oklch(60% 0.12 250);</code></pre>
+
+        <p>That is: 60% perceived lightness, moderate chroma, hue angle 250
+            (a confident blue). Now derive every variant you need without
+            touching a colour picker:</p>
+
+        <pre><code>--brand-light: oklch(from var(--brand) calc(l + 0.2) c h);
+--brand-dark:  oklch(from var(--brand) calc(l - 0.2) c h);
+--brand-muted: oklch(from var(--brand) l calc(c - 0.06) h);
+--brand-vivid: oklch(from var(--brand) l calc(c + 0.06) h);</code></pre>
+
+        <p>This is
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_colors/Relative_colors" target="_blank" rel="noopener">Relative Color Syntax</a>.
+            The <code>from</code> keyword destructures the source colour into its
+            channels. <code>calc()</code> adjusts individual channels
+            mathematically. The result is a derived colour that maintains the
+            perceptual relationships because the colour space itself guarantees
+            them. Change the brand colour once; every variant follows
+            automatically. No Sass functions. No JavaScript. No colour
+            library.</p>
+
+        <h2>light-dark(): The Theme Switch</h2>
+
+        <p>Dark mode. The feature that launched a thousand media queries,
+            a hundred CSS custom property toggles, and at least one npm package
+            too many. The platform solution is two declarations:</p>
+
+        <pre><code>:root {
+    color-scheme: light dark;
+}
+
+--bg:      light-dark(oklch(98% 0.01 250), oklch(15% 0.01 250));
+--surface: light-dark(oklch(95% 0.01 250), oklch(20% 0.02 250));
+--text:    light-dark(oklch(20% 0.01 250), oklch(90% 0.01 250));</code></pre>
+
+        <p>The
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark" target="_blank" rel="noopener"><code>light-dark()</code></a>
+            function accepts two values: the first for light mode, the second
+            for dark. The browser selects the appropriate value based on the
+            computed <code>color-scheme</code>. No JavaScript toggle. No
+            <code>@media (prefers-color-scheme)</code> duplication. No class
+            on the body element. The operating system preference propagates
+            through CSS directly, and the function resolves at computed-value
+            time.</p>
+
+        <p>Combined with OKLCH, the ergonomics are rather elegant: your light
+            and dark variants live side by side in the same declaration,
+            expressed in a colour space where the lightness values actually
+            correspond to what the user sees. <code>98%</code> is near-white.
+            <code>15%</code> is near-black. No ambiguity. No conversion tables.
+            No hoping that <code>#1a1a2e</code> and <code>#fafafa</code> will
+            produce adequate contrast.</p>
+
+        <svg viewBox="0 0 520 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Architecture diagram showing the three-layer pattern: OKLCH for perceptual colour, Relative Color Syntax for derived variants, and light-dark() for theme switching. One brand definition cascades to the entire design system." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .arch-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .arch-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .arch-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .arch-code { font: 400 10px/1 ui-monospace, monospace; fill: var(--muted); }
+                .arch-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .arch-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .arch-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .arch-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                .arch-fill-hl { fill: var(--accent); opacity: 0.15; rx: 4; }
+                .arch-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#arch-arrow-end); }
+                .arch-line { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+            <defs>
+                <marker id="arch-arrow-end" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+                </marker>
+            </defs>
+
+            <text class="arch-title" x="260" y="18" text-anchor="middle">THE THREE-LAYER PATTERN</text>
+            <text class="arch-sub" x="260" y="36" text-anchor="middle">Define once &#x2192; derive &#x2192; theme. No JavaScript.</text>
+
+            <!-- Layer 1: OKLCH -->
+            <rect class="arch-fill-hl" x="130" y="50" width="260" height="48"/>
+            <rect class="arch-box-hl" x="130" y="50" width="260" height="48"/>
+            <text class="arch-label" x="260" y="70" text-anchor="middle">1. OKLCH &#x2014; Perceptual Truth</text>
+            <text class="arch-code" x="260" y="88" text-anchor="middle">--brand: oklch(60% 0.12 250)</text>
+
+            <!-- Arrow down -->
+            <path class="arch-arrow" d="M260,98 L260,116"/>
+
+            <!-- Layer 2: Relative Color Syntax -->
+            <rect class="arch-fill" x="60" y="116" width="400" height="64"/>
+            <rect class="arch-box" x="60" y="116" width="400" height="64"/>
+            <text class="arch-label" x="260" y="136" text-anchor="middle">2. Relative Color Syntax &#x2014; Derived Variants</text>
+            <text class="arch-code" x="260" y="154" text-anchor="middle">oklch(from var(--brand) calc(l + 0.2) c h)</text>
+            <text class="arch-sub" x="260" y="170" text-anchor="middle">light &#x25A0; dark &#x25A0; muted &#x25A0; vivid &#x2014; all from one source</text>
+
+            <!-- Arrow down -->
+            <path class="arch-arrow" d="M260,180 L260,198"/>
+
+            <!-- Layer 3: light-dark() -->
+            <rect class="arch-fill" x="30" y="198" width="220" height="52"/>
+            <rect class="arch-box" x="30" y="198" width="220" height="52"/>
+            <text class="arch-label" x="140" y="218" text-anchor="middle">3a. light-dark()</text>
+            <text class="arch-code" x="140" y="236" text-anchor="middle">light-dark(light, dark)</text>
+
+            <rect class="arch-fill" x="270" y="198" width="220" height="52"/>
+            <rect class="arch-box" x="270" y="198" width="220" height="52"/>
+            <text class="arch-label" x="380" y="218" text-anchor="middle">3b. color-scheme</text>
+            <text class="arch-code" x="380" y="236" text-anchor="middle">color-scheme: light dark</text>
+
+            <!-- Bottom summary -->
+            <line class="arch-line" x1="30" y1="264" x2="490" y2="264"/>
+            <text class="arch-accent" x="260" y="284" text-anchor="middle">One brand definition &#x2192; entire design system. 0 KB JavaScript.</text>
+        </svg>
+
+        <h2>Browser Support</h2>
+
+        <p>OKLCH:
+            <a href="https://caniuse.com/css-oklch" target="_blank" rel="noopener">Chrome 111+, Firefox 113+, Safari 15.4+</a>.
+            Global coverage: 93%. Relative Color Syntax is somewhat newer
+            &#x2014; Chrome 119+, Firefox 128+, Safari 16.4+ &#x2014; but
+            the core <code>oklch()</code> function has been universally
+            available since early 2023. <code>light-dark()</code> shipped in
+            Chrome 123+, Firefox 120+, Safari 17.5+.</p>
+
+        <p>These are not experimental features behind a flag. They are
+            shipping, stable, interoperable CSS. The browser support exceeds
+            that of several features the industry deploys without a second
+            thought. The only prerequisite is the willingness to stop writing
+            <code>#FF6600</code>.</p>
+
+        <h2>The Deeper Point</h2>
+
+        <p>For three decades, the web&#x2019;s colour tooling was built
+            on a foundation that did not match human perception. Designers
+            compensated manually. Design systems shipped lookup tables.
+            Sass functions performed conversions that approximated what the
+            colour space should have guaranteed. The tooling existed because
+            the primitive was broken.</p>
+
+        <p>OKLCH is not a better version of HSL. It is a correct
+            implementation of what HSL pretended to be. Lightness means
+            lightness. Chroma means chroma. Hue rotation does not produce
+            brightness side effects. The colour space itself enforces the
+            perceptual relationships that design systems previously had to
+            enforce in code.</p>
+
+        <p>Combined with Relative Color Syntax and <code>light-dark()</code>,
+            the pattern is three layers deep and zero kilobytes of JavaScript
+            wide: define a brand colour in OKLCH, derive variants with
+            <code>calc()</code>, switch themes with a built-in function. The
+            entire colour architecture lives in CSS custom properties. No
+            build step. No runtime. No library. A colour system that tells
+            the truth, a derivation mechanism that respects it, and a theme
+            function that the browser resolves before your JavaScript has
+            finished parsing.</p>
+
+        <blockquote>
+            <p>For thirty years, CSS lied about lightness. In 2023, it
+                stopped. The colour swatches, at long last, match the
+                specification.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The complete implementation, ready to copy</strong></p>
+<pre><code>:root {
+    color-scheme: light dark;
+
+    /* Brand &#x2014; define once */
+    --brand:       oklch(60% 0.12 250);
+    --brand-light: oklch(from var(--brand) calc(l + 0.2) c h);
+    --brand-dark:  oklch(from var(--brand) calc(l - 0.2) c h);
+    --brand-muted: oklch(from var(--brand) l calc(c - 0.06) h);
+
+    /* Surfaces */
+    --bg:      light-dark(oklch(98% 0.01 250), oklch(15% 0.01 250));
+    --surface: light-dark(oklch(95% 0.015 250), oklch(20% 0.02 250));
+
+    /* Text */
+    --text:    light-dark(oklch(20% 0.01 250), oklch(90% 0.01 250));
+    --muted:   light-dark(oklch(45% 0.01 250), oklch(65% 0.01 250));
+}</code></pre>
+            <p>Resources:
+                <a href="https://bottosson.github.io/posts/oklab/" target="_blank" rel="noopener">Bj&#x00F6;rn Ottosson&#x2019;s Oklab paper</a>.
+                <a href="https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl" target="_blank" rel="noopener">Evil Martians: OKLCH in CSS</a>.
+                <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch" target="_blank" rel="noopener">MDN: oklch()</a>.
+                <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark" target="_blank" rel="noopener">MDN: light-dark()</a>.
+                <a href="https://oklch.com" target="_blank" rel="noopener">oklch.com colour picker</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

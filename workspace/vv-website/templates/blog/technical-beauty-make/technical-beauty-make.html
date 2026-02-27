@@ -1,0 +1,464 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}make: Three Concepts, Fifty Years &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 1976, Stuart Feldman wrote make in a weekend. Targets, dependencies, timestamps. Three concepts. Fifty years. Same algorithm. The industry responded with fourteen replacements. make still builds kernels.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-make{( endslot )}
+
+{( slot og-title )}make: Three Concepts, Fifty Years &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Stuart Feldman wrote make in a weekend. Targets, dependencies, timestamps. Three concepts. Fifty years. The industry built fourteen replacements. make still builds kernels.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "make: Three Concepts, Fifty Years",
+    "datePublished": "2026-02-24",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-make",
+    "description": "In 1976, Stuart Feldman wrote make in a weekend. Targets, dependencies, timestamps. Three concepts. Fifty years. Same algorithm. The industry responded with fourteen replacements. make still builds kernels.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-24">24 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>make: Three Concepts, Fifty Years</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">make</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 24</p>
+
+        <p>1976. <a href="https://en.wikipedia.org/wiki/Steve_Johnson_(programmer)" target="_blank" rel="noopener">Steve Johnson</a>
+            storms into Stuart Feldman&#x2019;s office at Bell Labs, furious. He has
+            spent the morning debugging a programme that is, by every measure, correct.
+            The source is fine. The logic is sound. The bug is not in the code. The bug
+            is that the binary was never recompiled after the last edit. Johnson has
+            been testing a stale executable, confirming the behaviour of yesterday&#x2019;s
+            programme while reading today&#x2019;s source. One does not need a great deal
+            of imagination to picture the state of mind.</p>
+
+        <p>That weekend,
+            <a href="https://en.wikipedia.org/wiki/Stuart_Feldman" target="_blank" rel="noopener">Feldman</a>
+            wrote <code>make</code>.</p>
+
+        <h2>The Man</h2>
+
+        <p>Stuart Feldman holds an A.B. in astrophysical sciences from Princeton
+            and a Ph.D. in applied mathematics from MIT. He would go on to receive the
+            <a href="https://awards.acm.org/software-system" target="_blank" rel="noopener">ACM Software System Award</a>
+            in 2003, serve as Vice President of Engineering at Google, and become
+            President of the ACM in 2006. None of these credentials are necessary to
+            understand what he built. What he built is necessary to understand the
+            credentials.</p>
+
+        <h2>The Idea</h2>
+
+        <p>The entire intellectual content of <code>make</code> fits in three
+            lines:</p>
+
+        <pre><code>target: dependencies
+	recipe</code></pre>
+
+        <p>If any dependency is newer than the target, run the recipe. If not,
+            do nothing. That is the algorithm. The dependency graph is a
+            <a href="https://en.wikipedia.org/wiki/Directed_acyclic_graph" target="_blank" rel="noopener">directed acyclic graph</a>,
+            resolved not by a database, not by a cache server, not by a daemon polling
+            for changes, but by filesystem timestamps. The filesystem <em>is</em> the cache.
+            <code>stat()</code> is the query. The operating system you are already running
+            is the entire infrastructure.</p>
+
+        <p>Consider what <code>make</code> does <em>not</em> do. It does not parse
+            your programming language. It does not understand your compiler. It does not
+            manage your packages. It does not fetch your dependencies from a registry.
+            It does not generate lock files. It does not phone home. It has no opinions
+            about your directory structure, your naming conventions, or your version
+            control system. It is language-agnostic by design &#x2014; not because
+            Feldman could not be bothered to write a C parser, but because the problem
+            of rebuilding what has changed is entirely orthogonal to the problem of
+            understanding what has been written.</p>
+
+        <p>This is the Unix philosophy in its purest expression: do one thing.
+            Do it completely. Compose with everything.</p>
+
+        <!-- DAG visualisation -->
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Directed acyclic graph showing make&#x2019;s dependency resolution. Source files feed into object files which feed into the final binary. Filesystem timestamps determine what needs rebuilding." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .make-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .make-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .make-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .make-mono { font: 400 10.5px/1 ui-monospace, monospace; fill: var(--text); }
+                .make-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .make-node { fill: none; stroke: var(--border); stroke-width: 1; }
+                .make-node-changed { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+                .make-arrow { stroke: var(--border); stroke-width: 1; fill: none; marker-end: url(#make-arr); }
+                .make-arrow-hot { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#make-arr-hot); }
+                .make-fill { fill: var(--accent); opacity: 0.08; }
+                .make-fill-hot { fill: var(--accent); opacity: 0.15; }
+            </style>
+            <defs>
+                <marker id="make-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--border)"/>
+                </marker>
+                <marker id="make-arr-hot" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <text class="make-title" x="260" y="18" text-anchor="middle">The DAG: Dependency Resolution by Timestamp</text>
+
+            <!-- Source files (left column) -->
+            <text class="make-muted" x="80" y="52" text-anchor="middle">Sources</text>
+            <rect class="make-node" x="20" y="62" width="120" height="30" rx="3"/>
+            <text class="make-mono" x="80" y="82" text-anchor="middle">main.c</text>
+            <rect class="make-node-changed" x="20" y="102" width="120" height="30" rx="3"/>
+            <rect class="make-fill-hot" x="20" y="102" width="120" height="30" rx="3"/>
+            <text class="make-mono" x="80" y="122" text-anchor="middle">utils.c</text>
+            <text class="make-accent" x="80" y="148" text-anchor="middle" style="font-size: 9px;">&#x2191; modified</text>
+            <rect class="make-node" x="20" y="160" width="120" height="30" rx="3"/>
+            <text class="make-mono" x="80" y="180" text-anchor="middle">parse.c</text>
+            <rect class="make-node" x="20" y="200" width="120" height="30" rx="3"/>
+            <text class="make-mono" x="80" y="220" text-anchor="middle">defs.h</text>
+
+            <!-- Object files (middle column) -->
+            <text class="make-muted" x="280" y="52" text-anchor="middle">Objects</text>
+            <rect class="make-node" x="220" y="62" width="120" height="30" rx="3"/>
+            <text class="make-mono" x="280" y="82" text-anchor="middle">main.o</text>
+            <rect class="make-node-changed" x="220" y="112" width="120" height="30" rx="3"/>
+            <rect class="make-fill-hot" x="220" y="112" width="120" height="30" rx="3"/>
+            <text class="make-mono" x="280" y="132" text-anchor="middle">utils.o</text>
+            <rect class="make-node" x="220" y="162" width="120" height="30" rx="3"/>
+            <text class="make-mono" x="280" y="182" text-anchor="middle">parse.o</text>
+
+            <!-- Binary (right) -->
+            <text class="make-muted" x="440" y="52" text-anchor="middle">Target</text>
+            <rect class="make-node-changed" x="390" y="102" width="110" height="40" rx="3"/>
+            <rect class="make-fill-hot" x="390" y="102" width="110" height="40" rx="3"/>
+            <text class="make-label" x="445" y="127" text-anchor="middle">programme</text>
+
+            <!-- Arrows: sources to objects -->
+            <line class="make-arrow" x1="140" y1="77" x2="218" y2="77"/>
+            <line class="make-arrow-hot" x1="140" y1="117" x2="218" y2="127"/>
+            <line class="make-arrow" x1="140" y1="175" x2="218" y2="177"/>
+
+            <!-- Arrows: objects to binary -->
+            <line class="make-arrow" x1="340" y1="77" x2="388" y2="115"/>
+            <line class="make-arrow-hot" x1="340" y1="127" x2="388" y2="122"/>
+            <line class="make-arrow" x1="340" y1="177" x2="388" y2="135"/>
+
+            <!-- Header dependency (dashed) -->
+            <line x1="140" y1="215" x2="218" y2="80" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#make-arr)"/>
+            <line x1="140" y1="215" x2="218" y2="130" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#make-arr)"/>
+            <line x1="140" y1="215" x2="218" y2="177" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#make-arr)"/>
+
+            <!-- Legend -->
+            <line x1="20" y1="262" x2="500" y2="262" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="make-muted" x="260" y="282" text-anchor="middle">Only utils.c changed &#x2192; only utils.o recompiled &#x2192; programme relinked.</text>
+            <text class="make-muted" x="260" y="296" text-anchor="middle">Cache: stat(). Database: the filesystem. Infrastructure: none.</text>
+        </svg>
+
+        <h2>The Tab</h2>
+
+        <p>Every tool has a scar, and <code>make</code>&#x2019;s is famous. The
+            recipe line must begin with a tab character. Not spaces. A tab. In 2026,
+            this design choice has generated approximately four trillion Stack Overflow
+            questions involving the words &#x201C;missing separator&#x201D; and roughly
+            equal measures of bewilderment and profanity.</p>
+
+        <p>The explanation is instructive. Feldman, by his own account, wanted to
+            learn <a href="https://en.wikipedia.org/wiki/Lex_(software)" target="_blank" rel="noopener">Lex</a>
+            &#x2014; the lexical analyser generator. He got snarled up in Lex&#x2019;s
+            own idiosyncrasies and fell back to the simplest possible approach: check
+            the first character of the line. A tab distinguished recipe lines from
+            everything else. It was a weekend project. It worked. A few weeks later,
+            a dozen users at Bell Labs depended on the format. Too late to change.</p>
+
+        <p>That tab has survived fifty years. It has outlived Lex&#x2019;s relevance,
+            outlived Bell Labs itself, outlived every attempt to replace <code>make</code>
+            with something that uses spaces. It is a permanent reminder that design
+            decisions made in haste on a Friday evening acquire the force of natural
+            law by Monday morning, provided someone depends on them. There is a lesson
+            here about backwards compatibility, about the weight of deployed code, and
+            about the advisability of learning Lex on a deadline.</p>
+
+        <h2>The Implementations</h2>
+
+        <p>Feldman&#x2019;s original <code>make</code> for
+            <a href="https://en.wikipedia.org/wiki/Version_7_Unix" target="_blank" rel="noopener">V7 Unix</a>
+            (1979) was roughly 2,500 lines of C. The algorithm was correct. The
+            interface was settled. What followed was not replacement but refinement.</p>
+
+        <p><a href="https://man.freebsd.org/cgi/man.cgi?query=make&sektion=1" target="_blank" rel="noopener">FreeBSD&#x2019;s bmake</a>
+            stands at approximately 29,000 lines. It adds conditionals
+            (<code>.if</code> / <code>.else</code> / <code>.endif</code>), loops
+            (<code>.for</code> / <code>.endfor</code>), parallel builds, and pattern
+            rules. These are genuine extensions to the language, not rewrites of the
+            algorithm. The DAG is the same. The timestamps are the same. The
+            philosophy is the same.</p>
+
+        <p><a href="https://www.gnu.org/software/make/" target="_blank" rel="noopener">GNU make</a>
+            4.4 weighs in at roughly 39,000 lines. Pattern rules, implicit rules,
+            automatic variables, built-in functions. More features, same core.
+            The algorithm Feldman wrote in a weekend remains the engine.</p>
+
+        <p>And then there is
+            <a href="https://cmake.org/" target="_blank" rel="noopener">CMake</a>:
+            approximately 1.5 million lines of C and C++. Its purpose &#x2014; its
+            entire reason for existence &#x2014; is to generate Makefiles. A 1.5-million-line
+            tool exists solely to produce the input files for a programme that was 2,500
+            lines in 1976. One might call this an endorsement. One might also call it
+            something else entirely.</p>
+
+        <!-- Implementation size comparison -->
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Implementation size comparison. V7 make: 2,500 lines. FreeBSD bmake: 29,000 lines. GNU make: 39,000 lines. CMake: 1.5 million lines, and it generates Makefiles." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .make-sz-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .make-sz-value { font: 400 11px/1 ui-monospace, monospace; fill: var(--muted); }
+                .make-sz-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .make-sz-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .make-sz-bar { fill: var(--accent); opacity: 0.7; rx: 2; }
+                .make-sz-bar-dim { fill: var(--muted); opacity: 0.3; rx: 2; }
+            </style>
+
+            <text class="make-sz-label" x="260" y="18" text-anchor="middle">Lines of Code: make Implementations</text>
+
+            <!-- V7 make -->
+            <text class="make-sz-label" x="120" y="54" text-anchor="end">V7 make (1976)</text>
+            <rect class="make-sz-bar" x="130" y="42" width="4" height="18"/>
+            <text class="make-sz-value" x="140" y="55">2,500</text>
+
+            <!-- bmake -->
+            <text class="make-sz-label" x="120" y="94" text-anchor="end">FreeBSD bmake</text>
+            <rect class="make-sz-bar" x="130" y="82" width="46" height="18"/>
+            <text class="make-sz-value" x="182" y="95">29,000</text>
+
+            <!-- GNU make -->
+            <text class="make-sz-label" x="120" y="134" text-anchor="end">GNU make 4.4</text>
+            <rect class="make-sz-bar" x="130" y="122" width="62" height="18"/>
+            <text class="make-sz-value" x="198" y="135">39,000</text>
+
+            <!-- CMake -->
+            <text class="make-sz-label" x="120" y="180" text-anchor="end">CMake</text>
+            <rect class="make-sz-bar-dim" x="130" y="168" width="370" height="18"/>
+            <text class="make-sz-value" x="130" y="202">1,500,000</text>
+
+            <!-- Annotation -->
+            <text class="make-sz-note" x="130" y="222">&#x2191; Generates Makefiles.</text>
+            <text class="make-sz-note" x="130" y="238">1.5 million lines to produce the input</text>
+            <text class="make-sz-note" x="130" y="254">for a 2,500-line programme.</text>
+
+            <line x1="130" y1="264" x2="500" y2="264" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="make-sz-accent" x="315" y="278" text-anchor="middle">Same algorithm. Same DAG. Same timestamps.</text>
+        </svg>
+
+        <h2>The Graveyard</h2>
+
+        <p>The industry has spent fifty years trying to replace <code>make</code>.
+            The roll call is instructive, not because the tools are bad &#x2014;
+            several are excellent &#x2014; but because each one illuminates the
+            remarkable difficulty of improving upon three concepts and a tab
+            character.</p>
+
+        <p><a href="https://ant.apache.org/" target="_blank" rel="noopener">Ant</a>
+            (2000) replaced Makefiles with XML because XML was the future. It was not.
+            <a href="https://maven.apache.org/" target="_blank" rel="noopener">Maven</a>
+            (2004) replaced Ant&#x2019;s imperative XML with declarative XML because
+            convention over configuration was the future. Builds became inscrutable.
+            <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a>
+            (2012) replaced Maven&#x2019;s XML with Groovy scripts because programmable
+            builds were the future. Build scripts became programmes with their own
+            dependency graphs and their own bugs.</p>
+
+        <p>On the JavaScript side:
+            <a href="https://gruntjs.com/" target="_blank" rel="noopener">Grunt</a>
+            (2012). Then
+            <a href="https://gulpjs.com/" target="_blank" rel="noopener">Gulp</a>
+            (2013), because Grunt was too slow. Then
+            <a href="https://webpack.js.org/" target="_blank" rel="noopener">Webpack</a>
+            (2014), which was not a build tool but became one. Then
+            <a href="https://rollupjs.org/" target="_blank" rel="noopener">Rollup</a>
+            (2015), because Webpack&#x2019;s configuration needed its own conference talk.
+            Then <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a>
+            (2020), because bundling was the problem that unbundling would solve.</p>
+
+        <p>At scale: <a href="https://bazel.build/" target="_blank" rel="noopener">Bazel</a>
+            (Google),
+            <a href="https://buck2.build/" target="_blank" rel="noopener">Buck</a>
+            (Meta), Pants (Twitter), Please (Thought Machine).
+            <a href="https://turbo.build/" target="_blank" rel="noopener">Turborepo</a>
+            adds caching to the monorepo that did not need a monorepo. Each solves
+            problems the previous tool created. Each introduces failure modes the
+            previous tool did not have.</p>
+
+        <!-- Build tool graveyard timeline -->
+        <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline of build tools from 1976 to 2026. make in 1976, then Ant, Maven, Gradle, Grunt, Gulp, Webpack, Rollup, Vite, Bazel, Buck, Turborepo. make is still at /usr/bin, building kernels." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .make-tl-label { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .make-tl-year { font: 400 9px/1 ui-monospace, monospace; fill: var(--muted); }
+                .make-tl-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .make-tl-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .make-tl-line { stroke: var(--border); stroke-width: 1; }
+                .make-tl-line-accent { stroke: var(--accent); stroke-width: 2; }
+                .make-tl-dot { fill: var(--muted); }
+                .make-tl-dot-accent { fill: var(--accent); }
+            </style>
+
+            <text class="make-tl-accent" x="260" y="18" text-anchor="middle">The Build Tool Timeline</text>
+
+            <!-- Main timeline axis -->
+            <line class="make-tl-line" x1="40" y1="50" x2="500" y2="50"/>
+            <text class="make-tl-year" x="40" y="44">1976</text>
+            <text class="make-tl-year" x="240" y="44">2000</text>
+            <text class="make-tl-year" x="480" y="44" text-anchor="end">2026</text>
+
+            <!-- make (persists entire timeline) -->
+            <line class="make-tl-line-accent" x1="40" y1="50" x2="500" y2="50"/>
+            <circle class="make-tl-dot-accent" cx="40" cy="50" r="4"/>
+            <text class="make-tl-accent" x="40" y="70">make</text>
+            <text class="make-tl-year" x="40" y="82">1976</text>
+
+            <!-- Java era -->
+            <circle class="make-tl-dot" cx="240" cy="50" r="3"/>
+            <line stroke="var(--border)" stroke-width="1" x1="240" y1="53" x2="240" y2="98"/>
+            <text class="make-tl-label" x="240" y="112" text-anchor="middle">Ant</text>
+            <text class="make-tl-year" x="240" y="124" text-anchor="middle">2000</text>
+
+            <circle class="make-tl-dot" cx="278" cy="50" r="3"/>
+            <line stroke="var(--border)" stroke-width="1" x1="278" y1="53" x2="278" y2="138"/>
+            <text class="make-tl-label" x="278" y="152" text-anchor="middle">Maven</text>
+            <text class="make-tl-year" x="278" y="164" text-anchor="middle">2004</text>
+
+            <circle class="make-tl-dot" cx="354" cy="50" r="3"/>
+            <line stroke="var(--border)" stroke-width="1" x1="354" y1="53" x2="354" y2="98"/>
+            <text class="make-tl-label" x="354" y="112" text-anchor="middle">Gradle</text>
+            <text class="make-tl-year" x="354" y="124" text-anchor="middle">2012</text>
+
+            <!-- JS era -->
+            <circle class="make-tl-dot" cx="354" cy="50" r="3"/>
+            <line stroke="var(--border)" stroke-width="1" x1="358" y1="53" x2="358" y2="178"/>
+            <text class="make-tl-label" x="358" y="192" text-anchor="middle">Grunt</text>
+            <text class="make-tl-year" x="358" y="204" text-anchor="middle">2012</text>
+
+            <circle class="make-tl-dot" cx="372" cy="50" r="3"/>
+            <line stroke="var(--border)" stroke-width="1" x1="372" y1="53" x2="372" y2="138"/>
+            <text class="make-tl-label" x="372" y="152" text-anchor="middle">Gulp</text>
+            <text class="make-tl-year" x="372" y="164" text-anchor="middle">2013</text>
+
+            <circle class="make-tl-dot" cx="390" cy="50" r="3"/>
+            <line stroke="var(--border)" stroke-width="1" x1="390" y1="53" x2="390" y2="218"/>
+            <text class="make-tl-label" x="390" y="232" text-anchor="middle">Webpack</text>
+            <text class="make-tl-year" x="390" y="244" text-anchor="middle">2014</text>
+
+            <circle class="make-tl-dot" cx="408" cy="50" r="3"/>
+            <line stroke="var(--border)" stroke-width="1" x1="408" y1="53" x2="408" y2="138"/>
+            <text class="make-tl-label" x="408" y="152" text-anchor="middle">Rollup</text>
+            <text class="make-tl-year" x="408" y="164" text-anchor="middle">2015</text>
+
+            <circle class="make-tl-dot" cx="444" cy="50" r="3"/>
+            <line stroke="var(--border)" stroke-width="1" x1="444" y1="53" x2="444" y2="178"/>
+            <text class="make-tl-label" x="444" y="192" text-anchor="middle">Vite</text>
+            <text class="make-tl-year" x="444" y="204" text-anchor="middle">2020</text>
+
+            <!-- Scale era -->
+            <circle class="make-tl-dot" cx="316" cy="50" r="3"/>
+            <line stroke="var(--border)" stroke-width="1" x1="316" y1="53" x2="316" y2="178"/>
+            <text class="make-tl-label" x="316" y="192" text-anchor="middle">Bazel</text>
+            <text class="make-tl-year" x="316" y="204" text-anchor="middle">2009</text>
+
+            <circle class="make-tl-dot" cx="462" cy="50" r="3"/>
+            <line stroke="var(--border)" stroke-width="1" x1="462" y1="53" x2="462" y2="98"/>
+            <text class="make-tl-label" x="462" y="112" text-anchor="middle">Turbo</text>
+            <text class="make-tl-year" x="462" y="124" text-anchor="middle">2021</text>
+
+            <!-- Bottom -->
+            <line x1="20" y1="270" x2="500" y2="270" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="make-tl-muted" x="260" y="290" text-anchor="middle">Each replaces the previous. Each introduces new failure modes.</text>
+            <text class="make-tl-accent" x="260" y="310" text-anchor="middle">make sits in /usr/bin. Building kernels.</text>
+        </svg>
+
+        <p>Meanwhile, <code>make</code> sits in <code>/usr/bin</code>, building
+            kernels.</p>
+
+        <h2>The Proof</h2>
+
+        <p><a href="https://www.freebsd.org/" target="_blank" rel="noopener">FreeBSD</a>
+            builds its entire operating system with
+            <a href="https://man.freebsd.org/cgi/man.cgi?query=make&sektion=1" target="_blank" rel="noopener">bmake</a>.
+            The kernel. The userland. The ports collection &#x2014; over 34,000 third-party
+            packages. The documentation. The release engineering. One Makefile hierarchy.
+            One tool. No YAML. No JSON configuration. No plugin ecosystem. No build
+            server with a web dashboard and a Slack integration.</p>
+
+        <p>A build system written in a weekend in 1976 compiles an operating system
+            that runs in production at Netflix, WhatsApp, and the Internet root name
+            servers. The algorithm has not changed. The fundamental insight &#x2014;
+            that rebuilding is a graph problem solved by timestamps &#x2014; has not
+            been superseded. It has merely been surrounded by forty years of tooling
+            that does everything <code>make</code> deliberately chose not to do.</p>
+
+        <h2>The Elegance of Refusal</h2>
+
+        <p>The deepest lesson of <code>make</code> is not what it does. It is what
+            it refuses to do. Every feature it lacks is a coupling it avoids. Every
+            language it does not understand is a language it cannot break. Every package
+            registry it does not contact is a network failure that cannot stop your
+            build.</p>
+
+        <p>This is not minimalism as aesthetic preference. It is minimalism as
+            engineering strategy. The less a tool knows about the world, the less of
+            the world can break it. <code>make</code> knows about files, timestamps,
+            and shell commands. That is the complete list of things that can go wrong.
+            Compare this with a modern build system that knows about your language, your
+            framework, your registry, your lock file, your CI provider, your cloud
+            cache, and the TOML schema you wrote to configure it all. Each integration
+            is a failure mode. Each dependency is a liability. Each &#x201C;convenience&#x201D;
+            is an assumption about a world that changes faster than your build
+            configuration.</p>
+
+        <p>Feldman wrote <code>make</code> in a weekend because the problem was
+            a weekend problem. It has survived fifty years because he had the
+            discipline to solve only that problem and nothing else.</p>
+
+        <blockquote>
+            <p>Targets. Dependencies. Timestamps. Three concepts. Fifty years. Same
+                algorithm. The filesystem is the cache. The operating system is the
+                infrastructure. Everything else is ceremony.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>What bmake adds, for the engineers who build with it</strong></p>
+            <p><a href="https://man.freebsd.org/cgi/man.cgi?query=make&sektion=1" target="_blank" rel="noopener">FreeBSD&#x2019;s bmake</a>
+                extends Feldman&#x2019;s original with conditionals (<code>.if</code> /
+                <code>.else</code> / <code>.endif</code>), iteration (<code>.for</code> /
+                <code>.endfor</code>), parallel builds via <code>-j</code>, and pattern
+                rules for suffix-based inference. It builds the FreeBSD kernel, the
+                complete userland, the ports collection (34,000+ packages), the
+                documentation tree, and the release engineering pipeline. One tool.
+                One Makefile hierarchy. The
+                <a href="http://www.catb.org/esr/writings/taoup/" target="_blank" rel="noopener">Art of Unix Programming</a>
+                and the
+                <a href="https://pubs.opengroup.org/onlinepubs/9799919799/utilities/make.html" target="_blank" rel="noopener">POSIX make specification</a>
+                remain the canonical references.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

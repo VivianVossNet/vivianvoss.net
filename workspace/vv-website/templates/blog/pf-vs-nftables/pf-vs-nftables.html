@@ -1,0 +1,425 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}pf vs nftables: Bruteforce &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Fresh server, SSH open, auth.log fills up. Linux reaches for fail2ban. FreeBSD solves it in four lines of pf.conf. One is reactive. The other was designed.">
+{( endslot )}
+
+{( slot canonical )}/blog/pf-vs-nftables{( endslot )}
+
+{( slot og-title )}pf vs nftables: Bruteforce &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Fresh server, SSH open, auth.log fills up. Linux reaches for fail2ban. FreeBSD solves it in four lines of pf.conf. One is reactive. The other was designed.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "pf vs nftables: Bruteforce",
+    "datePublished": "2026-01-27",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/pf-vs-nftables",
+    "description": "Fresh server, SSH open, auth.log fills up. Linux reaches for fail2ban. FreeBSD solves it in four lines of pf.conf. One is reactive. The other was designed.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-27">27 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>pf vs nftables: Bruteforce</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 1</p>
+
+        <p>
+            Fresh server. Fifteen minutes old. You have installed the operating system,
+            enabled SSH, and gone to make a cup of tea. By the time the kettle boils,
+            <code>auth.log</code> is filling up. Someone in a data centre you have never
+            heard of is methodically trying <code>root</code>, <code>admin</code>,
+            <code>test</code>, <code>oracle</code>, and every default credential known to
+            the collective unconscious of the internet. This is not a targeted attack. It
+            is Tuesday.
+        </p>
+
+        <p>
+            The question is not whether to stop it. The question is how.
+        </p>
+
+        <h2>The Linux Path</h2>
+
+        <p>
+            On Linux, the standard answer is
+            <a href="https://github.com/fail2ban/fail2ban" target="_blank" rel="noopener">fail2ban</a>.
+            A Python daemon that watches log files, matches lines against regular expressions,
+            counts the matches, and &#x2014; after a configurable threshold &#x2014; calls
+            out to the packet filter to block the offending address. The architecture is
+            admirably straightforward: one daemon reads what another daemon has written, and
+            if the pattern matches often enough, a third system intervenes. Three moving parts.
+            Two log parsers. One race condition you would rather not think about.
+        </p>
+
+        <p>
+            The installation proceeds as follows. Install fail2ban. Create
+            <code>jail.local</code>. Define the regular expression for your SSH log format.
+            Configure the action &#x2014; and here you must choose: nftables? iptables? ufw?
+            firewalld? The Linux firewall ecosystem offers four front ends to two back ends,
+            and fail2ban must be told which dialect you are speaking today. Restart the daemon.
+            Test. Hope.
+        </p>
+
+        <p>
+            Now the system is operational. An attacker connects. Attempts a login. Fails.
+            The SSH daemon writes a line to the log. fail2ban reads the log. Parses the line.
+            Matches the regex. Increments a counter. The attacker attempts again. And again.
+            After the configured threshold &#x2014; typically five, sometimes ten &#x2014;
+            fail2ban calls nftables and the address is blocked. The attacker has had fifty
+            attempts at the door before anyone thought to lock it. If fail2ban crashes,
+            the door stays open.
+        </p>
+
+        <!-- Reactive architecture: fail2ban on Linux -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 340" role="img" aria-label="Linux brute-force protection: attacker connects, SSH logs to auth.log, fail2ban daemon reads the log, parses with regex, counts failures, then calls nftables. The attacker gets 50 attempts before being blocked." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .pf-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pf-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
+                .pf-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .pf-mono { font: 400 10.5px/1 ui-monospace, monospace; fill: var(--text); }
+                .pf-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .pf-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .pf-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .pf-arrow { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#pf-arr-dim); }
+                .pf-arrow-accent { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#pf-arr); }
+            </style>
+            <defs>
+                <marker id="pf-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+                <marker id="pf-arr-dim" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+            </defs>
+
+            <text class="pf-title" x="260" y="18" text-anchor="middle" fill="var(--muted)">Linux: reactive protection</text>
+            <text class="pf-muted" x="260" y="34" text-anchor="middle">Three daemons, two log parsers, one hope</text>
+
+            <!-- Attacker -->
+            <rect class="pf-box" x="20" y="54" width="120" height="36"/>
+            <text class="pf-label" x="80" y="77" text-anchor="middle">Attacker</text>
+
+            <line class="pf-arrow" x1="140" y1="72" x2="190" y2="72"/>
+
+            <!-- SSH daemon -->
+            <rect class="pf-box" x="192" y="54" width="120" height="36"/>
+            <text class="pf-label" x="252" y="77" text-anchor="middle">sshd</text>
+
+            <line class="pf-arrow" x1="252" y1="90" x2="252" y2="120"/>
+
+            <!-- auth.log -->
+            <rect class="pf-box" x="192" y="122" width="120" height="36"/>
+            <text class="pf-mono" x="252" y="145" text-anchor="middle">auth.log</text>
+
+            <line class="pf-arrow" x1="252" y1="158" x2="252" y2="188"/>
+
+            <!-- fail2ban -->
+            <rect class="pf-box" x="172" y="190" width="160" height="50"/>
+            <text class="pf-label" x="252" y="211" text-anchor="middle">fail2ban (Python)</text>
+            <text class="pf-muted" x="252" y="228" text-anchor="middle">read &#x2192; regex &#x2192; count &#x2192; act</text>
+
+            <line class="pf-arrow" x1="252" y1="240" x2="252" y2="268"/>
+
+            <!-- nftables -->
+            <rect class="pf-box" x="192" y="270" width="120" height="36"/>
+            <text class="pf-label" x="252" y="293" text-anchor="middle">nftables</text>
+
+            <!-- Timing annotation -->
+            <text class="pf-muted" x="380" y="77" text-anchor="start">50 attempts pass</text>
+            <text class="pf-muted" x="380" y="93" text-anchor="start">before block fires</text>
+            <line x1="370" y1="72" x2="314" y2="72" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3 3"/>
+
+            <!-- Failure mode -->
+            <text class="pf-value" x="400" y="215" text-anchor="start">If fail2ban crashes:</text>
+            <text class="pf-muted" x="400" y="231" text-anchor="start">Protection stops.</text>
+            <text class="pf-muted" x="400" y="247" text-anchor="start">Silently.</text>
+
+            <!-- Steps count -->
+            <text class="pf-muted" x="260" y="326" text-anchor="middle">install &#x2192; jail.local &#x2192; regex &#x2192; choose backend &#x2192; action &#x2192; restart &#x2192; test</text>
+        </svg>
+
+        <p>
+            Two systems. Two failure modes. Two things that must be running, configured
+            correctly, and speaking the same dialect for an SSH brute-force attack to be
+            stopped. The architecture is reactive by design: something bad happens, the
+            system notices, and then it responds. The attacker is already inside the
+            conversation before the bouncer has been informed.
+        </p>
+
+        <h2>The FreeBSD Path</h2>
+
+        <p>
+            On FreeBSD, the answer is
+            <a href="https://man.openbsd.org/pf.conf" target="_blank" rel="noopener">pf</a>.
+            Four lines.
+        </p>
+
+        <pre><code>table &lt;bruteforce&gt; persist
+block quick from &lt;bruteforce&gt;
+pass in on egress proto tcp to port ssh \
+    max-src-conn 20 max-src-conn-rate 10/1 \
+    overload &lt;bruteforce&gt; flush global</code></pre>
+
+        <p>
+            That is the entire configuration. No daemon. No log parsing. No regular
+            expressions. No Python. The firewall itself &#x2014; running in the kernel &#x2014;
+            tracks connection states, counts connection rates, and when a threshold is
+            exceeded, adds the source address to a table and drops every packet from it.
+            The word &#x201C;flush global&#x201D; terminates all existing connections from that
+            address. Not just future ones. All of them. Instantly.
+        </p>
+
+        <p>
+            There is no window of fifty failed attempts. There is no daemon that must remain
+            running. There is no regex that must match the log format of this particular SSH
+            version. The firewall sees the connections directly, in real time, at the network
+            layer. It does not need to be told what an attack looks like. It was told what
+            normal looks like, and it enforces the boundary.
+        </p>
+
+        <!-- Proactive architecture: pf on FreeBSD -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 260" role="img" aria-label="FreeBSD brute-force protection: pf runs in the kernel, tracks connections directly, enforces rate limits, and blocks attackers instantly with no daemon required." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .pf2-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pf2-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
+                .pf2-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .pf2-mono { font: 400 10.5px/1 ui-monospace, monospace; fill: var(--text); }
+                .pf2-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .pf2-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .pf2-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#pf2-arr); }
+            </style>
+            <defs>
+                <marker id="pf2-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <text class="pf2-title" x="260" y="18" text-anchor="middle" fill="var(--accent)">FreeBSD: proactive protection</text>
+            <text class="pf2-muted" x="260" y="34" text-anchor="middle">In the kernel. No daemon. Four lines.</text>
+
+            <!-- Attacker -->
+            <rect class="pf2-box-accent" x="20" y="54" width="120" height="36"/>
+            <text class="pf2-label" x="80" y="77" text-anchor="middle">Attacker</text>
+
+            <line class="pf2-arrow" x1="140" y1="72" x2="190" y2="72"/>
+
+            <!-- pf kernel block -->
+            <rect class="pf2-box-accent" x="192" y="44" width="200" height="120"/>
+            <text class="pf2-title" x="292" y="66" text-anchor="middle" fill="var(--accent)">pf (kernel)</text>
+
+            <rect class="pf2-box-accent" x="206" y="78" width="172" height="24"/>
+            <text class="pf2-muted" x="292" y="95" text-anchor="middle">Stateful tracking</text>
+
+            <rect class="pf2-box-accent" x="206" y="106" width="172" height="24"/>
+            <text class="pf2-muted" x="292" y="123" text-anchor="middle">Rate limit + overload</text>
+
+            <rect class="pf2-box-accent" x="206" y="134" width="172" height="24"/>
+            <text class="pf2-muted" x="292" y="151" text-anchor="middle">Block + flush global</text>
+
+            <!-- Result arrow -->
+            <line class="pf2-arrow" x1="392" y1="104" x2="430" y2="104"/>
+            <text class="pf2-label" x="442" y="100" text-anchor="start">Blocked.</text>
+            <text class="pf2-muted" x="442" y="116" text-anchor="start">Instantly.</text>
+
+            <!-- Bottom features -->
+            <text class="pf2-value" x="260" y="196" text-anchor="middle">Built into pf since 2001</text>
+
+            <text class="pf2-muted" x="80" y="222" text-anchor="middle">Stateful inspection</text>
+            <text class="pf2-muted" x="210" y="222" text-anchor="middle">antispoof</text>
+            <text class="pf2-muted" x="310" y="222" text-anchor="middle">synproxy</text>
+            <text class="pf2-muted" x="430" y="222" text-anchor="middle">dynamic tables</text>
+
+            <text class="pf2-muted" x="130" y="242" text-anchor="middle">Rate limiting</text>
+            <text class="pf2-muted" x="292" y="242" text-anchor="middle">Overload actions</text>
+            <text class="pf2-muted" x="430" y="242" text-anchor="middle">scrub / normalize</text>
+        </svg>
+
+        <h2>The Difference Is Architectural</h2>
+
+        <p>
+            The distinction between these two approaches is not one of capability. nftables
+            is a competent packet filter. It can do stateful inspection. It can do rate
+            limiting &#x2014; with sufficient configuration. The distinction is one of
+            <em>design philosophy</em>.
+        </p>
+
+        <p>
+            nftables filters packets. That is its job, and it does it well. But it does
+            not anticipate security problems. It does not ship with built-in rate limiting
+            per source address. It does not have overload tables. It does not offer
+            <code>flush global</code>. These features must be assembled from separate
+            tools, separate daemons, separate configuration files, and separate failure
+            modes.
+        </p>
+
+        <p>
+            pf was designed as a firewall that anticipates your problems. Rate limiting
+            is not an extension. Overload tables are not a third-party add-on. SYN proxy
+            is not a kernel module you compile separately. <code>antispoof</code> is a
+            single keyword. <code>scrub</code> normalises packets in one line. These
+            features exist because the people who wrote pf understood that a firewall
+            which only filters packets is solving half the problem.
+        </p>
+
+        <!-- Feature comparison table as SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 310" role="img" aria-label="Feature comparison: pf has built-in stateful tracking, rate limiting, overload tables, SYN proxy, antispoof, scrub, and dynamic tables. nftables requires external tools or additional configuration for most of these features." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .pf3-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pf3-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
+                .pf3-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .pf3-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .pf3-row { fill: none; stroke: var(--border); stroke-width: 0.5; }
+                .pf3-yes { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .pf3-no { font: 400 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <text class="pf3-title" x="260" y="18" text-anchor="middle" fill="var(--text)">What ships in the box</text>
+
+            <!-- Header -->
+            <line class="pf3-row" x1="20" y1="34" x2="500" y2="34"/>
+            <text class="pf3-label" x="160" y="50" text-anchor="middle">Feature</text>
+            <text class="pf3-title" x="340" y="50" text-anchor="middle" fill="var(--accent)">pf</text>
+            <text class="pf3-title" x="450" y="50" text-anchor="middle" fill="var(--muted)">nftables</text>
+            <line class="pf3-row" x1="20" y1="58" x2="500" y2="58"/>
+
+            <!-- Row 1 -->
+            <text class="pf3-label" x="30" y="78">Stateful inspection</text>
+            <text class="pf3-yes" x="340" y="78" text-anchor="middle">Built-in</text>
+            <text class="pf3-yes" x="450" y="78" text-anchor="middle">Built-in</text>
+            <line class="pf3-row" x1="20" y1="88" x2="500" y2="88"/>
+
+            <!-- Row 2 -->
+            <text class="pf3-label" x="30" y="108">Rate limiting per source</text>
+            <text class="pf3-yes" x="340" y="108" text-anchor="middle">Built-in</text>
+            <text class="pf3-no" x="450" y="108" text-anchor="middle">Manual</text>
+            <line class="pf3-row" x1="20" y1="118" x2="500" y2="118"/>
+
+            <!-- Row 3 -->
+            <text class="pf3-label" x="30" y="138">Overload tables</text>
+            <text class="pf3-yes" x="340" y="138" text-anchor="middle">Built-in</text>
+            <text class="pf3-no" x="450" y="138" text-anchor="middle">ipset / sets</text>
+            <line class="pf3-row" x1="20" y1="148" x2="500" y2="148"/>
+
+            <!-- Row 4 -->
+            <text class="pf3-label" x="30" y="168">SYN proxy</text>
+            <text class="pf3-yes" x="340" y="168" text-anchor="middle">synproxy</text>
+            <text class="pf3-no" x="450" y="168" text-anchor="middle">SYNPROXY target</text>
+            <line class="pf3-row" x1="20" y1="178" x2="500" y2="178"/>
+
+            <!-- Row 5 -->
+            <text class="pf3-label" x="30" y="198">Anti-spoofing</text>
+            <text class="pf3-yes" x="340" y="198" text-anchor="middle">antispoof</text>
+            <text class="pf3-no" x="450" y="198" text-anchor="middle">Manual rules</text>
+            <line class="pf3-row" x1="20" y1="208" x2="500" y2="208"/>
+
+            <!-- Row 6 -->
+            <text class="pf3-label" x="30" y="228">Packet normalisation</text>
+            <text class="pf3-yes" x="340" y="228" text-anchor="middle">scrub</text>
+            <text class="pf3-no" x="450" y="228" text-anchor="middle">Not available</text>
+            <line class="pf3-row" x1="20" y1="238" x2="500" y2="238"/>
+
+            <!-- Row 7 -->
+            <text class="pf3-label" x="30" y="258">Brute-force protection</text>
+            <text class="pf3-yes" x="340" y="258" text-anchor="middle">4 lines</text>
+            <text class="pf3-no" x="450" y="258" text-anchor="middle">fail2ban</text>
+            <line class="pf3-row" x1="20" y1="268" x2="500" y2="268"/>
+
+            <!-- Summary -->
+            <text class="pf3-muted" x="260" y="296" text-anchor="middle">Same syntax since 2001. Security was not bolted on. It was designed in.</text>
+        </svg>
+
+        <h2>Twenty-Five Years of the Same Syntax</h2>
+
+        <p>
+            pf was written by Daniel Hartmeier for OpenBSD in 2001. The syntax has not
+            changed. The <code>pf.conf</code> you write today is the same language as
+            the <code>pf.conf</code> from twenty-five years ago. FreeBSD imported it.
+            The feature set grew &#x2014; <code>synproxy</code>, <code>antispoof</code>,
+            <code>scrub</code>, dynamic tables, overload actions &#x2014; but the grammar
+            remained stable. Your configuration does not break on upgrade. Your muscle
+            memory transfers. Your documentation from 2005 still applies.
+        </p>
+
+        <p>
+            On Linux, in the same twenty-five years, the packet filtering story has
+            been: <code>ipchains</code>, then <code>iptables</code>, then
+            <code>nftables</code>, with <code>ufw</code> and <code>firewalld</code>
+            as competing front ends, and fail2ban configured differently for each.
+            The tools improve. The churn is the cost. Every migration is a rewrite.
+            Every rewrite is an opportunity for misconfiguration. Every misconfiguration
+            is a window.
+        </p>
+
+        <h2>The Kernel Advantage</h2>
+
+        <p>
+            pf runs in the kernel. This is not an implementation detail. It is the
+            architecture. A userspace daemon can crash, can be killed by the OOM killer,
+            can fail to start after a reboot, can have its configuration file syntax-checked
+            only at restart. A kernel packet filter cannot crash independently of the system
+            it protects. If the kernel is running, pf is running. There is no gap. There is
+            no &#x201C;fail2ban didn&#x2019;t start because Python had a dependency
+            conflict&#x201D; scenario. There is no moment between boot and protection.
+        </p>
+
+        <p>
+            pf sees attacks in real time because it <em>is</em> the network stack. It does
+            not wait for sshd to write a log line, for the filesystem to flush, for a daemon
+            to read, for a regex to match. The packet arrives. The state table is consulted.
+            The rate is checked. The decision is made. Microseconds, not seconds.
+        </p>
+
+        <blockquote>
+            <p>nftables is a capable packet filter. pf is a firewall that anticipates
+                your problems.</p>
+        </blockquote>
+
+        <p>
+            Sometimes the elegant solution already exists. It is just not fashionable.
+        </p>
+
+        <aside class="vv-aside">
+            <p>
+                <strong>For Linux users looking for better options:</strong> nftables combined
+                with <a href="https://ipset.netfilter.org/" target="_blank" rel="noopener">ipset</a>
+                can achieve similar results, though with considerably more configuration.
+                <a href="https://www.crowdsec.net/" target="_blank" rel="noopener">CrowdSec</a>
+                is a modern, community-driven alternative to fail2ban that shares threat
+                intelligence across installations &#x2014; worth investigating if you are
+                committed to the Linux path. For the FreeBSD approach, the
+                <a href="https://docs.freebsd.org/en/books/handbook/firewalls/" target="_blank" rel="noopener">FreeBSD Handbook</a>
+                chapter on firewalls and Peter Hansteen&#x2019;s
+                <a href="https://nostarch.com/pf3" target="_blank" rel="noopener"><em>The Book of PF</em></a>
+                (No Starch Press) remain the definitive references. The
+                <a href="https://man.openbsd.org/pf.conf" target="_blank" rel="noopener">pf.conf manual</a>
+                on man.openbsd.org is, as one would expect, impeccable.
+            </p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

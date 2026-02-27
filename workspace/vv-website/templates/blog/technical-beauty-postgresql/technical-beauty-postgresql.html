@@ -1,0 +1,391 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: PostgreSQL &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Michael Stonebraker built POSTGRES at Berkeley in 1986. Minimal core, everything extensible. 38 years, 17 major versions, same BSD licence. No corporate owner, no licence changes. The extension architecture that outlasted every trend.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-postgresql{( endslot )}
+
+{( slot og-title )}Technical Beauty: PostgreSQL &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Michael Stonebraker built POSTGRES at Berkeley in 1986. Minimal core, everything extensible. 38 years, same BSD licence. No corporate owner. The extension architecture that outlasted every trend.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: PostgreSQL",
+    "datePublished": "2025-12-24",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-postgresql",
+    "description": "Michael Stonebraker built POSTGRES at Berkeley in 1986. Minimal core, everything extensible. 38 years, 17 major versions, same BSD licence. No corporate owner, no licence changes. The extension architecture that outlasted every trend.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2025-12-24">24 December 2025</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: PostgreSQL</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">postgresql</span>
+            <span class="vv-pill">sql</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 7</p>
+
+        <blockquote>
+            <p>&#x201C;Design the core for extensibility, and the extensions will
+                design themselves.&#x201D;</p>
+        </blockquote>
+
+        <p>In 1986, a professor at Berkeley who had already built one influential
+            database decided that the entire approach was wrong. Not the relational
+            model itself &#x2014; that was sound. The problem was what happened next:
+            every conceivable feature was welded into the core, every use case
+            anticipated at compile time, every capability inseparable from the
+            monolith. The result was software that did everything, understood nothing
+            in particular, and grew in precisely one direction: larger.</p>
+
+        <p>His name was
+            <a href="https://en.wikipedia.org/wiki/Michael_Stonebraker" target="_blank" rel="noopener">Michael Stonebraker</a>,
+            and his response was POSTGRES &#x2014; short for &#x201C;Post-Ingres,&#x201D;
+            because even the name was a refusal to carry the old architecture forward.
+            The project started at UC Berkeley. It would become the most consequential
+            database engine of the last four decades.</p>
+
+        <h2>The Man</h2>
+
+        <p>Stonebraker&#x2019;s career reads like a controlled demolition of
+            received wisdom. He built
+            <a href="https://en.wikipedia.org/wiki/Ingres_(database)" target="_blank" rel="noopener">Ingres</a>
+            in the 1970s &#x2014; one of the first relational databases, contemporaneous
+            with IBM&#x2019;s System R. He then built POSTGRES to correct Ingres&#x2019;s
+            limitations. He subsequently built Mariposa (distributed query processing),
+            Aurora and C-Store (column-oriented storage, later commercialised as Vertica),
+            H-Store (in-memory OLTP, later VoltDB), and SciDB (array-based analytics).
+            Each project was a thesis in executable form. Each challenged whatever
+            the industry had settled on as orthodoxy.</p>
+
+        <p>In 2014, the ACM awarded him the
+            <a href="https://amturing.acm.org/award_winners/stonebraker_1172121.cfm" target="_blank" rel="noopener">Turing Award</a>
+            &#x2014; computing&#x2019;s closest analogue to a Nobel Prize. The citation
+            reads: &#x201C;for fundamental contributions to the concepts and practices
+            underlying modern database systems.&#x201D; This is rather like citing
+            Newton for &#x201C;contributions to physics.&#x201D; It is technically
+            accurate and entirely insufficient.</p>
+
+        <h2>The Architecture</h2>
+
+        <p>The central insight of POSTGRES was not a new query language or a
+            faster storage engine. It was a separation of concerns so thorough
+            that it borders on philosophical: the core handles transactions,
+            concurrency, the query planner, and the write-ahead log. Everything
+            else &#x2014; data types, index methods, operators, functions,
+            procedural languages, foreign data wrappers &#x2014; is an extension.</p>
+
+        <p>This is not a plugin system bolted on after the fact. It is the
+            <a href="https://www.postgresql.org/docs/current/extend.html" target="_blank" rel="noopener">architecture itself</a>.
+            PostgreSQL does not have extensions. PostgreSQL <em>is</em> an
+            extension architecture with an ACID-compliant kernel.</p>
+
+        <svg viewBox="0 0 520 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PostgreSQL extension architecture. A minimal ACID core (transactions, WAL, query planner, concurrency) surrounded by extension rings: data types, index methods, procedural languages, foreign data wrappers, and domain extensions like PostGIS, pgvector, TimescaleDB, Citus, and pgmq." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .pg-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pg-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pg-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .pg-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .pg-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--accent); }
+                .pg-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .pg-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .pg-fill { fill: var(--accent); opacity: 0.06; }
+                .pg-fill-accent { fill: var(--accent); opacity: 0.15; }
+                .pg-ring { fill: none; stroke: var(--border); stroke-width: 1; }
+                .pg-ring-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+                .pg-ring-fill { fill: var(--accent); opacity: 0.04; }
+                .pg-ring-fill-inner { fill: var(--accent); opacity: 0.12; }
+                .pg-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <text class="pg-title" x="260" y="20" text-anchor="middle">PostgreSQL: The Extension Architecture</text>
+
+            <!-- Outer ring: domain extensions -->
+            <circle class="pg-ring-fill" cx="260" cy="195" r="148"/>
+            <circle class="pg-ring" cx="260" cy="195" r="148"/>
+
+            <!-- Middle ring: extension types -->
+            <circle class="pg-ring-fill" cx="260" cy="195" r="105"/>
+            <circle class="pg-ring" cx="260" cy="195" r="105"/>
+
+            <!-- Inner ring: core -->
+            <circle class="pg-ring-fill-inner" cx="260" cy="195" r="56"/>
+            <circle class="pg-ring-accent" cx="260" cy="195" r="56"/>
+
+            <!-- Core labels -->
+            <text class="pg-accent" x="260" y="180" text-anchor="middle">ACID Core</text>
+            <text class="pg-sub" x="260" y="194" text-anchor="middle">Transactions</text>
+            <text class="pg-sub" x="260" y="206" text-anchor="middle">WAL / Planner</text>
+            <text class="pg-sub" x="260" y="218" text-anchor="middle">MVCC</text>
+
+            <!-- Middle ring labels (extension categories) -->
+            <text class="pg-label" x="260" y="110" text-anchor="middle">Data Types</text>
+            <text class="pg-label" x="160" y="155" text-anchor="middle">Index</text>
+            <text class="pg-label" x="160" y="167" text-anchor="middle">Methods</text>
+            <text class="pg-label" x="360" y="160" text-anchor="middle">PL/</text>
+            <text class="pg-label" x="360" y="172" text-anchor="middle">Languages</text>
+            <text class="pg-label" x="170" y="248" text-anchor="middle">Operators</text>
+            <text class="pg-label" x="345" y="248" text-anchor="middle">FDW</text>
+
+            <!-- Outer ring labels (domain extensions) -->
+            <text class="pg-mono" x="260" y="62" text-anchor="middle">pgvector (AI)</text>
+            <text class="pg-mono" x="112" y="105" text-anchor="middle">PostGIS</text>
+            <text class="pg-mono" x="415" y="105" text-anchor="middle">Citus</text>
+            <text class="pg-mono" x="100" y="290" text-anchor="middle">pgmq</text>
+            <text class="pg-mono" x="420" y="290" text-anchor="middle">TimescaleDB</text>
+            <text class="pg-mono" x="260" y="332" text-anchor="middle">pg_cron / pg_stat</text>
+
+            <!-- Legend -->
+            <line x1="30" y1="350" x2="490" y2="350" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="pg-note" x="260" y="358" text-anchor="middle">Minimal core. Maximal surface. Extensibility is the architecture.</text>
+        </svg>
+
+        <p>The consequence is that PostgreSQL can become a geospatial database
+            (with <a href="https://postgis.net/" target="_blank" rel="noopener">PostGIS</a>),
+            a vector database for machine learning
+            (with <a href="https://github.com/pgvector/pgvector" target="_blank" rel="noopener">pgvector</a>),
+            a time-series database
+            (with <a href="https://www.timescale.com/" target="_blank" rel="noopener">TimescaleDB</a>),
+            a distributed query engine
+            (with <a href="https://www.citusdata.com/" target="_blank" rel="noopener">Citus</a>),
+            or a message queue
+            (with <a href="https://github.com/tembo-io/pgmq" target="_blank" rel="noopener">pgmq</a>
+            and the built-in
+            <a href="https://www.postgresql.org/docs/current/sql-listen.html" target="_blank" rel="noopener">LISTEN/NOTIFY</a>)
+            &#x2014; without the core gaining a single line of code. Each extension
+            slots into the same catalogue system, the same planner, the same
+            transaction guarantees. You do not bolt capabilities onto PostgreSQL.
+            You plug them in, and the kernel treats them as if they had always
+            been there.</p>
+
+        <p>This is not accidental modularity. It is Stonebraker&#x2019;s thesis
+            made concrete: the database should provide the machinery of
+            reliability and let the domain define everything else.</p>
+
+        <h2>The Governance</h2>
+
+        <p>PostgreSQL has been
+            <a href="https://www.postgresql.org/about/governance/" target="_blank" rel="noopener">community-governed</a>
+            since 1996. There is no corporate owner. There is no single company
+            that can change direction, relicense, or sunset the project. The
+            <a href="https://www.postgresql.org/developer/team/" target="_blank" rel="noopener">core team</a>
+            has seven members. There are thirty-one committers. Decisions are
+            made by technical consensus on public mailing lists. The governance
+            model is, in its own way, as minimal as the architecture: no
+            foundation with a seven-figure budget, no corporate advisory board,
+            no &#x201C;open core&#x201D; with a premium tier. Just people who
+            write code, review code, and argue about code in public.</p>
+
+        <p>This matters rather more than it might appear. In the last five
+            years, the database landscape has undergone a licensing convulsion
+            that has left much of the industry re-evaluating what
+            &#x201C;open source&#x201D; actually means.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Licence stability timeline. MongoDB changed from AGPL to SSPL in 2018. Redis changed from BSD to dual licence in 2024. Elasticsearch changed from Apache to SSPL in 2021. PostgreSQL: Version 1 through Version 17, same BSD licence since 1996." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .pg-tl-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pg-tl-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pg-tl-year { font: 400 9px/1 ui-monospace, monospace; fill: var(--muted); }
+                .pg-tl-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .pg-tl-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .pg-tl-change { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pg-tl-bar { fill: var(--accent); opacity: 0.15; rx: 2; }
+                .pg-tl-bar-break { fill: var(--text); opacity: 0.12; rx: 2; }
+                .pg-tl-bar-stable { fill: var(--accent); opacity: 0.6; rx: 2; }
+                .pg-tl-line { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 3; }
+                .pg-tl-break { stroke: var(--text); stroke-width: 1.5; stroke-dasharray: 2 2; }
+                .pg-tl-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <text class="pg-tl-title" x="260" y="20" text-anchor="middle">Licence Stability: Who Changed the Deal</text>
+            <text class="pg-tl-muted" x="260" y="36" text-anchor="middle">Timeline of open-source licence changes</text>
+
+            <!-- Time axis labels -->
+            <text class="pg-tl-year" x="60" y="62">1996</text>
+            <text class="pg-tl-year" x="200" y="62">2010</text>
+            <text class="pg-tl-year" x="370" y="62">2020</text>
+            <text class="pg-tl-year" x="470" y="62">2026</text>
+            <line stroke="var(--border)" stroke-width="1" x1="60" y1="68" x2="490" y2="68"/>
+
+            <!-- MongoDB -->
+            <text class="pg-tl-label" x="50" y="98" text-anchor="end">MongoDB</text>
+            <rect class="pg-tl-bar" x="224" y="84" width="116" height="20"/>
+            <text class="pg-tl-muted" x="282" y="98" text-anchor="middle">AGPL</text>
+            <line class="pg-tl-break" x1="340" y1="84" x2="340" y2="104"/>
+            <rect class="pg-tl-bar-break" x="340" y="84" width="150" height="20"/>
+            <text class="pg-tl-change" x="415" y="98" text-anchor="middle">SSPL (2018)</text>
+
+            <!-- Redis -->
+            <text class="pg-tl-label" x="50" y="132" text-anchor="end">Redis</text>
+            <rect class="pg-tl-bar" x="190" y="118" width="232" height="20"/>
+            <text class="pg-tl-muted" x="306" y="132" text-anchor="middle">BSD</text>
+            <line class="pg-tl-break" x1="422" y1="118" x2="422" y2="138"/>
+            <rect class="pg-tl-bar-break" x="422" y="118" width="68" height="20"/>
+            <text class="pg-tl-change" x="456" y="132" text-anchor="middle">Dual (2024)</text>
+
+            <!-- Elasticsearch -->
+            <text class="pg-tl-label" x="50" y="166" text-anchor="end">Elastic</text>
+            <rect class="pg-tl-bar" x="218" y="152" width="164" height="20"/>
+            <text class="pg-tl-muted" x="300" y="166" text-anchor="middle">Apache 2.0</text>
+            <line class="pg-tl-break" x1="382" y1="152" x2="382" y2="172"/>
+            <rect class="pg-tl-bar-break" x="382" y="152" width="108" height="20"/>
+            <text class="pg-tl-change" x="436" y="166" text-anchor="middle">SSPL (2021)</text>
+
+            <!-- PostgreSQL -->
+            <text class="pg-tl-label" x="50" y="210" text-anchor="end">PostgreSQL</text>
+            <rect class="pg-tl-bar-stable" x="60" y="196" width="430" height="20"/>
+            <text class="pg-tl-accent" x="275" y="210" text-anchor="middle">PostgreSQL Licence (BSD) &#x2014; v1 through v17</text>
+
+            <!-- Legend -->
+            <line class="pg-tl-line" x1="30" y1="240" x2="490" y2="240"/>
+            <text class="pg-tl-note" x="260" y="258" text-anchor="middle">MongoDB, Redis, Elasticsearch: corporate owners changed the licence.</text>
+            <text class="pg-tl-accent" x="260" y="276" text-anchor="middle">PostgreSQL: no corporate owner. No licence to change.</text>
+            <text class="pg-tl-note" x="260" y="294" text-anchor="middle">Version 17. Same BSD licence as version 1.</text>
+        </svg>
+
+        <p><a href="https://www.mongodb.com/" target="_blank" rel="noopener">MongoDB</a>
+            moved from AGPL to the Server Side Public Licence in 2018 &#x2014;
+            a licence specifically designed to prevent cloud providers from offering
+            MongoDB as a service without paying. Whatever one thinks of the commercial
+            logic, the effect is that the community&#x2019;s contributions now serve
+            a corporate licensing strategy.</p>
+
+        <p><a href="https://redis.io/" target="_blank" rel="noopener">Redis</a>
+            followed suit in 2024, switching from BSD to a dual licence that
+            restricts commercial use. Again, the community built on the assumption
+            of BSD. The assumption was revoked.</p>
+
+        <p><a href="https://www.elastic.co/" target="_blank" rel="noopener">Elasticsearch</a>
+            changed from Apache 2.0 to SSPL in 2021, prompting Amazon to fork
+            the project as OpenSearch. The result: two codebases, divided
+            communities, and a permanent lesson in what happens when a single
+            company controls the copyright.</p>
+
+        <p>PostgreSQL&#x2019;s response to all of this is the most powerful
+            response available: nothing. There is no corporate owner to change
+            the licence. There is no board to overrule the community. The
+            <a href="https://www.postgresql.org/about/licence/" target="_blank" rel="noopener">PostgreSQL Licence</a>
+            is functionally identical to the BSD licence. Version 17 ships
+            under the same terms as version 1. The legal foundation is as
+            minimal and as stable as the technical one.</p>
+
+        <h2>The Numbers</h2>
+
+        <p>Seven core team members. Thirty-one committers. ACID-compliant
+            from day one. Seventeen major versions. Thirty-eight years of
+            continuous development. The project has survived the object-database
+            movement, the XML-database movement, the NoSQL movement, the
+            NewSQL movement, and the current enthusiasm for embedding everything
+            into a vector store. It survived them by not joining them. The
+            extensions joined. The core remained.</p>
+
+        <p>This is not inertia. This is the discipline of a project that
+            understood, from the very first design document, that features
+            are liabilities when they live in the wrong layer. A geospatial
+            index in the core is a maintenance burden for every user who does
+            not need geospatial queries. A geospatial index as an extension
+            is zero cost to everyone except the people who benefit from it.
+            The economics of this separation are so overwhelmingly favourable
+            that it is remarkable how few projects have replicated it.</p>
+
+        <h2>The Extensions as Evidence</h2>
+
+        <p>The quality of an extension architecture is not measured by how
+            many extensions exist. It is measured by how ambitious the
+            extensions dare to be.</p>
+
+        <p><a href="https://postgis.net/" target="_blank" rel="noopener">PostGIS</a>
+            adds a complete geospatial stack &#x2014; coordinate reference
+            systems, spatial indices, topology, raster processing &#x2014;
+            and it is the reference implementation against which commercial
+            GIS systems benchmark themselves. It does not patch the core.
+            It uses the core&#x2019;s type system, operator system, and index
+            API as designed.</p>
+
+        <p><a href="https://github.com/pgvector/pgvector" target="_blank" rel="noopener">pgvector</a>
+            adds vector similarity search for machine learning embeddings.
+            The AI industry&#x2019;s current favourite party trick &#x2014;
+            semantic search over high-dimensional spaces &#x2014; plugs into
+            a database designed in 1986. Stonebraker did not anticipate large
+            language models. He anticipated that someone, someday, would need
+            a data type he had not imagined, and he designed the system so
+            that adding one would not require his permission.</p>
+
+        <p><a href="https://www.timescale.com/" target="_blank" rel="noopener">TimescaleDB</a>
+            turns PostgreSQL into a time-series database. Citus turns it into
+            a distributed query engine. pgmq and the built-in LISTEN/NOTIFY
+            turn it into a message broker. Each of these would justify a
+            dedicated product at most companies. In the PostgreSQL ecosystem,
+            they are <code>CREATE EXTENSION</code> statements.</p>
+
+        <h2>The Principle</h2>
+
+        <p>There is a phrase from the Unix tradition that applies here with
+            unusual precision: <em>mechanism, not policy</em>. The kernel
+            provides the mechanism &#x2014; transactions, concurrency control,
+            query planning, crash recovery. The extensions provide the policy
+            &#x2014; what data types matter, what indices suit the workload,
+            what procedural language fits the team.</p>
+
+        <p>This separation is the reason PostgreSQL is simultaneously the
+            most conservative and the most innovative database in production
+            today. The core changes slowly, deliberately, with the caution
+            appropriate to software that guards other people&#x2019;s data.
+            The extensions change at whatever pace their domain requires.
+            The AI ecosystem moves fast. pgvector moves with it. The
+            geospatial standards body moves slowly. PostGIS moves with it.
+            Neither tempo affects the other. Neither compromises the
+            transaction guarantees.</p>
+
+        <p>Stonebraker built a database that is, in the most literal sense,
+            not a database. It is a platform for building databases. The
+            difference is everything.</p>
+
+        <blockquote>
+            <p>Extensibility over features. A minimal core that does one thing
+                &#x2014; keep your data safe &#x2014; and an extension surface
+                that does everything else. Thirty-eight years proved this right.
+                Seventeen versions. Same licence. Same architecture. Same seven
+                people at the helm.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The reduction angle, for those who read the core
+                argument differently</strong></p>
+            <p>The technical beauty of PostgreSQL is not minimal code. It is
+                minimal <em>core</em>. The extension architecture separates
+                what must be stable (transactions, WAL, MVCC) from what must
+                evolve (data types, indices, domain logic). This is extensibility
+                over features &#x2014; the deliberate refusal to put capabilities
+                where they become liabilities. Thirty-eight years of evidence
+                suggest the refusal was correct. Sources:
+                <a href="https://www.postgresql.org/docs/current/history.html" target="_blank" rel="noopener">PostgreSQL history</a>,
+                <a href="https://arxiv.org/pdf/1901.01973" target="_blank" rel="noopener">Stonebraker retrospective (arXiv)</a>,
+                <a href="https://www.postgresql.org/about/governance/" target="_blank" rel="noopener">governance model</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,388 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}WireGuard: The VPN That Fits in Your Head &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Jason Donenfeld built WireGuard in 4,000 lines of code. OpenVPN needs 100,000. IPsec is worse. Linus Torvalds called it a work of art. 57 per cent faster in benchmarks. Readable in an afternoon. In the Linux kernel since 2020.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-wireguard{( endslot )}
+
+{( slot og-title )}WireGuard: The VPN That Fits in Your Head &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Jason Donenfeld built WireGuard in 4,000 lines. OpenVPN needs 100,000. Linus Torvalds called it a work of art. 57 per cent faster. In the Linux kernel since 2020.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "WireGuard: The VPN That Fits in Your Head",
+    "datePublished": "2025-12-17",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-wireguard",
+    "description": "Jason Donenfeld built WireGuard in 4,000 lines of code. OpenVPN needs 100,000. IPsec is worse. Linus Torvalds called it a work of art. 57 per cent faster in benchmarks. Readable in an afternoon. In the Linux kernel since 2020.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2025-12-17">17 December 2025</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>WireGuard: The VPN That Fits in Your Head</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">wireguard</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 5</p>
+
+        <blockquote>
+            <p>&#x201C;Can I just once again state my love for it and hope it gets
+                merged soon? Maybe the code isn&#x2019;t perfect, but I&#x2019;ve
+                skimmed it, and compared to the horrors that are OpenVPN and IPSec,
+                it&#x2019;s a work of art.&#x201D;</p>
+            <p>&#x2014; Linus Torvalds, Linux Kernel Mailing List, 2018</p>
+        </blockquote>
+
+        <p>Linus Torvalds does not hand out compliments. He hands out
+            <a href="https://lkml.org/lkml/2018/8/2/663" target="_blank" rel="noopener">opinions</a>,
+            frequently at volume, occasionally with vocabulary that would make a
+            docker sailor reconsider his career choices. When Torvalds describes
+            something as &#x201C;a work of art,&#x201D; it is worth understanding
+            precisely what earned that phrase.</p>
+
+        <h2>The Man</h2>
+
+        <p><a href="https://www.zx2c4.com/" target="_blank" rel="noopener">Jason A. Donenfeld</a>
+            is a security researcher and cryptographer. He built WireGuard in 2015
+            not because the world lacked VPN protocols &#x2014; it had two &#x2014;
+            but because both of them were, to use the technical term, appalling.
+            <a href="https://en.wikipedia.org/wiki/OpenVPN" target="_blank" rel="noopener">OpenVPN</a>
+            was a sprawling userspace daemon with over 100,000 lines of code.
+            <a href="https://en.wikipedia.org/wiki/IPsec" target="_blank" rel="noopener">IPsec</a>
+            was a committee-designed protocol suite with a configuration surface
+            area roughly the size of Belgium. Both worked. Neither could be audited
+            by a single human in a reasonable timeframe. For security software, that
+            is not an inconvenience. It is a structural defect.</p>
+
+        <p>Donenfeld&#x2019;s response was not to improve either protocol. It was
+            to start from scratch with a question that the VPN industry had apparently
+            never thought to ask: what if a VPN were simple enough to be correct?</p>
+
+        <h2>The Numbers</h2>
+
+        <p>WireGuard is approximately
+            <a href="https://www.wireguard.com/" target="_blank" rel="noopener">4,000 lines</a>
+            of code. OpenVPN exceeds 100,000. The IPsec implementation in the Linux
+            kernel &#x2014; StrongSwan plus the kernel modules &#x2014; runs to
+            several hundred thousand. Four thousand lines. You can read the entire
+            codebase in an afternoon. You can audit it in a week. You can hold the
+            complete mental model in your head while drinking a cup of tea, and the
+            tea will still be warm when you finish.</p>
+
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Codebase size comparison. WireGuard: 4,000 lines. OpenVPN: 100,000 lines. IPsec StrongSwan: 400,000 lines. WireGuard is readable in an afternoon. The others require a sabbatical." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .wg-sz-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .wg-sz-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .wg-sz-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .wg-sz-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .wg-sz-bar-top { fill: var(--accent); opacity: 0.8; rx: 2; }
+                .wg-sz-bar { fill: var(--accent); opacity: 0.4; rx: 2; }
+                .wg-sz-bar-dim { fill: var(--muted); opacity: 0.3; rx: 2; }
+                .wg-sz-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .wg-sz-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+            <text class="wg-sz-title" x="260" y="20" text-anchor="middle">Lines of Code: VPN Implementations</text>
+            <text class="wg-sz-sub" x="260" y="38" text-anchor="middle">Kernel module + userspace tooling</text>
+
+            <!-- WireGuard -->
+            <text class="wg-sz-label" x="130" y="80" text-anchor="end">WireGuard</text>
+            <rect class="wg-sz-bar-top" x="138" y="66" width="16" height="22"/>
+            <text class="wg-sz-value" x="162" y="82">4,000</text>
+            <text class="wg-sz-sub" x="162" y="96">Readable in an afternoon</text>
+
+            <!-- OpenVPN -->
+            <text class="wg-sz-label" x="130" y="134" text-anchor="end">OpenVPN</text>
+            <rect class="wg-sz-bar" x="138" y="120" width="200" height="22"/>
+            <text class="wg-sz-value" x="346" y="136">100,000+</text>
+            <text class="wg-sz-sub" x="346" y="150">Requires a sabbatical</text>
+
+            <!-- IPsec / StrongSwan -->
+            <text class="wg-sz-label" x="130" y="188" text-anchor="end">IPsec</text>
+            <text class="wg-sz-sub" x="130" y="200" text-anchor="end">(StrongSwan)</text>
+            <rect class="wg-sz-bar-dim" x="138" y="174" width="350" height="22"/>
+            <text class="wg-sz-value" x="380" y="190">400,000+</text>
+            <text class="wg-sz-sub" x="380" y="204">Requires a committee</text>
+
+            <!-- Divider -->
+            <line class="wg-sz-divider" x1="30" y1="228" x2="490" y2="228"/>
+
+            <!-- Bottom note -->
+            <text class="wg-sz-note" x="260" y="250" text-anchor="middle">Every line of code is an attack surface.</text>
+            <text class="wg-sz-note" x="260" y="268" text-anchor="middle">WireGuard has 96% fewer lines to exploit.</text>
+        </svg>
+
+        <p>This is not merely an aesthetic preference for small codebases. In
+            cryptographic software, every line of code is a potential attack surface.
+            Every conditional branch is a potential timing side-channel. Every
+            configuration option is a potential misconfiguration. OpenVPN supports
+            so many cipher suites that a non-trivial portion of its security
+            advisories amount to &#x201C;you chose the wrong one.&#x201D; IPsec
+            offers so many negotiation modes that entire books exist solely to
+            explain the handshake. WireGuard supports one cipher suite. One
+            handshake. One key exchange. The correct one.</p>
+
+        <h2>The Cryptography</h2>
+
+        <p>WireGuard&#x2019;s
+            <a href="https://www.wireguard.com/protocol/" target="_blank" rel="noopener">cryptographic choices</a>
+            are not configurable, and this is the design&#x2019;s single most
+            radical decision.
+            <a href="https://en.wikipedia.org/wiki/Curve25519" target="_blank" rel="noopener">Curve25519</a>
+            for key exchange.
+            <a href="https://en.wikipedia.org/wiki/ChaCha20-Poly1305" target="_blank" rel="noopener">ChaCha20-Poly1305</a>
+            for symmetric encryption.
+            <a href="https://en.wikipedia.org/wiki/BLAKE_(hash_function)#BLAKE2" target="_blank" rel="noopener">BLAKE2s</a>
+            for hashing. SipHash for hashtable keys.
+            <a href="https://noiseprotocol.org/" target="_blank" rel="noopener">Noise protocol framework</a>
+            for the handshake. That is the entire cryptographic specification.
+            It fits on a napkin.</p>
+
+        <p>The absence of cipher negotiation eliminates an entire class of
+            downgrade attacks. There is no option to fall back to DES. There is
+            no option to negotiate a weaker key exchange. There is no option to
+            do the wrong thing, because the protocol does not contain the wrong
+            thing. If the cryptographic primitives are ever broken, the protocol
+            version increments. This is how
+            <a href="https://en.wikipedia.org/wiki/SSH_(Secure_Shell)" target="_blank" rel="noopener">SSH</a>
+            should have worked. It is how TLS should have worked. It is how
+            nothing in the industry worked until Donenfeld decided to ignore
+            thirty years of &#x201C;flexibility&#x201D; that had achieved nothing
+            except a longer CVE list.</p>
+
+        <h2>The Performance</h2>
+
+        <p>The
+            <a href="https://www.wireguard.com/performance/" target="_blank" rel="noopener">benchmark data</a>
+            is not subtle. WireGuard achieves over 1 Gbps throughput on commodity
+            hardware where OpenVPN struggles to reach 100 Mbps. In direct
+            comparisons, WireGuard is
+            <a href="https://en.wikipedia.org/wiki/WireGuard#Performance" target="_blank" rel="noopener">57 per cent faster</a>
+            than IPsec and comfortably exceeds 10 Gbps on modern hardware. The
+            latency figures tell a similar story: WireGuard adds roughly 0.4
+            milliseconds of overhead. OpenVPN adds between 1.5 and 3 milliseconds.
+            On a mobile device, the difference between &#x201C;the VPN is invisible&#x201D;
+            and &#x201C;the VPN is annoying&#x201D; lives in those milliseconds.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Performance comparison. WireGuard throughput: 10+ Gbps, latency 0.4ms. IPsec: 6.4 Gbps, latency 1.0ms. OpenVPN: 0.1 Gbps, latency 1.5 to 3ms. WireGuard runs in kernel space. OpenVPN runs in userspace." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .wg-pf-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .wg-pf-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .wg-pf-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .wg-pf-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .wg-pf-bar-top { fill: var(--accent); opacity: 0.8; rx: 2; }
+                .wg-pf-bar { fill: var(--accent); opacity: 0.4; rx: 2; }
+                .wg-pf-bar-dim { fill: var(--muted); opacity: 0.25; rx: 2; }
+                .wg-pf-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .wg-pf-section { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .wg-pf-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+            <text class="wg-pf-title" x="260" y="20" text-anchor="middle">Performance: Throughput &#x0026; Latency</text>
+
+            <!-- Throughput section -->
+            <text class="wg-pf-section" x="30" y="52">Throughput (Gbps, higher is better)</text>
+            <!-- WireGuard -->
+            <text class="wg-pf-label" x="100" y="78" text-anchor="end">WireGuard</text>
+            <rect class="wg-pf-bar-top" x="108" y="64" width="360" height="20"/>
+            <text class="wg-pf-value" x="476" y="79">10+ Gbps</text>
+            <!-- IPsec -->
+            <text class="wg-pf-label" x="100" y="108" text-anchor="end">IPsec</text>
+            <rect class="wg-pf-bar" x="108" y="94" width="230" height="20"/>
+            <text class="wg-pf-value" x="346" y="109">6.4 Gbps</text>
+            <!-- OpenVPN -->
+            <text class="wg-pf-label" x="100" y="138" text-anchor="end">OpenVPN</text>
+            <rect class="wg-pf-bar-dim" x="108" y="124" width="4" height="20"/>
+            <text class="wg-pf-value" x="120" y="139">0.1 Gbps</text>
+            <text class="wg-pf-sub" x="120" y="155">Userspace. Context switches. Copies.</text>
+
+            <!-- Latency section -->
+            <line class="wg-pf-divider" x1="30" y1="172" x2="490" y2="172"/>
+            <text class="wg-pf-section" x="30" y="194">Latency overhead (ms, lower is better)</text>
+            <!-- WireGuard -->
+            <text class="wg-pf-label" x="100" y="220" text-anchor="end">WireGuard</text>
+            <rect class="wg-pf-bar-top" x="108" y="206" width="30" height="20"/>
+            <text class="wg-pf-value" x="146" y="221">0.4 ms</text>
+            <!-- IPsec -->
+            <text class="wg-pf-label" x="100" y="246" text-anchor="end">IPsec</text>
+            <rect class="wg-pf-bar" x="108" y="232" width="75" height="20"/>
+            <text class="wg-pf-value" x="191" y="247">1.0 ms</text>
+            <!-- OpenVPN -->
+            <text class="wg-pf-label" x="100" y="272" text-anchor="end">OpenVPN</text>
+            <rect class="wg-pf-bar-dim" x="108" y="258" width="225" height="20"/>
+            <text class="wg-pf-value" x="341" y="273">1.5&#x2013;3 ms</text>
+
+            <text class="wg-pf-note" x="260" y="298" text-anchor="middle">Kernel-space processing. Zero context switches. Zero unnecessary copies.</text>
+        </svg>
+
+        <p>The performance advantage is not a consequence of clever optimisation.
+            It is a consequence of architecture. WireGuard runs as a
+            <a href="https://en.wikipedia.org/wiki/Loadable_kernel_module" target="_blank" rel="noopener">kernel module</a>.
+            Packets never leave kernel space. There are no context switches between
+            user and kernel mode. There are no buffer copies between layers. There
+            is no TLS library spawning threads to negotiate a cipher suite that was
+            already decided at compile time. The packet enters the network stack,
+            hits the WireGuard module, gets encrypted, and leaves. The path from
+            ingress to egress is as short as the protocol itself.</p>
+
+        <p>OpenVPN, by contrast, operates entirely in userspace. Every packet
+            crosses the kernel-userspace boundary twice &#x2014; once on the way
+            in, once on the way out. Each crossing costs a context switch. Each
+            context switch costs microseconds. At 10 Gbps, microseconds become
+            the bottleneck. OpenVPN does not have a performance problem. It has
+            an architecture problem. The performance is a symptom.</p>
+
+        <h2>The Configuration</h2>
+
+        <p>An OpenVPN configuration file is typically between 30 and 80 lines,
+            not counting the certificate management infrastructure required to
+            make it function. An IPsec configuration &#x2014; depending on which
+            of the seventeen available IKE modes one selects &#x2014; can extend
+            to several hundred lines, plus a certificate authority, plus a key
+            management daemon, plus the existential dread of realising one has
+            chosen IKEv1 aggressive mode in production.</p>
+
+        <p>A complete WireGuard configuration:</p>
+
+        <pre><code>[Interface]
+PrivateKey = gI6EdUSYvn8...
+Address = 10.0.0.1/24
+ListenPort = 51820
+
+[Peer]
+PublicKey = xTIBA5rboUv...
+AllowedIPs = 10.0.0.2/32</code></pre>
+
+        <p>Seven lines. No certificate authority. No negotiation parameters. No
+            cipher selection. No pre-shared secret distribution mechanism that is
+            itself a security vulnerability. Public keys are exchanged out of band
+            &#x2014; the same model as SSH. If you can copy a string, you can
+            configure WireGuard. The protocol does not require a deployment guide.
+            It requires a <code>wg-quick up</code>.</p>
+
+        <h2>The Kernel</h2>
+
+        <p>WireGuard was merged into the
+            <a href="https://en.wikipedia.org/wiki/WireGuard" target="_blank" rel="noopener">Linux kernel</a>
+            in version 5.6, released March 2020. Torvalds had been advocating for
+            its inclusion since 2018. The merge was not controversial. When the
+            maintainer of the world&#x2019;s most widely deployed kernel says
+            &#x201C;it&#x2019;s a work of art&#x201D; and &#x201C;I hope it gets
+            merged soon,&#x201D; the patch queue tends to move briskly.</p>
+
+        <p>Today WireGuard ships natively in Linux, FreeBSD, OpenBSD, NetBSD,
+            Windows, macOS, iOS, and Android. The FreeBSD implementation was
+            contributed by the community and integrated into the base system. The
+            OpenBSD implementation was rewritten from scratch by the OpenBSD team,
+            because the OpenBSD team rewrites everything from scratch, and the
+            result was still compact enough to audit in a week. When your protocol
+            is simple enough that even OpenBSD&#x2019;s famously exacting security
+            team can implement it quickly, you have achieved something rather
+            special.</p>
+
+        <h2>The Attack Surface</h2>
+
+        <p>Security is not a feature that is added to software. It is a property
+            that emerges from the absence of places where things can go wrong.
+            Every line of code is a potential vulnerability. Every configuration
+            option is a potential mistake. Every protocol negotiation is a
+            potential downgrade. WireGuard minimises all three simultaneously.</p>
+
+        <p>The entire protocol produces a single type of packet: an encrypted
+            UDP datagram. There is no handshake visible to a network observer.
+            There is no response to unauthenticated packets. A WireGuard endpoint
+            that receives a packet from an unknown source does precisely nothing.
+            No error message. No reset. No indication that the service exists at
+            all. The endpoint is, from the perspective of a port scanner,
+            indistinguishable from a closed port. This is not stealth by
+            configuration. It is stealth by design. The protocol literally has
+            no mechanism for responding to strangers.</p>
+
+        <h2>The Philosophy</h2>
+
+        <p>WireGuard belongs to a specific lineage of software &#x2014; the
+            lineage that understands security as a function of simplicity, not
+            of features. <code>qmail</code> belongs to this lineage.
+            <code>OpenSSH</code> aspires to it. The
+            <a href="https://en.wikipedia.org/wiki/Noise_Protocol_Framework" target="_blank" rel="noopener">Noise protocol framework</a>
+            that WireGuard&#x2019;s handshake is built upon was designed with the
+            same conviction: that the most dangerous words in cryptographic
+            engineering are &#x201C;let&#x2019;s add an option for that.&#x201D;</p>
+
+        <p>Every cipher suite in OpenVPN exists because someone, at some point,
+            said &#x201C;but what if the customer needs RC4?&#x201D; Every IKE
+            negotiation mode in IPsec exists because a committee member said
+            &#x201C;but what about this edge case?&#x201D; Every one of those
+            accommodations is now a line item in a CVE database. Flexibility,
+            in cryptographic software, is not a virtue. It is a threat model.</p>
+
+        <p>Donenfeld understood this. He built a protocol that does one thing,
+            with one set of cryptographic primitives, in one way. If the primitives
+            are ever compromised, the entire protocol versions forward. There is
+            no negotiation. There is no fallback. There is no &#x201C;legacy
+            mode.&#x201D; There is only the current version, and it is either
+            secure or it is replaced. This is how cryptographic software should
+            work. It is how almost none of it does.</p>
+
+        <h2>The Lesson</h2>
+
+        <p>WireGuard did not win by being faster, though it is. It did not
+            win by being easier to configure, though it is. It did not win by
+            getting Torvalds&#x2019;s endorsement, though that certainly helped.
+            It won by being simple enough to be correct. Four thousand lines can
+            be audited. Four thousand lines can be held in a single engineer&#x2019;s
+            mental model. Four thousand lines can be reviewed by a security team
+            that does not require a six-month budget allocation for the engagement.</p>
+
+        <p>The VPN industry spent two decades adding features, options, modes,
+            and configuration parameters. Donenfeld spent 2015 removing them.
+            The result runs in every major operating system kernel on earth. It
+            handles 10 Gbps without breaking a sweat. It configures in seven
+            lines. It responds to strangers with silence.</p>
+
+        <blockquote>
+            <p>Four thousand lines. One cipher suite. Zero negotiation. The
+                correct answer is not a choice between options. The correct
+                answer is the absence of the wrong ones.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The backstory, for those who appreciate a good origin</strong></p>
+            <p>Donenfeld built WireGuard from frustration. Not theoretical
+                frustration &#x2014; the practical kind, born from configuring
+                IPsec tunnels and debugging OpenVPN certificate chains. Modern
+                cryptographic primitives exist. Code you can read in an afternoon
+                is achievable. The question was never whether it was possible to
+                build a simple, fast, auditable VPN. The question was whether
+                anyone would have the discipline to stop adding features once it
+                worked. Donenfeld stopped. Torvalds noticed. The kernel merged it.
+                Sources:
+                <a href="https://www.wireguard.com/" target="_blank" rel="noopener">wireguard.com</a>,
+                <a href="https://www.wireguard.com/performance/" target="_blank" rel="noopener">performance benchmarks</a>,
+                <a href="https://en.wikipedia.org/wiki/WireGuard" target="_blank" rel="noopener">Wikipedia</a>,
+                <a href="https://lkml.org/lkml/2018/8/2/663" target="_blank" rel="noopener">Torvalds on LKML</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

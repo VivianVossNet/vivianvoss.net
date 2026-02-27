@@ -1,0 +1,404 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Caddy Replacement &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Caddy replaces Nginx, Certbot, Cron, and renewal hooks. One binary. Zero TLS configuration. Auto HTTPS since 2015. Your reverse proxy config fits in a tweet.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-caddy-replacement{( endslot )}
+
+{( slot og-title )}The Caddy Replacement &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Caddy replaces Nginx, Certbot, Cron, and renewal hooks with a single binary. Zero TLS configuration. Auto HTTPS since 2015. The reverse proxy config that fits in a tweet.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Caddy Replacement",
+    "datePublished": "2025-12-07",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-caddy-replacement",
+    "description": "Caddy replaces Nginx, Certbot, Cron, and renewal hooks. One binary. Zero TLS configuration. Auto HTTPS since 2015. Your reverse proxy config fits in a tweet.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2025-12-07">07 December 2025</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Caddy Replacement</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">caddy</span>
+            <span class="vv-pill">nginx</span>
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Replacement</em> &#x25A0; Episode 01</p>
+
+        <blockquote>
+            <p>&#x201C;Your entire reverse proxy configuration fits in a tweet. The
+                interesting question is why it ever needed more.&#x201D;</p>
+        </blockquote>
+
+        <p>The year is 2015. You have just deployed a web application. It works.
+            Then someone mentions HTTPS. You install
+            <a href="https://certbot.eff.org/" target="_blank" rel="noopener">Certbot</a>.
+            You configure Nginx. You add a cron job for certificate renewal. You write
+            a renewal hook to reload Nginx after rotation. You test it. It fails. You
+            debug the hook. You discover the cron schedule collides with log rotation.
+            You fix it. You write documentation. You go home. You do not sleep well.</p>
+
+        <p>Matt Holt had the same evening in 2015. Unlike the rest of us, he decided
+            the problem was not the configuration. The problem was that configuration
+            existed at all. He wrote
+            <a href="https://caddyserver.com/" target="_blank" rel="noopener">Caddy</a>
+            &#x2014; a web server that handles TLS automatically, negotiates certificates
+            from Let&#x2019;s Encrypt on first request, renews them silently, and does
+            not require you to understand the ACME protocol, set a cron job, or write
+            a single line of TLS configuration. One binary. Zero ceremony.</p>
+
+        <h2>What You Replace</h2>
+
+        <p>The standard HTTPS reverse proxy stack in 2024 consists of four moving
+            parts: Nginx for the proxy itself, Certbot for certificate issuance,
+            a cron job for renewal, and a post-renewal hook to reload the server.
+            Each is maintained separately. Each can fail independently. Each has
+            its own configuration syntax, its own logging, and its own set of
+            assumptions about the state of the machine beneath it.</p>
+
+        <p>With Caddy, the entire arrangement collapses into one file:</p>
+
+        <pre><code>example.com {
+    reverse_proxy localhost:3000
+}</code></pre>
+
+        <p>That is not a simplified excerpt. That is the complete configuration.
+            HTTPS is the default, not an add-on. Certificates are obtained automatically
+            via the ACME protocol, renewed before expiry, and applied without a restart.
+            HTTP/3 is enabled out of the box since
+            <a href="https://github.com/caddyserver/caddy/releases/tag/v2.5.0" target="_blank" rel="noopener">version 2.5</a>
+            in 2022. No flag. No module. No conference talk explaining why you should
+            enable it.</p>
+
+        <svg viewBox="0 0 520 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stack comparison: Nginx plus Certbot plus Cron plus renewal hook versus Caddy as a single binary. Four components reduced to one, with auto HTTPS, auto renewal, and HTTP/3 included." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cr-stack-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cr-stack-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cr-stack-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cr-stack-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .cr-stack-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .cr-stack-fill { fill: var(--accent); opacity: 0.08; rx: 3; }
+                .cr-stack-fill-accent { fill: var(--accent); opacity: 0.15; rx: 3; }
+                .cr-stack-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#cr-stack-head); }
+            </style>
+            <defs>
+                <marker id="cr-stack-head" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text class="cr-stack-label" x="260" y="18" text-anchor="middle">The HTTPS Reverse Proxy Stack</text>
+            <!-- Left: Traditional -->
+            <text class="cr-stack-sub" x="130" y="44" text-anchor="middle">Before</text>
+            <rect class="cr-stack-fill" x="30" y="54" width="200" height="38"/>
+            <rect class="cr-stack-box" x="30" y="54" width="200" height="38"/>
+            <text class="cr-stack-label" x="130" y="70" text-anchor="middle">Nginx</text>
+            <text class="cr-stack-sub" x="130" y="84" text-anchor="middle">Reverse proxy + TLS termination</text>
+
+            <rect class="cr-stack-fill" x="30" y="98" width="200" height="38"/>
+            <rect class="cr-stack-box" x="30" y="98" width="200" height="38"/>
+            <text class="cr-stack-label" x="130" y="114" text-anchor="middle">Certbot</text>
+            <text class="cr-stack-sub" x="130" y="128" text-anchor="middle">Certificate issuance (ACME)</text>
+
+            <rect class="cr-stack-fill" x="30" y="142" width="200" height="38"/>
+            <rect class="cr-stack-box" x="30" y="142" width="200" height="38"/>
+            <text class="cr-stack-label" x="130" y="158" text-anchor="middle">Cron</text>
+            <text class="cr-stack-sub" x="130" y="172" text-anchor="middle">Scheduled renewal trigger</text>
+
+            <rect class="cr-stack-fill" x="30" y="186" width="200" height="38"/>
+            <rect class="cr-stack-box" x="30" y="186" width="200" height="38"/>
+            <text class="cr-stack-label" x="130" y="202" text-anchor="middle">Renewal Hook</text>
+            <text class="cr-stack-sub" x="130" y="216" text-anchor="middle">Reload Nginx after rotation</text>
+
+            <text class="cr-stack-sub" x="130" y="246" text-anchor="middle">4 components, 4 configs, 4 failure modes</text>
+
+            <!-- Arrow -->
+            <line class="cr-stack-arrow" x1="240" y1="148" x2="286" y2="148"/>
+
+            <!-- Right: Caddy -->
+            <text class="cr-stack-sub" x="390" y="44" text-anchor="middle">After</text>
+            <rect class="cr-stack-fill-accent" x="290" y="54" width="200" height="170"/>
+            <rect class="cr-stack-box-accent" x="290" y="54" width="200" height="170"/>
+            <text class="cr-stack-accent" x="390" y="100" text-anchor="middle" style="font-size: 14px; font-weight: 700;">Caddy</text>
+            <text class="cr-stack-sub" x="390" y="122" text-anchor="middle">Reverse proxy</text>
+            <text class="cr-stack-sub" x="390" y="138" text-anchor="middle">Auto HTTPS (ACME)</text>
+            <text class="cr-stack-sub" x="390" y="154" text-anchor="middle">Auto renewal</text>
+            <text class="cr-stack-sub" x="390" y="170" text-anchor="middle">HTTP/3</text>
+            <text class="cr-stack-sub" x="390" y="186" text-anchor="middle">Hot reload</text>
+
+            <text class="cr-stack-accent" x="390" y="246" text-anchor="middle">1 binary, 1 config, 1 process</text>
+
+            <!-- Bottom -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="30" y1="264" x2="490" y2="264"/>
+            <text class="cr-stack-sub" x="260" y="284" text-anchor="middle">Config that fits in a tweet:</text>
+            <text class="cr-stack-accent" x="260" y="302" text-anchor="middle">example.com { reverse_proxy localhost:3000 }</text>
+        </svg>
+
+        <p><a href="https://www.enlyft.com/tech/products/caddy-server" target="_blank" rel="noopener">133,000 websites</a>
+            run on Caddy. That number is modest next to
+            <a href="https://w3techs.com/technologies/overview/web_server" target="_blank" rel="noopener">Nginx&#x2019;s 38.6 per cent market share</a>,
+            which is rather the point. Nginx has twenty years of Stack Overflow
+            answers, Lua scripting in the request path, and the inertia of an
+            industry that has collectively memorised <code>nginx -t &amp;&amp;
+            nginx -s reload</code>. Caddy has correctness by default. The market
+            prefers the former. Engineering prefers the latter.</p>
+
+        <h2>The Performance Question</h2>
+
+        <p>The objection arrives on schedule: &#x201C;But Caddy is written in Go.
+            Go has garbage collection. Garbage collection means latency. Nginx is C.
+            C is fast.&#x201D; The objection is not wrong. It is merely irrelevant
+            for 99 per cent of deployments.</p>
+
+        <p>The
+            <a href="https://blog.tjll.net/reverse-proxy-hot-dog-eating-contest-caddy-vs-nginx/" target="_blank" rel="noopener">benchmarks</a>
+            tell a straightforward story. Below 50,000 requests per second &#x2014;
+            which covers the vast majority of production services &#x2014; the
+            difference between Caddy and Nginx is effectively noise. Above that
+            threshold, Nginx pulls ahead by roughly 10 to 15 per cent, attributable
+            to Go&#x2019;s garbage collector pausing at precisely the moments a
+            reverse proxy would prefer it did not.</p>
+
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Performance comparison: below 50,000 requests per second Caddy and Nginx are practically identical. Above that threshold Nginx leads by 10 to 15 per cent due to Go garbage collection." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cr-perf-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cr-perf-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cr-perf-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cr-perf-axis { stroke: var(--border); stroke-width: 1; }
+                .cr-perf-line-caddy { stroke: var(--accent); stroke-width: 2; fill: none; }
+                .cr-perf-line-nginx { stroke: var(--muted); stroke-width: 2; fill: none; stroke-dasharray: 6 3; }
+                .cr-perf-zone { fill: var(--accent); opacity: 0.06; }
+                .cr-perf-threshold { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.6; }
+            </style>
+            <text class="cr-perf-label" x="260" y="18" text-anchor="middle">Throughput: Caddy vs Nginx</text>
+            <!-- Axes -->
+            <line class="cr-perf-axis" x1="60" y1="40" x2="60" y2="220"/>
+            <line class="cr-perf-axis" x1="60" y1="220" x2="490" y2="220"/>
+            <text class="cr-perf-sub" x="30" y="134" text-anchor="middle" transform="rotate(-90 30 134)">Throughput</text>
+            <text class="cr-perf-sub" x="275" y="242" text-anchor="middle">Requests per second</text>
+            <!-- X axis labels -->
+            <text class="cr-perf-sub" x="60" y="236">0</text>
+            <text class="cr-perf-sub" x="168" y="236">20k</text>
+            <text class="cr-perf-sub" x="275" y="236">50k</text>
+            <text class="cr-perf-sub" x="383" y="236">80k</text>
+            <text class="cr-perf-sub" x="478" y="236">100k+</text>
+            <!-- Identical zone -->
+            <rect class="cr-perf-zone" x="60" y="40" width="215" height="180"/>
+            <text class="cr-perf-accent" x="168" y="58" text-anchor="middle" style="font-size: 10px;">Practically identical</text>
+            <!-- Threshold line -->
+            <line class="cr-perf-threshold" x1="275" y1="40" x2="275" y2="220"/>
+            <text class="cr-perf-accent" x="277" y="56" style="font-size: 9px;">50k req/s</text>
+            <!-- Nginx line (dashed, slightly higher after threshold) -->
+            <polyline class="cr-perf-line-nginx" points="60,200 168,140 275,95 383,62 490,48"/>
+            <!-- Caddy line (solid, diverges after threshold) -->
+            <polyline class="cr-perf-line-caddy" points="60,200 168,141 275,97 383,74 490,64"/>
+            <!-- Legend -->
+            <line x1="320" y1="100" x2="350" y2="100" stroke="var(--accent)" stroke-width="2"/>
+            <text class="cr-perf-label" x="356" y="104">Caddy</text>
+            <line x1="320" y1="118" x2="350" y2="118" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 3"/>
+            <text class="cr-perf-sub" x="356" y="122">Nginx</text>
+            <!-- Annotation -->
+            <text class="cr-perf-sub" x="410" y="148" text-anchor="middle">10&#x2013;15% gap</text>
+            <text class="cr-perf-sub" x="410" y="162" text-anchor="middle">(Go GC pauses)</text>
+            <!-- Bottom note -->
+            <text class="cr-perf-sub" x="260" y="268" text-anchor="middle">Below 50k req/s: choose by features. Above: measure.</text>
+        </svg>
+
+        <p>Fifty thousand requests per second is not a typical Tuesday afternoon.
+            It is the kind of traffic that implies a dedicated infrastructure team,
+            a load balancer in front of the proxy, and an architecture that has long
+            since stopped worrying about the configuration syntax of its edge server.
+            If your service handles that volume, you already know what you need. If
+            it does not &#x2014; and for most services it does not &#x2014; the
+            performance objection is academic.</p>
+
+        <h2>What You Lose</h2>
+
+        <p>Intellectual honesty demands the counter-argument. You lose three things
+            by choosing Caddy over Nginx, and all three are real.</p>
+
+        <p><strong>Lua scripting in the request path.</strong> Nginx with
+            <a href="https://openresty.org/" target="_blank" rel="noopener">OpenResty</a>
+            allows you to run Lua at every stage of the HTTP lifecycle &#x2014;
+            rewriting headers, transforming bodies, querying Redis mid-request.
+            Caddy has no equivalent. If your architecture requires programmable
+            logic inside the proxy, Nginx remains the correct tool.</p>
+
+        <p><strong>Raw throughput at extreme scale.</strong> Above 50,000 requests
+            per second, C wins. Go&#x2019;s garbage collector introduces
+            micro-pauses that compound under saturation. At cloud-native
+            hyperscaler volume, those pauses matter. At anything below that:
+            they do not.</p>
+
+        <p><strong>Twenty years of institutional knowledge.</strong> Every Nginx
+            problem has been solved on Stack Overflow. Every edge case has a blog
+            post. Every misconfiguration has a three-year-old thread with the
+            correct answer buried in the second reply. Caddy&#x2019;s documentation
+            is excellent, but the community surface area is smaller. When you are
+            debugging at 3 AM, accumulated knowledge has a value that no benchmark
+            can measure.</p>
+
+        <h2>What You Gain</h2>
+
+        <p>You gain something no amount of Nginx tuning provides: the elimination
+            of an entire class of operational failure.</p>
+
+        <p>Certificate expiry is the most common cause of HTTPS outages in
+            production. Not misconfiguration. Not cipher suite incompatibility.
+            <em>Forgetting to renew.</em> Certbot&#x2019;s cron job did not fire.
+            The renewal hook had a typo. The certificate renewed but Nginx was not
+            reloaded. The monitoring check passed because it tested HTTP, not HTTPS.
+            Each of these failures has brought down production systems. Each is
+            entirely preventable. Caddy prevents all of them by removing the human
+            from the renewal loop entirely.</p>
+
+        <p>You also gain HTTP/3 and QUIC without lifting a finger. Nginx added
+            experimental HTTP/3 support in 2022 behind a compile flag, a configuration
+            directive, and a prayer. Caddy has shipped it as a default since version
+            2.5. The protocol is simply there, working, for every domain you serve.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Feature comparison: what you lose versus what you gain. Caddy trades Lua scripting, peak throughput at extreme scale, and Stack Overflow answers for auto HTTPS, auto renewal, HTTP/3, and a config that eliminates human error." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cr-feat-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cr-feat-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cr-feat-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cr-feat-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .cr-feat-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .cr-feat-fill-dim { fill: var(--accent); opacity: 0.04; rx: 3; }
+                .cr-feat-fill { fill: var(--accent); opacity: 0.12; rx: 3; }
+            </style>
+            <text class="cr-feat-label" x="260" y="18" text-anchor="middle">The Trade-off</text>
+            <!-- Left: What you lose -->
+            <text class="cr-feat-sub" x="130" y="44" text-anchor="middle">What you lose</text>
+            <rect class="cr-feat-fill-dim" x="20" y="54" width="220" height="44"/>
+            <rect class="cr-feat-box" x="20" y="54" width="220" height="44"/>
+            <text class="cr-feat-label" x="130" y="72" text-anchor="middle">Lua scripting</text>
+            <text class="cr-feat-sub" x="130" y="88" text-anchor="middle">Programmable request pipeline</text>
+
+            <rect class="cr-feat-fill-dim" x="20" y="104" width="220" height="44"/>
+            <rect class="cr-feat-box" x="20" y="104" width="220" height="44"/>
+            <text class="cr-feat-label" x="130" y="122" text-anchor="middle">Peak throughput &gt;50k req/s</text>
+            <text class="cr-feat-sub" x="130" y="138" text-anchor="middle">10&#x2013;15% advantage (C vs Go GC)</text>
+
+            <rect class="cr-feat-fill-dim" x="20" y="154" width="220" height="44"/>
+            <rect class="cr-feat-box" x="20" y="154" width="220" height="44"/>
+            <text class="cr-feat-label" x="130" y="172" text-anchor="middle">20 years of Stack Overflow</text>
+            <text class="cr-feat-sub" x="130" y="188" text-anchor="middle">Every edge case, solved twice</text>
+
+            <!-- Right: What you gain -->
+            <text class="cr-feat-accent" x="390" y="44" text-anchor="middle">What you gain</text>
+            <rect class="cr-feat-fill" x="280" y="54" width="220" height="44"/>
+            <rect class="cr-feat-box-accent" x="280" y="54" width="220" height="44"/>
+            <text class="cr-feat-label" x="390" y="72" text-anchor="middle">Auto HTTPS</text>
+            <text class="cr-feat-sub" x="390" y="88" text-anchor="middle">Zero TLS config. Default since 2015.</text>
+
+            <rect class="cr-feat-fill" x="280" y="104" width="220" height="44"/>
+            <rect class="cr-feat-box-accent" x="280" y="104" width="220" height="44"/>
+            <text class="cr-feat-label" x="390" y="122" text-anchor="middle">Auto renewal</text>
+            <text class="cr-feat-sub" x="390" y="138" text-anchor="middle">No Certbot. No cron. No hooks.</text>
+
+            <rect class="cr-feat-fill" x="280" y="154" width="220" height="44"/>
+            <rect class="cr-feat-box-accent" x="280" y="154" width="220" height="44"/>
+            <text class="cr-feat-label" x="390" y="172" text-anchor="middle">HTTP/3 out of the box</text>
+            <text class="cr-feat-sub" x="390" y="188" text-anchor="middle">Default since v2.5 (2022)</text>
+
+            <rect class="cr-feat-fill" x="280" y="204" width="220" height="44"/>
+            <rect class="cr-feat-box-accent" x="280" y="204" width="220" height="44"/>
+            <text class="cr-feat-label" x="390" y="222" text-anchor="middle">Config that fits in a tweet</text>
+            <text class="cr-feat-sub" x="390" y="238" text-anchor="middle">Human error surface: near zero</text>
+
+            <!-- Bottom verdict -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="20" y1="264" x2="500" y2="264"/>
+            <text class="cr-feat-sub" x="260" y="286" text-anchor="middle">The 10% you lose at extreme scale buys the 100% you gain in operational reliability.</text>
+        </svg>
+
+        <h2>When Nginx Stays</h2>
+
+        <p>There are legitimate reasons to keep Nginx. Three, specifically.</p>
+
+        <p>Your architecture runs Lua in the request path. OpenResty is not a
+            convenience &#x2014; it is a dependency. Rewriting it in Caddy middleware
+            is possible but expensive, and the result is less capable. Nginx stays.</p>
+
+        <p>Your traffic exceeds 50,000 requests per second consistently, and the
+            10 to 15 per cent throughput differential has measurable impact on your
+            tail latency. You have measured this. You have not merely assumed it.
+            Nginx stays.</p>
+
+        <p>Your team has 15 years of Nginx muscle memory, and the migration cost
+            exceeds the operational cost of maintaining Certbot. This is a human
+            engineering decision, not a technical one, and it is entirely valid.
+            Nginx stays.</p>
+
+        <p>For everything else &#x2014; and &#x201C;everything else&#x201D;
+            covers the overwhelming majority of production deployments &#x2014;
+            Caddy is the replacement. Not the alternative. The replacement.</p>
+
+        <h2>The Replacement</h2>
+
+        <p>Caddy did not add features to the reverse proxy. It removed problems
+            from it. TLS is not configured because it does not need configuring.
+            Certificates are not managed because management implies the possibility
+            of forgetting. HTTP/3 is not enabled because it was never disabled.
+            The configuration is three lines because the problem is three lines.</p>
+
+        <p>The entire philosophy of Caddy is an implicit rebuke of the industry&#x2019;s
+            habit of solving simple problems with complex tools and then celebrating
+            the complexity as craftsmanship. The HTTPS reverse proxy is a solved
+            problem. The solution is one binary, one Caddyfile, and the quiet confidence
+            of software that does its job without requiring yours.</p>
+
+        <blockquote>
+            <p>You do not need Nginx, Certbot, Cron, and a renewal hook. You need
+                a web server that handles HTTPS. Caddy has been that server since
+                2015. The only thing missing was the industry&#x2019;s permission
+                to use it.</p>
+        </blockquote>
+
+        <p>Consider this your permission.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The performance footnote, for the engineers who scrolled here first</strong></p>
+            <p>Below 50,000 requests per second, Caddy and Nginx are practically
+                identical in throughput. The
+                <a href="https://blog.tjll.net/reverse-proxy-hot-dog-eating-contest-caddy-vs-nginx/" target="_blank" rel="noopener">benchmarks</a>
+                show noise, not a gap. Above that threshold, Nginx gains 10 to 15 per cent
+                due to Go&#x2019;s garbage collector. When does Nginx stay? Enterprise
+                deployments with Lua in the request path (OpenResty), sustained extreme
+                load where GC pauses affect tail latency, and teams whose collective muscle
+                memory is denominated in <code>nginx.conf</code> syntax.</p>
+            <p>When does Caddy win? Everything else. The
+                <a href="https://w3techs.com/technologies/details/ws-caddy" target="_blank" rel="noopener">market data</a>
+                shows
+                <a href="https://www.enlyft.com/tech/products/caddy-server" target="_blank" rel="noopener">133,000 sites</a>
+                and growing. Nginx holds
+                <a href="https://w3techs.com/technologies/overview/web_server" target="_blank" rel="noopener">38.6 per cent</a>
+                of the web server market. Both numbers tell the same story: the incumbent
+                is vast, the replacement is correct, and correctness is patient.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
