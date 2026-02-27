@@ -1,0 +1,505 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}ZFS Snapshots &#x0026; Boot Environments: The Safety Net &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Same ZFS, same commands, radically different experience. On FreeBSD, bectl is in base, the bootloader understands boot environments natively, and recovery takes 30 seconds. On Linux, ZFS is a legal grey area bolted on from outside.">
+{( endslot )}
+
+{( slot canonical )}/blog/zfs-the-safety-net{( endslot )}
+
+{( slot og-title )}ZFS Snapshots &#x0026; Boot Environments: The Safety Net &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Same ZFS, same commands, radically different experience. FreeBSD: bectl in base, native bootloader support, 30-second recovery. Linux: out-of-tree DKMS, legal grey area, documented breakage.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "ZFS Snapshots & Boot Environments: The Safety Net",
+    "datePublished": "2026-02-09",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/zfs-the-safety-net",
+    "description": "Same ZFS, same commands, radically different experience. On FreeBSD, bectl is in base, the bootloader understands boot environments natively, and recovery takes 30 seconds. On Linux, ZFS is a legal grey area bolted on from outside.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-09">09 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>ZFS Snapshots &#x0026; Boot Environments: The Safety Net</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">zfs</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 3</p>
+
+        <p>
+            You are about to upgrade your operating system. The packages have been
+            fetched, the changelogs reviewed, the maintenance window booked. There
+            is one question that separates a professional deployment from a prayer:
+            <em>what happens if it breaks?</em>
+        </p>
+
+        <p>
+            On <a href="https://docs.freebsd.org/en/books/handbook/zfs/" target="_blank" rel="noopener">FreeBSD</a>,
+            the answer is two commands and thirty seconds:
+        </p>
+
+        <blockquote>
+            <p><code>bectl create pre-upgrade &#x0026;&#x0026; pkg upgrade</code></p>
+        </blockquote>
+
+        <p>
+            Done. If the upgrade breaks something &#x2014; a kernel module fails to
+            load, a service refuses to start, something in the dependency tree has
+            developed strong opinions &#x2014; you reboot, select the old boot
+            environment from the bootloader menu, and carry on as though nothing
+            happened. Because, from ZFS&#x2019;s perspective, nothing did.
+        </p>
+
+        <p>
+            On Linux, the same safety net requires assembling the net yourself,
+            from parts, in the dark, hoping none of them are load-bearing.
+        </p>
+
+        <h2>The Integration</h2>
+
+        <p>
+            The difference is not ZFS itself. The code is identical &#x2014; the
+            <a href="https://github.com/openzfs/zfs" target="_blank" rel="noopener">OpenZFS</a>
+            project maintains a single codebase for both platforms. The difference
+            is where ZFS lives in the system architecture.
+        </p>
+
+        <p>
+            On FreeBSD, ZFS has been
+            <a href="https://www.freebsd.org/releases/7.0R/relnotes/" target="_blank" rel="noopener">in the kernel since 7.0</a>
+            (2008). Root-on-ZFS became the default installer option in 10.0 (2014).
+            <code>bectl</code> &#x2014; the boot environment manager &#x2014; shipped
+            in base with
+            <a href="https://www.freebsd.org/releases/12.0R/relnotes/" target="_blank" rel="noopener">FreeBSD 12.0</a>
+            (2018). No package to install. No configuration to discover. The
+            bootloader understands boot environments natively. And
+            <code>freebsd-update</code> creates a boot environment automatically
+            before applying patches. The safety net is not optional. It is the
+            default.
+        </p>
+
+        <p>
+            On Linux, ZFS occupies a rather more precarious position. The CDDL
+            licence under which ZFS was released is considered
+            <a href="https://theregister.com/2020/01/13/zfs_linux/" target="_blank" rel="noopener">incompatible</a>
+            with the GPL by most legal interpretations. Linus Torvalds, in January
+            2020, was characteristically succinct: &#x201C;Don&#x2019;t use ZFS.&#x201D;
+            This is not a technical objection. It is a legal one. And it has
+            architectural consequences.
+        </p>
+
+        <!-- SVG: FreeBSD vs Linux ZFS integration layers -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400" role="img" aria-label="ZFS integration comparison: on FreeBSD, ZFS is in the kernel, bectl in base, and the bootloader understands boot environments natively. On Linux, ZFS is an out-of-tree DKMS module requiring manual assembly at every layer." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .zfs-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .zfs-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
+                .zfs-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .zfs-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .zfs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .zfs-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .zfs-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#zfs-arr); }
+                .zfs-arrow-dim { stroke: var(--muted); stroke-width: 1; fill: none; stroke-dasharray: 4 3; marker-end: url(#zfs-arr-dim); }
+                .zfs-warn { fill: var(--accent); opacity: 0.08; rx: 4; }
+            </style>
+            <defs>
+                <marker id="zfs-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+                <marker id="zfs-arr-dim" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+            </defs>
+
+            <text class="zfs-title" x="260" y="18" text-anchor="middle" fill="var(--text)">ZFS Integration: Kernel to Bootloader</text>
+
+            <!-- Left: FreeBSD -->
+            <text class="zfs-title" x="130" y="46" text-anchor="middle" fill="var(--accent)">FreeBSD</text>
+            <text class="zfs-muted" x="130" y="62" text-anchor="middle">In the system. Since 2008.</text>
+
+            <rect class="zfs-box-accent" x="30" y="74" width="200" height="32"/>
+            <text class="zfs-label" x="130" y="95" text-anchor="middle">Bootloader (native BE support)</text>
+
+            <line class="zfs-arrow" x1="130" y1="106" x2="130" y2="122"/>
+
+            <rect class="zfs-box-accent" x="30" y="124" width="200" height="32"/>
+            <text class="zfs-label" x="130" y="145" text-anchor="middle">bectl (in base since 12.0)</text>
+
+            <line class="zfs-arrow" x1="130" y1="156" x2="130" y2="172"/>
+
+            <rect class="zfs-box-accent" x="30" y="174" width="200" height="32"/>
+            <text class="zfs-label" x="130" y="195" text-anchor="middle">freebsd-update (auto BE)</text>
+
+            <line class="zfs-arrow" x1="130" y1="206" x2="130" y2="222"/>
+
+            <rect class="zfs-box-accent" x="30" y="224" width="200" height="32"/>
+            <text class="zfs-label" x="130" y="245" text-anchor="middle">ZFS in kernel (since 7.0)</text>
+
+            <line class="zfs-arrow" x1="130" y1="256" x2="130" y2="272"/>
+
+            <rect class="zfs-box-accent" x="30" y="274" width="200" height="32"/>
+            <text class="zfs-label" x="130" y="295" text-anchor="middle">Root-on-ZFS (installer default)</text>
+
+            <text class="zfs-value" x="130" y="332" text-anchor="middle">0 packages to install.</text>
+            <text class="zfs-muted" x="130" y="348" text-anchor="middle">It just works. Out of the box.</text>
+
+            <!-- Right: Linux -->
+            <text class="zfs-title" x="390" y="46" text-anchor="middle" fill="var(--muted)">Linux</text>
+            <text class="zfs-muted" x="390" y="62" text-anchor="middle">Bolted on. Legal grey area.</text>
+
+            <rect class="zfs-warn" x="280" y="70" width="220" height="300"/>
+
+            <rect class="zfs-box" x="290" y="80" width="200" height="28"/>
+            <text class="zfs-muted" x="390" y="99" text-anchor="middle">Step 1: Install ZFS (DKMS)</text>
+
+            <line class="zfs-arrow-dim" x1="390" y1="108" x2="390" y2="122"/>
+
+            <rect class="zfs-box" x="290" y="124" width="200" height="28"/>
+            <text class="zfs-muted" x="390" y="143" text-anchor="middle">Step 2: Root-on-ZFS (manual)</text>
+
+            <line class="zfs-arrow-dim" x1="390" y1="152" x2="390" y2="166"/>
+
+            <rect class="zfs-box" x="290" y="168" width="200" height="28"/>
+            <text class="zfs-muted" x="390" y="187" text-anchor="middle">Step 3: Find a BE manager</text>
+
+            <line class="zfs-arrow-dim" x1="390" y1="196" x2="390" y2="210"/>
+
+            <rect class="zfs-box" x="290" y="212" width="200" height="28"/>
+            <text class="zfs-muted" x="390" y="231" text-anchor="middle">Step 4: Configure bootloader</text>
+
+            <line class="zfs-arrow-dim" x1="390" y1="240" x2="390" y2="254"/>
+
+            <rect class="zfs-box" x="290" y="256" width="200" height="28"/>
+            <text class="zfs-muted" x="390" y="275" text-anchor="middle">Step 5: Hope DKMS survives</text>
+
+            <text class="zfs-muted" x="390" y="310" text-anchor="middle">CDDL vs GPL. Out-of-tree. Fragile.</text>
+            <text class="zfs-muted" x="390" y="326" text-anchor="middle">Torvalds (2020): &#x201C;Don&#x2019;t use ZFS.&#x201D;</text>
+
+            <!-- Bottom line -->
+            <line x1="30" y1="370" x2="500" y2="370" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="zfs-muted" x="260" y="390" text-anchor="middle">Same ZFS. Same commands. Radically different experience.</text>
+        </svg>
+
+        <p>
+            Because ZFS cannot live in the Linux kernel tree, it is distributed as an
+            out-of-tree module compiled via
+            <a href="https://en.wikipedia.org/wiki/Dynamic_Kernel_Module_Support" target="_blank" rel="noopener">DKMS</a>
+            &#x2014; Dynamic Kernel Module Support. Every kernel update triggers a
+            recompilation. If the module fails to build against the new kernel headers,
+            ZFS disappears. If your root filesystem is on ZFS, so does your ability
+            to boot.
+        </p>
+
+        <h2>The DKMS Lottery</h2>
+
+        <p>
+            This is not theoretical. The failures are documented, timestamped, and
+            recurring.
+        </p>
+
+        <p>
+            Kernel 6.2.8 (March 2023):
+            <a href="https://github.com/openzfs/zfs/issues/14658" target="_blank" rel="noopener">DKMS build failure</a>.
+            Kernel 6.4 (July 2023):
+            <a href="https://github.com/openzfs/zfs/issues/15151" target="_blank" rel="noopener">DKMS build failure</a>.
+            Kernel 6.12 (January 2025):
+            <a href="https://github.com/openzfs/zfs/issues/17639" target="_blank" rel="noopener">DKMS build failure</a>.
+            The pattern is not a coincidence. It is structural. An out-of-tree module
+            must track kernel API changes it has no influence over, released on a
+            schedule it does not control, by a project whose maintainer has publicly
+            advised against its use.
+        </p>
+
+        <!-- SVG: DKMS failure timeline -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 220" role="img" aria-label="Timeline of documented DKMS build failures for ZFS on Linux: kernel 6.2.8 in March 2023, kernel 6.4 in July 2023, and kernel 6.12 in January 2025. Each failure breaks ZFS and potentially prevents booting from root-on-ZFS." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .dkms-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .dkms-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
+                .dkms-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .dkms-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dkms-dot { fill: var(--accent); }
+                .dkms-line { stroke: var(--border); stroke-width: 1; }
+                .dkms-line-accent { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 3; }
+            </style>
+
+            <text class="dkms-title" x="260" y="18" text-anchor="middle" fill="var(--text)">DKMS Build Failures &#x2014; ZFS on Linux</text>
+            <text class="dkms-muted" x="260" y="34" text-anchor="middle">Documented breakage. Recurring pattern.</text>
+
+            <!-- Timeline axis -->
+            <line class="dkms-line" x1="60" y1="80" x2="460" y2="80"/>
+
+            <!-- 2023 markers -->
+            <text class="dkms-muted" x="60" y="72">2023</text>
+            <text class="dkms-muted" x="340" y="72">2025</text>
+
+            <!-- Event 1: 6.2.8 -->
+            <circle class="dkms-dot" cx="120" cy="80" r="6"/>
+            <line class="dkms-line-accent" x1="120" y1="86" x2="120" y2="110"/>
+            <text class="dkms-value" x="120" y="124" text-anchor="middle">6.2.8</text>
+            <text class="dkms-muted" x="120" y="138" text-anchor="middle">Mar 2023</text>
+            <text class="dkms-muted" x="120" y="152" text-anchor="middle">#14658</text>
+
+            <!-- Event 2: 6.4 -->
+            <circle class="dkms-dot" cx="220" cy="80" r="6"/>
+            <line class="dkms-line-accent" x1="220" y1="86" x2="220" y2="110"/>
+            <text class="dkms-value" x="220" y="124" text-anchor="middle">6.4</text>
+            <text class="dkms-muted" x="220" y="138" text-anchor="middle">Jul 2023</text>
+            <text class="dkms-muted" x="220" y="152" text-anchor="middle">#15151</text>
+
+            <!-- Event 3: 6.12 -->
+            <circle class="dkms-dot" cx="380" cy="80" r="6"/>
+            <line class="dkms-line-accent" x1="380" y1="86" x2="380" y2="110"/>
+            <text class="dkms-value" x="380" y="124" text-anchor="middle">6.12</text>
+            <text class="dkms-muted" x="380" y="138" text-anchor="middle">Jan 2025</text>
+            <text class="dkms-muted" x="380" y="152" text-anchor="middle">#17639</text>
+
+            <!-- Bottom note -->
+            <line x1="60" y1="178" x2="460" y2="178" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="dkms-muted" x="260" y="198" text-anchor="middle">Root-on-ZFS + DKMS failure = unbootable system.</text>
+            <text class="dkms-muted" x="260" y="214" text-anchor="middle">On FreeBSD, the module is in the kernel. There is no DKMS.</text>
+        </svg>
+
+        <p>
+            On FreeBSD, there is no DKMS. There is no out-of-tree compilation.
+            There is no kernel update that can remove ZFS from the system, because
+            ZFS <em>is</em> the system. The module ships with the kernel. They are
+            tested together, released together, and upgraded together. The failure
+            mode that Linux users experience every few kernel releases simply does
+            not exist.
+        </p>
+
+        <h2>The Boot Environment</h2>
+
+        <p>
+            A boot environment is a complete, bootable snapshot of your operating
+            system. Not a backup. Not an image. A zero-cost clone of the live
+            filesystem that the bootloader can select at startup. If the upgrade
+            succeeds, you carry on. If it fails, you reboot into the previous
+            environment. The failed state remains available for forensic examination
+            or simply deletion.
+        </p>
+
+        <p>
+            On FreeBSD, <code>bectl</code> manages the lifecycle:
+        </p>
+
+        <p>
+            <code>bectl create pre-upgrade</code> &#x2014; creates the safety net.<br/>
+            <code>bectl list</code> &#x2014; shows all environments.<br/>
+            <code>bectl activate pre-upgrade</code> &#x2014; rolls back on next boot.<br/>
+            <code>bectl destroy failed-upgrade</code> &#x2014; removes the wreckage.
+        </p>
+
+        <p>
+            All in base. No package manager involved. The bootloader renders the
+            list of environments automatically. <code>freebsd-update</code> creates
+            a boot environment before applying patches, without being asked. The
+            safety net deploys itself.
+        </p>
+
+        <p>
+            On Linux, <code>bectl</code> does not exist. Ubuntu attempted to solve
+            this with
+            <a href="https://github.com/ubuntu/zsys" target="_blank" rel="noopener">zsys</a>,
+            a ZFS-based system state manager. Development ceased in 2021. The project&#x2019;s
+            own GitHub issue tracker contains an entry whose title rather speaks for
+            itself:
+            <a href="https://github.com/ubuntu/zsys/issues/230" target="_blank" rel="noopener">&#x201C;Don&#x2019;t use ZSYS&#x201D;</a>.
+            No replacement was announced. The boot environment story on Linux is,
+            at the time of writing, a collection of third-party scripts, distribution-specific
+            workarounds, and hope.
+        </p>
+
+        <h2>How Snapshots Work</h2>
+
+        <p>
+            The mechanism is worth understanding, because it explains why boot
+            environments are free and why the safety net has no performance cost.
+        </p>
+
+        <p>
+            ZFS is a
+            <a href="https://klarasystems.com/articles/openzfs-features-copy-on-write/" target="_blank" rel="noopener">copy-on-write</a>
+            filesystem. It never overwrites existing data. When a file changes, the
+            new data is written to a different location on disc, and the metadata
+            pointer is updated. The old blocks remain untouched until explicitly freed.
+        </p>
+
+        <p>
+            A snapshot simply freezes the metadata pointers at a given moment. No data
+            is copied. The snapshot is instantaneous &#x2014; sub-second, regardless
+            of dataset size. It consumes zero additional bytes at creation, because it
+            references the same blocks as the live filesystem. Only as the live system
+            diverges &#x2014; as new writes land on new blocks &#x2014; does the
+            snapshot begin to consume space, and only for the blocks that have changed.
+        </p>
+
+        <p>
+            There is no performance penalty. There is no I/O storm. There is no
+            &#x201C;please wait while the snapshot completes&#x201D; dialogue.
+            You type the command, and it is done. The safety net costs nothing
+            until you need it.
+        </p>
+
+        <!-- SVG: bectl workflow -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 300" role="img" aria-label="Boot environment workflow on FreeBSD: create snapshot before upgrade, upgrade, if success continue, if failure reboot into previous environment. Total recovery time: 30 seconds." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .be-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .be-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
+                .be-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .be-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .be-mono { font: 400 10.5px/1 ui-monospace, monospace; fill: var(--text); }
+                .be-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .be-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .be-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#be-arr); }
+                .be-arrow-dim { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#be-arr-dim); }
+                .be-success { fill: oklch(72% 0.15 145); }
+            </style>
+            <defs>
+                <marker id="be-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+                <marker id="be-arr-dim" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+            </defs>
+
+            <text class="be-title" x="260" y="18" text-anchor="middle" fill="var(--text)">Boot Environment Workflow (FreeBSD)</text>
+
+            <!-- Step 1 -->
+            <rect class="be-box-accent" x="160" y="34" width="200" height="32"/>
+            <text class="be-mono" x="260" y="55" text-anchor="middle">bectl create pre-upgrade</text>
+            <text class="be-muted" x="260" y="82" text-anchor="middle">Instant. 0 bytes. Sub-second.</text>
+
+            <line class="be-arrow" x1="260" y1="88" x2="260" y2="106"/>
+
+            <!-- Step 2 -->
+            <rect class="be-box-accent" x="160" y="108" width="200" height="32"/>
+            <text class="be-mono" x="260" y="129" text-anchor="middle">pkg upgrade</text>
+
+            <line class="be-arrow" x1="260" y1="140" x2="260" y2="158"/>
+
+            <!-- Decision -->
+            <text class="be-label" x="260" y="174" text-anchor="middle">Upgrade result?</text>
+
+            <!-- Success path -->
+            <line class="be-arrow" x1="195" y1="180" x2="120" y2="210"/>
+            <rect class="be-box-accent" x="30" y="212" width="180" height="32"/>
+            <text class="be-label be-success" x="120" y="233" text-anchor="middle" style="fill: oklch(72% 0.15 145);">Success &#x2014; carry on</text>
+            <text class="be-muted" x="120" y="260" text-anchor="middle">bectl destroy pre-upgrade</text>
+            <text class="be-muted" x="120" y="276" text-anchor="middle">(optional cleanup)</text>
+
+            <!-- Failure path -->
+            <line class="be-arrow" x1="325" y1="180" x2="400" y2="210"/>
+            <rect class="be-box-accent" x="310" y="212" width="180" height="32"/>
+            <text class="be-value" x="400" y="233" text-anchor="middle">Failure &#x2014; reboot</text>
+            <text class="be-muted" x="400" y="260" text-anchor="middle">Select old BE at bootloader.</text>
+            <text class="be-value" x="400" y="276" text-anchor="middle">Recovery: 30 seconds.</text>
+        </svg>
+
+        <h2>The Btrfs Question</h2>
+
+        <p>
+            &#x201C;But what about Btrfs?&#x201D; &#x2014; the reflexive counterpoint,
+            and a fair one.
+            <a href="https://en.opensuse.org/Portal:Snapper" target="_blank" rel="noopener">openSUSE with snapper</a>
+            is the closest Linux gets to a native boot environment workflow, and it
+            is genuinely useful. Credit where due: the openSUSE team has done serious
+            work to make filesystem snapshots a first-class citizen.
+        </p>
+
+        <p>
+            The caveats, however, are non-trivial. Btrfs has no equivalent of
+            <code>zfs send</code> / <code>zfs receive</code> &#x2014; the ability
+            to send an incremental snapshot stream to a remote machine, which is how
+            ZFS handles off-site replication without third-party tools. Btrfs&#x2019;s
+            RAID5 and RAID6 implementation carries a
+            <a href="https://btrfs.readthedocs.io/en/latest/btrfs-man5.html#raid56-status-and-recommended-practices" target="_blank" rel="noopener">data loss warning</a>
+            in its own documentation. And Btrfs reached production readiness around
+            2015 &#x2014; a decade after ZFS was deployed in production at Sun
+            Microsystems in 2005.
+        </p>
+
+        <p>
+            None of which makes Btrfs bad. It makes it younger, with a narrower
+            feature set, operating in an ecosystem where filesystem-level safety
+            nets are a distribution choice rather than a platform guarantee.
+            openSUSE chose well. Most other distributions did not choose at all.
+        </p>
+
+        <h2>The Contract</h2>
+
+        <p>
+            The difference between FreeBSD and Linux here is not a difference of
+            technology. It is a difference of commitment. FreeBSD ships ZFS in the
+            kernel, <code>bectl</code> in base, boot environment support in the
+            bootloader, and automatic snapshots in the update tool. The safety net
+            is a system contract: if you upgrade, you can always go back.
+        </p>
+
+        <p>
+            Linux ships none of this. ZFS is legally complicated. Boot environments
+            are a third-party concern. The update tools do not create snapshots.
+            The bootloader does not know about them. The safety net is your
+            responsibility, assembled from components that may or may not survive
+            the next kernel release.
+        </p>
+
+        <p>
+            Same filesystem. Same copy-on-write semantics. Same sub-second snapshots.
+            Same zero-byte initial cost. On one platform, it is infrastructure. On
+            the other, it is an afterthought.
+        </p>
+
+        <blockquote>
+            <p>A safety net that requires assembly is not a safety net. It is a
+                kit. FreeBSD ships the net. Linux ships the parts. The thirty
+                seconds it takes to recover from a failed upgrade on FreeBSD is
+                not a benchmark. It is a design decision &#x2014; and it was made
+                in 2008.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>How ZFS snapshots actually work:</strong>
+                ZFS never overwrites data. A write allocates new blocks; the old
+                blocks remain until freed. A snapshot freezes the block pointers:
+                sub-second, zero bytes, no performance impact. Space is consumed
+                only as the live filesystem diverges. This is why boot environments
+                are free to create and why <code>bectl create</code> returns before
+                you have finished reading this sentence.</p>
+
+            <p><strong>Sources:</strong>
+                <a href="https://docs.freebsd.org/en/books/handbook/zfs/" target="_blank" rel="noopener">FreeBSD Handbook &#x2014; ZFS</a>,
+                <a href="https://klarasystems.com/articles/introduction-to-freebsd-boot-environments/" target="_blank" rel="noopener">Klara Systems &#x2014; Boot Environments</a>,
+                <a href="https://klarasystems.com/articles/openzfs-features-copy-on-write/" target="_blank" rel="noopener">Klara Systems &#x2014; Copy-on-Write</a>.
+                DKMS breakages:
+                <a href="https://github.com/openzfs/zfs/issues/14658" target="_blank" rel="noopener">#14658</a>,
+                <a href="https://github.com/openzfs/zfs/issues/15151" target="_blank" rel="noopener">#15151</a>,
+                <a href="https://github.com/openzfs/zfs/issues/17639" target="_blank" rel="noopener">#17639</a>.
+                Ubuntu zsys abandoned:
+                <a href="https://github.com/ubuntu/zsys/issues/230" target="_blank" rel="noopener">#230</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

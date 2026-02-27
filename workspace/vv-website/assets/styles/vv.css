@@ -506,6 +506,79 @@
         }
     }
 
+    /* --- Keyword pills --------------------------------------------------- */
+
+    .vv-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: calc(var(--unit) * 0.5);
+    }
+
+    .vv-pill {
+        font-family: var(--font-body);
+        font-size: calc(var(--unit) * 1.5);
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--unit) * 1.5);
+        padding: calc(var(--unit) * 0.25) calc(var(--unit) * 1.25);
+        line-height: 1;
+    }
+
+    /* --- Pager (blog list) ------------------------------------------------ */
+
+    .vv-pager {
+        display: flex;
+        justify-content: center;
+        gap: calc(var(--unit) * 0.5);
+        padding: calc(var(--unit) * 2) 0;
+    }
+
+    .vv-pager:empty {
+        display: none;
+    }
+
+    .vv-pager button.vv-pager-btn {
+        all: unset;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        width: calc(var(--unit) * 4.5);
+        height: calc(var(--unit) * 4.5);
+        font-family: var(--font-body);
+        font-size: calc(var(--unit) * 1.75);
+        line-height: 1;
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--unit) * 0.75);
+        cursor: pointer;
+        transition: border-color 0.15s, color 0.15s;
+
+        &:hover {
+            border-color: var(--accent);
+            color: var(--text);
+            filter: none;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        &.is-active {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        &:disabled {
+            opacity: 0.2;
+            cursor: default;
+            pointer-events: none;
+        }
+    }
+
     /* --- Article (blog post) ---------------------------------------------- */
 
     .vv-article {

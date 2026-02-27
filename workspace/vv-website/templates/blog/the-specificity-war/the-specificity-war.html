@@ -1,0 +1,457 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Specificity War Is Over &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="CSS Cascade Layers end the two-decade specificity war permanently. One declaration line sets the hierarchy. Layer order outranks specificity. No more !important, no inline styles as nuclear option.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-specificity-war{( endslot )}
+
+{( slot og-title )}The Specificity War Is Over &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}CSS @layer ends the specificity war. One declaration line sets the hierarchy. Layer order outranks specificity. No more !important.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Specificity War Is Over",
+    "datePublished": "2026-02-11",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-specificity-war",
+    "description": "CSS Cascade Layers end the two-decade specificity war permanently. One declaration line sets the hierarchy. Layer order outranks specificity. No more !important, no inline styles as nuclear option.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-11">11 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Specificity War Is Over</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">css</span>
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 3</p>
+
+        <blockquote>
+            <p>&#x201C;The cascade, after 25 years, finally makes sense. Terribly
+                sorry it took so long.&#x201D;</p>
+        </blockquote>
+
+        <p>For a quarter of a century, CSS specificity was a medieval
+            succession dispute. The throne of &#x201C;which style applies&#x201D;
+            was contested not by merit but by lineage &#x2014; the depth of
+            your selector chain, the number of classes in your ancestry, the
+            presence of an <code>#id</code> somewhere in the bloodline. When
+            two rules disagreed, the one with more heraldic weight prevailed.
+            When both had equal claim, source order arbitrated like a tired
+            magistrate. And when all else failed, the developer reached for
+            <code>!important</code> &#x2014; the nuclear option, the
+            constitutional crisis, the divine right of kings invoked by
+            someone who had simply run out of patience.</p>
+
+        <p>The war is over.
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer" target="_blank" rel="noopener"><code>@layer</code></a>
+            ended it. Not with a compromise, not with a polyfill, but with a
+            single declaration that rewrites the rules of precedence entirely.</p>
+
+<pre><code>@layer general, extern, components, themes;</code></pre>
+
+        <p>Four layers. Declaration order decides priority. Last wins.
+            That is the entire peace treaty.</p>
+
+        <h2>The Old Regime</h2>
+
+        <p>To appreciate what <code>@layer</code> resolves, one must first
+            recall what it replaces. The
+            <a href="https://www.w3.org/TR/css-cascade-4/#cascading" target="_blank" rel="noopener">CSS cascade</a>
+            has always followed a hierarchy: origin (user-agent, author,
+            user), then specificity, then source order. In theory, this was
+            elegant. In practice, it was a siege engine aimed at your own
+            codebase.</p>
+
+        <p>You wrote a clean <code>.button</code> component. Then a
+            third-party library shipped a <code>.btn</code> rule with higher
+            specificity. Your component lost. You increased your specificity.
+            Then another library arrived, and its selector was deeper still.
+            You added <code>!important</code>. Then the third-party vendor
+            added <code>!important</code>. Now you were trapped in a mutual
+            escalation with the nuclear codes on both sides, and the only
+            winner was the developer who loaded their stylesheet last.</p>
+
+        <p>The entire discipline of CSS architecture &#x2014; BEM, SMACSS,
+            ITCSS, utility-first &#x2014; was, at its core, a series of
+            treaties attempting to prevent specificity conflicts through naming
+            conventions and file ordering. Diplomatic solutions to a
+            constitutional deficiency. The language lacked a way to declare:
+            &#x201C;This layer of styles outranks that layer, regardless of
+            selector weight.&#x201D;</p>
+
+        <p>Now it has one.</p>
+
+        <svg viewBox="0 0 520 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison of old specificity resolution (selector weight decides) versus new @layer resolution (layer order decides). The old model shows escalating specificity leading to !important. The new model shows four named layers where order outranks specificity." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .layer-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .layer-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .layer-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .layer-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .layer-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .layer-fill { fill: var(--accent); opacity: 0.04; rx: 3; }
+                .layer-fill-accent { fill: var(--accent); opacity: 0.12; rx: 3; }
+                .layer-arrow { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#layer-arrow-head); }
+                .layer-arrow-accent { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#layer-arrow-head-accent); }
+                .layer-strike { stroke: var(--accent); stroke-width: 2; opacity: 0.7; }
+            </style>
+            <defs>
+                <marker id="layer-arrow-head" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+                </marker>
+                <marker id="layer-arrow-head-accent" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+                </marker>
+            </defs>
+            <!-- Left: Old Regime -->
+            <text class="layer-label" x="120" y="18" text-anchor="middle">The Old Regime</text>
+            <text class="layer-sub" x="120" y="34" text-anchor="middle">Selector weight decides</text>
+
+            <rect class="layer-fill" x="20" y="46" width="200" height="32"/>
+            <rect class="layer-box" x="20" y="46" width="200" height="32"/>
+            <text class="layer-sub" x="30" y="66">.button</text>
+            <text class="layer-sub" x="180" y="66" text-anchor="end">0,1,0</text>
+
+            <path class="layer-arrow" d="M120,78 L120,88"/>
+
+            <rect class="layer-fill" x="20" y="90" width="200" height="32"/>
+            <rect class="layer-box" x="20" y="90" width="200" height="32"/>
+            <text class="layer-sub" x="30" y="110">nav .btn.primary</text>
+            <text class="layer-sub" x="180" y="110" text-anchor="end">0,3,0</text>
+
+            <path class="layer-arrow" d="M120,122 L120,132"/>
+
+            <rect class="layer-fill" x="20" y="134" width="200" height="32"/>
+            <rect class="layer-box" x="20" y="134" width="200" height="32"/>
+            <text class="layer-sub" x="30" y="154">#app .nav .btn</text>
+            <text class="layer-sub" x="180" y="154" text-anchor="end">1,2,0</text>
+
+            <path class="layer-arrow" d="M120,166 L120,176"/>
+
+            <rect class="layer-fill" x="20" y="178" width="200" height="32"/>
+            <rect class="layer-box" x="20" y="178" width="200" height="32"/>
+            <text class="layer-sub" x="30" y="198">.button { !important }</text>
+            <text class="layer-sub" x="180" y="198" text-anchor="end">&#x2622;</text>
+
+            <text class="layer-sub" x="120" y="230" text-anchor="middle">Escalation spiral</text>
+
+            <!-- Right: @layer -->
+            <text class="layer-accent" x="390" y="18" text-anchor="middle">@layer</text>
+            <text class="layer-sub" x="390" y="34" text-anchor="middle">Declaration order decides</text>
+
+            <rect class="layer-fill-accent" x="290" y="46" width="200" height="32"/>
+            <rect class="layer-box-accent" x="290" y="46" width="200" height="32"/>
+            <text class="layer-sub" x="300" y="66">general</text>
+            <text class="layer-sub" x="480" y="66" text-anchor="end">lowest</text>
+
+            <rect class="layer-fill-accent" x="290" y="90" width="200" height="32"/>
+            <rect class="layer-box-accent" x="290" y="90" width="200" height="32"/>
+            <text class="layer-sub" x="300" y="110">extern</text>
+            <text class="layer-sub" x="480" y="110" text-anchor="end">&#x2191;</text>
+
+            <rect class="layer-fill-accent" x="290" y="134" width="200" height="32"/>
+            <rect class="layer-box-accent" x="290" y="134" width="200" height="32"/>
+            <text class="layer-sub" x="300" y="154">components</text>
+            <text class="layer-sub" x="480" y="154" text-anchor="end">&#x2191;</text>
+
+            <rect class="layer-fill-accent" x="290" y="178" width="200" height="32"/>
+            <rect class="layer-box-accent" x="290" y="178" width="200" height="32"/>
+            <text class="layer-accent" x="300" y="198">themes</text>
+            <text class="layer-accent" x="480" y="198" text-anchor="end">highest</text>
+
+            <text class="layer-accent" x="390" y="230" text-anchor="middle">Last declared wins. Always.</text>
+
+            <!-- Bottom -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="20" y1="250" x2="500" y2="250"/>
+            <text class="layer-sub" x="260" y="272" text-anchor="middle">Five selectors deep in components loses to one selector in themes.</text>
+            <text class="layer-accent" x="260" y="290" text-anchor="middle">Layer order outranks specificity.</text>
+        </svg>
+
+        <h2>The Four Layers</h2>
+
+        <p>The declaration is a single line. The architecture it imposes
+            is permanent:</p>
+
+<pre><code>@layer general, extern, components, themes;</code></pre>
+
+        <p><strong>general</strong> &#x2014; your reset, your CSS custom
+            properties, your base typography. The foundation. Everything here
+            is meant to be overridden. It sets defaults with the quiet
+            confidence of a butler who knows the household will ignore his
+            suggestions but makes them anyway.</p>
+
+        <p><strong>extern</strong> &#x2014; third-party CSS. Tailwind.
+            FontAwesome. That analytics widget your marketing department
+            insists upon. Everything you did not write and cannot fully trust.
+            Wrapping it in <code>extern</code> means it can never outrank
+            your own components, regardless of how many selectors the vendor
+            chains together.</p>
+
+        <p><strong>components</strong> &#x2014; your styles. Your buttons,
+            your cards, your layout primitives. This is where the application
+            lives. It automatically outranks <code>extern</code> because it
+            is declared after it. Third-party CSS wreaking havoc? Not any
+            more. Components win. Automatically.</p>
+
+        <p><strong>themes</strong> &#x2014; dark mode, high contrast, visual
+            variations. The final word. A single-class selector in
+            <code>themes</code> outranks a five-selector chain in
+            <code>components</code>. Not because its specificity is higher
+            &#x2014; it almost certainly is not &#x2014; but because layer
+            order outranks specificity entirely. The succession is settled
+            by constitutional law, not by the size of the army.</p>
+
+        <h2>The Precedence Revolution</h2>
+
+        <p>This is the part that rewrites two decades of muscle memory.
+            Under the old regime, specificity was the primary arbiter. A
+            selector with <code>(1,2,0)</code> beat a selector with
+            <code>(0,3,0)</code>, regardless of where each appeared.
+            <code>@layer</code> inverts that hierarchy. Layer order is
+            evaluated <em>before</em> specificity. Specificity only matters
+            within the same layer.</p>
+
+        <p>Let that settle for a moment. Five selectors deep in
+            <code>components</code> loses to one selector in
+            <code>themes</code>. Not because of a hack. Not because of
+            <code>!important</code>. Because the
+            <a href="https://www.w3.org/TR/css-cascade-5/#layering" target="_blank" rel="noopener">W3C CSS Cascade Level 5 specification</a>
+            says so. The cascade finally has a proper constitution, and
+            specificity has been demoted from sovereign to civil servant.</p>
+
+        <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Specificity comparison: a five-selector chain in the components layer loses to a single class selector in the themes layer, because layer order is evaluated before specificity." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .layerspec-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .layerspec-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .layerspec-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .layerspec-code { font: 400 11px/1 ui-monospace, monospace; fill: var(--muted); }
+                .layerspec-code-accent { font: 400 11px/1 ui-monospace, monospace; fill: var(--accent); }
+                .layerspec-bar { fill: var(--muted); opacity: 0.15; rx: 2; }
+                .layerspec-bar-accent { fill: var(--accent); opacity: 0.7; rx: 2; }
+                .layerspec-line { stroke: var(--border); stroke-width: 0.5; }
+            </style>
+            <text class="layerspec-label" x="260" y="18" text-anchor="middle">Specificity vs Layer Order</text>
+
+            <!-- Row 1: components layer, high specificity -->
+            <text class="layerspec-sub" x="10" y="58">components</text>
+            <text class="layerspec-code" x="10" y="78">#app main .card .body p</text>
+            <text class="layerspec-sub" x="260" y="68">Specificity: 1,2,1</text>
+            <rect class="layerspec-bar" x="360" y="54" width="140" height="18"/>
+            <text class="layerspec-sub" x="510" y="68">LOSES</text>
+
+            <!-- Divider -->
+            <line class="layerspec-line" x1="10" y1="100" x2="510" y2="100"/>
+            <text class="layerspec-sub" x="260" y="118" text-anchor="middle">vs</text>
+            <line class="layerspec-line" x1="10" y1="128" x2="510" y2="128"/>
+
+            <!-- Row 2: themes layer, low specificity -->
+            <text class="layerspec-accent" x="10" y="158">themes</text>
+            <text class="layerspec-code-accent" x="10" y="178">.dark p</text>
+            <text class="layerspec-accent" x="260" y="168">Specificity: 0,1,1</text>
+            <rect class="layerspec-bar-accent" x="360" y="154" width="40" height="18"/>
+            <text class="layerspec-accent" x="510" y="168">WINS</text>
+
+            <!-- Explanation -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="10" y1="206" x2="510" y2="206"/>
+            <text class="layerspec-sub" x="260" y="230" text-anchor="middle">Layer order is evaluated before specificity.</text>
+            <text class="layerspec-accent" x="260" y="250" text-anchor="middle">The smaller bar wins because themes outranks components.</text>
+        </svg>
+
+        <h2>Sublayers: Divide the Vassal States</h2>
+
+        <p>Layers nest. The <code>extern</code> layer can contain its own
+            internal hierarchy, each third-party dependency isolated from the
+            others:</p>
+
+<pre><code>@layer extern {
+    @layer tailwind, fontawesome, other;
+}
+
+@layer extern.tailwind {
+    @import url("tailwind.css");
+}
+
+@layer extern.fontawesome {
+    @import url("fontawesome.css");
+}</code></pre>
+
+        <p>Tailwind and FontAwesome now occupy separate sublayers within
+            <code>extern</code>. They cannot outrank each other by accident.
+            They cannot outrank your components at all. The feudal metaphor
+            holds: vassals may squabble amongst themselves, but they do not
+            challenge the crown.</p>
+
+        <p>The <code>@import</code> syntax integrates directly with layer
+            declarations. No wrapper needed, no build step required. The
+            browser understands the assignment.</p>
+
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sublayer architecture: the extern layer contains nested sublayers for tailwind, fontawesome, and other third-party CSS. The full hierarchy shows general at the bottom, extern with sublayers above it, then components, then themes at the top." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .layernest-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .layernest-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .layernest-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .layernest-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .layernest-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .layernest-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                .layernest-fill-deep { fill: var(--accent); opacity: 0.03; rx: 3; }
+                .layernest-fill-top { fill: var(--accent); opacity: 0.15; rx: 3; }
+                .layernest-brace { stroke: var(--border); stroke-width: 1; fill: none; }
+            </style>
+            <text class="layernest-label" x="260" y="18" text-anchor="middle">Layer Hierarchy with Sublayers</text>
+
+            <!-- themes (top) -->
+            <rect class="layernest-fill-top" x="30" y="32" width="460" height="36"/>
+            <rect class="layernest-box-accent" x="30" y="32" width="460" height="36"/>
+            <text class="layernest-accent" x="260" y="55" text-anchor="middle">themes</text>
+
+            <!-- components -->
+            <rect class="layernest-fill" x="30" y="76" width="460" height="36"/>
+            <rect class="layernest-box" x="30" y="76" width="460" height="36"/>
+            <text class="layernest-label" x="260" y="99" text-anchor="middle">components</text>
+
+            <!-- extern (container) -->
+            <rect class="layernest-fill-deep" x="30" y="120" width="460" height="100"/>
+            <rect class="layernest-box" x="30" y="120" width="460" height="100"/>
+            <text class="layernest-label" x="50" y="140">extern</text>
+
+            <!-- sublayers inside extern -->
+            <rect class="layernest-fill" x="50" y="148" width="130" height="28"/>
+            <rect class="layernest-box" x="50" y="148" width="130" height="28"/>
+            <text class="layernest-sub" x="115" y="167" text-anchor="middle">tailwind</text>
+
+            <rect class="layernest-fill" x="195" y="148" width="130" height="28"/>
+            <rect class="layernest-box" x="195" y="148" width="130" height="28"/>
+            <text class="layernest-sub" x="260" y="167" text-anchor="middle">fontawesome</text>
+
+            <rect class="layernest-fill" x="340" y="148" width="130" height="28"/>
+            <rect class="layernest-box" x="340" y="148" width="130" height="28"/>
+            <text class="layernest-sub" x="405" y="167" text-anchor="middle">other</text>
+
+            <text class="layernest-sub" x="260" y="207" text-anchor="middle">Sublayers resolve internally, never outrank parent</text>
+
+            <!-- general (bottom) -->
+            <rect class="layernest-fill-deep" x="30" y="228" width="460" height="36"/>
+            <rect class="layernest-box" x="30" y="228" width="460" height="36"/>
+            <text class="layernest-sub" x="260" y="251" text-anchor="middle">general</text>
+
+            <!-- Priority arrow -->
+            <text class="layernest-sub" x="14" y="55" text-anchor="end">&#x2191;</text>
+            <text class="layernest-sub" x="14" y="99" text-anchor="end">|</text>
+            <text class="layernest-sub" x="14" y="170" text-anchor="end">|</text>
+            <text class="layernest-sub" x="14" y="251" text-anchor="end">|</text>
+            <text class="layernest-sub" x="7" y="272" text-anchor="middle" style="font-size: 9px;">priority</text>
+        </svg>
+
+        <h2>The Unlayered Exception</h2>
+
+        <p>There is one important caveat, and it is the kind that will
+            catch you precisely once before you remember it for life.
+            Unlayered styles &#x2014; any CSS not assigned to a layer
+            &#x2014; override everything. They sit above the layer stack
+            entirely, as if the constitution does not apply to them.</p>
+
+<pre><code>/* This unlayered rule beats ALL layers */
+.debug-border {
+    outline: 2px solid red;
+}</code></pre>
+
+        <p>For debugging, this is useful. A quick diagnostic rule that
+            overrides everything without touching the layer declarations.
+            For production, it is dangerous. An unlayered stylesheet
+            imported without a <code>layer()</code> qualifier will silently
+            override your entire architecture. The constitutional monarchy
+            works only if everyone is inside the constitution.</p>
+
+        <h2>Browser Support: Already Shipped</h2>
+
+        <p><a href="https://caniuse.com/css-cascade-layers" target="_blank" rel="noopener">Every modern browser</a>
+            has supported <code>@layer</code> since March 2022. Chrome 99.
+            Firefox 97. Safari 15.4. Edge 99. There is no polyfill required.
+            There is no build step. There is no &#x201C;we shall adopt it
+            once the ecosystem matures&#x201D; excuse remaining. The
+            ecosystem matured four years ago. The only thing missing is
+            your adoption.</p>
+
+        <h2>The Peace Treaty</h2>
+
+        <p>The specificity war lasted twenty-five years. Developers fought
+            it with naming conventions (BEM), with methodologies (ITCSS),
+            with utility classes (Tailwind), and with the outright rejection
+            of CSS in favour of JavaScript (CSS-in-JS). Each approach was a
+            workaround for the same constitutional deficiency: the cascade
+            had no mechanism for declaring layer precedence.</p>
+
+        <p>Now it does. One line. Four layers. Declaration order decides
+            priority. Layer order outranks specificity. The diplomatic
+            workarounds were honourable. They are no longer necessary.</p>
+
+        <p><code>!important</code> is no longer a weapon. It is an
+            archaeological artefact.</p>
+
+        <blockquote>
+            <p>The cascade, after 25 years, finally makes sense. Terribly
+                sorry it took so long.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The complete setup, for those who build rather than debate</strong></p>
+
+<pre><code>/* 1. Declare the hierarchy — one line, permanent */
+@layer general, extern, components, themes;
+
+/* 2. Import third-party CSS into sublayers */
+@import url("tailwind.css") layer(extern.tailwind);
+@import url("fontawesome.css") layer(extern.fontawesome);
+
+/* 3. Base layer: reset, variables, typography */
+@layer general {
+    :root {
+        --bg: oklch(98% 0 0);
+        --text: oklch(20% 0 0);
+        --accent: oklch(65% 0.2 30);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+}
+
+/* 4. Components: your styles, always above extern */
+@layer components {
+    .button { background: var(--accent); }
+}
+
+/* 5. Themes: the final word */
+@layer themes {
+    .dark { --bg: oklch(15% 0 0); --text: oklch(90% 0 0); }
+}</code></pre>
+
+            <p>Unlayered styles override everything &#x2014; useful for
+                debugging, dangerous in production. Keep all production CSS
+                inside layers.</p>
+            <p>Sources:
+                <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer" target="_blank" rel="noopener">MDN &#x2014; @layer</a>,
+                <a href="https://www.w3.org/TR/css-cascade-5/#layering" target="_blank" rel="noopener">W3C CSS Cascade Level 5</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

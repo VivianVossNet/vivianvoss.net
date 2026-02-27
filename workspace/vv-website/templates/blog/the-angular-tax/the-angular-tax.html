@@ -1,0 +1,459 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Angular Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Angular is the SAP of frontend frameworks. Zone.js monkey-patches 30-plus browser APIs, a Hello World ships 500 KB, and Google builds Angular but does not use it. The performance tax, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-angular-tax{( endslot )}
+
+{( slot og-title )}The Angular Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Zone.js monkey-patches 30-plus browser APIs. A Hello World ships 500 KB. Google builds Angular but does not use it. The performance tax, itemised.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Angular Tax",
+    "datePublished": "2025-12-29",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-angular-tax",
+    "description": "Angular is the SAP of frontend frameworks. Zone.js monkey-patches 30-plus browser APIs, a Hello World ships 500 KB, and Google builds Angular but does not use it. The performance tax, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2025-12-29">29 December 2025</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Angular Tax</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">angular</span>
+            <span class="vv-pill">typescript</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Performance-Fresser</em> &#x25A0; Episode 6</p>
+
+        <p>Angular is the SAP of frontend frameworks. Enterprise loves it. Consultants
+            adore it. It solves problems with tremendous thoroughness &#x2014; problems
+            that it created with equal thoroughness. The architecture is imposing.
+            The decorator ceremony is magnificent. The bundle size is&#x2026;
+            let us examine the bundle size.</p>
+
+        <p>A <code>Hello World</code> in Angular ships approximately
+            <a href="https://bundlephobia.com/package/@angular/core" target="_blank" rel="noopener">500 KB</a>.
+            Half a megabyte. To display two words. Vue accomplishes the same greeting
+            in 80 KB. Svelte in 3 KB.
+            <a href="https://minline.run" target="_blank" rel="noopener">minline.js</a>
+            in 1,337 bytes. Vanilla JavaScript in fewer than one kilobyte. And HTML
+            &#x2014; the language that solved &#x201C;Hello World&#x201D; in 1993
+            &#x2014; requires no JavaScript at all.</p>
+
+        <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bundle size comparison for a Hello World application. Angular approximately 500 KB, Vue 80 KB, Svelte 3 KB, minline.js 1,337 bytes, Vanilla JavaScript less than 1 KB." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .ng-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .ng-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .ng-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .ng-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .ng-bar { fill: var(--accent); rx: 2; }
+                .ng-bar-dim { fill: var(--accent); opacity: 0.15; rx: 2; }
+                .ng-axis { stroke: var(--border); stroke-width: 1; }
+                .ng-grid { stroke: var(--border); stroke-width: 0.5; opacity: 0.2; }
+            </style>
+            <!-- Title -->
+            <text class="ng-title" x="260" y="20" text-anchor="middle">HELLO WORLD &#x2014; bundle size comparison</text>
+            <!-- Axis -->
+            <line class="ng-axis" x1="130" y1="40" x2="130" y2="270"/>
+            <line class="ng-axis" x1="130" y1="270" x2="510" y2="270"/>
+            <!-- Grid -->
+            <line class="ng-grid" x1="206" y1="40" x2="206" y2="270"/>
+            <text class="ng-muted" x="206" y="288" text-anchor="middle">100 KB</text>
+            <line class="ng-grid" x1="282" y1="40" x2="282" y2="270"/>
+            <text class="ng-muted" x="282" y="288" text-anchor="middle">200 KB</text>
+            <line class="ng-grid" x1="358" y1="40" x2="358" y2="270"/>
+            <text class="ng-muted" x="358" y="288" text-anchor="middle">300 KB</text>
+            <line class="ng-grid" x1="434" y1="40" x2="434" y2="270"/>
+            <text class="ng-muted" x="434" y="288" text-anchor="middle">400 KB</text>
+            <text class="ng-muted" x="510" y="288" text-anchor="middle">500 KB</text>
+            <!-- Angular: ~500 KB -->
+            <text class="ng-label" x="125" y="68" text-anchor="end">Angular</text>
+            <rect class="ng-bar" x="130" y="54" width="380" height="24" opacity="0.7"/>
+            <text class="ng-value" x="490" y="83">~500 KB</text>
+            <!-- Vue: 80 KB -->
+            <text class="ng-label" x="125" y="118" text-anchor="end">Vue</text>
+            <rect class="ng-bar" x="130" y="104" width="61" height="24" opacity="0.7"/>
+            <text class="ng-value" x="198" y="133">80 KB</text>
+            <!-- Svelte: 3 KB -->
+            <text class="ng-label" x="125" y="168" text-anchor="end">Svelte</text>
+            <rect class="ng-bar" x="130" y="154" width="3" height="24" opacity="0.7"/>
+            <text class="ng-value" x="142" y="183">3 KB</text>
+            <!-- minline.js: 1337 B -->
+            <text class="ng-label" x="125" y="218" text-anchor="end">minline.js</text>
+            <rect class="ng-bar" x="130" y="204" width="2" height="24" opacity="0.7"/>
+            <text class="ng-value" x="142" y="233">1,337 B</text>
+            <!-- Vanilla: <1 KB -->
+            <text class="ng-label" x="125" y="258" text-anchor="end">Vanilla</text>
+            <rect class="ng-bar" x="130" y="244" width="1" height="24" opacity="0.7"/>
+            <text class="ng-value" x="142" y="263">&lt;1 KB</text>
+            <!-- Source -->
+            <text class="ng-muted" x="510" y="310" text-anchor="end">Source: bundlephobia.com</text>
+        </svg>
+
+        <p>Half a megabyte is not a framework. It is a municipal planning application
+            that has wandered into a browser. But the bundle is merely the entrance fee.
+            The real cost is what happens once Angular starts running.</p>
+
+        <h2>Zone.js: The Monkey-Patch Engine</h2>
+
+        <p>At Angular&#x2019;s core sits
+            <a href="https://github.com/angular/angular/tree/main/packages/zone.js" target="_blank" rel="noopener">Zone.js</a>
+            &#x2014; a library whose job description reads like a surveillance operation.
+            Zone.js monkey-patches <strong>every asynchronous browser API</strong>.
+            <code>setTimeout</code>. <code>Promise</code>. <code>fetch</code>.
+            <code>addEventListener</code>. <code>requestAnimationFrame</code>.
+            <code>WebSocket</code>. <code>MutationObserver</code>. <code>XMLHttpRequest</code>.
+            Thirty-plus APIs in total, each one wrapped in a proxy that reports back to
+            Angular&#x2019;s change detection system.</p>
+
+        <p>The reasoning is almost endearing. Angular needs to know when &#x201C;something
+            happened&#x201D; so it can check whether the view requires an update. Rather than
+            asking developers to signal state changes explicitly &#x2014; as every other
+            framework does &#x2014; Angular chose to intercept every asynchronous operation
+            in the entire browser runtime. The approach has the quiet confidence of a fire
+            alarm that monitors every room by occasionally setting small fires and checking
+            whether anyone reacts.</p>
+
+        <p>The consequences are measurable. Move your mouse across an Angular application.
+            <code>mousemove</code> fires at 60 events per second. Each event is intercepted
+            by Zone.js. Each interception triggers
+            <a href="https://angular.io/guide/change-detection" target="_blank" rel="noopener">change detection</a>.
+            Each change detection cycle walks <strong>every component</strong> in the tree,
+            checking every binding, comparing every value. Sixty times per second. Every
+            component. Because the user moved a cursor.</p>
+
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Zone.js change detection cycle. A mousemove event triggers Zone.js interception, which triggers change detection, which walks every component in the tree. This happens 60 times per second." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .zjs-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .zjs-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .zjs-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .zjs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .zjs-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .zjs-fill { fill: var(--accent); opacity: 0.1; rx: 3; }
+                .zjs-line { stroke: var(--border); stroke-width: 1.5; fill: none; }
+                .zjs-line-hl { stroke: var(--accent); stroke-width: 2; fill: none; }
+                .zjs-dot { fill: var(--accent); }
+            </style>
+            <!-- Title -->
+            <text class="zjs-value" x="260" y="20" text-anchor="middle">ZONE.JS CHANGE DETECTION</text>
+            <text class="zjs-muted" x="260" y="36" text-anchor="middle">what happens when the user moves a cursor</text>
+            <!-- Step 1: Event -->
+            <rect class="zjs-box-hl" x="175" y="50" width="170" height="30"/>
+            <text class="zjs-label" x="260" y="70" text-anchor="middle">mousemove event</text>
+            <text class="zjs-muted" x="380" y="70">60&#x00D7;/sec</text>
+            <!-- Arrow -->
+            <line class="zjs-line" x1="260" y1="80" x2="260" y2="100"/>
+            <circle class="zjs-dot" cx="260" cy="100" r="3"/>
+            <!-- Step 2: Zone.js intercept -->
+            <rect class="zjs-fill" x="175" y="105" width="170" height="30"/>
+            <rect class="zjs-box" x="175" y="105" width="170" height="30"/>
+            <text class="zjs-label" x="260" y="125" text-anchor="middle">Zone.js intercepts</text>
+            <!-- Arrow -->
+            <line class="zjs-line" x1="260" y1="135" x2="260" y2="155"/>
+            <circle class="zjs-dot" cx="260" cy="155" r="3"/>
+            <!-- Step 3: Change detection -->
+            <rect class="zjs-fill" x="175" y="160" width="170" height="30"/>
+            <rect class="zjs-box" x="175" y="160" width="170" height="30"/>
+            <text class="zjs-label" x="260" y="180" text-anchor="middle">change detection runs</text>
+            <!-- Arrow -->
+            <line class="zjs-line" x1="260" y1="190" x2="260" y2="210"/>
+            <circle class="zjs-dot" cx="260" cy="210" r="3"/>
+            <!-- Step 4: Component tree walk -->
+            <rect class="zjs-box-hl" x="140" y="215" width="240" height="30"/>
+            <text class="zjs-label" x="260" y="235" text-anchor="middle">EVERY component checked</text>
+            <!-- Tree illustration below -->
+            <text class="zjs-muted" x="260" y="262" text-anchor="middle">full tree walk per event</text>
+            <!-- Component tree visual -->
+            <rect class="zjs-fill" x="240" y="270" width="40" height="16"/>
+            <rect class="zjs-box" x="240" y="270" width="40" height="16"/>
+            <line class="zjs-line" x1="260" y1="286" x2="200" y2="298"/>
+            <line class="zjs-line" x1="260" y1="286" x2="320" y2="298"/>
+            <rect class="zjs-fill" x="180" y="298" width="40" height="16"/>
+            <rect class="zjs-box" x="180" y="298" width="40" height="16"/>
+            <rect class="zjs-fill" x="300" y="298" width="40" height="16"/>
+            <rect class="zjs-box" x="300" y="298" width="40" height="16"/>
+            <line class="zjs-line" x1="200" y1="314" x2="160" y2="320"/>
+            <line class="zjs-line" x1="200" y1="314" x2="240" y2="320"/>
+            <line class="zjs-line" x1="320" y1="314" x2="280" y2="320"/>
+            <line class="zjs-line" x1="320" y1="314" x2="360" y2="320"/>
+            <circle class="zjs-dot" cx="160" cy="324" r="4" opacity="0.5"/>
+            <circle class="zjs-dot" cx="240" cy="324" r="4" opacity="0.5"/>
+            <circle class="zjs-dot" cx="280" cy="324" r="4" opacity="0.5"/>
+            <circle class="zjs-dot" cx="360" cy="324" r="4" opacity="0.5"/>
+            <!-- Cycle arrow on the right -->
+            <path class="zjs-line-hl" d="M 400 70 C 440 70, 440 235, 400 235" marker-end="url(#zjs-arr)"/>
+            <defs>
+                <marker id="zjs-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text class="zjs-value" x="465" y="155" text-anchor="middle" transform="rotate(90 465 155)">60&#x00D7; per second</text>
+        </svg>
+
+        <p>Mobile batteries have never drained faster. Rather pleasant in one&#x2019;s pocket
+            during winter, though.</p>
+
+        <p>Angular&#x2019;s response to this self-inflicted performance problem is the
+            <a href="https://angular.io/api/core/ChangeDetectionStrategy" target="_blank" rel="noopener"><code>OnPush</code>
+            change detection strategy</a> &#x2014; an opt-in mechanism that tells Angular
+            to skip a component unless its inputs actually change. The strategy works.
+            It also represents additional complexity introduced to mitigate the default
+            behaviour&#x2019;s insanity. The developer must mark every component, manage
+            immutable references, and understand a mental model that exists only because
+            the framework chose a detection strategy that detects everything, always,
+            regardless of relevance.</p>
+
+        <p>The pattern is familiar. Create a problem. Sell the solution. Call it a
+            &#x201C;strategy.&#x201D;</p>
+
+        <h2>The Decorator Ceremony</h2>
+
+        <p>Writing an Angular component is a liturgical experience. Every component
+            requires <code>@Component</code>. Dependencies require <code>@Injectable</code>.
+            Inputs require <code>@Input</code>. Outputs require <code>@Output</code>.
+            DOM references require <code>@ViewChild</code>. Event listeners require
+            <code>@HostListener</code>. Host bindings require <code>@HostBinding</code>.
+            Seven decorators &#x2014; and the component has not yet done anything.</p>
+
+        <p>Consider the humble button. HTML solved it in 1993:</p>
+
+        <blockquote>
+            <p><code>&lt;button onclick=&#x201C;submit()&#x201D;&gt;Send&lt;/button&gt;</code></p>
+        </blockquote>
+
+        <p>Angular requires a component class, a template file, a stylesheet, a module
+            declaration, the <code>@Component</code> decorator with its metadata object,
+            an <code>@Output</code> event emitter, and an <code>@Injectable</code> service
+            if the button needs to fetch data &#x2014; which itself demands a constructor
+            with five injected dependencies just to make an HTTP request.</p>
+
+        <p>The ceremony is not structure. Structure serves a purpose. Ceremony serves
+            itself. And Angular&#x2019;s ceremony is so elaborate that the framework
+            ships its own code generator &#x2014; <code>ng generate</code> &#x2014;
+            because writing an Angular component by hand is considered unreasonable
+            by the framework&#x2019;s own authors.</p>
+
+        <h2>The Dependency Injection Cathedral</h2>
+
+        <p>Angular inherited Dependency Injection from Java&#x2019;s Spring Framework
+            and imported it wholesale into a language that never asked for it. A typical
+            Angular service constructor reads like a roll call:</p>
+
+        <blockquote>
+            <p><code>constructor(private http: HttpClient, private router: Router,
+                private store: Store, private auth: AuthService,
+                private config: ConfigService) {}</code></p>
+        </blockquote>
+
+        <p>Five injections to fetch data from a server. The <code>Fetch API</code> is one
+            line. It has been one line since 2015. It works in every browser. It requires
+            no decorators, no providers, no modules, no injectors, and no constructor
+            ceremony. But Angular wraps it in a service, wraps the service in a provider,
+            wraps the provider in a module, and wraps the module in a decorator &#x2014;
+            and then calls the result &#x201C;architecture.&#x201D;</p>
+
+        <h2>The Maker Who Does Not Use It</h2>
+
+        <p>Here is the detail that ought to appear in every Angular conference keynote
+            but curiously never does. Google builds Angular. Google does not use Angular.</p>
+
+        <p>YouTube runs on a custom framework. Gmail uses Closure. Google Search is
+            server-rendered. Google Docs is a custom engine. Google Maps is a custom
+            engine. The products that define Google &#x2014; the products that serve
+            billions of users &#x2014; are not built with the framework that Google
+            tells everyone else to use.</p>
+
+        <p>One might call this a coincidence. One might also call it a product review.</p>
+
+        <p>The distinction matters because Angular&#x2019;s primary sales pitch is
+            enterprise credibility. &#x201C;Google backs it.&#x201D; Google backs it
+            the way a restaurant backs its competitor&#x2019;s menu. The endorsement
+            is warm, public, and entirely theoretical.</p>
+
+        <h2>The Upgrade Treadmill</h2>
+
+        <p>Angular ships major releases every six months. Each major release contains
+            breaking changes. Each breaking change requires migration. Each migration
+            requires development time, testing time, and the quiet hope that the
+            <code>ng update</code> schematics will handle the worst of it.</p>
+
+        <p>The result is a permanent migration industry. Consultancies specialise in
+            Angular upgrades. Training programmes exist solely to teach the new syntax
+            that replaced the previous new syntax that replaced the original syntax.
+            RxJS subscription leaks are a rite of passage &#x2014; the framework
+            encourages reactive patterns built on Observables, then leaves the developer
+            to remember <code>unsubscribe()</code> in <code>ngOnDestroy</code>, or face
+            memory leaks that accumulate silently until the application slows to a crawl.</p>
+
+        <p>The community&#x2019;s workaround &#x2014; the <code>takeUntil</code> pattern
+            with a <code>Subject</code> &#x2014; adds boilerplate to every component.
+            Another solution to a problem the framework created. Another decorator on the
+            pile.</p>
+
+        <h2>The Complexity Spiral</h2>
+
+        <p>The pattern repeats with architectural precision. Every default behaviour
+            creates a performance or complexity problem. Every problem begets an
+            opt-in solution. Every solution adds its own complexity. The spiral is
+            self-sustaining.</p>
+
+        <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Angular&#x2019;s complexity spiral. Zone.js overhead leads to OnPush. Module bloat leads to lazy loading. RxJS leaks lead to takeUntil. Each solution adds complexity that requires its own solution." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .sp-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sp-value { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sp-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .sp-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .sp-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#sp-arr); }
+                .sp-arrow-dim { stroke: var(--border); stroke-width: 1; fill: none; marker-end: url(#sp-arr2); }
+            </style>
+            <defs>
+                <marker id="sp-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+                <marker id="sp-arr2" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--border)"/>
+                </marker>
+            </defs>
+            <!-- Title -->
+            <text class="sp-value" x="260" y="20" text-anchor="middle">THE COMPLEXITY SPIRAL</text>
+            <text class="sp-muted" x="260" y="36" text-anchor="middle">create problem &#x2192; sell solution &#x2192; new problem</text>
+            <!-- Row 1: Zone.js -->
+            <rect class="sp-box-hl" x="20" y="55" width="140" height="36"/>
+            <text class="sp-label" x="90" y="72" text-anchor="middle">Zone.js</text>
+            <text class="sp-muted" x="90" y="86" text-anchor="middle">overhead</text>
+            <line class="sp-arrow" x1="160" y1="73" x2="190" y2="73"/>
+            <rect class="sp-box" x="195" y="55" width="140" height="36"/>
+            <text class="sp-label" x="265" y="72" text-anchor="middle">OnPush</text>
+            <text class="sp-muted" x="265" y="86" text-anchor="middle">opt-in complexity</text>
+            <line class="sp-arrow-dim" x1="335" y1="73" x2="365" y2="73"/>
+            <rect class="sp-box" x="370" y="55" width="130" height="36"/>
+            <text class="sp-muted" x="435" y="72" text-anchor="middle">immutable ref</text>
+            <text class="sp-muted" x="435" y="86" text-anchor="middle">management</text>
+            <!-- Row 2: Modules -->
+            <rect class="sp-box-hl" x="20" y="115" width="140" height="36"/>
+            <text class="sp-label" x="90" y="132" text-anchor="middle">Module bloat</text>
+            <text class="sp-muted" x="90" y="146" text-anchor="middle">large bundles</text>
+            <line class="sp-arrow" x1="160" y1="133" x2="190" y2="133"/>
+            <rect class="sp-box" x="195" y="115" width="140" height="36"/>
+            <text class="sp-label" x="265" y="132" text-anchor="middle">Lazy loading</text>
+            <text class="sp-muted" x="265" y="146" text-anchor="middle">route splitting</text>
+            <line class="sp-arrow-dim" x1="335" y1="133" x2="365" y2="133"/>
+            <rect class="sp-box" x="370" y="115" width="130" height="36"/>
+            <text class="sp-muted" x="435" y="132" text-anchor="middle">preload strategy</text>
+            <text class="sp-muted" x="435" y="146" text-anchor="middle">management</text>
+            <!-- Row 3: RxJS -->
+            <rect class="sp-box-hl" x="20" y="175" width="140" height="36"/>
+            <text class="sp-label" x="90" y="192" text-anchor="middle">RxJS leaks</text>
+            <text class="sp-muted" x="90" y="206" text-anchor="middle">subscriptions</text>
+            <line class="sp-arrow" x1="160" y1="193" x2="190" y2="193"/>
+            <rect class="sp-box" x="195" y="175" width="140" height="36"/>
+            <text class="sp-label" x="265" y="192" text-anchor="middle">takeUntil</text>
+            <text class="sp-muted" x="265" y="206" text-anchor="middle">boilerplate</text>
+            <line class="sp-arrow-dim" x1="335" y1="193" x2="365" y2="193"/>
+            <rect class="sp-box" x="370" y="175" width="130" height="36"/>
+            <text class="sp-muted" x="435" y="192" text-anchor="middle">Subject lifecycle</text>
+            <text class="sp-muted" x="435" y="206" text-anchor="middle">management</text>
+            <!-- Row 4: Bundle -->
+            <rect class="sp-box-hl" x="20" y="235" width="140" height="36"/>
+            <text class="sp-label" x="90" y="252" text-anchor="middle">500 KB bundle</text>
+            <text class="sp-muted" x="90" y="266" text-anchor="middle">Hello World</text>
+            <line class="sp-arrow" x1="160" y1="253" x2="190" y2="253"/>
+            <rect class="sp-box" x="195" y="235" width="140" height="36"/>
+            <text class="sp-label" x="265" y="252" text-anchor="middle">Tree-shaking</text>
+            <text class="sp-muted" x="265" y="266" text-anchor="middle">build config</text>
+            <line class="sp-arrow-dim" x1="335" y1="253" x2="365" y2="253"/>
+            <rect class="sp-box" x="370" y="235" width="130" height="36"/>
+            <text class="sp-muted" x="435" y="252" text-anchor="middle">side-effect audit</text>
+            <text class="sp-muted" x="435" y="266" text-anchor="middle">per dependency</text>
+            <!-- Bottom annotation -->
+            <text class="sp-muted" x="260" y="305" text-anchor="middle">Each &#x201C;solution&#x201D; adds complexity that requires its own solution.</text>
+        </svg>
+
+        <p>Zone.js overhead &#x2192; OnPush. Module bloat &#x2192; lazy loading.
+            RxJS leaks &#x2192; <code>takeUntil</code>. Bundle size &#x2192; tree-shaking.
+            And tree-shaking requires auditing every dependency for side effects, which
+            requires build configuration, which requires expertise, which requires
+            a training budget. The spiral does not terminate. It merely generates
+            billable hours.</p>
+
+        <h2>In Fairness</h2>
+
+        <p>Some developers genuinely love Angular. They appreciate the opinions. They
+            value the consistency. They find comfort in a framework that makes every
+            architectural decision for you, even the wrong ones. For large teams with
+            high staff turnover, there is a legitimate argument that enforced uniformity
+            reduces the damage any single developer can cause. This is not nothing.
+            It is also not a technical argument. It is a management argument dressed
+            in decorators.</p>
+
+        <p>Angular has its place. That place is a large enterprise with a budget for
+            the ceremony, a tolerance for the bundle, and a philosophical comfort with
+            the notion that the framework knows better than the platform.</p>
+
+        <h2>The Invoice</h2>
+
+        <p>Let us itemise.</p>
+
+        <p><strong>500 KB</strong> for Hello World. <strong>30+</strong> browser APIs
+            monkey-patched by Zone.js. <strong>60</strong> change detection cycles per
+            second from a cursor movement. Seven decorators before a component does
+            anything. Five constructor injections to make an HTTP request. Six-month
+            major releases with breaking changes. A subscription model that leaks
+            memory unless the developer remembers the incantation. And a maker that
+            does not use its own product for any of its flagship applications.</p>
+
+        <p>The framework is not the product. The framework is the SAP of frontend
+            development: expensive, comprehensive, and profoundly confident that the
+            problem is your lack of configuration rather than its excess of it.</p>
+
+        <blockquote>
+            <p>The fastest change detection is the one that does not run.
+                The lightest bundle is the one that does not ship.
+                The simplest decorator is the one that does not exist.</p>
+        </blockquote>
+
+        <p>HTML solved buttons in 1993. The Fetch API solved HTTP requests in 2015.
+            The browser solved rendering before Angular was born. Every kilobyte of
+            framework you ship to a user on a mid-range device in Manila, a budget
+            Android in Nairobi, or a perfectly adequate broadband connection in
+            Kaiserslautern &#x2014; that is not architecture. That is a tax.
+            And the user never voted for it.</p>
+
+        <aside>
+            <p><strong>From the comments:</strong> Zone.js patches 30+ browser APIs.
+                The bundle comparison is not a matter of opinion &#x2014; it is a
+                matter of <code>bundlephobia</code>. Google&#x2019;s own products
+                do not use Angular. And the &#x201C;create problem, sell solution&#x201D;
+                pattern is not a conspiracy. It is the framework&#x2019;s documented
+                architecture, visible in its own source code and its own migration
+                guides. The spiral is not an accusation. It is a
+                <code>git log</code>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,391 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Native ES Modules: The Replacement &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Native ES Modules replace npm, Webpack, and Babel. Browsers have supported them since 2018. HTTP/2 multiplexing solved the request problem in 2015. The build pipeline is the complexity.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-esmodules-replacement{( endslot )}
+
+{( slot og-title )}Native ES Modules: The Replacement &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Browsers have understood ES Modules since 2018. HTTP/2 solved the request overhead in 2015. The build pipeline was the complexity all along.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Native ES Modules: The Replacement",
+    "datePublished": "2025-12-14",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-esmodules-replacement",
+    "description": "Native ES Modules replace npm, Webpack, and Babel. Browsers have supported them since 2018. HTTP/2 multiplexing solved the request problem in 2015. The build pipeline is the complexity.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2025-12-14">14 December 2025</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Native ES Modules: The Replacement</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Replacement</em> &#x25A0; Episode 02</p>
+
+        <p>Here is the entire setup for loading JavaScript modules in a browser in 2026:</p>
+
+        <p><code>&lt;script type=&#x201D;module&#x201D;&gt;</code></p>
+
+        <p>That is it. No <code>npm install</code>. No <code>webpack.config.js</code>.
+            No 847 MB <code>node_modules</code> directory. No Babel transpilation stage.
+            No loader chain. No plugin ecosystem. One attribute on a script tag, and the
+            browser does what it has known how to do since 2018.</p>
+
+        <p>The question is not whether this works. The question is why, eight years later,
+            the industry still behaves as though it does not.</p>
+
+        <h2>The Timeline Nobody Checked</h2>
+
+        <p>The history is brief and instructive. In 2015,
+            <a href="https://tools.ietf.org/html/rfc7540" target="_blank" rel="noopener">HTTP/2</a>
+            shipped with multiplexing &#x2014; the ability to send hundreds of requests
+            over a single TCP connection without the head-of-line blocking that made
+            HTTP/1.1 concatenation necessary. The &#x201C;too many requests&#x201D;
+            argument, the foundational justification for bundling everything into a single
+            file, became a historical footnote. Nobody sent flowers.</p>
+
+        <p>In 2017, ES Modules landed in Chrome 61 and Safari 11. Firefox 60 followed in
+            May 2018. Edge 16 completed the set. The <code>import</code> and
+            <code>export</code> keywords became native browser primitives. Not polyfilled.
+            Not transpiled. Understood.</p>
+
+        <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline showing the key dates: HTTP/2 with multiplexing in 2015, ES Modules in all major browsers by 2018, and the present day in 2026 where much of the industry still bundles everything." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .esm-axis { stroke: var(--border); stroke-width: 2; }
+                .esm-tick { stroke: var(--border); stroke-width: 1; }
+                .esm-dot { fill: var(--accent); }
+                .esm-dot-dim { fill: var(--muted); opacity: 0.4; }
+                .esm-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .esm-year { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .esm-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .esm-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .esm-ghost { font: 400 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); opacity: 0.6; }
+                .esm-brace { stroke: var(--accent); stroke-width: 1.5; fill: none; opacity: 0.5; }
+            </style>
+            <!-- Title -->
+            <text class="esm-title" x="260" y="20" text-anchor="middle">THE TIMELINE NOBODY CHECKED</text>
+
+            <!-- Main axis -->
+            <line class="esm-axis" x1="40" y1="100" x2="490" y2="100"/>
+
+            <!-- 2012: Webpack -->
+            <line class="esm-tick" x1="70" y1="92" x2="70" y2="108"/>
+            <circle cx="70" cy="100" r="4" class="esm-dot-dim"/>
+            <text class="esm-year" x="70" y="82" text-anchor="middle">2012</text>
+            <text class="esm-muted" x="70" y="125" text-anchor="middle">Webpack</text>
+            <text class="esm-muted" x="70" y="137" text-anchor="middle">released</text>
+
+            <!-- 2015: HTTP/2 -->
+            <line class="esm-tick" x1="190" y1="92" x2="190" y2="108"/>
+            <circle cx="190" cy="100" r="6" class="esm-dot"/>
+            <text class="esm-year" x="190" y="82" text-anchor="middle">2015</text>
+            <text class="esm-label" x="190" y="125" text-anchor="middle">HTTP/2</text>
+            <text class="esm-muted" x="190" y="137" text-anchor="middle">Multiplexing</text>
+            <text class="esm-muted" x="190" y="149" text-anchor="middle">&#x201C;Too many requests&#x201D;</text>
+            <text class="esm-muted" x="190" y="161" text-anchor="middle">solved</text>
+
+            <!-- 2017-2018: ES Modules -->
+            <line class="esm-tick" x1="310" y1="92" x2="310" y2="108"/>
+            <circle cx="310" cy="100" r="6" class="esm-dot"/>
+            <text class="esm-year" x="310" y="82" text-anchor="middle">2017&#x2013;18</text>
+            <text class="esm-label" x="310" y="125" text-anchor="middle">ES Modules</text>
+            <text class="esm-muted" x="310" y="137" text-anchor="middle">All major browsers</text>
+            <text class="esm-muted" x="310" y="149" text-anchor="middle">Bundler optional</text>
+
+            <!-- 2026: Today -->
+            <line class="esm-tick" x1="460" y1="92" x2="460" y2="108"/>
+            <circle cx="460" cy="100" r="6" class="esm-dot-dim"/>
+            <text class="esm-year" x="460" y="82" text-anchor="middle">2026</text>
+            <text class="esm-ghost" x="460" y="125" text-anchor="middle">Industry still</text>
+            <text class="esm-ghost" x="460" y="137" text-anchor="middle">bundling</text>
+
+            <!-- Brace spanning 2015-2018 to 2026 -->
+            <path class="esm-brace" d="M 190 170 Q 190 195, 325 195 Q 460 195, 460 170"/>
+            <text class="esm-muted" x="325" y="215" text-anchor="middle">8&#x2013;11 years of unnecessary build steps</text>
+
+            <!-- Browser support note -->
+            <text class="esm-muted" x="260" y="245" text-anchor="middle">ES Modules browser support: 98%+ global (caniuse.com)</text>
+        </svg>
+
+        <p>The browser, in other words, has understood JavaScript modules for the better part
+            of a decade. The build pipeline &#x2014; npm, Webpack, Babel, the entire orchestrated
+            ceremony of transpilation and bundling &#x2014; is not solving a current problem. It
+            is solving a 2012 problem, in 2026, at 2026 prices.</p>
+
+        <h2>The Anatomy of the Replacement</h2>
+
+        <p>The traditional JavaScript workflow requires four interlocking systems: a package
+            manager to fetch code, a bundler to concatenate it, a transpiler to downgrade it,
+            and a configuration layer to make the other three cooperate. Native ES Modules
+            replace the entire chain with a browser-native mechanism.</p>
+
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison diagram: Traditional pipeline with npm, Webpack, Babel and config versus native ES Modules with just a script tag. Four boxes on the left, one on the right." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .esm-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .esm-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .esm-box-dim { fill: var(--muted); opacity: 0.08; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .esm-arrow { stroke: var(--border); stroke-width: 1; fill: none; marker-end: url(#esm-arrowhead); }
+                .esm-arr-hl { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#esm-arrowhead-hl); }
+                .esm-h2 { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .esm-box-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .esm-box-sub { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .esm-strike { text-decoration: line-through; font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); opacity: 0.5; }
+                .esm-vs { font: 700 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <defs>
+                <marker id="esm-arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--border)" stroke-width="1"/>
+                </marker>
+                <marker id="esm-arrowhead-hl" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+                </marker>
+            </defs>
+
+            <!-- Title left -->
+            <text class="esm-h2" x="120" y="22" text-anchor="middle">TRADITIONAL</text>
+            <!-- Title right -->
+            <text class="esm-h2" x="400" y="22" text-anchor="middle">NATIVE ES MODULES</text>
+
+            <!-- Left column: Traditional pipeline -->
+            <rect class="esm-box-dim" x="30" y="40" width="180" height="48"/>
+            <text class="esm-box-label" x="120" y="60" text-anchor="middle">npm install</text>
+            <text class="esm-box-sub" x="120" y="76" text-anchor="middle">847 MB node_modules</text>
+
+            <line class="esm-arrow" x1="120" y1="88" x2="120" y2="105"/>
+
+            <rect class="esm-box-dim" x="30" y="108" width="180" height="48"/>
+            <text class="esm-box-label" x="120" y="128" text-anchor="middle">Babel / TypeScript</text>
+            <text class="esm-box-sub" x="120" y="144" text-anchor="middle">Transpile to ES5</text>
+
+            <line class="esm-arrow" x1="120" y1="156" x2="120" y2="173"/>
+
+            <rect class="esm-box-dim" x="30" y="176" width="180" height="48"/>
+            <text class="esm-box-label" x="120" y="196" text-anchor="middle">Webpack / Rollup</text>
+            <text class="esm-box-sub" x="120" y="212" text-anchor="middle">Bundle + tree-shake + minify</text>
+
+            <line class="esm-arrow" x1="120" y1="224" x2="120" y2="241"/>
+
+            <rect class="esm-box-dim" x="30" y="244" width="180" height="48"/>
+            <text class="esm-box-label" x="120" y="264" text-anchor="middle">webpack.config.js</text>
+            <text class="esm-box-sub" x="120" y="280" text-anchor="middle">200+ lines of loaders/plugins</text>
+
+            <!-- VS -->
+            <text class="esm-vs" x="260" y="175" text-anchor="middle">vs</text>
+
+            <!-- Right column: Native ES Modules -->
+            <rect class="esm-box-hl" x="310" y="130" width="180" height="68"/>
+            <text class="esm-box-label" x="400" y="158" text-anchor="middle">&lt;script type="module"&gt;</text>
+            <text class="esm-box-sub" x="400" y="176" text-anchor="middle">Zero config. Zero build. Done.</text>
+
+            <!-- Footnotes -->
+            <text class="esm-box-sub" x="120" y="316" text-anchor="middle">4 tools, 3 config files, N plugins</text>
+            <text class="esm-box-sub" x="400" y="316" text-anchor="middle">1 attribute, 0 dependencies</text>
+        </svg>
+
+        <p>The <code>&lt;script type=&#x201D;module&#x201D;&gt;</code> attribute tells the browser
+            to treat the file as an ES Module. The browser resolves <code>import</code> statements,
+            fetches the dependencies, and executes them in the correct order. It has done this,
+            reliably, across all major browsers, for eight years. The
+            <a href="https://caniuse.com/es6-module" target="_blank" rel="noopener">global support
+            stands at 98%</a>, which is higher than the support for several CSS properties that
+            nobody hesitates to ship.</p>
+
+        <h2>The Phantom Objection</h2>
+
+        <p>The most common objection arrives on cue: &#x201C;But what about performance? Loading
+            fifty individual files is slower than loading one bundle.&#x201D;</p>
+
+        <p>This was true in 2014. It has not been true since 2015.</p>
+
+        <p>HTTP/2 multiplexing allows hundreds of requests to travel in parallel over a single
+            connection. There is no connection-per-request overhead. There is no head-of-line
+            blocking. The protocol was specifically designed to make the concatenation argument
+            obsolete, and it succeeded &#x2014; eleven years ago.</p>
+
+        <p>Moreover, the browser caches individual modules. Change one file, and the browser
+            reloads precisely that file. The other forty-nine remain cached. With a bundled
+            application, changing one line of code invalidates the entire bundle. The user
+            downloads everything again. This is not a theoretical disadvantage. It is a measurable
+            one, on every deployment, for every user.</p>
+
+        <h2>What You Lose</h2>
+
+        <p>Honesty demands an itemisation of the costs. Abandoning the build pipeline means
+            abandoning several things the industry has grown accustomed to.</p>
+
+        <p><strong>The npm ecosystem.</strong> 2.1 million packages &#x2014; the greatest
+            unaudited code dump on Earth. You lose access to <code>is-odd</code>, the package
+            that checks whether a number is odd (400,000 weekly downloads at its peak, for a
+            function that is one line of arithmetic). You lose the convenience of
+            <code>npm install</code> and gain the inconvenience of understanding what your
+            dependencies actually do. Whether this is a loss depends on your relationship
+            with the
+            <a href="https://blog.npmjs.org/post/141577284765/kik-left-pad-and-npm" target="_blank" rel="noopener">left-pad
+            incident of 2016</a>, in which eleven lines of code brought down build systems
+            across the industry.</p>
+
+        <p><strong>Build-time optimisation.</strong> Tree-shaking, dead code elimination,
+            minification &#x2014; these are genuine benefits when your application ships
+            five hundred modules. For a project with thirty modules, the optimisation removes
+            kilobytes. The build pipeline that performs the optimisation adds minutes. The
+            arithmetic is unflattering.</p>
+
+        <p><strong>TypeScript.</strong> Without a build step, <code>.ts</code> files do not
+            reach the browser. This is a genuine constraint for TypeScript projects. It is
+            not a constraint for JavaScript projects, which is most of the web.</p>
+
+        <h2>What You Gain</h2>
+
+        <p><strong>Zero build step.</strong> Save the file. Reload the browser. The feedback
+            loop is instantaneous because there is nothing between the code and the execution
+            environment. No watcher. No compilation. No bundle invalidation. The file you wrote
+            is the file the browser runs.</p>
+
+        <p><strong>Granular caching.</strong> Each module is cached independently. Deploy a
+            change to one file and only that file is re-fetched. The rest of the application
+            remains cached. In a bundled workflow, any change to any file invalidates the
+            entire bundle.</p>
+
+        <p><strong>Dependencies you understand.</strong> When you import a module from a URL
+            or a local path, you know what it is. You chose it. You read it. There is no
+            transitive dependency tree five levels deep, maintained by strangers whose names
+            you have never encountered, executing code you have never read.</p>
+
+        <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Caching comparison: bundled application invalidates the entire bundle on any change, while ES Modules only invalidate the changed file and keep the rest cached." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .esm-cache-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .esm-cache-label { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .esm-cache-sub { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .esm-cache-cached { fill: var(--accent); opacity: 0.15; stroke: var(--accent); stroke-width: 1; rx: 3; }
+                .esm-cache-stale { fill: var(--muted); opacity: 0.1; stroke: var(--border); stroke-width: 1; rx: 3; stroke-dasharray: 4,3; }
+                .esm-cache-changed { fill: var(--accent); opacity: 0.5; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+            <!-- Title -->
+            <text class="esm-cache-title" x="260" y="20" text-anchor="middle">CACHE INVALIDATION ON DEPLOY</text>
+
+            <!-- Left: Bundled -->
+            <text class="esm-cache-label" x="120" y="48" text-anchor="middle">Bundled (1 file)</text>
+
+            <!-- One big stale block -->
+            <rect class="esm-cache-stale" x="30" y="58" width="180" height="80"/>
+            <text class="esm-cache-sub" x="120" y="95" text-anchor="middle">bundle.js &#x2014; 350 KB</text>
+            <text class="esm-cache-sub" x="120" y="110" text-anchor="middle">1 line changed &#x2192; entire bundle redownloaded</text>
+
+            <text class="esm-cache-sub" x="120" y="158" text-anchor="middle">User downloads: 350 KB</text>
+
+            <!-- Right: ES Modules -->
+            <text class="esm-cache-label" x="400" y="48" text-anchor="middle">ES Modules (30 files)</text>
+
+            <!-- Grid of small boxes, one changed, rest cached -->
+            <rect class="esm-cache-cached" x="310" y="58" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="342" y="58" width="28" height="22"/>
+            <rect class="esm-cache-changed" x="374" y="58" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="406" y="58" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="438" y="58" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="470" y="58" width="28" height="22"/>
+
+            <rect class="esm-cache-cached" x="310" y="84" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="342" y="84" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="374" y="84" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="406" y="84" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="438" y="84" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="470" y="84" width="28" height="22"/>
+
+            <rect class="esm-cache-cached" x="310" y="110" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="342" y="110" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="374" y="110" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="406" y="110" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="438" y="110" width="28" height="22"/>
+            <rect class="esm-cache-cached" x="470" y="110" width="28" height="22"/>
+
+            <!-- Legend -->
+            <rect class="esm-cache-changed" x="310" y="142" width="10" height="10"/>
+            <text class="esm-cache-sub" x="325" y="151">Changed (re-fetched)</text>
+            <rect class="esm-cache-cached" x="420" y="142" width="10" height="10"/>
+            <text class="esm-cache-sub" x="435" y="151">Cached</text>
+
+            <text class="esm-cache-sub" x="400" y="175" text-anchor="middle">User downloads: ~4 KB (1 file)</text>
+        </svg>
+
+        <h2>The 90% Argument</h2>
+
+        <p>The honest assessment is this: for applications with five hundred or more modules,
+            aggressive tree-shaking and code splitting remain valuable. The bundler earns its
+            keep. Nobody disputes this.</p>
+
+        <p>The dishonest assessment is pretending that most projects are in this category.</p>
+
+        <p>They are not. The vast majority of web projects ship between ten and fifty modules.
+            A marketing site, a dashboard, a content management front-end, an internal tool &#x2014;
+            these are not applications that require build-time dependency graph analysis. They are
+            applications that require a script tag and a browser manufactured after 2017.</p>
+
+        <p>For ninety per cent of projects under fifty modules, the build pipeline is not solving
+            complexity. The build pipeline <em>is</em> the complexity. The configuration file, the
+            dependency tree, the plugin compatibility matrix, the CI minutes, the &#x201C;works on
+            my machine&#x201D; debugging sessions &#x2014; all of it exists to support a tool that
+            the browser replaced eight years ago.</p>
+
+        <h2>The Invoice</h2>
+
+        <p>Let us be specific about what the build pipeline costs.</p>
+
+        <p><strong>npm install:</strong> fetches packages you did not choose, maintained by people
+            you have not vetted, executing install scripts you have not read. The median
+            <code>node_modules</code> folder for a React project exceeds 200 MB.</p>
+
+        <p><strong>webpack.config.js:</strong> the configuration file that nobody fully understands,
+            inherited from a colleague who has since left, modified by Stack Overflow, maintained by
+            prayer.</p>
+
+        <p><strong>Babel:</strong> transpiles modern JavaScript to ES5 for browsers that corporate IT
+            retired three years ago. In 2026, transpilation is predominantly an act of nostalgia.</p>
+
+        <p><strong>CI minutes:</strong> the build runs on every push, consuming compute, generating
+            artefacts, and adding latency to a feedback loop that could be instantaneous.</p>
+
+        <p>The native alternative: one script tag, zero configuration, granular caching, instant
+            reload, and dependencies you chose deliberately. The browser has been ready since 2018.
+            The protocol has been ready since 2015. The only thing not ready, apparently, is the
+            industry.</p>
+
+        <aside class="vv-aside">
+            <p><strong>A necessary caveat</strong></p>
+            <p>Large applications with 500+ modules will continue to benefit from bundlers &#x2014;
+                tree-shaking and code splitting at that scale are genuine optimisations. But the
+                reality is that most projects have 10 to 50 modules.
+                <a href="https://tools.ietf.org/html/rfc7540" target="_blank" rel="noopener">HTTP/2
+                multiplexing</a> handles hundreds of parallel requests without overhead.
+                <a href="https://caniuse.com/es6-module" target="_blank" rel="noopener">ES Module
+                browser support</a> stands at 98%+ globally. The edge case has been doing the
+                talking for the entire room.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

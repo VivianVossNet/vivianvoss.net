@@ -1,0 +1,476 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Dialog Element &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="22.5 million npm installs per week for JavaScript that recreates the native HTML dialog element. Focus traps, escape handlers, backdrop overlays, ARIA semantics. All built in. 0 KB.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-dialog-element{( endslot )}
+
+{( slot og-title )}The Dialog Element &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}22.5 million npm installs per week for focus traps and modal overlays. The browser has shipped all of it natively since 2022. Zero kilobytes. Zero configuration.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Dialog Element",
+    "datePublished": "2026-02-18",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-dialog-element",
+    "description": "22.5 million npm installs per week for JavaScript that recreates the native HTML dialog element. Focus traps, escape handlers, backdrop overlays, ARIA semantics. All built in. 0 KB.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-18">18 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Dialog Element</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">html</span>
+            <span class="vv-pill">css</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 04</p>
+
+        <blockquote>
+            <p>&#x201C;Modal or not modal &#x2014; that is the method call.&#x201D;</p>
+        </blockquote>
+
+        <p>There exists, in the npm registry, a constellation of packages whose
+            collective purpose is to open a box on screen, trap focus inside it,
+            darken the background, close on Escape, and announce itself to screen
+            readers. These packages enjoy
+            <a href="https://www.npmjs.com/package/react-modal" target="_blank" rel="noopener">22.5 million
+            installs per week</a>. They are, by any commercial measure, a roaring
+            success. They are also, by any engineering measure, entirely unnecessary.</p>
+
+        <p>The HTML
+            <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog" target="_blank" rel="noopener"><code>&lt;dialog&gt;</code>
+            element</a> does all of this natively. It ships in every browser. It has
+            shipped in every browser since 2022. It weighs zero kilobytes. It requires
+            zero configuration. It satisfies seven of the nine
+            <a href="https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/" target="_blank" rel="noopener">W3C
+            accessibility requirements</a> for a modal dialog before you have written
+            a single line of code.</p>
+
+        <p>The industry, with characteristic thoroughness, has elected to reimplement
+            it in JavaScript.</p>
+
+        <h2>The Entire Pattern</h2>
+
+        <p>Here is a confirmation dialog. The complete, production-ready,
+            accessible confirmation dialog:</p>
+
+        <pre><code>&lt;dialog id="confirm"&gt;
+  &lt;form method="dialog"&gt;
+    &lt;p&gt;Are you sure?&lt;/p&gt;
+    &lt;button value="no"&gt;Cancel&lt;/button&gt;
+    &lt;button value="yes" autofocus&gt;Confirm&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/dialog&gt;</code></pre>
+
+        <p>Opening it requires one line:</p>
+
+        <pre><code>document.getElementById('confirm').showModal();</code></pre>
+
+        <p>That is not a simplified excerpt. That is the entire implementation.
+            The <code>&lt;form method=&#x201D;dialog&#x201D;&gt;</code> tells the
+            browser to close the dialog when any button is pressed and to set the
+            dialog&#x2019;s <code>returnValue</code> to the button&#x2019;s
+            <code>value</code> attribute. No event listeners for the close action.
+            No state management for open/closed. No cleanup. The platform handles
+            the lifecycle.</p>
+
+        <h2>What the Browser Provides Free of Charge</h2>
+
+        <p>When you call
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal" target="_blank" rel="noopener"><code>.showModal()</code></a>,
+            the browser does the following, without being asked, without being configured,
+            and without requiring a single dependency:</p>
+
+        <p><strong>Focus management.</strong> Focus moves into the dialog automatically.
+            When the dialog closes, focus returns to the element that opened it.
+            Tab and Shift+Tab cycle through focusable elements inside the dialog
+            and nowhere else. The focus trap that
+            <a href="https://www.npmjs.com/package/focus-trap" target="_blank" rel="noopener">focus-trap</a>
+            implements in 2,036 lines of JavaScript is built into the browser
+            as a default behaviour.</p>
+
+        <p><strong>Inert background.</strong> Everything outside the dialog becomes
+            inert. Not visually hidden &#x2014; <em>inert</em>. Clicks do not register.
+            Tab does not reach it. Screen readers do not announce it. The page behind the
+            dialog is, for all practical purposes, temporarily non-existent.</p>
+
+        <p><strong>Escape closes.</strong> Press Escape. The dialog closes. No
+            <code>addEventListener(&#x2019;keydown&#x2019;)</code>. No
+            <code>event.key === &#x2019;Escape&#x2019;</code>. No checking whether
+            another dialog is stacked on top. The browser handles it.</p>
+
+        <p><strong>The <code>::backdrop</code> pseudo-element.</strong> A styleable
+            overlay behind the dialog. It exists automatically. It requires no
+            additional DOM element, no absolute positioning, no z-index arithmetic.
+            You style it with CSS and the browser renders it.</p>
+
+        <p><strong>Top layer.</strong> The dialog renders in the
+            <a href="https://developer.mozilla.org/en-US/docs/Glossary/Top_layer" target="_blank" rel="noopener">top layer</a>,
+            above all other content, above all z-index stacking contexts,
+            above absolutely everything. The z-index wars &#x2014; the eternal
+            arms race of <code>z-index: 99999</code> &#x2014; simply do not
+            apply. The top layer is a separate rendering plane. There is nothing
+            to fight.</p>
+
+        <p><strong>ARIA semantics.</strong> A modal dialog opened with
+            <code>.showModal()</code> has <code>role=&#x201D;dialog&#x201D;</code> and
+            <code>aria-modal=&#x201D;true&#x201D;</code> implicitly. Screen readers
+            announce it correctly. The W3C specifies nine requirements for an
+            accessible modal dialog. <code>.showModal()</code> satisfies seven
+            before you write a line.</p>
+
+        <p><strong>Return value.</strong> <code>dialog.returnValue</code> contains
+            the value of the button that closed it. No custom events. No callback
+            chains. No state variable tracking which button was pressed. The
+            answer is on the element.</p>
+
+        <svg viewBox="0 0 520 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Browser feature checklist: seven capabilities provided free by showModal. Focus management, inert background, Escape closes, backdrop pseudo-element, top layer, ARIA semantics, and return value. All built in, zero kilobytes." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .dlg-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dlg-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .dlg-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .dlg-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dlg-check { font: 700 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dlg-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .dlg-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .dlg-fill { fill: var(--accent); opacity: 0.08; rx: 3; }
+                .dlg-fill-hl { fill: var(--accent); opacity: 0.15; rx: 3; }
+            </style>
+            <text class="dlg-title" x="260" y="18" text-anchor="middle">WHAT .showModal() PROVIDES FREE</text>
+            <text class="dlg-sub" x="260" y="36" text-anchor="middle">7 of 9 W3C accessibility requirements &#x2014; zero lines of code</text>
+
+            <rect class="dlg-fill-hl" x="30" y="50" width="460" height="36"/>
+            <rect class="dlg-box-hl" x="30" y="50" width="460" height="36"/>
+            <text class="dlg-check" x="50" y="73">&#x2713;</text>
+            <text class="dlg-label" x="72" y="65">Focus management</text>
+            <text class="dlg-sub" x="72" y="80">Auto-focus, tab cycling, return on close</text>
+
+            <rect class="dlg-fill-hl" x="30" y="92" width="460" height="36"/>
+            <rect class="dlg-box-hl" x="30" y="92" width="460" height="36"/>
+            <text class="dlg-check" x="50" y="115">&#x2713;</text>
+            <text class="dlg-label" x="72" y="107">Inert background</text>
+            <text class="dlg-sub" x="72" y="122">No clicks, no tab, no screen reader access</text>
+
+            <rect class="dlg-fill-hl" x="30" y="134" width="460" height="36"/>
+            <rect class="dlg-box-hl" x="30" y="134" width="460" height="36"/>
+            <text class="dlg-check" x="50" y="157">&#x2713;</text>
+            <text class="dlg-label" x="72" y="149">Escape closes</text>
+            <text class="dlg-sub" x="72" y="164">Native key handling, no event listener</text>
+
+            <rect class="dlg-fill-hl" x="30" y="176" width="460" height="36"/>
+            <rect class="dlg-box-hl" x="30" y="176" width="460" height="36"/>
+            <text class="dlg-check" x="50" y="199">&#x2713;</text>
+            <text class="dlg-label" x="72" y="191">::backdrop pseudo-element</text>
+            <text class="dlg-sub" x="72" y="206">Styleable overlay, no extra DOM</text>
+
+            <rect class="dlg-fill-hl" x="30" y="218" width="460" height="36"/>
+            <rect class="dlg-box-hl" x="30" y="218" width="460" height="36"/>
+            <text class="dlg-check" x="50" y="241">&#x2713;</text>
+            <text class="dlg-label" x="72" y="233">Top layer</text>
+            <text class="dlg-sub" x="72" y="248">Above all z-index. No stacking context wars</text>
+
+            <rect class="dlg-fill-hl" x="30" y="260" width="460" height="36"/>
+            <rect class="dlg-box-hl" x="30" y="260" width="460" height="36"/>
+            <text class="dlg-check" x="50" y="283">&#x2713;</text>
+            <text class="dlg-label" x="72" y="275">ARIA semantics</text>
+            <text class="dlg-sub" x="72" y="290">role="dialog", aria-modal="true" implicit</text>
+
+            <rect class="dlg-fill-hl" x="30" y="302" width="460" height="36"/>
+            <rect class="dlg-box-hl" x="30" y="302" width="460" height="36"/>
+            <text class="dlg-check" x="50" y="325">&#x2713;</text>
+            <text class="dlg-label" x="72" y="317">returnValue</text>
+            <text class="dlg-sub" x="72" y="332">Which button closed it. On the element.</text>
+
+            <text class="dlg-accent" x="260" y="356" text-anchor="middle">Total cost: 0 KB</text>
+        </svg>
+
+        <h2>The One Thing It Does Not Do</h2>
+
+        <p>Scroll lock. When a modal dialog opens, the background page remains
+            scrollable. This is the single omission, the one genuine gap in the
+            native implementation. The solution is two lines of CSS:</p>
+
+        <pre><code>html:has(dialog[open]:modal) {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+}</code></pre>
+
+        <p>The <code>:has()</code> selector targets the <code>&lt;html&gt;</code>
+            element only when it contains an open modal dialog. No JavaScript. No
+            toggle class on the body. No scroll position bookkeeping. The
+            <code>scrollbar-gutter: stable</code> prevents the layout shift that
+            occurs when the scrollbar disappears. Two declarations. Problem solved.</p>
+
+        <h2>Two Methods, One Element</h2>
+
+        <p>The <code>&lt;dialog&gt;</code> element has two opening methods, and
+            the distinction between them is the entire architecture of the
+            component:</p>
+
+        <p><strong><code>.show()</code></strong> opens the dialog non-modally.
+            No backdrop. No inert background. No focus trap. The page remains
+            fully interactive. The dialog is an overlay, not a takeover. Think
+            toast notifications, inline confirmations, supplementary panels.</p>
+
+        <p><strong><code>.showModal()</code></strong> opens the dialog modally.
+            Backdrop. Inert background. Focus trap. Escape closes. Top layer.
+            ARIA semantics. The full ceremony. Think confirmation prompts,
+            destructive action gates, authentication flows.</p>
+
+        <p>Same element. Same HTML. The method call decides the behaviour. No
+            <code>isModal</code> prop. No configuration object. No conditional
+            rendering. One element, two methods, two entirely different interaction
+            patterns.</p>
+
+        <svg viewBox="0 0 520 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison of .show() versus .showModal() methods. Same element, different behaviour. Non-modal has no backdrop, no focus trap, page stays interactive. Modal has backdrop, focus trap, inert background, Escape closes, top layer, ARIA." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .dlg-cmp-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dlg-cmp-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .dlg-cmp-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .dlg-cmp-code { font: 600 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dlg-cmp-row { font: 400 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .dlg-cmp-no { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .dlg-cmp-yes { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dlg-cmp-line { stroke: var(--border); stroke-width: 0.5; }
+                .dlg-cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .dlg-cmp-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .dlg-cmp-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                .dlg-cmp-fill-hl { fill: var(--accent); opacity: 0.12; rx: 3; }
+            </style>
+            <text class="dlg-cmp-title" x="260" y="18" text-anchor="middle">SAME ELEMENT, DIFFERENT METHOD</text>
+            <text class="dlg-cmp-sub" x="260" y="36" text-anchor="middle">The method call is the architecture</text>
+
+            <!-- Column headers -->
+            <rect class="dlg-cmp-fill" x="30" y="50" width="220" height="36"/>
+            <rect class="dlg-cmp-box" x="30" y="50" width="220" height="36"/>
+            <text class="dlg-cmp-code" x="140" y="73" text-anchor="middle">.show()</text>
+
+            <rect class="dlg-cmp-fill-hl" x="270" y="50" width="220" height="36"/>
+            <rect class="dlg-cmp-box-hl" x="270" y="50" width="220" height="36"/>
+            <text class="dlg-cmp-code" x="380" y="73" text-anchor="middle">.showModal()</text>
+
+            <!-- Rows -->
+            <line class="dlg-cmp-line" x1="30" y1="106" x2="490" y2="106"/>
+            <text class="dlg-cmp-row" x="30" y="102">Backdrop</text>
+            <text class="dlg-cmp-no" x="140" y="102" text-anchor="middle">&#x2014;</text>
+            <text class="dlg-cmp-yes" x="380" y="102" text-anchor="middle">&#x2713;</text>
+
+            <line class="dlg-cmp-line" x1="30" y1="130" x2="490" y2="130"/>
+            <text class="dlg-cmp-row" x="30" y="126">Focus trap</text>
+            <text class="dlg-cmp-no" x="140" y="126" text-anchor="middle">&#x2014;</text>
+            <text class="dlg-cmp-yes" x="380" y="126" text-anchor="middle">&#x2713;</text>
+
+            <line class="dlg-cmp-line" x1="30" y1="154" x2="490" y2="154"/>
+            <text class="dlg-cmp-row" x="30" y="150">Inert background</text>
+            <text class="dlg-cmp-no" x="140" y="150" text-anchor="middle">&#x2014;</text>
+            <text class="dlg-cmp-yes" x="380" y="150" text-anchor="middle">&#x2713;</text>
+
+            <line class="dlg-cmp-line" x1="30" y1="178" x2="490" y2="178"/>
+            <text class="dlg-cmp-row" x="30" y="174">Escape closes</text>
+            <text class="dlg-cmp-no" x="140" y="174" text-anchor="middle">&#x2014;</text>
+            <text class="dlg-cmp-yes" x="380" y="174" text-anchor="middle">&#x2713;</text>
+
+            <line class="dlg-cmp-line" x1="30" y1="202" x2="490" y2="202"/>
+            <text class="dlg-cmp-row" x="30" y="198">Top layer</text>
+            <text class="dlg-cmp-no" x="140" y="198" text-anchor="middle">&#x2014;</text>
+            <text class="dlg-cmp-yes" x="380" y="198" text-anchor="middle">&#x2713;</text>
+
+            <line class="dlg-cmp-line" x1="30" y1="226" x2="490" y2="226"/>
+            <text class="dlg-cmp-row" x="30" y="222">ARIA modal semantics</text>
+            <text class="dlg-cmp-no" x="140" y="222" text-anchor="middle">&#x2014;</text>
+            <text class="dlg-cmp-yes" x="380" y="222" text-anchor="middle">&#x2713;</text>
+
+            <text class="dlg-cmp-row" x="30" y="246">Page interactive</text>
+            <text class="dlg-cmp-yes" x="140" y="246" text-anchor="middle">&#x2713;</text>
+            <text class="dlg-cmp-no" x="380" y="246" text-anchor="middle">&#x2014;</text>
+
+            <!-- Bottom -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="30" y1="264" x2="490" y2="264"/>
+            <text class="dlg-cmp-sub" x="260" y="284" text-anchor="middle">Toast, inline panel &#x2192; .show()  &#x25A0;  Confirm, auth, destructive &#x2192; .showModal()</text>
+        </svg>
+
+        <h2>The Library Invoice</h2>
+
+        <p>Let us examine what the ecosystem charges for the privilege of
+            reimplementing a browser primitive.</p>
+
+        <p><a href="https://www.npmjs.com/package/focus-trap" target="_blank" rel="noopener"><strong>focus-trap</strong></a>
+            plus
+            <a href="https://www.npmjs.com/package/tabbable" target="_blank" rel="noopener"><strong>tabbable</strong></a>:
+            2,036 lines of JavaScript for focus management alone. That is the
+            focus trap, the tab order analysis, the edge case handling for shadow
+            DOM, the workaround for browser inconsistencies that were resolved
+            years ago. Two thousand lines. To do what <code>.showModal()</code>
+            does by default.</p>
+
+        <p><a href="https://www.npmjs.com/package/react-modal" target="_blank" rel="noopener"><strong>react-modal</strong></a>:
+            27 KB. Portal rendering, body class management, focus trapping,
+            scroll locking, ARIA attributes, keyboard handling. Every one of
+            these features is either built into <code>&lt;dialog&gt;</code> or
+            achievable with two lines of CSS. The package has 2.4 million
+            weekly downloads.</p>
+
+        <p><a href="https://www.npmjs.com/package/@radix-ui/react-dialog" target="_blank" rel="noopener"><strong>@radix-ui/react-dialog</strong></a>:
+            34 KB. A &#x201C;headless&#x201D; dialog component. Unstyled, composable,
+            accessible. It is, by all accounts, beautifully engineered. It is also
+            34 kilobytes of JavaScript performing a job that the browser performs
+            in zero kilobytes. The engineering is not in question. The necessity is.</p>
+
+        <p>The combined weekly downloads across these packages and their
+            competitors exceed 22 million. That is 22 million <code>npm install</code>
+            operations per week, fetching JavaScript to replicate what every
+            browser has shipped natively for four years.</p>
+
+        <svg viewBox="0 0 520 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Library size comparison: focus-trap plus tabbable at 2,036 lines, react-modal at 27 KB, Radix dialog at 34 KB, and native dialog at 0 KB. Bar chart showing the weight of each approach." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .dlg-bar-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dlg-bar-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .dlg-bar-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .dlg-bar-val { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dlg-bar-dim { fill: var(--muted); opacity: 0.15; rx: 3; }
+                .dlg-bar-hl { fill: var(--accent); opacity: 0.25; rx: 3; }
+                .dlg-bar-zero { fill: var(--accent); opacity: 0.6; rx: 3; }
+                .dlg-bar-line { stroke: var(--border); stroke-width: 0.5; }
+            </style>
+            <text class="dlg-bar-title" x="260" y="18" text-anchor="middle">THE LIBRARY INVOICE</text>
+            <text class="dlg-bar-sub" x="260" y="36" text-anchor="middle">What you download to do what the browser already does</text>
+
+            <!-- focus-trap + tabbable -->
+            <text class="dlg-bar-label" x="30" y="70">focus-trap + tabbable</text>
+            <text class="dlg-bar-sub" x="30" y="84">Focus management only</text>
+            <rect class="dlg-bar-dim" x="30" y="90" width="380" height="24"/>
+            <text class="dlg-bar-val" x="420" y="107">2,036 lines JS</text>
+
+            <!-- react-modal -->
+            <text class="dlg-bar-label" x="30" y="134">react-modal</text>
+            <text class="dlg-bar-sub" x="30" y="148">Full modal component</text>
+            <rect class="dlg-bar-dim" x="30" y="154" width="300" height="24"/>
+            <text class="dlg-bar-val" x="340" y="171">27 KB</text>
+
+            <!-- @radix-ui/react-dialog -->
+            <text class="dlg-bar-label" x="30" y="198">@radix-ui/react-dialog</text>
+            <text class="dlg-bar-sub" x="30" y="212">Headless dialog</text>
+            <rect class="dlg-bar-dim" x="30" y="218" width="380" height="24"/>
+            <text class="dlg-bar-val" x="420" y="235">34 KB</text>
+
+            <!-- Native dialog -->
+            <line class="dlg-bar-line" x1="30" y1="256" x2="490" y2="256"/>
+            <text class="dlg-bar-label" x="30" y="276">Native &lt;dialog&gt;</text>
+            <text class="dlg-bar-sub" x="30" y="290">Focus, inert, escape, backdrop, ARIA, returnValue</text>
+            <rect class="dlg-bar-zero" x="30" y="252" width="4" height="4" rx="2"/>
+            <text class="dlg-bar-val" x="420" y="276">0 KB</text>
+
+            <text class="dlg-bar-sub" x="260" y="310" text-anchor="middle">Combined: 22.5 million npm installs/week to replicate a native element</text>
+        </svg>
+
+        <h2>The Timeline</h2>
+
+        <p>Chrome shipped <code>&lt;dialog&gt;</code> in 2014. Version 37. Twelve
+            years ago. For eight years, it sat behind a &#x201C;Chrome only&#x201D;
+            asterisk while the rest of the browser vendors considered their options
+            with no particular urgency.</p>
+
+        <p>Safari joined in March 2022 with version 15.4. Firefox followed in
+            the same month with version 98. Eight years. Rather fashionably late,
+            even by web standards committee standards.</p>
+
+        <p>Since March 2022, <code>&lt;dialog&gt;</code> has been available in every
+            major browser. Global support stands at
+            <a href="https://caniuse.com/dialog" target="_blank" rel="noopener">96 per cent</a>.
+            That is higher than CSS <code>:has()</code>, higher than CSS nesting,
+            higher than several features the industry ships without hesitation. The
+            compatibility excuse expired two years ago. The packages, however,
+            continue to accumulate downloads as though it had not.</p>
+
+        <h2>The Styling</h2>
+
+        <p>The aesthetic objection arrives on cue: &#x201C;But the native dialog
+            is ugly.&#x201D; This is true in the same way that an unstyled
+            <code>&lt;button&gt;</code> is ugly. The element is a semantic container.
+            You style it:</p>
+
+        <pre><code>dialog {
+    border: 1px solid oklch(0.5 0 0);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    max-width: 28rem;
+}
+
+dialog::backdrop {
+    background: oklch(0.1 0 0 / 0.6);
+    backdrop-filter: blur(4px);
+}</code></pre>
+
+        <p>The <code>::backdrop</code> pseudo-element is fully styleable. Blur,
+            gradient, opacity, animation &#x2014; whatever the design requires.
+            It is not a polyfill. It is not a workaround. It is a first-class
+            CSS primitive, rendered by the browser in the correct stacking context,
+            with correct hit-testing, at zero performance cost.</p>
+
+        <h2>What Remains</h2>
+
+        <p>The native <code>&lt;dialog&gt;</code> element does not solve every
+            conceivable modal requirement. It does not animate its opening and
+            closing transitions natively &#x2014; though
+            <a href="https://webkit.org/blog/15269/help-us-invent-css-transition-behavior/" target="_blank" rel="noopener">CSS
+            <code>@starting-style</code></a> and <code>transition-behavior: allow-discrete</code>
+            are closing that gap. It does not provide built-in confirm/cancel
+            callbacks &#x2014; though <code>returnValue</code> and the
+            <code>close</code> event cover the pattern. And it does not lock
+            scroll &#x2014; though two lines of CSS do.</p>
+
+        <p>What remains, after subtracting everything the browser provides
+            natively, is not 27 KB of JavaScript. It is not 34 KB. It is not
+            2,036 lines of focus management. What remains is a handful of CSS
+            declarations and the quiet realisation that the platform was ready
+            before the industry was willing to notice.</p>
+
+        <blockquote>
+            <p>22.5 million installs per week. For a box that opens, traps focus,
+                and closes on Escape. The browser has done this since 2022. The npm
+                registry, apparently, has not been informed.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The complete implementation, for engineers who want the recipe</strong></p>
+            <p>The <code>&lt;dialog&gt;</code> element with <code>&lt;form method=&#x201D;dialog&#x201D;&gt;</code>
+                handles the lifecycle. <code>.showModal()</code> for modal, <code>.show()</code>
+                for non-modal. <code>::backdrop</code> accepts <code>backdrop-filter: blur()</code>,
+                gradients, and transitions. Scroll lock is two lines:
+                <code>html:has(dialog[open]:modal) { overflow: hidden; scrollbar-gutter: stable; }</code>.
+                The <code>close</code> event fires on dismissal;
+                <code>dialog.returnValue</code> carries the button&#x2019;s value.</p>
+            <p><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog" target="_blank" rel="noopener">MDN
+                documentation</a>.
+                <a href="https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/" target="_blank" rel="noopener">W3C
+                ARIA Authoring Practices</a>.
+                <a href="https://caniuse.com/dialog" target="_blank" rel="noopener">Browser
+                support: 96% globally</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

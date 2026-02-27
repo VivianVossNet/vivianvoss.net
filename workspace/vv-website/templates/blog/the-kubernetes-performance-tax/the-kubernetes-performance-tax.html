@@ -1,0 +1,530 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Kubernetes: You Are Not Google &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="82 per cent of container users run Kubernetes in production. The control plane demands 12&#x2013;24 GB RAM before your app serves one request. CPU utilisation: 10 per cent. The performance tax, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-kubernetes-performance-tax{( endslot )}
+
+{( slot og-title )}Kubernetes: You Are Not Google &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}82 per cent run Kubernetes. 10 per cent CPU utilisation. 38 per cent weekly outages. 34 workdays per year troubleshooting. The performance tax, itemised.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Kubernetes: You Are Not Google",
+    "datePublished": "2026-02-08",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-kubernetes-performance-tax",
+    "description": "82 per cent of container users run Kubernetes in production. The control plane demands 12&#x2013;24 GB RAM before your app serves one request. CPU utilisation: 10 per cent. The performance tax, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-08">08 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Kubernetes: You Are Not Google</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">kubernetes</span>
+            <span class="vv-pill">docker</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">cloud</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Performance-Fresser</em> &#x25A0; Episode 12</p>
+
+        <blockquote>
+            <p>&#x201C;There&#x2019;s a lot of extra concepts, config files, and infrastructure
+                you have to manage to do something basic.&#x201D;</p>
+            <p>&#x2014; Kelsey Hightower, the man who literally wrote
+                <em>Kubernetes Up &amp; Running</em></p>
+        </blockquote>
+
+        <p>Kubernetes was built at Google, for Google &#x2014; an organisation that runs
+            millions of containers across global data centres, serving billions of requests
+            per second, operated by thousands of engineers who cannot remember the last time
+            they deployed fewer than fifty services simultaneously. Google open-sourced the
+            concept. The
+            <a href="https://www.cncf.io/reports/cncf-annual-survey-2023/" target="_blank" rel="noopener">CNCF adopted it</a>.
+            And <strong>82 per cent</strong> of container users now run it in production.</p>
+
+        <p>The question nobody asks at the architecture meeting is whether any of those
+            82 per cent actually have Google&#x2019;s problems. The answer, for the
+            overwhelming majority, is no. They have a web application, a database, and
+            a deployment that worked perfectly well before someone added &#x201C;Kubernetes
+            migration&#x201D; to the Q3 roadmap.</p>
+
+        <p>Let us examine what that migration actually costs.</p>
+
+        <h2>The Control Plane Tax</h2>
+
+        <p>Before your application serves its first request &#x2014; before a single byte
+            of business logic executes &#x2014; Kubernetes demands its tribute. The control
+            plane is not optional. It is the nervous system of the cluster, and it is
+            remarkably hungry.</p>
+
+        <p>The minimum viable control plane: <strong>etcd</strong> (the distributed key-value
+            store that remembers everything, consuming 2&#x2013;8 GB of RAM for the privilege),
+            <strong>kube-apiserver</strong> (the front door through which every request must pass),
+            <strong>kube-scheduler</strong> (which decides where your pods live),
+            <strong>kube-controller-manager</strong> (which ensures reality matches the YAML),
+            <strong>kubelet</strong> on every node (reserving up to 25 per cent of each
+            node&#x2019;s memory), <strong>CoreDNS</strong> (because services need names), and
+            <strong>kube-proxy</strong> plus a CNI plugin (because packets need routes).</p>
+
+        <p>A production-grade, highly available deployment of this apparatus &#x2014; before
+            you have deployed a single line of your own code &#x2014; requires
+            <strong>6&#x2013;12 CPU cores</strong> and <strong>12&#x2013;24 GB of RAM</strong>.
+            That is the cover charge. The club is empty. The music has not started. But the
+            bill is already running.</p>
+
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kubernetes control plane resource consumption. Seven mandatory components consuming 6 to 12 CPU cores and 12 to 24 GB RAM before any application code runs. K3s lightweight alternative still idles at 1.6 GB." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .k8sp-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .k8sp-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .k8sp-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .k8sp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .k8sp-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .k8sp-fill { fill: var(--accent); opacity: 0.12; rx: 3; }
+                .k8sp-bar { fill: var(--accent); rx: 2; }
+                .k8sp-bar-dim { fill: var(--border); opacity: 0.3; rx: 2; }
+                .k8sp-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+            <!-- Title -->
+            <text class="k8sp-muted" x="260" y="16" text-anchor="middle">CONTROL PLANE &#x2014; before your app serves one request</text>
+            <!-- Components -->
+            <rect class="k8sp-fill" x="20" y="30" width="120" height="26"/>
+            <text class="k8sp-label" x="80" y="48" text-anchor="middle">etcd</text>
+            <text class="k8sp-muted" x="80" y="72" text-anchor="middle">2&#x2013;8 GB RAM</text>
+
+            <rect class="k8sp-fill" x="150" y="30" width="120" height="26"/>
+            <text class="k8sp-label" x="210" y="48" text-anchor="middle">kube-apiserver</text>
+
+            <rect class="k8sp-fill" x="280" y="30" width="100" height="26"/>
+            <text class="k8sp-label" x="330" y="48" text-anchor="middle">scheduler</text>
+
+            <rect class="k8sp-fill" x="390" y="30" width="110" height="26"/>
+            <text class="k8sp-label" x="445" y="48" text-anchor="middle">ctrl-manager</text>
+
+            <rect class="k8sp-fill" x="20" y="90" width="100" height="26"/>
+            <text class="k8sp-label" x="70" y="108" text-anchor="middle">kubelet</text>
+            <text class="k8sp-muted" x="70" y="132" text-anchor="middle">25% node mem</text>
+
+            <rect class="k8sp-fill" x="130" y="90" width="90" height="26"/>
+            <text class="k8sp-label" x="175" y="108" text-anchor="middle">CoreDNS</text>
+
+            <rect class="k8sp-fill" x="230" y="90" width="100" height="26"/>
+            <text class="k8sp-label" x="280" y="108" text-anchor="middle">kube-proxy</text>
+
+            <rect class="k8sp-fill" x="340" y="90" width="100" height="26"/>
+            <text class="k8sp-label" x="390" y="108" text-anchor="middle">CNI plugin</text>
+
+            <!-- Divider -->
+            <line class="k8sp-divider" x1="20" y1="150" x2="500" y2="150"/>
+
+            <!-- Production HA totals -->
+            <text class="k8sp-label" x="260" y="172" text-anchor="middle">Production HA Totals</text>
+
+            <!-- CPU bar -->
+            <text class="k8sp-muted" x="20" y="198">CPU</text>
+            <rect class="k8sp-bar-dim" x="60" y="186" width="380" height="20"/>
+            <rect class="k8sp-bar" x="60" y="186" width="190" height="20" opacity="0.7"/>
+            <text class="k8sp-value" x="460" y="201">6&#x2013;12 cores</text>
+
+            <!-- RAM bar -->
+            <text class="k8sp-muted" x="20" y="228">RAM</text>
+            <rect class="k8sp-bar-dim" x="60" y="216" width="380" height="20"/>
+            <rect class="k8sp-bar" x="60" y="216" width="320" height="20" opacity="0.7"/>
+            <text class="k8sp-value" x="460" y="231">12&#x2013;24 GB</text>
+
+            <!-- K3s comparison -->
+            <line class="k8sp-divider" x1="20" y1="250" x2="500" y2="250"/>
+            <text class="k8sp-muted" x="20" y="272">K3s &#x201C;lightweight&#x201D; idle:</text>
+            <rect class="k8sp-bar" x="60" y="280" width="60" height="16" opacity="0.5"/>
+            <text class="k8sp-value" x="130" y="293">1.6 GB RAM</text>
+            <text class="k8sp-muted" x="260" y="293">&#x2014; just idling</text>
+
+            <!-- Source -->
+            <text class="k8sp-muted" x="500" y="330" text-anchor="end">Source: docs.k3s.io resource profiling</text>
+        </svg>
+
+        <p>&#x201C;But K3s is lightweight,&#x201D; someone offers helpfully. K3s &#x2014;
+            the stripped-down Kubernetes distribution marketed as the sensible alternative
+            &#x2014; idles at
+            <a href="https://docs.k3s.io/reference/resource-profiling" target="_blank" rel="noopener">1.6 GB of RAM</a>.
+            Doing nothing. Serving no requests. Simply existing, in the quiet, expensive
+            way that Kubernetes does.</p>
+
+        <h2>The YAML Labyrinth</h2>
+
+        <p>Deploying a single service on Kubernetes requires a Deployment manifest
+            (20 lines), a Service definition (19 lines), and an Ingress resource
+            (27 lines). That is 66 lines of YAML for one service to accept traffic.
+            In production &#x2014; with ConfigMaps, Secrets, health checks, resource
+            limits, pod disruption budgets, and the other liturgical requirements &#x2014;
+            the count exceeds <strong>200 lines per service</strong>.</p>
+
+        <p>The same deployment on FreeBSD: one entry in <code>rc.conf</code>.</p>
+
+        <p>The same deployment on Linux: one systemd unit file, ten lines.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Configuration comparison for deploying one service. FreeBSD rc.conf: 1 line. Linux systemd: 10 lines. Kubernetes minimal: 66 lines across three files. Kubernetes production: 200-plus lines across 5 to 8 files." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .k8sy-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .k8sy-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .k8sy-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .k8sy-bar { fill: var(--accent); rx: 2; }
+                .k8sy-bar-dim { fill: var(--accent); opacity: 0.15; rx: 2; }
+                .k8sy-axis { stroke: var(--border); stroke-width: 1; }
+                .k8sy-grid { stroke: var(--border); stroke-width: 0.5; opacity: 0.2; }
+                .k8sy-detail { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <!-- Title -->
+            <text class="k8sy-muted" x="260" y="16" text-anchor="middle">DEPLOY ONE SERVICE &#x2014; lines of configuration</text>
+            <!-- Axis -->
+            <line class="k8sy-axis" x1="150" y1="30" x2="150" y2="250"/>
+            <line class="k8sy-axis" x1="150" y1="250" x2="510" y2="250"/>
+            <!-- Grid + labels -->
+            <line class="k8sy-grid" x1="222" y1="30" x2="222" y2="250"/>
+            <text class="k8sy-muted" x="222" y="268" text-anchor="middle">50</text>
+            <line class="k8sy-grid" x1="294" y1="30" x2="294" y2="250"/>
+            <text class="k8sy-muted" x="294" y="268" text-anchor="middle">100</text>
+            <line class="k8sy-grid" x1="366" y1="30" x2="366" y2="250"/>
+            <text class="k8sy-muted" x="366" y="268" text-anchor="middle">150</text>
+            <line class="k8sy-grid" x1="438" y1="30" x2="438" y2="250"/>
+            <text class="k8sy-muted" x="438" y="268" text-anchor="middle">200</text>
+            <text class="k8sy-muted" x="510" y="268" text-anchor="middle">250</text>
+            <!-- FreeBSD: 1 line -->
+            <text class="k8sy-label" x="145" y="60" text-anchor="end">FreeBSD</text>
+            <text class="k8sy-detail" x="145" y="74" text-anchor="end">rc.conf</text>
+            <rect class="k8sy-bar" x="150" y="50" width="2" height="28" opacity="0.9"/>
+            <text class="k8sy-value" x="162" y="69">1 line</text>
+            <!-- Linux: 10 lines -->
+            <text class="k8sy-label" x="145" y="115" text-anchor="end">Linux</text>
+            <text class="k8sy-detail" x="145" y="129" text-anchor="end">systemd unit</text>
+            <rect class="k8sy-bar" x="150" y="105" width="15" height="28" opacity="0.8"/>
+            <text class="k8sy-value" x="172" y="124">10 lines</text>
+            <!-- K8s minimal: 66 lines -->
+            <text class="k8sy-label" x="145" y="170" text-anchor="end">K8s</text>
+            <text class="k8sy-detail" x="145" y="184" text-anchor="end">minimal</text>
+            <rect class="k8sy-bar" x="150" y="160" width="95" height="28" opacity="0.6"/>
+            <text class="k8sy-value" x="254" y="179">66 lines</text>
+            <text class="k8sy-detail" x="254" y="194">3 files</text>
+            <!-- K8s production: 200+ lines -->
+            <text class="k8sy-label" x="145" y="225" text-anchor="end">K8s</text>
+            <text class="k8sy-detail" x="145" y="239" text-anchor="end">production</text>
+            <rect class="k8sy-bar-dim" x="150" y="215" width="290" height="28"/>
+            <text class="k8sy-value" x="448" y="234">200+ lines</text>
+            <text class="k8sy-detail" x="448" y="249">5&#x2013;8 files</text>
+            <!-- Annotation -->
+            <text class="k8sy-muted" x="330" y="295" text-anchor="middle">Same service. Same outcome. 200&#x00D7; more configuration.</text>
+        </svg>
+
+        <p>The YAML is not merely verbose. It is a maintenance surface. Every manifest
+            is a contract with the cluster, and contracts drift. The YAML committed to
+            Git and the state actually running in the cluster diverge silently, in the
+            way that only distributed systems can. Configuration management becomes
+            configuration archaeology.</p>
+
+        <h2>The Utilisation Scandal</h2>
+
+        <p>Here is the number that should appear on every quarterly board report and
+            never does.</p>
+
+        <p>According to
+            <a href="https://cast.ai/press-release/new-kubernetes-cost-benchmark-report" target="_blank" rel="noopener">Cast.ai&#x2019;s 2024 Kubernetes Cost Benchmark</a>,
+            surveying over 2,100 organisations: average CPU utilisation is
+            <strong>10 per cent</strong>. Memory utilisation is <strong>23 per cent</strong>.
+            That means <strong>87 per cent of provisioned CPU sits idle</strong>. Nine out
+            of ten cycles purchased and never used. The cloud provider sends an invoice for
+            every one of them.</p>
+
+        <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kubernetes resource utilisation from Cast.ai 2024 data across 2,100 organisations. CPU utilisation 10 per cent, 90 per cent idle. Memory utilisation 23 per cent, 77 per cent idle." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .k8sw-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .k8sw-value { font: 700 20px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .k8sw-value-dim { font: 700 20px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); opacity: 0.5; }
+                .k8sw-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .k8sw-used { fill: var(--accent); }
+                .k8sw-idle { fill: var(--border); opacity: 0.25; }
+                .k8sw-source { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <!-- Title -->
+            <text class="k8sw-muted" x="260" y="16" text-anchor="middle">KUBERNETES CLUSTER UTILISATION &#x2014; 2,100+ organisations</text>
+            <!-- CPU section -->
+            <text class="k8sw-label" x="130" y="50" text-anchor="middle">CPU</text>
+            <!-- 10x10 grid, 10 used out of 100 -->
+            <!-- Row 1: all used -->
+            <rect class="k8sw-used" x="30" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="52" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="74" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="96" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="118" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="140" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="162" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="184" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="206" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="228" y="60" width="18" height="18" rx="2"/>
+            <!-- Row 2: all idle -->
+            <rect class="k8sw-idle" x="30" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="52" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="74" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="96" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="118" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="140" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="162" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="184" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="206" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="228" y="82" width="18" height="18" rx="2"/>
+            <!-- Rows 3-10: all idle (compressed representation) -->
+            <rect class="k8sw-idle" x="30" y="104" width="216" height="18" rx="2" opacity="0.15"/>
+            <rect class="k8sw-idle" x="30" y="126" width="216" height="18" rx="2" opacity="0.12"/>
+            <rect class="k8sw-idle" x="30" y="148" width="216" height="18" rx="2" opacity="0.09"/>
+            <!-- CPU stats -->
+            <text class="k8sw-value" x="130" y="196" text-anchor="middle">10%</text>
+            <text class="k8sw-muted" x="130" y="212" text-anchor="middle">used</text>
+            <text class="k8sw-value-dim" x="130" y="236" text-anchor="middle">90% idle</text>
+            <!-- Memory section -->
+            <text class="k8sw-label" x="400" y="50" text-anchor="middle">Memory</text>
+            <!-- Memory: 23 used, 77 idle (simplified visual) -->
+            <!-- Used blocks -->
+            <rect class="k8sw-used" x="300" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="322" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="344" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="366" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="388" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="410" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="432" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="454" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="476" y="60" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="498" y="60" width="18" height="18" rx="2"/>
+            <!-- Row 2: partial used + idle -->
+            <rect class="k8sw-used" x="300" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="322" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-used" x="344" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="366" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="388" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="410" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="432" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="454" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="476" y="82" width="18" height="18" rx="2"/>
+            <rect class="k8sw-idle" x="498" y="82" width="18" height="18" rx="2"/>
+            <!-- Rows 3-10: all idle -->
+            <rect class="k8sw-idle" x="300" y="104" width="216" height="18" rx="2" opacity="0.15"/>
+            <rect class="k8sw-idle" x="300" y="126" width="216" height="18" rx="2" opacity="0.12"/>
+            <rect class="k8sw-idle" x="300" y="148" width="216" height="18" rx="2" opacity="0.09"/>
+            <!-- Memory stats -->
+            <text class="k8sw-value" x="400" y="196" text-anchor="middle">23%</text>
+            <text class="k8sw-muted" x="400" y="212" text-anchor="middle">used</text>
+            <text class="k8sw-value-dim" x="400" y="236" text-anchor="middle">77% idle</text>
+            <!-- Source -->
+            <text class="k8sw-source" x="260" y="256" text-anchor="middle">Source: Cast.ai 2024 Kubernetes Cost Benchmark, 2,100+ organisations</text>
+        </svg>
+
+        <p>Let that number settle into the chair. For every unit of CPU your application
+            actually consumes, you are paying for ten. Not because the workload requires it.
+            Because Kubernetes requires headroom, redundancy, node overhead, system daemons,
+            and the comforting illusion that autoscaling will sort it out eventually. The
+            cloud provider, naturally, does not object to billing you for nine idle cores.</p>
+
+        <h2>The Operational Sinkhole</h2>
+
+        <p>If the waste were quiet, one might tolerate it. It is not.</p>
+
+        <p>The
+            <a href="https://komodor.com/blog/komodor-2025-enterprise-kubernetes-report" target="_blank" rel="noopener">Komodor 2025 Enterprise Kubernetes Report</a>
+            surveyed enterprise teams and found numbers that ought to make any CTO reach for
+            the antacids. <strong>38 per cent</strong> of teams experience high-impact
+            outages <em>weekly</em>. Not monthly. Not quarterly. Every week, more than a
+            third of Kubernetes deployments suffer incidents severe enough to impact users.</p>
+
+        <p>Of those incidents, <strong>79 per cent</strong> are caused by recent changes.
+            The very mechanism that Kubernetes is supposed to manage &#x2014; deployment &#x2014;
+            is the primary source of its failures. The orchestrator is orchestrating its own
+            outages.</p>
+
+        <p>The time cost: <strong>34 workdays per year</strong> spent troubleshooting
+            Kubernetes issues. Not building features. Not shipping products. Not serving
+            customers. Thirty-four days &#x2014; nearly seven working weeks &#x2014;
+            maintaining the system that maintains the system. It is the infrastructure
+            equivalent of a car that spends more time in the garage than on the road.</p>
+
+        <h2>The Exits</h2>
+
+        <p>The companies that have left Kubernetes do not whisper about it. They publish
+            the numbers.</p>
+
+        <p><strong>Amazon Prime Video</strong> moved their video monitoring pipeline from
+            a microservices architecture on Kubernetes back to a monolith.
+            <a href="https://dev.to/aws-builders/how-prime-video-reduced-costs-by-90-by-ditching-microservices-4epf" target="_blank" rel="noopener">Cost reduction: 90 per cent</a>.
+            Not 9. Ninety. The same workload, the same throughput, one-tenth of the
+            infrastructure cost. Amazon&#x2019;s own team decided that Amazon&#x2019;s
+            own orchestration platform was too expensive for Amazon&#x2019;s own service.
+            The irony writes itself.</p>
+
+        <p><strong>37signals</strong> &#x2014; the makers of Basecamp and HEY &#x2014;
+            left the cloud entirely. DHH published the savings with characteristic
+            understatement:
+            <a href="https://world.hey.com/dhh/our-cloud-exit-savings-will-now-top-ten-million-over-five-years-f4861b64" target="_blank" rel="noopener">over $10 million saved across five years</a>.
+            They bought servers. They hired two infrastructure engineers. The maths was
+            not close.</p>
+
+        <p><strong>GEICO</strong> &#x2014; yes, the insurance company &#x2014; reported
+            2.5 times higher costs after their Kubernetes adoption. The platform that
+            was supposed to reduce operational overhead increased it by 150 per cent.</p>
+
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cost impact of leaving Kubernetes. Prime Video: 90 per cent cost reduction. 37signals: over 10 million dollars saved in five years. GEICO: 2.5 times higher costs after adopting Kubernetes. A company with 12 DevOps engineers reduced to 3 after leaving Kubernetes; 9 had been maintaining the platform, not the product." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .k8se-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .k8se-value { font: 700 15px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .k8se-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .k8se-bar { fill: var(--accent); rx: 3; }
+                .k8se-bar-dim { fill: var(--border); opacity: 0.25; rx: 3; }
+                .k8se-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+                .k8se-note { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+            </style>
+            <!-- Title -->
+            <text class="k8se-muted" x="260" y="16" text-anchor="middle">THE EXITS &#x2014; what happened when they left</text>
+            <!-- Prime Video -->
+            <text class="k8se-label" x="20" y="48">Prime Video</text>
+            <text class="k8se-muted" x="20" y="62">K8s microservices &#x2192; monolith</text>
+            <rect class="k8se-bar-dim" x="150" y="38" width="300" height="22"/>
+            <rect class="k8se-bar" x="150" y="38" width="30" height="22"/>
+            <text class="k8se-value" x="460" y="55">&#x2212;90%</text>
+            <text class="k8se-muted" x="190" y="54">after</text>
+            <text class="k8se-muted" x="380" y="54">before</text>
+            <!-- 37signals -->
+            <text class="k8se-label" x="20" y="102">37signals</text>
+            <text class="k8se-muted" x="20" y="116">Cloud exit &#x2192; own hardware</text>
+            <text class="k8se-value" x="150" y="110">$10M+</text>
+            <text class="k8se-muted" x="220" y="110">saved over 5 years</text>
+            <!-- GEICO -->
+            <text class="k8se-label" x="20" y="155">GEICO</text>
+            <text class="k8se-muted" x="20" y="169">After K8s adoption</text>
+            <rect class="k8se-bar" x="150" y="147" width="120" height="22" opacity="0.3"/>
+            <rect class="k8se-bar" x="150" y="147" width="300" height="22" opacity="0.15"/>
+            <text class="k8se-value" x="460" y="163">2.5&#x00D7; cost</text>
+            <!-- Divider -->
+            <line class="k8se-divider" x1="20" y1="192" x2="500" y2="192"/>
+            <!-- Staffing -->
+            <text class="k8se-label" x="260" y="214" text-anchor="middle">The Staffing Revelation</text>
+            <!-- Before: 12 circles -->
+            <text class="k8se-muted" x="20" y="240">Before</text>
+            <circle cx="80" cy="236" r="6" fill="var(--accent)" opacity="0.3"/>
+            <circle cx="96" cy="236" r="6" fill="var(--accent)" opacity="0.3"/>
+            <circle cx="112" cy="236" r="6" fill="var(--accent)" opacity="0.3"/>
+            <circle cx="128" cy="236" r="6" fill="var(--accent)" opacity="0.3"/>
+            <circle cx="144" cy="236" r="6" fill="var(--accent)" opacity="0.3"/>
+            <circle cx="160" cy="236" r="6" fill="var(--accent)" opacity="0.3"/>
+            <circle cx="176" cy="236" r="6" fill="var(--accent)" opacity="0.3"/>
+            <circle cx="192" cy="236" r="6" fill="var(--accent)" opacity="0.3"/>
+            <circle cx="208" cy="236" r="6" fill="var(--accent)" opacity="0.3"/>
+            <circle cx="224" cy="236" r="6" fill="var(--accent)"/>
+            <circle cx="240" cy="236" r="6" fill="var(--accent)"/>
+            <circle cx="256" cy="236" r="6" fill="var(--accent)"/>
+            <text class="k8se-muted" x="272" y="240">12 DevOps</text>
+            <!-- After: 3 circles -->
+            <text class="k8se-muted" x="20" y="268">After</text>
+            <circle cx="80" cy="264" r="6" fill="var(--accent)"/>
+            <circle cx="96" cy="264" r="6" fill="var(--accent)"/>
+            <circle cx="112" cy="264" r="6" fill="var(--accent)"/>
+            <text class="k8se-muted" x="128" y="268">3 DevOps</text>
+            <text class="k8se-note" x="260" y="268">9 had maintained the platform, not the product</text>
+        </svg>
+
+        <p>The staffing story is perhaps the most revealing. One organisation
+            <a href="https://hhf.technology/stay-away-from-complex-deployments" target="_blank" rel="noopener">reduced their DevOps team from 12 engineers to 3</a>
+            after leaving Kubernetes. Nine engineers &#x2014; nine full-time salaries &#x2014;
+            had been maintaining the platform, not the product. Three-quarters of the
+            operations team existed solely to keep the orchestration layer alive. When
+            the orchestration layer departed, so did the need for nine people whose job
+            was feeding it.</p>
+
+        <h2>The Certification Tax</h2>
+
+        <p>Kubernetes is sufficiently complex that operating it requires formal
+            certification. The
+            <a href="https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/" target="_blank" rel="noopener">Certified Kubernetes Administrator</a>
+            exam costs $445 per engineer. With the recommended training course, the bill
+            climbs to $1,950 per head. A team of five &#x2014; the minimum for credible
+            on-call rotation &#x2014; costs roughly $10,000 in certification alone. Not
+            in tooling. Not in cloud spend. In the privilege of being allowed to understand
+            the system you have already paid for.</p>
+
+        <p>FreeBSD requires no certification. Neither does systemd. Neither does
+            <code>rc.conf</code>. The documentation is the certification. It is freely
+            available, thoroughly written, and has not changed its fundamental model in
+            twenty-five years. There is something to be said for technology that does not
+            require a training budget.</p>
+
+        <h2>The 5 Per Cent Rule</h2>
+
+        <p>Kubernetes makes sense. It genuinely does &#x2014; under a specific set of
+            conditions that the conference talks neglect to mention.</p>
+
+        <p>You need Kubernetes if you are running <strong>50 or more services</strong>
+            across <strong>multiple geographic regions</strong>, with a
+            <strong>dedicated platform engineering team</strong> whose sole occupation is
+            maintaining the cluster, and your organisation has the budget, the headcount,
+            and the operational maturity to absorb the overhead without flinching.</p>
+
+        <p>That describes approximately <strong>5 per cent</strong> of the companies
+            currently running Kubernetes. The other 95 per cent adopted it because a
+            conference talk made it sound inevitable, a job posting made it sound mandatory,
+            and nobody in the room had the institutional courage to ask: &#x201C;But do
+            we actually need this?&#x201D;</p>
+
+        <h2>The Verdict</h2>
+
+        <p>Ten per cent CPU utilisation. Twelve to twenty-four gigabytes of RAM consumed
+            before your first deployment. Two hundred lines of YAML to do what one
+            <code>rc.conf</code> entry accomplishes. Thirty-four workdays per year
+            lost to troubleshooting. Thirty-eight per cent of teams suffering weekly
+            outages. Nine out of twelve DevOps engineers maintaining the platform rather
+            than the product. Ninety per cent cost reductions when teams leave.</p>
+
+        <p>And beneath all of it, Kelsey Hightower &#x2014; the man whose name is
+            synonymous with Kubernetes advocacy &#x2014; quietly noting that there is
+            rather a lot of infrastructure required to do something basic.</p>
+
+        <blockquote>
+            <p>Kubernetes was built for Google&#x2019;s problems at Google&#x2019;s
+                scale with Google&#x2019;s budget. You are not Google. You almost
+                certainly never will be. And the invoice for pretending otherwise
+                is 34 workdays, 90 per cent of your CPU, and nine engineers who
+                could have been building the product.</p>
+        </blockquote>
+
+        <p>The failure stories are
+            <a href="https://k8s.af" target="_blank" rel="noopener">curated and catalogued</a>.
+            The exit stories are published with numbers. The performance data is surveyed
+            across thousands of organisations. The evidence is not ambiguous. It is merely
+            inconvenient.</p>
+
+        <p>The question was never whether Kubernetes works. It works beautifully &#x2014;
+            at Google&#x2019;s scale, for Google&#x2019;s problems. The question is whether
+            your three services, your single region, and your team of eight need a platform
+            that was designed to orchestrate the infrastructure of one of the largest
+            distributed systems operations on Earth.</p>
+
+        <p>The answer, for 95 per cent of you, is a polite but firm no. And the 34 workdays
+            you save can be spent building the thing your customers actually pay for.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
