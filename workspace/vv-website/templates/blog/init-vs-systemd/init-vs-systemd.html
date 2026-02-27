@@ -47,14 +47,14 @@
         <p>
             A service starts. It stops. It restarts if it crashes. It declares its
             dependencies so the system knows the order. That is the job description.
-            It has not changed since the 1980s. What has changed &#x2014; rather
-            dramatically &#x2014; is the amount of C required to accomplish it.
+            It has not changed since the 1980s. What has changed, rather
+            dramatically, is the amount of C required to accomplish it.
         </p>
 
         <p>
             On <a href="https://docs.freebsd.org/en/articles/rc-scripting/" target="_blank" rel="noopener">FreeBSD</a>,
             a service is a shell script. Ten lines, typically. It sources one shared
-            library &#x2014; <code>rc.subr</code> &#x2014; declares <code>REQUIRE</code>,
+            library, <code>rc.subr</code>, declares <code>REQUIRE</code>,
             <code>BEFORE</code>, and <code>AFTER</code> for dependency ordering, reads
             its configuration from a single file (<code>/etc/rc.conf</code>), and is
             sorted at boot by one C utility: <code>rcorder</code>. The entire init
@@ -83,7 +83,7 @@
         </p>
 
         <p>
-            systemd is composed of &#x2014; well, rather more. The binary count stood at
+            systemd is composed of, well, rather more. The binary count stood at
             69 in 2013, which prompted some concern. By 2024, it had doubled. The project
             absorbed fifteen distinct tools that previously existed as independent,
             single-purpose programs, each maintained by specialists who understood them
@@ -156,8 +156,8 @@
         </svg>
 
         <p>
-            The ratio is instructive not because bigger is necessarily worse &#x2014;
-            complexity has legitimate uses &#x2014; but because both systems solve
+            The ratio is instructive not because bigger is necessarily worse
+            (complexity has legitimate uses) but because both systems solve
             the same problem. The question is whether the additional 689,800 lines
             of C purchase something the shell scripts cannot provide, or whether they
             purchase something nobody asked for.
@@ -180,8 +180,8 @@
             <code>ConsoleKit</code> became <code>logind</code>.
             NTP became <code>timesyncd</code>.
             DHCP became <code>networkd</code>.
-            And in 2024, <code>sudo</code> &#x2014; a thirty-four-year-old privilege
-            escalation tool &#x2014; was deemed insufficiently integrated. Enter
+            And in 2024, <code>sudo</code>, a thirty-four-year-old privilege
+            escalation tool, was deemed insufficiently integrated. Enter
             <a href="https://www.theregister.com/2025/02/06/14_years_of_systemd/" target="_blank" rel="noopener"><code>run0</code></a>,
             systemd&#x2019;s replacement for the programme that lets you become root.
         </p>
@@ -215,10 +215,10 @@
 
         <p>
             On a systemd machine, the logs are in the journal. The journal is binary.
-            To read it, you need <code>journalctl</code> &#x2014; which requires a
+            To read it, you need <code>journalctl</code>, which requires a
             functioning systemd, which requires a functioning D-Bus, which requires the
             very system you are trying to diagnose. If the journal has corrupted
-            &#x2014; and it does &#x2014; you are reading binary with <code>hexdump</code>
+            (and it does) you are reading binary with <code>hexdump</code>
             and rather wishing you were not.
         </p>
 
@@ -327,7 +327,7 @@
 
         <p>
             In 2016, this architectural choice bore its most instructive fruit. An
-            unprivileged user &#x2014; not root, not a daemon, an ordinary user &#x2014;
+            unprivileged user, not root, not a daemon, an ordinary user,
             could
             <a href="https://agwa.name/blog/post/how_to_crash_systemd_in_one_tweet" target="_blank" rel="noopener">hang PID 1</a>
             by sending an empty D-Bus message. One message. Zero bytes of payload.
@@ -353,7 +353,7 @@
                 .pid-warn { fill: var(--accent); opacity: 0.1; rx: 4; }
             </style>
 
-            <text class="pid-title" x="260" y="18" text-anchor="middle" fill="var(--text)">PID 1 &#x2014; the process that must never fail</text>
+            <text class="pid-title" x="260" y="18" text-anchor="middle" fill="var(--text)">PID 1: the process that must never fail</text>
             <text class="pid-muted" x="260" y="34" text-anchor="middle">Crash = kernel panic. No recovery.</text>
 
             <!-- Left: FreeBSD -->
@@ -407,8 +407,8 @@
         <p>
             The question is not whether systemd&#x2019;s PID 1 is well-written. The
             question is whether PID 1 should also be a DNS resolver, a log daemon, a
-            device manager, a container runtime, a session tracker, and &#x2014; as of
-            2024 &#x2014; a sudo replacement. The Unix answer is no. Not because these
+            device manager, a container runtime, a session tracker, and, as of
+            2024, a sudo replacement. The Unix answer is no. Not because these
             are bad functions, but because PID 1 is the wrong place to put them. A
             fifteen-line process cannot have a D-Bus vulnerability. It cannot be hung by
             a zero-byte message. It cannot fail in ways its authors did not anticipate,
@@ -445,7 +445,7 @@
             The most instructive aspect of systemd is not what it does but what it
             reveals about the industry&#x2019;s relationship with complexity. When
             Lennart Poettering proposed systemd, he argued that shell scripts were
-            slow, fragile, and unparseable. These were legitimate criticisms &#x2014;
+            slow, fragile, and unparseable. These were legitimate criticisms.
             SysVinit had genuine weaknesses. The response, however, was not to fix
             the shell scripts. It was to replace the entire ecosystem with a monolithic
             suite that now performs the functions of fifteen previously independent tools.
@@ -474,7 +474,7 @@
                 C binary. systemd does this with 690,000 lines of C and a growing
                 conviction that every system utility should live under one roof. The
                 services start either way. The question is what else you are running
-                &#x2014; and what happens when it breaks.</p>
+                and what happens when it breaks.</p>
         </blockquote>
     </div>
 

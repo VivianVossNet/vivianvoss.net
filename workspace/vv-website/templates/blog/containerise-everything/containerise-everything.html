@@ -50,8 +50,8 @@
         <p>The problem was genuine. Shipping code between environments broke things.
             Different library versions, different kernel configurations, different ideas
             of what <code>/usr/local</code> was for. Docker wrapped Linux containers into
-            a portable format: build once, ship anywhere. For deployment, it was &#x2014;
-            and remains &#x2014; genuinely brilliant.</p>
+            a portable format: build once, ship anywhere. For deployment, it was,
+            and remains, genuinely brilliant.</p>
 
         <p>Then the industry decided it was equally brilliant for development.</p>
 
@@ -65,9 +65,9 @@
             does not work on anyone else&#x2019;s.</p>
 
         <p>Key assumption: the target is a Linux server. Docker uses kernel features
-            &#x2014; <a href="https://man7.org/linux/man-pages/man7/namespaces.7.html" target="_blank" rel="noopener">namespaces</a>,
-            <a href="https://man7.org/linux/man-pages/man7/cgroups.7.html" target="_blank" rel="noopener">cgroups</a>
-            &#x2014; that exist natively in the Linux kernel. Runs directly on the host.
+            (<a href="https://man7.org/linux/man-pages/man7/namespaces.7.html" target="_blank" rel="noopener">namespaces</a>,
+            <a href="https://man7.org/linux/man-pages/man7/cgroups.7.html" target="_blank" rel="noopener">cgroups</a>)
+            that exist natively in the Linux kernel. Runs directly on the host.
             No overhead worth mentioning.</p>
 
         <h2>The Copy</h2>
@@ -81,9 +81,9 @@
 
         <h2>The Missing Context</h2>
 
-        <p>This is where the pattern fractures. The original context &#x2014; a Linux
-            server &#x2014; and the copied context &#x2014; a developer&#x2019;s laptop
-            running macOS &#x2014; are architecturally incompatible in ways that compound
+        <p>This is where the pattern fractures. The original context (a Linux
+            server) and the copied context (a developer&#x2019;s laptop
+            running macOS) are architecturally incompatible in ways that compound
             with every layer of abstraction.</p>
 
         <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison: Docker on Linux runs natively with nanosecond filesystem latency. Docker on macOS runs inside a Linux VM with 2.5x slower bind mounts." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
@@ -130,8 +130,8 @@
 
         <p>On Linux, Docker runs natively. The filesystem is local. Latency is measured
             in nanoseconds. On macOS, Docker runs a
-            <a href="https://docs.docker.com/desktop/settings-and-maintenance/settings/" target="_blank" rel="noopener">Linux virtual machine</a>
-            &#x2014; first HyperKit, then Apple Virtualisation Framework, now Docker VMM.
+            <a href="https://docs.docker.com/desktop/settings-and-maintenance/settings/" target="_blank" rel="noopener">Linux virtual machine</a>,
+            first HyperKit, then Apple Virtualisation Framework, now Docker VMM.
             Bind mounts cross a virtualisation boundary. The filesystem is no longer local;
             it is negotiated.</p>
 
@@ -148,7 +148,7 @@
                 .perf-bar-native { fill: var(--accent); rx: 2; }
                 .perf-axis { stroke: var(--border); stroke-width: 1; }
             </style>
-            <text class="perf-muted" x="260" y="18" text-anchor="middle">npm install &#x2014; bind mount (M4 Pro, 2025)</text>
+            <text class="perf-muted" x="260" y="18" text-anchor="middle">npm install, bind mount (M4 Pro, 2025)</text>
             <!-- Bars -->
             <text class="perf-label" x="145" y="55" text-anchor="end">Native macOS</text>
             <rect class="perf-bar-native" x="150" y="42" width="128" height="20"/>
@@ -202,7 +202,7 @@
 
         <h2>The Cascade</h2>
 
-        <p>The truly instructive part is not any single cost. It is the sequence &#x2014;
+        <p>The truly instructive part is not any single cost. It is the sequence:
             each step presented as the natural, reasonable consequence of the one before,
             each one adding friction that was not in the original estimate.</p>
 
@@ -266,7 +266,7 @@
 
         <p>Context matters not merely technically, but historically. Docker did not arrive
             as a development tool. It arrived as a deployment tool and was gradually
-            reinterpreted &#x2014; a pattern this series has encountered
+            reinterpreted, a pattern this series has encountered
             <a href="/blog/mvc-for-web">rather frequently</a>.</p>
 
         <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Docker timeline: 2013 PyCon announcement, 2014 Docker Compose, 2017 multi-stage builds, 2018 Hykes departs, 2021 licensing change." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">

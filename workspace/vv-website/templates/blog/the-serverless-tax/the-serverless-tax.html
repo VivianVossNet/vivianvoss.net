@@ -52,13 +52,13 @@
             The servers are very much present. They boot, they execute your function,
             they die. They are
             <a href="https://firecracker-microvm.github.io/" target="_blank" rel="noopener">Firecracker MicroVMs</a>
-            &#x2014; lightweight virtual machines that spin up in under 125 milliseconds,
+            (lightweight virtual machines that spin up in under 125 milliseconds,
             run your code in a sandboxed environment, and are destroyed the moment the
-            invocation completes. Servers with amnesia. The hardware did not disappear.
+            invocation completes). Servers with amnesia. The hardware did not disappear.
             The responsibility for naming it did.</p>
 
         <p>One does not eliminate infrastructure by rebranding it. One relocates the
-            complexity &#x2014; from your operations team to your cloud provider&#x2019;s
+            complexity: from your operations team to your cloud provider&#x2019;s
             pricing spreadsheet, from your deployment pipeline to four incompatible
             vendor APIs, from your monitoring dashboard to a distributed log system
             that charges per gigabyte ingested. The servers are still there. They simply
@@ -74,10 +74,10 @@
             the way a Betamax tape is compatible with a VHS player.</p>
 
         <p>The lock-in is not contractual. It is architectural. Your code is not
-            merely deployed on AWS &#x2014; it is <em>written in AWS</em>. The event
+            merely deployed on AWS; it is <em>written in AWS</em>. The event
             object, the context object, the handler signature, the deployment packaging,
-            the IAM role assumption, the layer system, the cold start mitigation strategies
-            &#x2014; all of it is Lambda-specific. Moving to Azure Functions is not a migration.
+            the IAM role assumption, the layer system, the cold start mitigation strategies:
+            all of it is Lambda-specific. Moving to Azure Functions is not a migration.
             It is a rewrite. The vendor did not trap you. You trapped yourself, one
             <code>event.Records[0].s3.bucket.name</code> at a time.</p>
 
@@ -163,7 +163,7 @@
 
         <p><strong>Relocated:</strong> Everything else. The work did not vanish. It changed
             shape. Instead of configuring nginx, you configure API Gateway. Instead of
-            reading syslog, you read CloudWatch &#x2014; at $0.50 per gigabyte ingested.
+            reading syslog, you read CloudWatch (at $0.50 per gigabyte ingested).
             Instead of tuning process memory, you tune function memory in 128 MB increments
             while a pricing calculator runs in the adjacent browser tab. Instead of monitoring
             a server, you monitor cold starts, concurrency limits, timeout thresholds,
@@ -178,18 +178,18 @@
 
         <h2>The Scale Nobody Needs</h2>
 
-        <p>&#x201C;But it scales to millions of requests!&#x201D; &#x2014; a defence so
+        <p>&#x201C;But it scales to millions of requests!&#x201D; A defence so
             popular it deserves the arithmetic it never receives.</p>
 
         <p><a href="https://www.similarweb.com/" target="_blank" rel="noopener">SimilarWeb</a>
             publishes traffic estimates. Let us look at two German e-commerce operations
             that are not small by any reasonable measure.</p>
 
-        <p><strong>Otto.de</strong> &#x2014; Germany&#x2019;s second-largest online retailer.
+        <p><strong>Otto.de</strong>, Germany&#x2019;s second-largest online retailer.
             Approximately 50 million monthly visits. That is roughly 19 requests per second
             on average. Nineteen. Not nineteen thousand. Nineteen.</p>
 
-        <p><strong>Alternate.de</strong> &#x2014; a major electronics retailer. Approximately
+        <p><strong>Alternate.de</strong>, a major electronics retailer. Approximately
             4 million monthly visits. That translates to 1.5 requests per second. One and
             a half.</p>
 
@@ -254,8 +254,8 @@
             MicroVM inside a hypervisor inside a data centre. The layers of abstraction have
             their own geological strata at this point.</p>
 
-        <p>The mitigations are revealing. Provisioned Concurrency &#x2014; AWS&#x2019;s
-            solution to cold starts &#x2014; keeps functions warm by running them
+        <p>The mitigations are revealing. Provisioned Concurrency, AWS&#x2019;s
+            solution to cold starts, keeps functions warm by running them
             continuously. You pay for compute that is always on, waiting for requests. The
             industry term for a function that is always on, waiting for requests, is
             a <em>server</em>. The circle is complete.</p>
@@ -267,15 +267,15 @@
             compute. Fractions of a cent. Pennies for millions. The back-of-napkin arithmetic
             is irresistible until you apply it to constant traffic.</p>
 
-        <p>A modest API handling 100 requests per second &#x2014; a workload that a single
-            Caddy process handles while checking its email &#x2014; generates 8.64 million
+        <p>A modest API handling 100 requests per second (a workload that a single
+            Caddy process handles while checking its email) generates 8.64 million
             requests per day. 259 million per month. At 256 MB and 200 ms average duration:
             roughly $220 per month in compute, plus $52 in request fees, plus CloudWatch,
             plus API Gateway, plus the egress that nobody remembers to include until the
             invoice arrives. Call it $350 per month, conservatively, for a workload that
             runs comfortably on a &#x20AC;5 VPS.</p>
 
-        <p>The pricing model rewards intermittent, bursty workloads &#x2014; a webhook that
+        <p>The pricing model rewards intermittent, bursty workloads: a webhook that
             fires twice a day, a cron job that runs at midnight, a prototype with twelve
             users. For anything resembling constant traffic, you are paying a premium for
             the privilege of not owning a server that would have cost less than the
@@ -306,7 +306,7 @@
 
         <p>10,000 or more requests per second. Logs in one place. Deployments via
             <code>scp</code> and a process restart. The entire operational model fits
-            in a single paragraph because there is nothing to explain &#x2014; the
+            in a single paragraph because there is nothing to explain. The
             complexity was never added in the first place.</p>
 
         <svg viewBox="0 0 520 320" aria-label="Cost comparison. The serverless stack: Lambda plus API Gateway plus CloudWatch plus egress at approximately 350 dollars per month for 100 requests per second. The alternative: two FreeBSD servers with Caddy and jails at 40 euros per month, handling over 10,000 requests per second with zero cold starts and zero vendor lock-in." role="img" style="max-width: 520px; width: 100%; height: auto; margin: 2rem 0;">
@@ -336,7 +336,7 @@
             <text x="38" y="160" class="ct-cross">&#x2717;</text>
             <text x="55" y="160" class="ct-item">Egress: metered</text>
             <text x="38" y="182" class="ct-cross">&#x2717;</text>
-            <text x="55" y="182" class="ct-item">Cold starts: 100ms&#x2013;6s</text>
+            <text x="55" y="182" class="ct-item">Cold starts: 100ms-6s</text>
             <text x="38" y="204" class="ct-cross">&#x2717;</text>
             <text x="55" y="204" class="ct-item">Vendor lock-in: total</text>
             <text x="38" y="226" class="ct-cross">&#x2717;</text>
@@ -366,9 +366,9 @@
         </svg>
 
         <p>Netflix serves 700,000 or more requests per second to a quarter of a billion
-            subscribers. Their delivery infrastructure &#x2014;
-            <a href="https://openconnect.netflix.com/" target="_blank" rel="noopener">Open Connect</a>
-            &#x2014; runs on FreeBSD, bare metal, jails. Not Lambda. Not serverless. Not
+            subscribers. Their delivery infrastructure,
+            <a href="https://openconnect.netflix.com/" target="_blank" rel="noopener">Open Connect</a>,
+            runs on FreeBSD, bare metal, jails. Not Lambda. Not serverless. Not
             MicroVMs booting and dying per request. The company that defines scale at its
             most extreme chose the opposite of serverless for the work that matters.</p>
 
@@ -378,9 +378,9 @@
             with a handful of users. A data pipeline that runs at 2 a.m. and sleeps until
             next Tuesday. In these contexts, paying per invocation is rational, even elegant.</p>
 
-        <p>For the other 90 per cent &#x2014; the API with steady traffic, the web application
+        <p>For the other 90 per cent (the API with steady traffic, the web application
             that serves actual users, the service that runs continuously because that is what
-            services do &#x2014; serverless is managed hosting with exceptional marketing. You
+            services do), serverless is managed hosting with exceptional marketing. You
             are renting MicroVMs that boot and die per request, writing code in a vendor
             dialect that goes nowhere else, debugging distributed logs that charge by the
             gigabyte, and calling it progress.</p>

@@ -52,7 +52,7 @@
             It was called Webpack, and it was, at the time, genuinely useful.</p>
 
         <p>In 2017, ES Modules shipped natively in every major browser. The problem Webpack
-            was built to solve &#x2014; that browsers could not understand module imports &#x2014;
+            was built to solve (that browsers could not understand module imports)
             ceased to exist. <code>import</code> and <code>export</code> became part of the
             language. The browser understood them. The build step became optional.</p>
 
@@ -65,7 +65,7 @@
         <p>Evan Wallace released
             <a href="https://esbuild.github.io/" target="_blank" rel="noopener">esbuild</a> in 2020,
             written in Go, and published benchmarks that read less like a comparison and more
-            like an autopsy report. Three.js &#x2014; a substantial, real-world codebase &#x2014;
+            like an autopsy report. Three.js, a substantial, real-world codebase,
             bundled in 0.39 seconds by esbuild. Webpack 5 required 41.21 seconds. That is not
             a percentage improvement. That is a <strong>106x difference</strong>.</p>
 
@@ -85,7 +85,7 @@
                 .bt-factor { font: 700 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
             </style>
             <!-- Title -->
-            <text class="bt-title" x="260" y="20" text-anchor="middle">BUILD TIME &#x2014; SAME INPUT, SAME OUTPUT</text>
+            <text class="bt-title" x="260" y="20" text-anchor="middle">BUILD TIME: SAME INPUT, SAME OUTPUT</text>
 
             <!-- Section 1: Three.js -->
             <text class="bt-label" x="30" y="56">Three.js</text>
@@ -142,14 +142,14 @@
             the CI server falls over.</p>
 
         <p>Webpack 4, on a mid-sized production project, consumed between 500 and 800 MB of RAM.
-            Unpleasant, but manageable. Webpack 5 &#x2014; the version marketed as the performance
-            upgrade &#x2014; consumed
+            Unpleasant, but manageable. Webpack 5, the version marketed as the performance
+            upgrade, consumed
             <a href="https://github.com/webpack/webpack/issues/13550" target="_blank" rel="noopener">3.8 GB on the
             same project</a>. Not a different project. Not a larger codebase. The same files,
             the same output, and nearly five times the memory.</p>
 
         <p>The root cause is <code>terser-webpack-plugin</code>, Webpack&#x2019;s default
-            minifier. It spawns worker threads for parallel minification &#x2014; a sensible
+            minifier. It spawns worker threads for parallel minification, a sensible
             optimisation in theory. In practice, each worker clones the entire AST into its
             own memory space. Four workers, four copies of the abstract syntax tree, four times
             the allocation, and a garbage collector that cannot reclaim any of it until all
@@ -174,7 +174,7 @@
             development can begin.</p>
 
         <p>But cold starts happen once. Hot Module Replacement happens hundreds of times
-            a day &#x2014; every save, every change, every iteration. This is where the tax
+            a day, every save, every change, every iteration. This is where the tax
             becomes a salary deduction.</p>
 
         <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Developer experience comparison. Cold start with 1000 React components: Vite 1.7 seconds, Webpack 5.6 seconds. Hot Module Replacement: Vite 10 to 20 milliseconds, Webpack 500 to 1600 milliseconds. The HMR difference means Webpack developers wait 50 to 80 times longer on every save." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
@@ -191,7 +191,7 @@
                 .dx-big { font: 700 22px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
             </style>
             <!-- Title -->
-            <text class="dx-title" x="260" y="20" text-anchor="middle">DEVELOPER EXPERIENCE &#x2014; 1,000 REACT COMPONENTS</text>
+            <text class="dx-title" x="260" y="20" text-anchor="middle">DEVELOPER EXPERIENCE: 1,000 REACT COMPONENTS</text>
 
             <!-- Left card: Cold Start -->
             <rect class="dx-box" x="20" y="40" width="230" height="150"/>
@@ -217,29 +217,29 @@
             <!-- Vite bar -->
             <text class="dx-muted" x="285" y="96">Vite</text>
             <rect class="dx-bar" x="345" y="84" width="4" height="18" rx="2"/>
-            <text class="dx-value" x="357" y="98">10&#x2013;20 ms</text>
+            <text class="dx-value" x="357" y="98">10-20 ms</text>
 
             <!-- Webpack bar -->
             <text class="dx-muted" x="285" y="126">Webpack 5</text>
             <rect class="dx-bar-dim" x="345" y="114" width="130" height="18" rx="2"/>
-            <text class="dx-label" x="481" y="128">500&#x2013;1600 ms</text>
+            <text class="dx-label" x="481" y="128">500-1600 ms</text>
 
             <!-- Factor -->
-            <text class="dx-value" x="385" y="168" text-anchor="middle">50&#x2013;80x slower</text>
+            <text class="dx-value" x="385" y="168" text-anchor="middle">50-80x slower</text>
 
             <!-- Bottom annotation -->
             <rect class="dx-box" x="60" y="210" width="400" height="50"/>
             <text class="dx-label" x="260" y="232" text-anchor="middle">200 saves/day &#xD7; 1 second lost per save</text>
             <text class="dx-big" x="260" y="254" text-anchor="middle">3 minutes 20 seconds</text>
-            <text class="dx-muted" x="260" y="275" text-anchor="middle">per developer, per day &#x2014; staring at a spinner</text>
+            <text class="dx-muted" x="260" y="275" text-anchor="middle">per developer, per day, staring at a spinner</text>
 
             <!-- Source -->
             <text class="dx-muted" x="260" y="298" text-anchor="middle">Source: github.com/farm-fe/performance-compare</text>
         </svg>
 
         <p>Vite updates the browser in 10 to 20 milliseconds. Webpack takes 500 to 1,600
-            milliseconds. On every single save. Two hundred saves a day &#x2014; a conservative
-            estimate for an active developer &#x2014; and Webpack costs three minutes and twenty
+            milliseconds. On every single save. Two hundred saves a day, a conservative
+            estimate for an active developer, and Webpack costs three minutes and twenty
             seconds of dead air. Not thinking time. Not debugging. Staring at a browser that
             has not yet caught up with the code you wrote two seconds ago.</p>
 
@@ -279,7 +279,7 @@
         <p>The
             <a href="https://2024.stateofjs.com/en-US/libraries/build_tools/" target="_blank" rel="noopener">State
             of JavaScript 2024</a> survey paints a portrait of a tool that the industry uses
-            out of inertia rather than enthusiasm. Webpack&#x2019;s usage stands at 86% &#x2014;
+            out of inertia rather than enthusiasm. Webpack&#x2019;s usage stands at 86%,
             an enormous installed base. Its satisfaction score: <strong>14% positive</strong>.
             Its dislike ratio: <strong>37%</strong>. More than a third of its users actively
             dislike it. Only 14% would recommend it.</p>
@@ -302,7 +302,7 @@
                 .sv-vs { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
             </style>
             <!-- Title -->
-            <text class="sv-title" x="260" y="20" text-anchor="middle">STATE OF JS 2024 &#x2014; BUILD TOOLS</text>
+            <text class="sv-title" x="260" y="20" text-anchor="middle">STATE OF JS 2024: BUILD TOOLS</text>
 
             <!-- Webpack section -->
             <text class="sv-label" x="30" y="55">WEBPACK</text>
@@ -363,7 +363,7 @@
             browser vendors implemented the specification.</p>
 
         <p>That was nine years ago. The problem Webpack solves has been solved, by the platform,
-            natively, for nine years. And yet Webpack persists &#x2014; not because the problem
+            natively, for nine years. And yet Webpack persists, not because the problem
             returned, but because the ecosystem built on top of the solution never noticed the
             problem had left.</p>
 
@@ -379,7 +379,7 @@
             An 86% usage rate with a 14% satisfaction score.</p>
 
         <p>Every one of these costs is documented. Every one is measurable. Every one is paid
-            daily &#x2014; in developer time waiting for builds, in CI minutes burning compute,
+            daily: in developer time waiting for builds, in CI minutes burning compute,
             in RAM allocated to a tool that concatenates files with the resource appetite of a
             database server.</p>
 

@@ -3,7 +3,7 @@
 {( slot title )}Kubernetes: You Are Not Google &#x2014; Vivian Voss{( endslot )}
 
 {( slot meta )}
-<meta name="description" content="82 per cent of container users run Kubernetes in production. The control plane demands 12&#x2013;24 GB RAM before your app serves one request. CPU utilisation: 10 per cent. The performance tax, itemised.">
+<meta name="description" content="82 per cent of container users run Kubernetes in production. The control plane demands 12-24 GB RAM before your app serves one request. CPU utilisation: 10 per cent. The performance tax, itemised.">
 {( endslot )}
 
 {( slot canonical )}/blog/the-kubernetes-performance-tax{( endslot )}
@@ -20,7 +20,7 @@
     "author": { "@id": "https://vivianvoss.net/#person" },
     "publisher": { "@id": "https://vivianvoss.net/#person" },
     "url": "https://vivianvoss.net/blog/the-kubernetes-performance-tax",
-    "description": "82 per cent of container users run Kubernetes in production. The control plane demands 12&#x2013;24 GB RAM before your app serves one request. CPU utilisation: 10 per cent. The performance tax, itemised.",
+    "description": "82 per cent of container users run Kubernetes in production. The control plane demands 12-24 GB RAM before your app serves one request. CPU utilisation: 10 per cent. The performance tax, itemised.",
     "inLanguage": "en-GB",
     "isPartOf": { "@id": "https://vivianvoss.net/#website" }
 }</script>{( endslot )}
@@ -48,11 +48,11 @@
         <blockquote>
             <p>&#x201C;There&#x2019;s a lot of extra concepts, config files, and infrastructure
                 you have to manage to do something basic.&#x201D;</p>
-            <p>&#x2014; Kelsey Hightower, the man who literally wrote
+            <p>Kelsey Hightower, the man who literally wrote
                 <em>Kubernetes Up &amp; Running</em></p>
         </blockquote>
 
-        <p>Kubernetes was built at Google, for Google &#x2014; an organisation that runs
+        <p>Kubernetes was built at Google, for Google: an organisation that runs
             millions of containers across global data centres, serving billions of requests
             per second, operated by thousands of engineers who cannot remember the last time
             they deployed fewer than fifty services simultaneously. Google open-sourced the
@@ -70,13 +70,13 @@
 
         <h2>The Control Plane Tax</h2>
 
-        <p>Before your application serves its first request &#x2014; before a single byte
-            of business logic executes &#x2014; Kubernetes demands its tribute. The control
+        <p>Before your application serves its first request, before a single byte
+            of business logic executes, Kubernetes demands its tribute. The control
             plane is not optional. It is the nervous system of the cluster, and it is
             remarkably hungry.</p>
 
         <p>The minimum viable control plane: <strong>etcd</strong> (the distributed key-value
-            store that remembers everything, consuming 2&#x2013;8 GB of RAM for the privilege),
+            store that remembers everything, consuming 2-8 GB of RAM for the privilege),
             <strong>kube-apiserver</strong> (the front door through which every request must pass),
             <strong>kube-scheduler</strong> (which decides where your pods live),
             <strong>kube-controller-manager</strong> (which ensures reality matches the YAML),
@@ -84,9 +84,9 @@
             node&#x2019;s memory), <strong>CoreDNS</strong> (because services need names), and
             <strong>kube-proxy</strong> plus a CNI plugin (because packets need routes).</p>
 
-        <p>A production-grade, highly available deployment of this apparatus &#x2014; before
-            you have deployed a single line of your own code &#x2014; requires
-            <strong>6&#x2013;12 CPU cores</strong> and <strong>12&#x2013;24 GB of RAM</strong>.
+        <p>A production-grade, highly available deployment of this apparatus, before
+            you have deployed a single line of your own code, requires
+            <strong>6-12 CPU cores</strong> and <strong>12-24 GB of RAM</strong>.
             That is the cover charge. The club is empty. The music has not started. But the
             bill is already running.</p>
 
@@ -103,11 +103,11 @@
                 .k8sp-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
             </style>
             <!-- Title -->
-            <text class="k8sp-muted" x="260" y="16" text-anchor="middle">CONTROL PLANE &#x2014; before your app serves one request</text>
+            <text class="k8sp-muted" x="260" y="16" text-anchor="middle">CONTROL PLANE: before your app serves one request</text>
             <!-- Components -->
             <rect class="k8sp-fill" x="20" y="30" width="120" height="26"/>
             <text class="k8sp-label" x="80" y="48" text-anchor="middle">etcd</text>
-            <text class="k8sp-muted" x="80" y="72" text-anchor="middle">2&#x2013;8 GB RAM</text>
+            <text class="k8sp-muted" x="80" y="72" text-anchor="middle">2-8 GB RAM</text>
 
             <rect class="k8sp-fill" x="150" y="30" width="120" height="26"/>
             <text class="k8sp-label" x="210" y="48" text-anchor="middle">kube-apiserver</text>
@@ -141,28 +141,28 @@
             <text class="k8sp-muted" x="20" y="198">CPU</text>
             <rect class="k8sp-bar-dim" x="60" y="186" width="380" height="20"/>
             <rect class="k8sp-bar" x="60" y="186" width="190" height="20" opacity="0.7"/>
-            <text class="k8sp-value" x="460" y="201">6&#x2013;12 cores</text>
+            <text class="k8sp-value" x="460" y="201">6-12 cores</text>
 
             <!-- RAM bar -->
             <text class="k8sp-muted" x="20" y="228">RAM</text>
             <rect class="k8sp-bar-dim" x="60" y="216" width="380" height="20"/>
             <rect class="k8sp-bar" x="60" y="216" width="320" height="20" opacity="0.7"/>
-            <text class="k8sp-value" x="460" y="231">12&#x2013;24 GB</text>
+            <text class="k8sp-value" x="460" y="231">12-24 GB</text>
 
             <!-- K3s comparison -->
             <line class="k8sp-divider" x1="20" y1="250" x2="500" y2="250"/>
             <text class="k8sp-muted" x="20" y="272">K3s &#x201C;lightweight&#x201D; idle:</text>
             <rect class="k8sp-bar" x="60" y="280" width="60" height="16" opacity="0.5"/>
             <text class="k8sp-value" x="130" y="293">1.6 GB RAM</text>
-            <text class="k8sp-muted" x="260" y="293">&#x2014; just idling</text>
+            <text class="k8sp-muted" x="260" y="293">just idling</text>
 
             <!-- Source -->
             <text class="k8sp-muted" x="500" y="330" text-anchor="end">Source: docs.k3s.io resource profiling</text>
         </svg>
 
-        <p>&#x201C;But K3s is lightweight,&#x201D; someone offers helpfully. K3s &#x2014;
-            the stripped-down Kubernetes distribution marketed as the sensible alternative
-            &#x2014; idles at
+        <p>&#x201C;But K3s is lightweight,&#x201D; someone offers helpfully. K3s,
+            the stripped-down Kubernetes distribution marketed as the sensible alternative,
+            idles at
             <a href="https://docs.k3s.io/reference/resource-profiling" target="_blank" rel="noopener">1.6 GB of RAM</a>.
             Doing nothing. Serving no requests. Simply existing, in the quiet, expensive
             way that Kubernetes does.</p>
@@ -172,8 +172,8 @@
         <p>Deploying a single service on Kubernetes requires a Deployment manifest
             (20 lines), a Service definition (19 lines), and an Ingress resource
             (27 lines). That is 66 lines of YAML for one service to accept traffic.
-            In production &#x2014; with ConfigMaps, Secrets, health checks, resource
-            limits, pod disruption budgets, and the other liturgical requirements &#x2014;
+            In production, with ConfigMaps, Secrets, health checks, resource
+            limits, pod disruption budgets, and the other liturgical requirements,
             the count exceeds <strong>200 lines per service</strong>.</p>
 
         <p>The same deployment on FreeBSD: one entry in <code>rc.conf</code>.</p>
@@ -192,7 +192,7 @@
                 .k8sy-detail { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
             </style>
             <!-- Title -->
-            <text class="k8sy-muted" x="260" y="16" text-anchor="middle">DEPLOY ONE SERVICE &#x2014; lines of configuration</text>
+            <text class="k8sy-muted" x="260" y="16" text-anchor="middle">DEPLOY ONE SERVICE: lines of configuration</text>
             <!-- Axis -->
             <line class="k8sy-axis" x1="150" y1="30" x2="150" y2="250"/>
             <line class="k8sy-axis" x1="150" y1="250" x2="510" y2="250"/>
@@ -227,7 +227,7 @@
             <text class="k8sy-detail" x="145" y="239" text-anchor="end">production</text>
             <rect class="k8sy-bar-dim" x="150" y="215" width="290" height="28"/>
             <text class="k8sy-value" x="448" y="234">200+ lines</text>
-            <text class="k8sy-detail" x="448" y="249">5&#x2013;8 files</text>
+            <text class="k8sy-detail" x="448" y="249">5-8 files</text>
             <!-- Annotation -->
             <text class="k8sy-muted" x="330" y="295" text-anchor="middle">Same service. Same outcome. 200&#x00D7; more configuration.</text>
         </svg>
@@ -262,7 +262,7 @@
                 .k8sw-source { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
             </style>
             <!-- Title -->
-            <text class="k8sw-muted" x="260" y="16" text-anchor="middle">KUBERNETES CLUSTER UTILISATION &#x2014; 2,100+ organisations</text>
+            <text class="k8sw-muted" x="260" y="16" text-anchor="middle">KUBERNETES CLUSTER UTILISATION, 2,100+ organisations</text>
             <!-- CPU section -->
             <text class="k8sw-label" x="130" y="50" text-anchor="middle">CPU</text>
             <!-- 10x10 grid, 10 used out of 100 -->
@@ -351,13 +351,13 @@
             third of Kubernetes deployments suffer incidents severe enough to impact users.</p>
 
         <p>Of those incidents, <strong>79 per cent</strong> are caused by recent changes.
-            The very mechanism that Kubernetes is supposed to manage &#x2014; deployment &#x2014;
+            The very mechanism that Kubernetes is supposed to manage, deployment,
             is the primary source of its failures. The orchestrator is orchestrating its own
             outages.</p>
 
         <p>The time cost: <strong>34 workdays per year</strong> spent troubleshooting
             Kubernetes issues. Not building features. Not shipping products. Not serving
-            customers. Thirty-four days &#x2014; nearly seven working weeks &#x2014;
+            customers. Thirty-four days, nearly seven working weeks,
             maintaining the system that maintains the system. It is the infrastructure
             equivalent of a car that spends more time in the garage than on the road.</p>
 
@@ -374,14 +374,14 @@
             own orchestration platform was too expensive for Amazon&#x2019;s own service.
             The irony writes itself.</p>
 
-        <p><strong>37signals</strong> &#x2014; the makers of Basecamp and HEY &#x2014;
+        <p><strong>37signals</strong>, the makers of Basecamp and HEY,
             left the cloud entirely. DHH published the savings with characteristic
             understatement:
             <a href="https://world.hey.com/dhh/our-cloud-exit-savings-will-now-top-ten-million-over-five-years-f4861b64" target="_blank" rel="noopener">over $10 million saved across five years</a>.
             They bought servers. They hired two infrastructure engineers. The maths was
             not close.</p>
 
-        <p><strong>GEICO</strong> &#x2014; yes, the insurance company &#x2014; reported
+        <p><strong>GEICO</strong> (yes, the insurance company) reported
             2.5 times higher costs after their Kubernetes adoption. The platform that
             was supposed to reduce operational overhead increased it by 150 per cent.</p>
 
@@ -396,7 +396,7 @@
                 .k8se-note { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
             </style>
             <!-- Title -->
-            <text class="k8se-muted" x="260" y="16" text-anchor="middle">THE EXITS &#x2014; what happened when they left</text>
+            <text class="k8se-muted" x="260" y="16" text-anchor="middle">THE EXITS: what happened when they left</text>
             <!-- Prime Video -->
             <text class="k8se-label" x="20" y="48">Prime Video</text>
             <text class="k8se-muted" x="20" y="62">K8s microservices &#x2192; monolith</text>
@@ -446,7 +446,7 @@
 
         <p>The staffing story is perhaps the most revealing. One organisation
             <a href="https://hhf.technology/stay-away-from-complex-deployments" target="_blank" rel="noopener">reduced their DevOps team from 12 engineers to 3</a>
-            after leaving Kubernetes. Nine engineers &#x2014; nine full-time salaries &#x2014;
+            after leaving Kubernetes. Nine engineers, nine full-time salaries,
             had been maintaining the platform, not the product. Three-quarters of the
             operations team existed solely to keep the orchestration layer alive. When
             the orchestration layer departed, so did the need for nine people whose job
@@ -458,8 +458,8 @@
             certification. The
             <a href="https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/" target="_blank" rel="noopener">Certified Kubernetes Administrator</a>
             exam costs $445 per engineer. With the recommended training course, the bill
-            climbs to $1,950 per head. A team of five &#x2014; the minimum for credible
-            on-call rotation &#x2014; costs roughly $10,000 in certification alone. Not
+            climbs to $1,950 per head. A team of five (the minimum for credible
+            on-call rotation) costs roughly $10,000 in certification alone. Not
             in tooling. Not in cloud spend. In the privilege of being allowed to understand
             the system you have already paid for.</p>
 
@@ -471,7 +471,7 @@
 
         <h2>The 5 Per Cent Rule</h2>
 
-        <p>Kubernetes makes sense. It genuinely does &#x2014; under a specific set of
+        <p>Kubernetes makes sense. It genuinely does, under a specific set of
             conditions that the conference talks neglect to mention.</p>
 
         <p>You need Kubernetes if you are running <strong>50 or more services</strong>
@@ -495,8 +495,8 @@
             outages. Nine out of twelve DevOps engineers maintaining the platform rather
             than the product. Ninety per cent cost reductions when teams leave.</p>
 
-        <p>And beneath all of it, Kelsey Hightower &#x2014; the man whose name is
-            synonymous with Kubernetes advocacy &#x2014; quietly noting that there is
+        <p>And beneath all of it, Kelsey Hightower, the man whose name is
+            synonymous with Kubernetes advocacy, quietly noting that there is
             rather a lot of infrastructure required to do something basic.</p>
 
         <blockquote>
@@ -513,8 +513,7 @@
             across thousands of organisations. The evidence is not ambiguous. It is merely
             inconvenient.</p>
 
-        <p>The question was never whether Kubernetes works. It works beautifully &#x2014;
-            at Google&#x2019;s scale, for Google&#x2019;s problems. The question is whether
+        <p>The question was never whether Kubernetes works. It works beautifully at Google&#x2019;s scale, for Google&#x2019;s problems. The question is whether
             your three services, your single region, and your team of eight need a platform
             that was designed to orchestrate the infrastructure of one of the largest
             distributed systems operations on Earth.</p>

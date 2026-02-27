@@ -61,7 +61,7 @@
 
         <p>Then came
             <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/hsl" target="_blank" rel="noopener">HSL</a>,
-            and the industry exhaled. Hue, Saturation, Lightness &#x2014; finally,
+            and the industry exhaled. Hue, Saturation, Lightness: finally,
             a model that speaks human. Rotate the hue wheel, adjust saturation,
             slide the lightness. Intuitive. Elegant. And, as it happens,
             fundamentally dishonest.</p>
@@ -99,11 +99,11 @@
             </style>
 
             <text class="clr-title" x="260" y="18" text-anchor="middle">HSL LIGHTNESS vs OKLCH LIGHTNESS</text>
-            <text class="clr-sub" x="260" y="36" text-anchor="middle">Same &#x201C;lightness&#x201D; value &#x2014; vastly different perceived brightness</text>
+            <text class="clr-sub" x="260" y="36" text-anchor="middle">Same &#x201C;lightness&#x201D; value, vastly different perceived brightness</text>
 
             <!-- HSL Section -->
             <text class="clr-label" x="30" y="64">HSL</text>
-            <text class="clr-sub" x="65" y="64">&#x2014; mathematical lightness</text>
+            <text class="clr-sub" x="65" y="64">: mathematical lightness</text>
 
             <rect class="clr-bar-y" x="30" y="76" width="200" height="32"/>
             <text class="clr-code" x="40" y="96">hsl(60, 100%, 50%)</text>
@@ -122,7 +122,7 @@
 
             <!-- OKLCH Section -->
             <text class="clr-label" x="30" y="186">OKLCH</text>
-            <text class="clr-sub" x="80" y="186">&#x2014; perceptual lightness</text>
+            <text class="clr-sub" x="80" y="186">: perceptual lightness</text>
 
             <rect class="clr-bar-yo" x="30" y="198" width="200" height="32"/>
             <text class="clr-code" x="40" y="218">oklch(90% 0.18 100)</text>
@@ -153,22 +153,22 @@
             <a href="https://bottosson.github.io/posts/oklab/" target="_blank" rel="noopener">Bj&#x00F6;rn Ottosson</a>
             published Oklab, a perceptual colour space designed from first
             principles to match human vision. OKLCH is its cylindrical
-            representation &#x2014; the same colour space expressed as Lightness,
+            representation, the same colour space expressed as Lightness,
             Chroma, and Hue rather than Cartesian coordinates. Three axes, each
             doing exactly what it claims:</p>
 
-        <p><strong>L &#x2014; Lightness.</strong> Perceptually uniform. When you
+        <p><strong>L: Lightness.</strong> Perceptually uniform. When you
             change L by 10%, the colour actually <em>looks</em> 10% brighter or
             darker to the human eye. Not &#x201C;10% brighter according to a
             formula that ignores the human eye.&#x201D; Actually brighter. This
             is the promise HSL made and could not keep.</p>
 
-        <p><strong>C &#x2014; Chroma.</strong> Colour intensity, from grey to
+        <p><strong>C: Chroma.</strong> Colour intensity, from grey to
             vivid. Unlike HSL&#x2019;s saturation, chroma in OKLCH is absolute.
             A chroma of 0.12 means the same intensity regardless of hue. You can
             desaturate by reducing C without side effects on perceived lightness.</p>
 
-        <p><strong>H &#x2014; Hue.</strong> The hue angle, 0&#x2013;360 degrees.
+        <p><strong>H: Hue.</strong> The hue angle, 0-360 degrees.
             Rotating the hue changes the colour without affecting lightness or
             chroma. This sounds obvious. In HSL, rotating from yellow to blue at
             constant S and L produces a dramatic perceived brightness shift. In
@@ -184,9 +184,9 @@
 
         <p>There is a second advantage, and it is not subtle.
             <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch" target="_blank" rel="noopener">OKLCH in CSS</a>
-            supports colour gamuts beyond sRGB. Display P3 &#x2014; the wide
+            supports colour gamuts beyond sRGB. Display P3, the wide
             gamut that modern Apple, Samsung, and flagship displays have shipped
-            for years &#x2014; offers roughly 50% more colours than sRGB. Rec2020
+            for years, offers roughly 50% more colours than sRGB. Rec2020
             goes further still. HEX and RGB are physically incapable of
             addressing these colours. They are locked to the sRGB gamut, which
             was defined in 1996 for CRT monitors that no longer exist.</p>
@@ -281,7 +281,7 @@
             <!-- Layer 1: OKLCH -->
             <rect class="arch-fill-hl" x="130" y="50" width="260" height="48"/>
             <rect class="arch-box-hl" x="130" y="50" width="260" height="48"/>
-            <text class="arch-label" x="260" y="70" text-anchor="middle">1. OKLCH &#x2014; Perceptual Truth</text>
+            <text class="arch-label" x="260" y="70" text-anchor="middle">1. OKLCH: Perceptual Truth</text>
             <text class="arch-code" x="260" y="88" text-anchor="middle">--brand: oklch(60% 0.12 250)</text>
 
             <!-- Arrow down -->
@@ -290,9 +290,9 @@
             <!-- Layer 2: Relative Color Syntax -->
             <rect class="arch-fill" x="60" y="116" width="400" height="64"/>
             <rect class="arch-box" x="60" y="116" width="400" height="64"/>
-            <text class="arch-label" x="260" y="136" text-anchor="middle">2. Relative Color Syntax &#x2014; Derived Variants</text>
+            <text class="arch-label" x="260" y="136" text-anchor="middle">2. Relative Color Syntax: Derived Variants</text>
             <text class="arch-code" x="260" y="154" text-anchor="middle">oklch(from var(--brand) calc(l + 0.2) c h)</text>
-            <text class="arch-sub" x="260" y="170" text-anchor="middle">light &#x25A0; dark &#x25A0; muted &#x25A0; vivid &#x2014; all from one source</text>
+            <text class="arch-sub" x="260" y="170" text-anchor="middle">light &#x25A0; dark &#x25A0; muted &#x25A0; vivid, all from one source</text>
 
             <!-- Arrow down -->
             <path class="arch-arrow" d="M260,180 L260,198"/>
@@ -318,7 +318,7 @@
         <p>OKLCH:
             <a href="https://caniuse.com/css-oklch" target="_blank" rel="noopener">Chrome 111+, Firefox 113+, Safari 15.4+</a>.
             Global coverage: 93%. Relative Color Syntax is somewhat newer
-            &#x2014; Chrome 119+, Firefox 128+, Safari 16.4+ &#x2014; but
+            (Chrome 119+, Firefox 128+, Safari 16.4+) but
             the core <code>oklch()</code> function has been universally
             available since early 2023. <code>light-dark()</code> shipped in
             Chrome 123+, Firefox 120+, Safari 17.5+.</p>
@@ -366,7 +366,7 @@
 <pre><code>:root {
     color-scheme: light dark;
 
-    /* Brand &#x2014; define once */
+    /* Brand: define once */
     --brand:       oklch(60% 0.12 250);
     --brand-light: oklch(from var(--brand) calc(l + 0.2) c h);
     --brand-dark:  oklch(from var(--brand) calc(l - 0.2) c h);

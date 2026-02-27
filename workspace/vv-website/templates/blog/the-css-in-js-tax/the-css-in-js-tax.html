@@ -48,7 +48,7 @@
         <p>CSS-in-JS is the practice of writing CSS inside JavaScript in order
             to generate CSS. One writes a style declaration, hands it to a runtime
             library, which parses it, hashes it, injects it into the DOM, and
-            produces &#x2014; CSS. The browser then reads the CSS. The same CSS one
+            produces CSS. The browser then reads the CSS. The same CSS one
             could have written in the first place.</p>
 
         <p>The engineering term for this is a translation layer. The colloquial
@@ -59,8 +59,8 @@
         <h2>The Runtime Overhead</h2>
 
         <p><a href="https://bundlephobia.com/package/styled-components" target="_blank"
-            rel="noopener">styled-components</a> &#x2014; the most popular CSS-in-JS
-            library &#x2014; operates at runtime. On every render, it parses template
+            rel="noopener">styled-components</a>, the most popular CSS-in-JS
+            library, operates at runtime. On every render, it parses template
             literals, computes styles from props, generates unique class names via
             hashing, and injects <code>&lt;style&gt;</code> tags into the document head.
             Every render. Not once. Not on first mount. Every single time the component
@@ -75,7 +75,7 @@
 
         <p>A static CSS file, by contrast, is parsed once, cached by the browser,
             and applied without executing a single line of JavaScript. The runtime
-            cost is zero. Not low &#x2014; zero. The browser was built to do this.
+            cost is zero. Not low. Zero. The browser was built to do this.
             It has been doing it since 1996. It is, one might venture, rather
             practised.</p>
 
@@ -95,7 +95,7 @@
                 .bnd-native-label { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
             </style>
             <!-- Title -->
-            <text class="bnd-muted" x="290" y="16" text-anchor="middle">Runtime library cost &#x2014; before your styles</text>
+            <text class="bnd-muted" x="290" y="16" text-anchor="middle">Runtime library cost - before your styles</text>
             <!-- Axes -->
             <line class="bnd-axis" x1="160" y1="35" x2="160" y2="180"/>
             <line class="bnd-axis" x1="160" y1="180" x2="490" y2="180"/>
@@ -120,7 +120,7 @@
             <text class="bnd-label" x="155" y="152" text-anchor="end">Native CSS</text>
             <line class="bnd-native" x1="160" y1="148" x2="162" y2="148"/>
             <text class="bnd-native-label" x="178" y="152">0 KB</text>
-            <text class="bnd-muted" x="228" y="152">&#x2014; already in the browser</text>
+            <text class="bnd-muted" x="228" y="152">- already in the browser</text>
             <!-- Sources -->
             <text class="bnd-muted" x="490" y="216" text-anchor="end">Source: bundlephobia.com</text>
         </svg>
@@ -144,9 +144,9 @@
             correct. Then the JavaScript arrives.</p>
 
         <p>The client-side runtime now regenerates the styles from scratch. It hashes
-            the template literals again. If the hashes match &#x2014; and they usually
+            the template literals again. If the hashes match (and they usually
             do, but &#x201C;usually&#x201D; is doing rather a lot of heavy lifting in
-            a production environment &#x2014; the styles survive. If they do not match,
+            a production environment), the styles survive. If they do not match,
             the user sees a flash of unstyled content, or worse, the wrong styles
             applied until the JavaScript finishes executing.</p>
 
@@ -265,8 +265,8 @@
 
         <h2>The Solutions That Already Exist</h2>
 
-        <p>The scoping problem &#x2014; the genuine concern that CSS-in-JS claims to
-            address &#x2014; was solved years before styled-components shipped its
+        <p>The scoping problem, the genuine concern that CSS-in-JS claims to
+            address, was solved years before styled-components shipped its
             first release.</p>
 
         <p><strong>BEM</strong> (Block Element Modifier) arrived in 2010. A naming
@@ -285,7 +285,7 @@
 
         <p>And then there are
             <a href="https://caniuse.com/css-variables" target="_blank"
-            rel="noopener">CSS Custom Properties</a> &#x2014; native CSS variables,
+            rel="noopener">CSS Custom Properties</a>, native CSS variables,
             supported by 98% of browsers worldwide. Dynamic values, in CSS, without
             JavaScript. One sets a property on an element; the cascade does the rest.
             The &#x201C;dynamic&#x201D; argument for CSS-in-JS collapses the moment
@@ -408,8 +408,8 @@
         <p>CSS-in-JS solved a workflow preference. It made styles co-located with
             components, which some teams prefer, and that preference is not
             unreasonable. But a workflow preference that costs 13 KB, a runtime parser,
-            hydration fragility, and opaque debugging &#x2014; when the alternative is
-            zero bytes, no runtime, and a language the browser already speaks &#x2014;
+            hydration fragility, and opaque debugging (when the alternative is
+            zero bytes, no runtime, and a language the browser already speaks)
             is a preference the user is paying for. And the user did not choose it.</p>
 
         <blockquote>

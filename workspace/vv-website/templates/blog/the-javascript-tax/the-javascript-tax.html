@@ -52,7 +52,7 @@
             Not eventually. Not under rare conditions. Never. Two hundred and forty-five
             kilobytes of code that travels across the network, gets parsed by the engine,
             occupies memory, and does precisely nothing. Shipped, paid for, and thrown away
-            &#x2014; on every single page load.</p>
+            on every single page load.</p>
 
         <p>On the developer&#x2019;s MacBook Pro, this is invisible. The M-series chip
             parses the bundle in under 200 milliseconds, the fan stays silent, and the
@@ -71,7 +71,7 @@
 
         <p>The arithmetic is merciless. A 500 KB bundle that takes 200 milliseconds on a
             developer&#x2019;s workstation demands five full seconds on a mid-range Android
-            handset &#x2014; the kind of device that represents the majority of the
+            handset, the kind of device that represents the majority of the
             world&#x2019;s web traffic. Five seconds of a locked main thread. Five seconds
             of an unresponsive screen. Five seconds during which the user stares at a
             layout that looks finished but refuses to obey their fingers.</p>
@@ -88,7 +88,7 @@
                 .pt-multiplier { font: 700 18px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
             </style>
             <!-- Title -->
-            <text class="pt-muted" x="260" y="16" text-anchor="middle">500 KB JavaScript &#x2014; parse time</text>
+            <text class="pt-muted" x="260" y="16" text-anchor="middle">500 KB JavaScript: parse time</text>
             <!-- Axes -->
             <line class="pt-axis" x1="160" y1="40" x2="160" y2="180"/>
             <line class="pt-axis" x1="160" y1="180" x2="500" y2="180"/>
@@ -144,7 +144,7 @@
             <strong>431 per cent more main-thread time</strong> on mobile compared to
             desktop. Not 31. Not 131. Four hundred and thirty-one per cent. The same
             study measured a <strong>146 per cent increase in frame defects</strong>
-            &#x2014; dropped frames, janky scrolling, input latency &#x2014; directly
+            (dropped frames, janky scrolling, input latency) directly
             attributable to thermal throttling under sustained JavaScript load.</p>
 
         <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The thermal throttling feedback loop. Heavy JavaScript causes CPU load, which produces heat, which triggers throttling, which causes slower execution, which extends CPU load duration, creating a self-reinforcing cycle. Results: 431 per cent more main-thread time, 146 per cent more frame defects." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
@@ -210,8 +210,8 @@
 
         <h2>The Battery Asymmetry</h2>
 
-        <p>There is a further indignity. Images and video &#x2014; the assets that
-            actually constitute the majority of page weight &#x2014; are decoded by
+        <p>There is a further indignity. Images and video, the assets that
+            actually constitute the majority of page weight, are decoded by
             dedicated hardware. The GPU handles image decompression. A hardware video
             decoder handles media playback. These circuits are purpose-built, thermally
             efficient, and draw a fraction of the power that general-purpose computation
@@ -227,7 +227,7 @@
         <p>The user notices this. Not consciously, not as a technical observation, but as
             the vague, persistent awareness that certain websites make their phone warm and
             their battery percentage drop. They do not diagnose the cause. They simply
-            leave. And in the analytics dashboard, this registers as a bounce &#x2014;
+            leave. And in the analytics dashboard, this registers as a bounce,
             attributed to content, to design, to anything except the 558 KB of JavaScript
             that turned their phone into a hand warmer.</p>
 
@@ -236,7 +236,7 @@
         <p>Nikita Tonsky, in his
             <a href="https://tonsky.me/blog/js-bloat/" target="_blank" rel="noopener">2024 survey of application sizes</a>,
             catalogued the dimensions of the crisis with admirable precision. Slack: 55 MB.
-            LinkedIn: 31 MB. Gmail: 20 MB. These are client-side footprints &#x2014; the
+            LinkedIn: 31 MB. Gmail: 20 MB. These are client-side footprints, the
             weight your device must download, store, and execute to perform tasks that are,
             at their core, astonishingly simple.</p>
 
@@ -252,8 +252,8 @@
                 in a shipping container.</p>
         </blockquote>
 
-        <p>Gmail requires 20 MB to display an email. The email itself &#x2014; headers,
-            body, the lot &#x2014; might be 15 KB. LinkedIn demands 31 MB to show a feed
+        <p>Gmail requires 20 MB to display an email. The email itself (headers,
+            body, the lot) might be 15 KB. LinkedIn demands 31 MB to show a feed
             of text posts that average perhaps 500 bytes each. The clients have become
             several orders of magnitude larger than the content they exist to present.
             The envelope has consumed the letter.</p>
@@ -282,7 +282,7 @@
 
         <p>The solution is not complicated. It is merely unfashionable.</p>
 
-        <p>Server-side device intelligence &#x2014; the server knows the client. The
+        <p>Server-side device intelligence: the server knows the client. The
             <code>User-Agent</code> header, the
             <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Client_hints" target="_blank" rel="noopener">Client Hints API</a>,
             the <code>Save-Data</code> header. The information is there. A template engine
@@ -292,8 +292,8 @@
 
         <p>The pattern is old. It predates the SPA era. The server renders HTML. The
             browser displays it. Interactive elements are enhanced progressively, not
-            reconstructed from a JavaScript monolith. The approach has a name &#x2014;
-            progressive enhancement &#x2014; and it fell out of favour not because it
+            reconstructed from a JavaScript monolith. The approach has a name,
+            progressive enhancement, and it fell out of favour not because it
             stopped working, but because it was insufficiently complex to sustain a
             conference circuit.</p>
 
@@ -309,7 +309,7 @@
                 .pc-waste { fill: none; stroke: var(--accent); stroke-width: 1; stroke-dasharray: 4 2; }
             </style>
             <!-- Title -->
-            <text class="pc-muted" x="260" y="16" text-anchor="middle">JAVASCRIPT PAYLOAD &#x2014; what ships vs what runs</text>
+            <text class="pc-muted" x="260" y="16" text-anchor="middle">JAVASCRIPT PAYLOAD: what ships vs what runs</text>
             <!-- Axes -->
             <line class="pc-axis" x1="140" y1="30" x2="140" y2="170"/>
             <line class="pc-axis" x1="140" y1="170" x2="510" y2="170"/>
@@ -336,13 +336,13 @@
             <text class="pc-label" x="135" y="142" text-anchor="end">Rendered</text>
             <rect class="pc-bar-alt" x="140" y="120" width="5" height="28" rx="2"/>
             <text class="pc-value" x="155" y="138">8.8 KB gz</text>
-            <text class="pc-muted" x="155" y="158">0% waste &#x2014; direct DOM, no virtual DOM</text>
+            <text class="pc-muted" x="155" y="158">0% waste, direct DOM, no virtual DOM</text>
             <!-- Source -->
             <text class="pc-muted" x="510" y="210" text-anchor="end">Sources: httparchive.org, web.dev</text>
         </svg>
 
-        <p>htm/a &#x2014; the server-side reactivity framework from
-            <a href="/ecosystem">the Min2Max ecosystem</a> &#x2014; ships 8.8 KB gzipped.
+        <p>htm/a, the server-side reactivity framework from
+            <a href="/ecosystem">the Min2Max ecosystem</a>, ships 8.8 KB gzipped.
             Direct DOM mutation. No virtual DOM. No reconciliation. No hydration ceremony.
             The server renders the page. The browser displays it. Interactive elements
             respond without downloading a quarter-megabyte of unused abstractions first.</p>
@@ -359,12 +359,12 @@
             never executes. <strong>25&#x00D7;</strong> parse-time penalty on mobile.
             <strong>431%</strong> more main-thread time for framework-heavy sites on
             phones. <strong>146%</strong> more frame defects from thermal throttling.
-            A battery that drains because JavaScript has no hardware decoder &#x2014;
+            A battery that drains because JavaScript has no hardware decoder and
             every cycle runs on the main CPU. Application clients that outweigh their
             content by a factor of 550,000.</p>
 
         <p>Every one of these numbers is measured. Every one is published. And every one
-            is absorbed by the user &#x2014; not as a statistic, but as heat in their
+            is absorbed by the user, not as a statistic, but as heat in their
             palm, percentage points draining from their battery, and the quiet frustration
             of a page that will not respond.</p>
 
@@ -377,7 +377,7 @@
             lightweight. Both can be parsed incrementally, rendered progressively, and
             displayed before the full document has arrived. JavaScript is the exception.
             It demands synchronous parsing, monopolises the main thread, generates heat,
-            triggers throttling, and consumes battery &#x2014; and the industry ships
+            triggers throttling, and consumes battery. And the industry ships
             558 KB of it, median, to devices that were designed to last a day on a single
             charge.</p>
 

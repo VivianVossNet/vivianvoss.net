@@ -54,7 +54,7 @@
             rather, the YAML was correct but the indentation was wrong, which in a whitespace-sensitive
             configuration language amounts to the same thing.</p>
 
-        <p>CI/CD &#x2014; Continuous Integration, Continuous Deployment &#x2014; is the industry&#x2019;s
+        <p>CI/CD (Continuous Integration, Continuous Deployment) is the industry&#x2019;s
             answer to the question &#x201C;how do we ship software reliably?&#x201D; The answer, it
             turns out, is a forty-five-minute pipeline that runs on every pull request, consumes six
             developer-hours per day in waiting time, and costs
@@ -64,14 +64,14 @@
         <h2>The Waiting Tax</h2>
 
         <p>A developer opens a pull request. The pipeline begins. Forty-five minutes later, it
-            finishes &#x2014; or fails on a flaky test that passed locally, or times out on a
+            finishes, or fails on a flaky test that passed locally, or times out on a
             Docker layer cache that was evicted overnight, or discovers that a transitive
             dependency released a patch version that breaks the build in a way nobody could
             have predicted because nobody reads changelogs for packages four levels deep.</p>
 
         <p>While the pipeline runs, the developer context-switches. Picks up another ticket.
             Loses the mental model of the code they just wrote. When the pipeline finally reports
-            back &#x2014; red, naturally &#x2014; the developer must reload that mental model,
+            back, red, naturally, the developer must reload that mental model,
             diagnose the failure, fix it, push again, and wait another forty-five minutes. Two
             cycles of this, and the morning is gone.</p>
 
@@ -123,7 +123,7 @@
         <p>The pipeline is defined in YAML. This is the first structural error. YAML is a
             serialisation format that was never designed to be a programming language, yet CI/CD
             platforms have collectively decided it should be one. It is whitespace-sensitive, which
-            means a single misplaced space can invalidate the entire pipeline &#x2014; silently,
+            means a single misplaced space can invalidate the entire pipeline. Silently,
             because YAML does not throw syntax errors so much as reinterpret your intent.</p>
 
         <p>It is not locally testable. The feedback loop for pipeline configuration is: edit YAML,
@@ -142,8 +142,8 @@
         <h2>The Supply Chain</h2>
 
         <p>The pipeline does not merely run your code. It runs everyone else&#x2019;s. The modern
-            CI/CD pipeline is a composition of third-party actions, orbs, templates, and plugins
-            &#x2014; a marketplace of executable infrastructure, maintained by strangers, pinned
+            CI/CD pipeline is a composition of third-party actions, orbs, templates, and plugins:
+            a marketplace of executable infrastructure, maintained by strangers, pinned
             (if you are fortunate) to a specific version, and granted access to your build environment,
             your secrets, and your deployment credentials.</p>
 
@@ -151,8 +151,8 @@
 
         <p><a href="https://github.com/advisories/GHSA-mrrh-fwg8-r2c3" target="_blank" rel="noopener">CVE-2025-30066</a>:
             <code>tj-actions/changed-files</code>, a widely used GitHub Action, was compromised.
-            The attack injected code that extracted CI/CD secrets &#x2014; API keys, deployment tokens,
-            cloud credentials &#x2014; from the runner environment and wrote them to the build log.
+            The attack injected code that extracted CI/CD secrets (API keys, deployment tokens,
+            cloud credentials) from the runner environment and wrote them to the build log.
             According to
             <a href="https://unit42.paloaltonetworks.com/github-actions-supply-chain-attack/" target="_blank" rel="noopener">Palo Alto&#x2019;s Unit 42</a>,
             23,000 repositories were affected. Twenty-three thousand codebases, each trusting a
@@ -210,12 +210,12 @@
             <text x="440" y="200" class="sc-muted" text-anchor="middle">publicly readable</text>
             <!-- Impact -->
             <text x="260" y="250" class="sc-count" text-anchor="middle">23,000 repos</text>
-            <text x="260" y="268" class="sc-muted" text-anchor="middle">CVE-2025-30066 &#x2014; tj-actions/changed-files</text>
+            <text x="260" y="268" class="sc-muted" text-anchor="middle">CVE-2025-30066: tj-actions/changed-files</text>
             <text x="260" y="300" class="sc-muted" text-anchor="middle">Source: Palo Alto Unit 42, github.com/advisories</text>
         </svg>
 
         <p>The marketplace model is npm for infrastructure. The same structural defect, the same
-            implicit trust model, the same inevitable breach &#x2014; except that npm packages merely
+            implicit trust model, the same inevitable breach. Except that npm packages merely
             have access to your application. CI/CD actions have access to your deployment credentials,
             your cloud accounts, and the keys to every environment you have ever configured.</p>
 
@@ -227,7 +227,7 @@
             you discover approximately six months after committing to the platform.</p>
 
         <p>The migration path between any two of these systems is a full rewrite. Not of your
-            application &#x2014; the application, mercifully, does not care &#x2014; but of your
+            application (the application, mercifully, does not care) but of your
             entire build, test, and deployment infrastructure. Every conditional, every cache
             strategy, every environment variable mapping, every secret reference. The YAML is
             not portable. The ecosystem is not interoperable. The abstractions do not abstract.</p>
@@ -312,27 +312,27 @@
         <p>Fairness requires the concession. CI/CD pipelines earn their keep in specific
             circumstances, and pretending otherwise would be dishonest.</p>
 
-        <p><strong>Regulated industries</strong> &#x2014; finance, healthcare, aerospace &#x2014; where
+        <p><strong>Regulated industries</strong>: finance, healthcare, aerospace, where
             an auditable, reproducible build process is not merely desirable but legally mandated.
             The pipeline becomes a compliance artefact, and the cost is the cost of doing regulated
             business. Nobody disputes this.</p>
 
-        <p><strong>Large teams</strong> &#x2014; fifty developers or more, where the coordination
+        <p><strong>Large teams</strong>: fifty developers or more, where the coordination
             problem genuinely exceeds what human review and trust can manage. At that scale, automated
             gates prevent the kind of integration conflicts that would otherwise consume entire
             sprint cycles.</p>
 
-        <p><strong>Complex monorepos</strong> &#x2014; where a change in one module can break twelve
+        <p><strong>Complex monorepos</strong>: where a change in one module can break twelve
             others, and the dependency graph is too dense for manual reasoning. The pipeline becomes
             a safety net, and the net is worth its weight.</p>
 
-        <p>For the remaining majority &#x2014; the team of eight, the service with four endpoints,
-            the application that deploys once a day to a single server &#x2014; the pipeline is
+        <p>For the remaining majority, the team of eight, the service with four endpoints,
+            the application that deploys once a day to a single server, the pipeline is
             overhead dressed as best practice.</p>
 
         <h2>The Alternative</h2>
 
-        <p><code>git push</code>. A webhook fires. The server pulls. Two shell scripts &#x2014; one
+        <p><code>git push</code>. A webhook fires. The server pulls. Two shell scripts: one
             to build, one to deploy. The entire process completes in seconds, not minutes. No YAML.
             No marketplace. No third-party actions with access to your secrets. No forty-five-minute
             wait. No $13,445 per developer per year in lost productivity.</p>
@@ -348,13 +348,13 @@
         <h2>The Verdict</h2>
 
         <p>CI/CD is a $1.73 billion industry projected to reach $4.53 billion by 2030. That
-            growth is funded by developer hours &#x2014; twenty per cent of the working week,
+            growth is funded by developer hours: twenty per cent of the working week,
             across millions of engineers, spent waiting for pipelines, debugging YAML, and
             trusting a marketplace that has already demonstrated it cannot be trusted.</p>
 
         <blockquote>
             <p>The pipeline is not the solution. It is the longest-running workaround in
-                the industry &#x2014; a forty-five-minute confession that the stack beneath
+                the industry: a forty-five-minute confession that the stack beneath
                 it was never reliable enough to deploy with confidence.</p>
         </blockquote>
 

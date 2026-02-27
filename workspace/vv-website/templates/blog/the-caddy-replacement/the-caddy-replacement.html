@@ -62,7 +62,7 @@
             the problem was not the configuration. The problem was that configuration
             existed at all. He wrote
             <a href="https://caddyserver.com/" target="_blank" rel="noopener">Caddy</a>
-            &#x2014; a web server that handles TLS automatically, negotiates certificates
+            : a web server that handles TLS automatically, negotiates certificates
             from Let&#x2019;s Encrypt on first request, renews them silently, and does
             not require you to understand the ACME protocol, set a cron job, or write
             a single line of TLS configuration. One binary. Zero ceremony.</p>
@@ -171,8 +171,8 @@
 
         <p>The
             <a href="https://blog.tjll.net/reverse-proxy-hot-dog-eating-contest-caddy-vs-nginx/" target="_blank" rel="noopener">benchmarks</a>
-            tell a straightforward story. Below 50,000 requests per second &#x2014;
-            which covers the vast majority of production services &#x2014; the
+            tell a straightforward story. Below 50,000 requests per second,
+            which covers the vast majority of production services, the
             difference between Caddy and Nginx is effectively noise. Above that
             threshold, Nginx pulls ahead by roughly 10 to 15 per cent, attributable
             to Go&#x2019;s garbage collector pausing at precisely the moments a
@@ -217,7 +217,7 @@
             <line x1="320" y1="118" x2="350" y2="118" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 3"/>
             <text class="cr-perf-sub" x="356" y="122">Nginx</text>
             <!-- Annotation -->
-            <text class="cr-perf-sub" x="410" y="148" text-anchor="middle">10&#x2013;15% gap</text>
+            <text class="cr-perf-sub" x="410" y="148" text-anchor="middle">10-15% gap</text>
             <text class="cr-perf-sub" x="410" y="162" text-anchor="middle">(Go GC pauses)</text>
             <!-- Bottom note -->
             <text class="cr-perf-sub" x="260" y="268" text-anchor="middle">Below 50k req/s: choose by features. Above: measure.</text>
@@ -228,7 +228,7 @@
             a load balancer in front of the proxy, and an architecture that has long
             since stopped worrying about the configuration syntax of its edge server.
             If your service handles that volume, you already know what you need. If
-            it does not &#x2014; and for most services it does not &#x2014; the
+            it does not (and for most services it does not) the
             performance objection is academic.</p>
 
         <h2>What You Lose</h2>
@@ -238,7 +238,7 @@
 
         <p><strong>Lua scripting in the request path.</strong> Nginx with
             <a href="https://openresty.org/" target="_blank" rel="noopener">OpenResty</a>
-            allows you to run Lua at every stage of the HTTP lifecycle &#x2014;
+            allows you to run Lua at every stage of the HTTP lifecycle:
             rewriting headers, transforming bodies, querying Redis mid-request.
             Caddy has no equivalent. If your architecture requires programmable
             logic inside the proxy, Nginx remains the correct tool.</p>
@@ -297,7 +297,7 @@
             <rect class="cr-feat-fill-dim" x="20" y="104" width="220" height="44"/>
             <rect class="cr-feat-box" x="20" y="104" width="220" height="44"/>
             <text class="cr-feat-label" x="130" y="122" text-anchor="middle">Peak throughput &gt;50k req/s</text>
-            <text class="cr-feat-sub" x="130" y="138" text-anchor="middle">10&#x2013;15% advantage (C vs Go GC)</text>
+            <text class="cr-feat-sub" x="130" y="138" text-anchor="middle">10-15% advantage (C vs Go GC)</text>
 
             <rect class="cr-feat-fill-dim" x="20" y="154" width="220" height="44"/>
             <rect class="cr-feat-box" x="20" y="154" width="220" height="44"/>
@@ -336,7 +336,7 @@
         <p>There are legitimate reasons to keep Nginx. Three, specifically.</p>
 
         <p>Your architecture runs Lua in the request path. OpenResty is not a
-            convenience &#x2014; it is a dependency. Rewriting it in Caddy middleware
+            convenience. It is a dependency. Rewriting it in Caddy middleware
             is possible but expensive, and the result is less capable. Nginx stays.</p>
 
         <p>Your traffic exceeds 50,000 requests per second consistently, and the
@@ -349,8 +349,8 @@
             engineering decision, not a technical one, and it is entirely valid.
             Nginx stays.</p>
 
-        <p>For everything else &#x2014; and &#x201C;everything else&#x201D;
-            covers the overwhelming majority of production deployments &#x2014;
+        <p>For everything else, and &#x201C;everything else&#x201D;
+            covers the overwhelming majority of production deployments,
             Caddy is the replacement. Not the alternative. The replacement.</p>
 
         <h2>The Replacement</h2>

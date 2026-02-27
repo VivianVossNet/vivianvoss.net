@@ -3,14 +3,14 @@
 {( slot title )}The Interpreted Stack — Vivian Voss{( endslot )}
 
 {( slot meta )}
-<meta name="description" content="Seven layers of compensation. One compiled binary. The standard PHP deployment is not a stack — it is a monument to sunk cost.">
+<meta name="description" content="Seven layers of compensation. One compiled binary. The standard PHP deployment is not a stack. It is a monument to sunk cost.">
 {( endslot )}
 
 {( slot canonical )}/blog/the-interpreted-stack{( endslot )}
 
 {( slot og-title )}The Interpreted Stack — Vivian Voss{( endslot )}
 
-{( slot og-desc )}Seven layers of compensation. One compiled binary. The standard PHP deployment is not a stack — it is a monument to sunk cost.{( endslot )}
+{( slot og-desc )}Seven layers of compensation. One compiled binary. The standard PHP deployment is not a stack. It is a monument to sunk cost.{( endslot )}
 
 {( slot jsonld )}<script type="application/ld+json">{
     "@context": "https://schema.org",
@@ -20,7 +20,7 @@
     "author": { "@id": "https://vivianvoss.net/#person" },
     "publisher": { "@id": "https://vivianvoss.net/#person" },
     "url": "https://vivianvoss.net/blog/the-interpreted-stack",
-    "description": "Seven layers of compensation. One compiled binary. The standard PHP deployment is not a stack — it is a monument to sunk cost.",
+    "description": "Seven layers of compensation. One compiled binary. The standard PHP deployment is not a stack. It is a monument to sunk cost.",
     "inLanguage": "en-GB",
     "isPartOf": { "@id": "https://vivianvoss.net/#website" }
 }</script>{( endslot )}
@@ -52,20 +52,20 @@
         <p>Consider what the typical PHP production environment actually requires
             before it can perform this single, modest task:</p>
 
-        <p><strong>Nginx</strong> &#x2014; because PHP cannot serve HTTP on its own.
+        <p><strong>Nginx</strong>: because PHP cannot serve HTTP on its own.
             A language designed for the web that requires a separate programme to
             participate in it. One might call this an architectural decision. One
             might also call it an admission.</p>
 
         <p><strong><a href="https://docs.platform.sh/languages/php/fpm.html" target="_blank" rel="noopener">PHP-FPM</a></strong>
-            &#x2014; because the language needs an external process manager to handle
+            : because the language needs an external process manager to handle
             concurrent requests. The FastCGI Process Manager spawns worker pools,
             manages lifetimes, and consumes
-            <a href="https://docs.platform.sh/languages/php/fpm.html" target="_blank" rel="noopener">300&#x2013;600 MB of memory</a>
+            <a href="https://docs.platform.sh/languages/php/fpm.html" target="_blank" rel="noopener">300-600 MB of memory</a>
             merely to supervise a language that cannot supervise itself.</p>
 
         <p><strong><a href="https://www.php.net/manual/en/opcache.configuration.php" target="_blank" rel="noopener">OPcache</a></strong>
-            &#x2014; because interpreting the same source files on every request proved,
+            : because interpreting the same source files on every request proved,
             unsurprisingly, too slow. The solution: cache the compiled bytecode between
             requests, which is to say, approximate what a compiled language does by default.
             PHP 8's JIT compiler improves synthetic benchmarks by up to
@@ -74,26 +74,26 @@
             <a href="https://sevalla.com/blog/laravel-benchmarks/" target="_blank" rel="noopener">1.8% improvement</a>.
             The bottleneck, it turns out, was never the CPU.</p>
 
-        <p><strong>Composer + vendor/</strong> &#x2014; because the language ships without
+        <p><strong>Composer + vendor/</strong>: because the language ships without
             a standard library worth mentioning. Need to send an HTTP request? Install a
             package. Parse a date? Package. Validate an email? Package. The
             <a href="https://laracasts.com/discuss/channels/laravel/laravel-project-size-way-too-big" target="_blank" rel="noopener">vendor/ directory</a>
-            of a typical Laravel application weighs 50&#x2013;200 MB. That is not a
+            of a typical Laravel application weighs 50-200 MB. That is not a
             dependency tree. It is a dependency forest, and no one has drawn the map.</p>
 
-        <p><strong>A framework</strong> &#x2014; because the language provides no routing,
+        <p><strong>A framework</strong>: because the language provides no routing,
             no request lifecycle, no structure. Laravel, Symfony, or one of their many
             imitators must supply what the language itself declined to.</p>
 
-        <p><strong>A template engine</strong> &#x2014; because mixing business logic and
+        <p><strong>A template engine</strong>: because mixing business logic and
             HTML markup was eventually recognised as poor form. Blade, Twig, or a
             bespoke alternative now separates concerns that a well-designed language
             would never have entangled.</p>
 
-        <p><strong>Redis</strong> &#x2014; because PHP forgets everything after each request.
+        <p><strong>Redis</strong>: because PHP forgets everything after each request.
             The shared-nothing architecture, once presented as a feature, requires an
             external in-memory store to maintain any state whatsoever between page loads.
-            Sessions, caches, queues &#x2014; all outsourced to a separate system because
+            Sessions, caches, queues: all outsourced to a separate system because
             the primary one has the long-term memory of a goldfish.</p>
 
         <p>Seven layers. Each one a patch on the one below. Each one adding latency,
@@ -161,8 +161,8 @@
             <text class="stack-sub" x="140" y="358" text-anchor="middle">forgets everything per request</text>
 
             <!-- Brace / annotation -->
-            <text class="stack-sub" x="140" y="390" text-anchor="middle">300&#x2013;600 MB &#xB7; 300 ms cold start</text>
-            <text class="stack-sub" x="140" y="408" text-anchor="middle">50&#x2013;200 MB vendor/ alone</text>
+            <text class="stack-sub" x="140" y="390" text-anchor="middle">300-600 MB &#xB7; 300 ms cold start</text>
+            <text class="stack-sub" x="140" y="408" text-anchor="middle">50-200 MB vendor/ alone</text>
 
             <!-- Compiled Binary title -->
             <text class="stack-title" x="440" y="20" text-anchor="middle">Compiled Binary</text>
@@ -208,8 +208,8 @@
 
         <p>Theory is pleasant. Arithmetic is persuasive. Here is what
             <a href="https://github.com/get-castd/server" target="_blank" rel="noopener">CASTD</a>
-            &#x2014; a compiled Rust web server with Lua scripting and built-in
-            templating &#x2014; actually measures in production:</p>
+            , a compiled Rust web server with Lua scripting and built-in
+            templating, actually measures in production:</p>
 
         <p><strong>CASTD</strong> (real, measured, running):</p>
         <ul>
@@ -222,8 +222,8 @@
             <a href="https://sevalla.com/blog/laravel-benchmarks/" target="_blank" rel="noopener">Laravel stack</a></strong>
             (Nginx + PHP-FPM + OPcache + Redis + Cron + Queue):</p>
         <ul>
-            <li>Deploy size: 50&#x2013;200 MB (vendor/ alone).</li>
-            <li>Memory: 300&#x2013;600 MB (FPM worker pool).</li>
+            <li>Deploy size: 50-200 MB (vendor/ alone).</li>
+            <li>Memory: 300-600 MB (FPM worker pool).</li>
             <li><a href="https://www.deployhq.com/blog/comparing-php-application-servers-in-2025-performance-scalability-and-modern-options" target="_blank" rel="noopener">Cold start</a>: 300 ms.</li>
         </ul>
 
@@ -253,7 +253,7 @@
         <aside>
             <h2>Under Load</h2>
             <p>A load test tells the full story. Five thousand requests at 200
-                concurrent connections: memory rose from 3,760 KB to 4,224 KB &#x2014;
+                concurrent connections: memory rose from 3,760 KB to 4,224 KB,
                 a difference of 464 KB. When the test ended, the binary returned
                 the memory immediately.</p>
             <p>No garbage collector deliberating. No worker pool lingering. The
