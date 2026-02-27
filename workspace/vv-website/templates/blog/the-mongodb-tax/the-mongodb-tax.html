@@ -136,8 +136,8 @@
 
         <h2>Reinventing the JOIN</h2>
 
-        <p>The moment your document model encounters a relationship it cannot embed &#x2014;
-            and it will, because data has relationships whether you like it or not &#x2014;
+        <p>The moment your document model encounters a relationship it cannot embed
+            (and it will, because data has relationships whether you like it or not)
             you need to fetch related documents. In SQL, this is a JOIN. One query. The
             database engine optimises it. The query planner has had fifty years of research
             poured into making it fast.</p>
@@ -149,8 +149,8 @@
 
         <p>Or you use the
             <a href="https://www.mongodb.com/docs/manual/reference/operator/aggregation/lookup/" target="_blank" rel="noopener">Aggregation Pipeline</a>
-            with <code>$lookup</code>. Which is &#x2014; and there is no polite way to phrase
-            this &#x2014; a JOIN. A proprietary, MongoDB-specific JOIN, expressed in nested
+            with <code>$lookup</code>. Which is, and there is no polite way to phrase
+            this, a JOIN. A proprietary, MongoDB-specific JOIN, expressed in nested
             JSON objects rather than declarative SQL, documented in MongoDB&#x2019;s own format,
             and transferable to precisely zero other databases.</p>
 
@@ -214,7 +214,7 @@
         <p>In MongoDB, the schema lives in your application code. Every function that reads
             a document must validate its structure. Every write must be manually checked for
             consistency. The schema has not been removed. It has been moved from a system
-            designed to enforce it &#x2014; the database &#x2014; to a system that is not:
+            designed to enforce it (the database) to a system that is not:
             your application.</p>
 
         <p>The proof is
@@ -231,14 +231,14 @@
 
         <p>Codd publishes the relational model in 1970. Fifty-three years of research,
             optimisation, and battle-testing follow. Then MongoDB 1.0 arrives in 2009,
-            and in 2012 &#x2014; this is the part that bears emphasis &#x2014; it ships with
+            and in 2012 (this is the part that bears emphasis) it ships with
             <a href="https://aphyr.com/posts/284-jepsen-mongodb" target="_blank" rel="noopener">no write acknowledgement by default</a>.
             The database confirms a write before it has actually been written. Kyle Kingsbury&#x2019;s
             Jepsen analysis remains essential reading for anyone who stores data they would
             prefer not to lose.</p>
 
-        <p>Multi-document transactions arrive in 2018. ACID compliance &#x2014; the baseline
-            feature of every relational database since the 1980s &#x2014; took MongoDB nine
+        <p>Multi-document transactions arrive in 2018. ACID compliance, the baseline
+            feature of every relational database since the 1980s, took MongoDB nine
             years to implement. Also in 2018, MongoDB switches from the AGPL to the
             <a href="https://www.mongodb.com/blog/post/mongodb-now-released-under-the-server-side-public-license" target="_blank" rel="noopener">Server Side Public License</a>,
             a licence so restrictive that
@@ -290,7 +290,7 @@
             <text x="460" y="92" class="tl-muted" text-anchor="middle">revenue</text>
             <!-- Bottom note -->
             <line x1="40" y1="140" x2="480" y2="140" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4"/>
-            <text x="260" y="165" class="tl-text" text-anchor="middle">Meanwhile, PostgreSQL (1996&#x2013;present):</text>
+            <text x="260" y="165" class="tl-text" text-anchor="middle">Meanwhile, PostgreSQL (1996-present):</text>
             <text x="260" y="182" class="tl-muted" text-anchor="middle">Free. ACID since day one. JSONB for document-shaped data.</text>
             <text x="260" y="196" class="tl-muted" text-anchor="middle">Real open source. No write acknowledgement surprises.</text>
             <text x="260" y="216" class="tl-text" text-anchor="middle">Everything MongoDB rebuilt, PostgreSQL never lost.</text>
@@ -300,16 +300,16 @@
 
         <p><a href="https://www.postgresql.org/docs/current/datatype-json.html" target="_blank" rel="noopener">PostgreSQL
             ships JSONB</a>. A native, indexable, queryable binary JSON type. You can
-            store document-shaped data &#x2014; the genuinely useful part of the document
-            model &#x2014; inside a relational database, alongside proper foreign keys,
+            store document-shaped data (the genuinely useful part of the document
+            model) inside a relational database, alongside proper foreign keys,
             proper transactions, and proper ACID guarantees. No ODM required. No
             Aggregation Pipeline. No proprietary query syntax.</p>
 
         <p>The document model is not the problem. The problem is making it the
             <em>only</em> model. Some data is genuinely document-shaped: logs, events,
             sensor readings, CMS content. PostgreSQL handles these with JSONB. The rest
-            of your data &#x2014; the customers, orders, inventory, and everything else
-            with relationships &#x2014; gets proper relational modelling, enforced at
+            of your data (the customers, orders, inventory, and everything else
+            with relationships) gets proper relational modelling, enforced at
             the database level.</p>
 
         <p>One database. Both models. Free.
@@ -321,13 +321,13 @@
         <h2>The Fair Concession</h2>
 
         <p>MongoDB is not without legitimate use cases. Logs, event streams, sensor
-            data, time-series telemetry &#x2014; data that is genuinely document-shaped,
+            data, time-series telemetry. Data that is genuinely document-shaped,
             append-mostly, and rarely joined. In these contexts, a document store is
             the natural fit, and MongoDB serves well.</p>
 
         <p>The problem is scope. MongoDB was not marketed as a specialist tool for
             append-heavy, relationship-free data. It was marketed as a general-purpose
-            database replacement. &#x201C;Say goodbye to complex schemas!&#x201D; &#x2014;
+            database replacement. &#x201C;Say goodbye to complex schemas!&#x201D;
             the implication being that schemas are the problem rather than the solution.
             And an industry that was tired of writing migration scripts believed it.</p>
 
@@ -346,7 +346,7 @@
             arrived before the evaluation. &#x201C;Schemaless&#x201D; sounds like freedom.
             &#x201C;Document model&#x201D; sounds modern. &#x201C;NoSQL&#x201D; sounds like
             progress. The words are chosen with care. They bypass the technical question
-            &#x2014; &#x201C;Does my data have relationships?&#x201D; &#x2014; and replace
+            (&#x201C;Does my data have relationships?&#x201D;) and replace
             it with an emotional one: &#x201C;Do you want to be modern?&#x201D;</p>
 
         <p>The answer to the first question is almost always yes. Your data has
@@ -366,7 +366,7 @@
             the bits that genuinely benefit from a document model. The wheel was invented.
             It was round. It worked.</p>
 
-        <p>MongoDB reinvented it &#x2014; square &#x2014; and charged $1.7 billion
+        <p>MongoDB reinvented it, square, and charged $1.7 billion
             for the privilege. The invoice is on the table.</p>
     </div>
 

@@ -49,7 +49,7 @@
                 merged soon? Maybe the code isn&#x2019;t perfect, but I&#x2019;ve
                 skimmed it, and compared to the horrors that are OpenVPN and IPSec,
                 it&#x2019;s a work of art.&#x201D;</p>
-            <p>&#x2014; Linus Torvalds, Linux Kernel Mailing List, 2018</p>
+            <p>Linus Torvalds, Linux Kernel Mailing List, 2018</p>
         </blockquote>
 
         <p>Linus Torvalds does not hand out compliments. He hands out
@@ -63,7 +63,7 @@
 
         <p><a href="https://www.zx2c4.com/" target="_blank" rel="noopener">Jason A. Donenfeld</a>
             is a security researcher and cryptographer. He built WireGuard in 2015
-            not because the world lacked VPN protocols &#x2014; it had two &#x2014;
+            not because the world lacked VPN protocols (it had two)
             but because both of them were, to use the technical term, appalling.
             <a href="https://en.wikipedia.org/wiki/OpenVPN" target="_blank" rel="noopener">OpenVPN</a>
             was a sprawling userspace daemon with over 100,000 lines of code.
@@ -82,7 +82,7 @@
         <p>WireGuard is approximately
             <a href="https://www.wireguard.com/" target="_blank" rel="noopener">4,000 lines</a>
             of code. OpenVPN exceeds 100,000. The IPsec implementation in the Linux
-            kernel &#x2014; StrongSwan plus the kernel modules &#x2014; runs to
+            kernel (StrongSwan plus the kernel modules) runs to
             several hundred thousand. Four thousand lines. You can read the entire
             codebase in an afternoon. You can audit it in a week. You can hold the
             complete mental model in your head while drinking a cup of tea, and the
@@ -227,7 +227,7 @@
             <!-- OpenVPN -->
             <text class="wg-pf-label" x="100" y="272" text-anchor="end">OpenVPN</text>
             <rect class="wg-pf-bar-dim" x="108" y="258" width="225" height="20"/>
-            <text class="wg-pf-value" x="341" y="273">1.5&#x2013;3 ms</text>
+            <text class="wg-pf-value" x="341" y="273">1.5-3 ms</text>
 
             <text class="wg-pf-note" x="260" y="298" text-anchor="middle">Kernel-space processing. Zero context switches. Zero unnecessary copies.</text>
         </svg>
@@ -243,7 +243,7 @@
             ingress to egress is as short as the protocol itself.</p>
 
         <p>OpenVPN, by contrast, operates entirely in userspace. Every packet
-            crosses the kernel-userspace boundary twice &#x2014; once on the way
+            crosses the kernel-userspace boundary twice: once on the way
             in, once on the way out. Each crossing costs a context switch. Each
             context switch costs microseconds. At 10 Gbps, microseconds become
             the bottleneck. OpenVPN does not have a performance problem. It has
@@ -253,8 +253,8 @@
 
         <p>An OpenVPN configuration file is typically between 30 and 80 lines,
             not counting the certificate management infrastructure required to
-            make it function. An IPsec configuration &#x2014; depending on which
-            of the seventeen available IKE modes one selects &#x2014; can extend
+            make it function. An IPsec configuration, depending on which
+            of the seventeen available IKE modes one selects, can extend
             to several hundred lines, plus a certificate authority, plus a key
             management daemon, plus the existential dread of realising one has
             chosen IKEv1 aggressive mode in production.</p>
@@ -272,8 +272,8 @@ AllowedIPs = 10.0.0.2/32</code></pre>
 
         <p>Seven lines. No certificate authority. No negotiation parameters. No
             cipher selection. No pre-shared secret distribution mechanism that is
-            itself a security vulnerability. Public keys are exchanged out of band
-            &#x2014; the same model as SSH. If you can copy a string, you can
+            itself a security vulnerability. Public keys are exchanged out of band,
+            the same model as SSH. If you can copy a string, you can
             configure WireGuard. The protocol does not require a deployment guide.
             It requires a <code>wg-quick up</code>.</p>
 
@@ -317,7 +317,7 @@ AllowedIPs = 10.0.0.2/32</code></pre>
 
         <h2>The Philosophy</h2>
 
-        <p>WireGuard belongs to a specific lineage of software &#x2014; the
+        <p>WireGuard belongs to a specific lineage of software, the
             lineage that understands security as a function of simplicity, not
             of features. <code>qmail</code> belongs to this lineage.
             <code>OpenSSH</code> aspires to it. The
@@ -366,7 +366,7 @@ AllowedIPs = 10.0.0.2/32</code></pre>
         <aside class="vv-aside">
             <p><strong>The backstory, for those who appreciate a good origin</strong></p>
             <p>Donenfeld built WireGuard from frustration. Not theoretical
-                frustration &#x2014; the practical kind, born from configuring
+                frustration, but the practical kind, born from configuring
                 IPsec tunnels and debugging OpenVPN certificate chains. Modern
                 cryptographic primitives exist. Code you can read in an afternoon
                 is achievable. The question was never whether it was possible to

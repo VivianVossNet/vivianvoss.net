@@ -114,7 +114,7 @@
             <rect class="es-box-fill" x="40" y="218" width="200" height="66"/>
             <rect class="es-box" x="40" y="218" width="200" height="66"/>
             <text class="es-num" x="140" y="252" text-anchor="middle">1 row</text>
-            <text class="es-sub" x="140" y="274" text-anchor="middle">per entity &#x2014; constant</text>
+            <text class="es-sub" x="140" y="274" text-anchor="middle">per entity, constant</text>
             <rect class="es-box-fill" x="280" y="218" width="200" height="66"/>
             <rect class="es-box" x="280" y="218" width="200" height="66"/>
             <text class="es-num" x="380" y="252" text-anchor="middle">3 TB</text>
@@ -122,7 +122,7 @@
         </svg>
 
         <p>Scale this to a real system. Every user action, every state transition,
-            every correction &#x2014; all preserved, all immutable, all growing. A
+            every correction, all preserved, all immutable, all growing. A
             <a href="https://kitemetric.com/blogs/event-sourcing-fails-5-real-world-lessons" target="_blank" rel="noopener">real-world case study</a>
             reports 3 TB of events to reconstruct a single account balance. Query
             times measured in minutes, not milliseconds. The database is not slow.
@@ -135,7 +135,7 @@
             System corrupted? Replay from the event log. State lost? Rebuild from
             events. It sounds like a superpower until you do the arithmetic.</p>
 
-        <p>Millions of events. Sequential replay. No shortcuts &#x2014; events
+        <p>Millions of events. Sequential replay. No shortcuts. Events
             must be applied in order, because that is the entire point. A
             <a href="https://kitemetric.com/blogs/event-sourcing-fails-5-real-world-lessons" target="_blank" rel="noopener">production replay</a>
             of a moderately sized system: ten hours. Your system is down.
@@ -146,8 +146,8 @@
         <p>The solution, inevitably, is snapshots. Periodically capture the
             current state so you only need to replay events since the last
             snapshot. Sensible enough. But consider what you have just done: you
-            have introduced a second storage system &#x2014; one that stores
-            current state &#x2014; to compensate for the fact that your primary
+            have introduced a second storage system (one that stores
+            current state) to compensate for the fact that your primary
             storage system does not.</p>
 
         <p>Snapshots are an admission that the architecture does not scale.
@@ -158,7 +158,7 @@
         <h2>The Schema Evolution Invoice</h2>
 
         <p>Events are immutable. That is the contract. Once written, they never
-            change. Splendid &#x2014; until your domain model evolves, which it
+            change. Splendid, until your domain model evolves, which it
             will, because domains evolve, because the business evolves, because
             the world is not a versioned API.</p>
 
@@ -169,8 +169,8 @@
         <blockquote><p><code>{ price: 100, currency: &#x201C;EUR&#x201D; }</code></p></blockquote>
 
         <p>Every event written before version 2 lacks a currency field. They
-            cannot be updated &#x2014; immutability is the rule. They cannot be
-            ignored &#x2014; the replay depends on them. They must be handled,
+            cannot be updated (immutability is the rule). They cannot be
+            ignored (the replay depends on them). They must be handled,
             forever, by every consumer that reads the event stream.</p>
 
         <p><a href="https://event-driven.io/en/simple_events_versioning_patterns/" target="_blank" rel="noopener">Five patterns exist</a>
@@ -217,8 +217,8 @@
             <text class="ice-sub" x="260" y="304" text-anchor="middle">The top sells the pattern. The bottom is the invoice.</text>
         </svg>
 
-        <p><a href="https://leanpub.com/esversioning" target="_blank" rel="noopener">Greg Young</a>
-            &#x2014; the person who popularised event sourcing &#x2014; wrote an entire
+        <p><a href="https://leanpub.com/esversioning" target="_blank" rel="noopener">Greg Young</a>,
+            the person who popularised event sourcing, wrote an entire
             book about versioning alone. When the inventor needs a book-length
             treatment for a single sub-problem of the pattern, that is not
             documentation. That is a warning label.</p>
@@ -228,7 +228,7 @@
         <p>Event sourcing typically separates the write model (event store) from
             the read model (projections). Commands produce events. Projections
             consume events and build queryable views. The read store is
-            &#x201C;eventually consistent&#x201D; &#x2014; industry shorthand for
+            &#x201C;eventually consistent&#x201D;, industry shorthand for
             &#x201C;not consistent yet.&#x201D;</p>
 
         <p>The typical lag: 200 milliseconds. In conference talks, this sounds
@@ -249,7 +249,7 @@
             not in the mental model that every database textbook, every ORM, and
             every line-of-business application has used for the past forty years.
             Events. Sequences of facts that, when replayed, produce the current
-            state &#x2014; provided you handle every schema version correctly,
+            state, provided you handle every schema version correctly,
             apply the upcasters in order, and remember that the read model is
             200 milliseconds behind.</p>
 
@@ -275,7 +275,7 @@
             a sequence of events, and has been since double-entry bookkeeping
             was formalised in 1494. Regulated industries where
             <a href="https://martinfowler.com/eaaDev/EventSourcing.html" target="_blank" rel="noopener">Martin Fowler&#x2019;s original description</a>
-            applies: the audit trail is not a feature &#x2014; it is the product.</p>
+            applies: the audit trail is not a feature. It is the product.</p>
 
         <p>In these domains, the cost is justified because the cost of
             <em>not</em> having a complete event history is higher: regulatory
@@ -299,8 +299,8 @@
 
         <p>The audit table is not as theoretically elegant. It does not permit
             time travel or state reconstruction from first principles. It does,
-            however, answer the question that actually matters &#x2014;
-            &#x201C;who changed what, and when?&#x201D; &#x2014; without requiring
+            however, answer the question that actually matters,
+            &#x201C;who changed what, and when?&#x201D;, without requiring
             a specialist team, a snapshot strategy, and a versioning book.</p>
 
         <h2>The Verdict</h2>
@@ -322,9 +322,9 @@
 
         <aside class="vv-aside">
             <p><strong>First comment</strong></p>
-            <p>Greg Young &#x2014; the person who
-                <a href="https://leanpub.com/esversioning" target="_blank" rel="noopener">popularised event sourcing</a>
-                &#x2014; wrote an entire book dedicated solely to versioning. Not
+            <p>Greg Young, the person who
+                <a href="https://leanpub.com/esversioning" target="_blank" rel="noopener">popularised event sourcing</a>,
+                wrote an entire book dedicated solely to versioning. Not
                 event sourcing as a whole. Just the versioning sub-problem. If the
                 inventor requires a book-length treatment for one aspect of the
                 pattern, perhaps the pattern&#x2019;s complexity deserves more

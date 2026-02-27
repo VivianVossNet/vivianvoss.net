@@ -61,9 +61,9 @@
         </blockquote>
 
         <p>
-            Done. If the upgrade breaks something &#x2014; a kernel module fails to
+            Done. If the upgrade breaks something (a kernel module fails to
             load, a service refuses to start, something in the dependency tree has
-            developed strong opinions &#x2014; you reboot, select the old boot
+            developed strong opinions), you reboot, select the old boot
             environment from the bootloader menu, and carry on as though nothing
             happened. Because, from ZFS&#x2019;s perspective, nothing did.
         </p>
@@ -76,7 +76,7 @@
         <h2>The Integration</h2>
 
         <p>
-            The difference is not ZFS itself. The code is identical &#x2014; the
+            The difference is not ZFS itself. The code is identical: the
             <a href="https://github.com/openzfs/zfs" target="_blank" rel="noopener">OpenZFS</a>
             project maintains a single codebase for both platforms. The difference
             is where ZFS lives in the system architecture.
@@ -86,7 +86,7 @@
             On FreeBSD, ZFS has been
             <a href="https://www.freebsd.org/releases/7.0R/relnotes/" target="_blank" rel="noopener">in the kernel since 7.0</a>
             (2008). Root-on-ZFS became the default installer option in 10.0 (2014).
-            <code>bectl</code> &#x2014; the boot environment manager &#x2014; shipped
+            <code>bectl</code>, the boot environment manager, shipped
             in base with
             <a href="https://www.freebsd.org/releases/12.0R/relnotes/" target="_blank" rel="noopener">FreeBSD 12.0</a>
             (2018). No package to install. No configuration to discover. The
@@ -201,7 +201,7 @@
             Because ZFS cannot live in the Linux kernel tree, it is distributed as an
             out-of-tree module compiled via
             <a href="https://en.wikipedia.org/wiki/Dynamic_Kernel_Module_Support" target="_blank" rel="noopener">DKMS</a>
-            &#x2014; Dynamic Kernel Module Support. Every kernel update triggers a
+            (Dynamic Kernel Module Support). Every kernel update triggers a
             recompilation. If the module fails to build against the new kernel headers,
             ZFS disappears. If your root filesystem is on ZFS, so does your ability
             to boot.
@@ -239,7 +239,7 @@
                 .dkms-line-accent { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 3; }
             </style>
 
-            <text class="dkms-title" x="260" y="18" text-anchor="middle" fill="var(--text)">DKMS Build Failures &#x2014; ZFS on Linux</text>
+            <text class="dkms-title" x="260" y="18" text-anchor="middle" fill="var(--text)">DKMS Build Failures: ZFS on Linux</text>
             <text class="dkms-muted" x="260" y="34" text-anchor="middle">Documented breakage. Recurring pattern.</text>
 
             <!-- Timeline axis -->
@@ -301,10 +301,10 @@
         </p>
 
         <p>
-            <code>bectl create pre-upgrade</code> &#x2014; creates the safety net.<br/>
-            <code>bectl list</code> &#x2014; shows all environments.<br/>
-            <code>bectl activate pre-upgrade</code> &#x2014; rolls back on next boot.<br/>
-            <code>bectl destroy failed-upgrade</code> &#x2014; removes the wreckage.
+            <code>bectl create pre-upgrade</code>: creates the safety net.<br/>
+            <code>bectl list</code>: shows all environments.<br/>
+            <code>bectl activate pre-upgrade</code>: rolls back on next boot.<br/>
+            <code>bectl destroy failed-upgrade</code>: removes the wreckage.
         </p>
 
         <p>
@@ -344,10 +344,10 @@
 
         <p>
             A snapshot simply freezes the metadata pointers at a given moment. No data
-            is copied. The snapshot is instantaneous &#x2014; sub-second, regardless
+            is copied. The snapshot is instantaneous, sub-second regardless
             of dataset size. It consumes zero additional bytes at creation, because it
             references the same blocks as the live filesystem. Only as the live system
-            diverges &#x2014; as new writes land on new blocks &#x2014; does the
+            diverges (as new writes land on new blocks) does the
             snapshot begin to consume space, and only for the blocks that have changed.
         </p>
 
@@ -402,14 +402,14 @@
             <!-- Success path -->
             <line class="be-arrow" x1="195" y1="180" x2="120" y2="210"/>
             <rect class="be-box-accent" x="30" y="212" width="180" height="32"/>
-            <text class="be-label be-success" x="120" y="233" text-anchor="middle" style="fill: oklch(72% 0.15 145);">Success &#x2014; carry on</text>
+            <text class="be-label be-success" x="120" y="233" text-anchor="middle" style="fill: oklch(72% 0.15 145);">Success: carry on</text>
             <text class="be-muted" x="120" y="260" text-anchor="middle">bectl destroy pre-upgrade</text>
             <text class="be-muted" x="120" y="276" text-anchor="middle">(optional cleanup)</text>
 
             <!-- Failure path -->
             <line class="be-arrow" x1="325" y1="180" x2="400" y2="210"/>
             <rect class="be-box-accent" x="310" y="212" width="180" height="32"/>
-            <text class="be-value" x="400" y="233" text-anchor="middle">Failure &#x2014; reboot</text>
+            <text class="be-value" x="400" y="233" text-anchor="middle">Failure: reboot</text>
             <text class="be-muted" x="400" y="260" text-anchor="middle">Select old BE at bootloader.</text>
             <text class="be-value" x="400" y="276" text-anchor="middle">Recovery: 30 seconds.</text>
         </svg>
@@ -417,7 +417,7 @@
         <h2>The Btrfs Question</h2>
 
         <p>
-            &#x201C;But what about Btrfs?&#x201D; &#x2014; the reflexive counterpoint,
+            &#x201C;But what about Btrfs?&#x201D; The reflexive counterpoint,
             and a fair one.
             <a href="https://en.opensuse.org/Portal:Snapper" target="_blank" rel="noopener">openSUSE with snapper</a>
             is the closest Linux gets to a native boot environment workflow, and it
@@ -427,13 +427,13 @@
 
         <p>
             The caveats, however, are non-trivial. Btrfs has no equivalent of
-            <code>zfs send</code> / <code>zfs receive</code> &#x2014; the ability
+            <code>zfs send</code> / <code>zfs receive</code>, the ability
             to send an incremental snapshot stream to a remote machine, which is how
             ZFS handles off-site replication without third-party tools. Btrfs&#x2019;s
             RAID5 and RAID6 implementation carries a
             <a href="https://btrfs.readthedocs.io/en/latest/btrfs-man5.html#raid56-status-and-recommended-practices" target="_blank" rel="noopener">data loss warning</a>
             in its own documentation. And Btrfs reached production readiness around
-            2015 &#x2014; a decade after ZFS was deployed in production at Sun
+            2015, a decade after ZFS was deployed in production at Sun
             Microsystems in 2005.
         </p>
 
@@ -472,7 +472,7 @@
             <p>A safety net that requires assembly is not a safety net. It is a
                 kit. FreeBSD ships the net. Linux ships the parts. The thirty
                 seconds it takes to recover from a failed upgrade on FreeBSD is
-                not a benchmark. It is a design decision &#x2014; and it was made
+                not a benchmark. It is a design decision, and it was made
                 in 2008.</p>
         </blockquote>
 
@@ -486,9 +486,9 @@
                 you have finished reading this sentence.</p>
 
             <p><strong>Sources:</strong>
-                <a href="https://docs.freebsd.org/en/books/handbook/zfs/" target="_blank" rel="noopener">FreeBSD Handbook &#x2014; ZFS</a>,
-                <a href="https://klarasystems.com/articles/introduction-to-freebsd-boot-environments/" target="_blank" rel="noopener">Klara Systems &#x2014; Boot Environments</a>,
-                <a href="https://klarasystems.com/articles/openzfs-features-copy-on-write/" target="_blank" rel="noopener">Klara Systems &#x2014; Copy-on-Write</a>.
+                <a href="https://docs.freebsd.org/en/books/handbook/zfs/" target="_blank" rel="noopener">FreeBSD Handbook: ZFS</a>,
+                <a href="https://klarasystems.com/articles/introduction-to-freebsd-boot-environments/" target="_blank" rel="noopener">Klara Systems: Boot Environments</a>,
+                <a href="https://klarasystems.com/articles/openzfs-features-copy-on-write/" target="_blank" rel="noopener">Klara Systems: Copy-on-Write</a>.
                 DKMS breakages:
                 <a href="https://github.com/openzfs/zfs/issues/14658" target="_blank" rel="noopener">#14658</a>,
                 <a href="https://github.com/openzfs/zfs/issues/15151" target="_blank" rel="noopener">#15151</a>,

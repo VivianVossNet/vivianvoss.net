@@ -54,7 +54,7 @@
 
         <h2>The Original</h2>
 
-        <p>SUnit tested <em>units</em> &#x2014; the clue, one might argue, is in the name.
+        <p>SUnit tested <em>units</em>: the clue, one might argue, is in the name.
             A function takes arguments, performs computation, returns a result. No database.
             No network. No filesystem. The test verifies that the computation is correct.
             If it fails, you know precisely where the fault lies, because there is nowhere
@@ -82,8 +82,8 @@
 
         <p>The distinction matters. The first is engineering. The second is compliance.</p>
 
-        <p>And here is where the pattern fractures. Library code &#x2014; the kind Beck
-            was testing &#x2014; has no side effects. That is rather the point. Application
+        <p>And here is where the pattern fractures. Library code, the kind Beck
+            was testing, has no side effects. That is rather the point. Application
             code is nothing <em>but</em> side effects. An endpoint hits a database, calls
             an external API, sends an email, writes to a queue, and returns HTML. There is
             no &#x201C;isolated unit&#x201D; in that chain. It is a procession of side
@@ -103,8 +103,8 @@
             to call, in the order you told it to call them. It is a loyalty test for
             your implementation details.</p>
 
-        <p>Refactor a method &#x2014; extract a helper, rename a parameter, change the
-            internal sequence &#x2014; and fifty tests break. The behaviour is unchanged.
+        <p>Refactor a method (extract a helper, rename a parameter, change the
+            internal sequence) and fifty tests break. The behaviour is unchanged.
             The output is identical. The user notices nothing. But the mocks noticed
             everything, because the mocks are not testing behaviour. They are testing
             <em>how</em> the code works, not <em>what</em> it does.</p>
@@ -179,13 +179,13 @@
         <p>100% code coverage means every line was executed during testing. Not that
             every line works correctly. Not that the system functions. Not that a
             single user journey completes. Merely that the test runner visited every
-            line, the way a tourist visits a cathedral &#x2014; technically present,
+            line, the way a tourist visits a cathedral: technically present,
             spiritually elsewhere.</p>
 
         <p>The
             <a href="https://martinfowler.com/articles/practical-test-pyramid.html" target="_blank" rel="noopener">testing pyramid</a>
-            &#x2014; many unit tests at the base, fewer integration tests in the middle,
-            a handful of end-to-end tests at the top &#x2014; was popularised by
+            (many unit tests at the base, fewer integration tests in the middle,
+            a handful of end-to-end tests at the top) was popularised by
             <a href="https://testing.googleblog.com/" target="_blank" rel="noopener">Google&#x2019;s testing team</a>.
             At Google, thousands of engineers share libraries that millions of projects
             depend upon. Unit testing those libraries is not merely sensible; it is
@@ -305,11 +305,11 @@
 
         <p>Unit tests are for units. Isolated logic. Pure computation. Functions
             where input determines output and nothing else intervenes. For these,
-            unit tests remain the correct tool &#x2014; fast, precise, and
+            unit tests remain the correct tool: fast, precise, and
             genuinely informative when they fail.</p>
 
-        <p>For everything else &#x2014; the endpoints, the workflows, the chains
-            of side effects that constitute actual application behaviour &#x2014;
+        <p>For everything else, the endpoints, the workflows, the chains
+            of side effects that constitute actual application behaviour,
             integration tests. Fewer of them. Slower, yes. But they test what
             the user experiences, not what the mock framework expects.</p>
 

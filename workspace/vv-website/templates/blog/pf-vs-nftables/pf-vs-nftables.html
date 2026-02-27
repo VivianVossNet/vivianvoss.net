@@ -65,7 +65,7 @@
             On Linux, the standard answer is
             <a href="https://github.com/fail2ban/fail2ban" target="_blank" rel="noopener">fail2ban</a>.
             A Python daemon that watches log files, matches lines against regular expressions,
-            counts the matches, and &#x2014; after a configurable threshold &#x2014; calls
+            counts the matches, and, after a configurable threshold, calls
             out to the packet filter to block the offending address. The architecture is
             admirably straightforward: one daemon reads what another daemon has written, and
             if the pattern matches often enough, a third system intervenes. Three moving parts.
@@ -75,7 +75,7 @@
         <p>
             The installation proceeds as follows. Install fail2ban. Create
             <code>jail.local</code>. Define the regular expression for your SSH log format.
-            Configure the action &#x2014; and here you must choose: nftables? iptables? ufw?
+            Configure the action, and here you must choose: nftables? iptables? ufw?
             firewalld? The Linux firewall ecosystem offers four front ends to two back ends,
             and fail2ban must be told which dialect you are speaking today. Restart the daemon.
             Test. Hope.
@@ -85,7 +85,7 @@
             Now the system is operational. An attacker connects. Attempts a login. Fails.
             The SSH daemon writes a line to the log. fail2ban reads the log. Parses the line.
             Matches the regex. Increments a counter. The attacker attempts again. And again.
-            After the configured threshold &#x2014; typically five, sometimes ten &#x2014;
+            After the configured threshold (typically five, sometimes ten)
             fail2ban calls nftables and the address is blocked. The attacker has had fifty
             attempts at the door before anyone thought to lock it. If fail2ban crashes,
             the door stays open.
@@ -183,7 +183,7 @@ pass in on egress proto tcp to port ssh \
 
         <p>
             That is the entire configuration. No daemon. No log parsing. No regular
-            expressions. No Python. The firewall itself &#x2014; running in the kernel &#x2014;
+            expressions. No Python. The firewall itself, running in the kernel,
             tracks connection states, counts connection rates, and when a threshold is
             exceeded, adds the source address to a table and drops every packet from it.
             The word &#x201C;flush global&#x201D; terminates all existing connections from that
@@ -260,7 +260,7 @@ pass in on egress proto tcp to port ssh \
         <p>
             The distinction between these two approaches is not one of capability. nftables
             is a competent packet filter. It can do stateful inspection. It can do rate
-            limiting &#x2014; with sufficient configuration. The distinction is one of
+            limiting, with sufficient configuration. The distinction is one of
             <em>design philosophy</em>.
         </p>
 
@@ -355,8 +355,8 @@ pass in on egress proto tcp to port ssh \
             pf was written by Daniel Hartmeier for OpenBSD in 2001. The syntax has not
             changed. The <code>pf.conf</code> you write today is the same language as
             the <code>pf.conf</code> from twenty-five years ago. FreeBSD imported it.
-            The feature set grew &#x2014; <code>synproxy</code>, <code>antispoof</code>,
-            <code>scrub</code>, dynamic tables, overload actions &#x2014; but the grammar
+            The feature set grew (<code>synproxy</code>, <code>antispoof</code>,
+            <code>scrub</code>, dynamic tables, overload actions) but the grammar
             remained stable. Your configuration does not break on upgrade. Your muscle
             memory transfers. Your documentation from 2005 still applies.
         </p>
@@ -406,7 +406,7 @@ pass in on egress proto tcp to port ssh \
                 can achieve similar results, though with considerably more configuration.
                 <a href="https://www.crowdsec.net/" target="_blank" rel="noopener">CrowdSec</a>
                 is a modern, community-driven alternative to fail2ban that shares threat
-                intelligence across installations &#x2014; worth investigating if you are
+                intelligence across installations, worth investigating if you are
                 committed to the Linux path. For the FreeBSD approach, the
                 <a href="https://docs.freebsd.org/en/books/handbook/firewalls/" target="_blank" rel="noopener">FreeBSD Handbook</a>
                 chapter on firewalls and Peter Hansteen&#x2019;s

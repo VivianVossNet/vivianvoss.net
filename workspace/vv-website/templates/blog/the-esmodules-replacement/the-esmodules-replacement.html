@@ -60,7 +60,7 @@
 
         <p>The history is brief and instructive. In 2015,
             <a href="https://tools.ietf.org/html/rfc7540" target="_blank" rel="noopener">HTTP/2</a>
-            shipped with multiplexing &#x2014; the ability to send hundreds of requests
+            shipped with multiplexing: the ability to send hundreds of requests
             over a single TCP connection without the head-of-line blocking that made
             HTTP/1.1 concatenation necessary. The &#x201C;too many requests&#x201D;
             argument, the foundational justification for bundling everything into a single
@@ -109,7 +109,7 @@
             <!-- 2017-2018: ES Modules -->
             <line class="esm-tick" x1="310" y1="92" x2="310" y2="108"/>
             <circle cx="310" cy="100" r="6" class="esm-dot"/>
-            <text class="esm-year" x="310" y="82" text-anchor="middle">2017&#x2013;18</text>
+            <text class="esm-year" x="310" y="82" text-anchor="middle">2017-18</text>
             <text class="esm-label" x="310" y="125" text-anchor="middle">ES Modules</text>
             <text class="esm-muted" x="310" y="137" text-anchor="middle">All major browsers</text>
             <text class="esm-muted" x="310" y="149" text-anchor="middle">Bundler optional</text>
@@ -123,15 +123,15 @@
 
             <!-- Brace spanning 2015-2018 to 2026 -->
             <path class="esm-brace" d="M 190 170 Q 190 195, 325 195 Q 460 195, 460 170"/>
-            <text class="esm-muted" x="325" y="215" text-anchor="middle">8&#x2013;11 years of unnecessary build steps</text>
+            <text class="esm-muted" x="325" y="215" text-anchor="middle">8-11 years of unnecessary build steps</text>
 
             <!-- Browser support note -->
             <text class="esm-muted" x="260" y="245" text-anchor="middle">ES Modules browser support: 98%+ global (caniuse.com)</text>
         </svg>
 
         <p>The browser, in other words, has understood JavaScript modules for the better part
-            of a decade. The build pipeline &#x2014; npm, Webpack, Babel, the entire orchestrated
-            ceremony of transpilation and bundling &#x2014; is not solving a current problem. It
+            of a decade. The build pipeline (npm, Webpack, Babel, the entire orchestrated
+            ceremony of transpilation and bundling) is not solving a current problem. It
             is solving a 2012 problem, in 2026, at 2026 prices.</p>
 
         <h2>The Anatomy of the Replacement</h2>
@@ -222,7 +222,7 @@
         <p>HTTP/2 multiplexing allows hundreds of requests to travel in parallel over a single
             connection. There is no connection-per-request overhead. There is no head-of-line
             blocking. The protocol was specifically designed to make the concatenation argument
-            obsolete, and it succeeded &#x2014; eleven years ago.</p>
+            obsolete, and it succeeded. Eleven years ago.</p>
 
         <p>Moreover, the browser caches individual modules. Change one file, and the browser
             reloads precisely that file. The other forty-nine remain cached. With a bundled
@@ -235,7 +235,7 @@
         <p>Honesty demands an itemisation of the costs. Abandoning the build pipeline means
             abandoning several things the industry has grown accustomed to.</p>
 
-        <p><strong>The npm ecosystem.</strong> 2.1 million packages &#x2014; the greatest
+        <p><strong>The npm ecosystem.</strong> 2.1 million packages, the greatest
             unaudited code dump on Earth. You lose access to <code>is-odd</code>, the package
             that checks whether a number is odd (400,000 weekly downloads at its peak, for a
             function that is one line of arithmetic). You lose the convenience of
@@ -247,7 +247,7 @@
             across the industry.</p>
 
         <p><strong>Build-time optimisation.</strong> Tree-shaking, dead code elimination,
-            minification &#x2014; these are genuine benefits when your application ships
+            minification: these are genuine benefits when your application ships
             five hundred modules. For a project with thirty modules, the optimisation removes
             kilobytes. The build pipeline that performs the optimisation adds minutes. The
             arithmetic is unflattering.</p>
@@ -290,7 +290,7 @@
 
             <!-- One big stale block -->
             <rect class="esm-cache-stale" x="30" y="58" width="180" height="80"/>
-            <text class="esm-cache-sub" x="120" y="95" text-anchor="middle">bundle.js &#x2014; 350 KB</text>
+            <text class="esm-cache-sub" x="120" y="95" text-anchor="middle">bundle.js: 350 KB</text>
             <text class="esm-cache-sub" x="120" y="110" text-anchor="middle">1 line changed &#x2192; entire bundle redownloaded</text>
 
             <text class="esm-cache-sub" x="120" y="158" text-anchor="middle">User downloads: 350 KB</text>
@@ -338,14 +338,14 @@
         <p>The dishonest assessment is pretending that most projects are in this category.</p>
 
         <p>They are not. The vast majority of web projects ship between ten and fifty modules.
-            A marketing site, a dashboard, a content management front-end, an internal tool &#x2014;
+            A marketing site, a dashboard, a content management front-end, an internal tool:
             these are not applications that require build-time dependency graph analysis. They are
             applications that require a script tag and a browser manufactured after 2017.</p>
 
         <p>For ninety per cent of projects under fifty modules, the build pipeline is not solving
             complexity. The build pipeline <em>is</em> the complexity. The configuration file, the
             dependency tree, the plugin compatibility matrix, the CI minutes, the &#x201C;works on
-            my machine&#x201D; debugging sessions &#x2014; all of it exists to support a tool that
+            my machine&#x201D; debugging sessions: all of it exists to support a tool that
             the browser replaced eight years ago.</p>
 
         <h2>The Invoice</h2>
@@ -373,7 +373,7 @@
 
         <aside class="vv-aside">
             <p><strong>A necessary caveat</strong></p>
-            <p>Large applications with 500+ modules will continue to benefit from bundlers &#x2014;
+            <p>Large applications with 500+ modules will continue to benefit from bundlers:
                 tree-shaking and code splitting at that scale are genuine optimisations. But the
                 reality is that most projects have 10 to 50 modules.
                 <a href="https://tools.ietf.org/html/rfc7540" target="_blank" rel="noopener">HTTP/2

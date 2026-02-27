@@ -86,10 +86,10 @@
         <p>
             Consider the mapping. Each Unix tool has a single responsibility: <code>grep</code>
             filters, <code>sort</code> sorts, <code>uniq</code> deduplicates. The API contract
-            is <code>stdin</code> and <code>stdout</code> &mdash; text in, text out, the universal
+            is <code>stdin</code> and <code>stdout</code>: text in, text out, the universal
             interface. The message queue is the pipe: one process writes, the next reads,
             backpressure built in at the kernel level. Service discovery is <code>$PATH</code>.
-            Orchestration is the shell script. Observability is <code>tee</code> &mdash; tap into
+            Orchestration is the shell script. Observability is <code>tee</code>: tap into
             any data stream between any two services, live, with zero configuration.
         </p>
 
@@ -104,7 +104,7 @@
             <rect x="0" y="0" width="240" height="32" rx="2" fill="var(--accent)" opacity="0.9"/>
             <rect x="240" y="0" width="240" height="32" rx="2" fill="var(--muted)" opacity="0.25"/>
             <rect x="480" y="0" width="240" height="32" rx="2" fill="var(--muted)" opacity="0.15"/>
-            <text x="120" y="21" text-anchor="middle" fill="var(--bg)" class="svg-heading">Unix (1973&ndash;1978)</text>
+            <text x="120" y="21" text-anchor="middle" fill="var(--bg)" class="svg-heading">Unix (1973-1978)</text>
             <text x="360" y="21" text-anchor="middle" fill="var(--text)" class="svg-heading">Modern Equivalent</text>
             <text x="600" y="21" text-anchor="middle" fill="var(--text)" class="svg-heading">Overhead</text>
             <!-- Rows -->
@@ -116,7 +116,7 @@
             <text x="256" y="52" fill="var(--text)" class="svg-label">Message Queue</text>
             <text x="256" y="68" fill="var(--muted)" class="svg-text">Kafka, RabbitMQ, SQS</text>
             <text x="496" y="52" fill="var(--accent)" class="svg-label">JVM + broker cluster</text>
-            <text x="496" y="68" fill="var(--muted)" class="svg-text">6&ndash;32 GB RAM</text>
+            <text x="496" y="68" fill="var(--muted)" class="svg-text">6-32 GB RAM</text>
             <line x1="0" y1="77" x2="720" y2="77" stroke="var(--border)" stroke-width="0.5"/>
             <!-- Row 2 -->
             <text x="16" y="97" fill="var(--accent)" class="svg-label">stdin / stdout</text>
@@ -140,7 +140,7 @@
             <text x="16" y="202" fill="var(--muted)" class="svg-text">Sequential + parallel</text>
             <text x="256" y="186" fill="var(--text)" class="svg-label">Orchestration</text>
             <text x="256" y="202" fill="var(--muted)" class="svg-text">Kubernetes, Nomad, ECS</text>
-            <text x="496" y="186" fill="var(--accent)" class="svg-label">12&ndash;24 GB control plane</text>
+            <text x="496" y="186" fill="var(--accent)" class="svg-label">12-24 GB control plane</text>
             <text x="496" y="202" fill="var(--muted)" class="svg-text">etcd + scheduler + API</text>
             <line x1="0" y1="210" x2="720" y2="210" stroke="var(--border)" stroke-width="0.5"/>
             <!-- Row 5 -->
@@ -150,7 +150,7 @@
             <text x="256" y="230" fill="var(--text)" class="svg-label">Observability</text>
             <text x="256" y="246" fill="var(--muted)" class="svg-text">ELK, Datadog, Splunk</text>
             <text x="496" y="230" fill="var(--accent)" class="svg-label">$150+/GB/day (Splunk)</text>
-            <text x="496" y="246" fill="var(--muted)" class="svg-text">$15&ndash;23/host/mo (Datadog)</text>
+            <text x="496" y="246" fill="var(--muted)" class="svg-text">$15-23/host/mo (Datadog)</text>
             <line x1="0" y1="255" x2="720" y2="255" stroke="var(--border)" stroke-width="0.5"/>
             <!-- Row 6 -->
             <text x="16" y="275" fill="var(--accent)" class="svg-label">exit codes</text>
@@ -193,7 +193,7 @@
         <p>
             The industry will happily sell you the
             <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html" target="_blank" rel="noopener">Elastic Stack</a>
-            for this. Elasticsearch alone recommends 4&ndash;8 GB of heap memory.
+            for this. Elasticsearch alone recommends 4-8 GB of heap memory.
             <code>grep</code> uses approximately 2 MB of resident memory. One is not like the other.
         </p>
 
@@ -260,7 +260,7 @@
 
             <!-- RIGHT SIDE: Modern Microservices -->
             <text x="530" y="20" text-anchor="middle" fill="var(--muted)" class="svg-title">MODERN EQUIVALENT</text>
-            <text x="530" y="35" text-anchor="middle" fill="var(--muted)" class="svg-small">12+ services, 20&ndash;40 GB RAM</text>
+            <text x="530" y="35" text-anchor="middle" fill="var(--muted)" class="svg-small">12+ services, 20-40 GB RAM</text>
 
             <!-- API Gateway -->
             <rect x="460" y="48" width="140" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
@@ -284,7 +284,7 @@
             <rect x="385" y="140" width="120" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
             <text x="445" y="159" text-anchor="middle" fill="var(--muted)" class="svg-node">Elasticsearch</text>
             <line x1="615" y1="122" x2="505" y2="145" stroke="var(--muted)" stroke-width="0.75" marker-end="url(#arrow-muted)"/>
-            <text x="445" y="183" text-anchor="middle" fill="var(--muted)" class="svg-small">4&ndash;8 GB heap</text>
+            <text x="445" y="183" text-anchor="middle" fill="var(--muted)" class="svg-small">4-8 GB heap</text>
 
             <!-- Kibana -->
             <rect x="555" y="140" width="120" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
@@ -299,7 +299,7 @@
             <rect x="555" y="196" width="120" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
             <text x="615" y="215" text-anchor="middle" fill="var(--muted)" class="svg-node">Orchestrator</text>
             <line x1="505" y1="211" x2="553" y2="211" stroke="var(--muted)" stroke-width="0.75" marker-end="url(#arrow-muted)"/>
-            <text x="615" y="239" text-anchor="middle" fill="var(--muted)" class="svg-small">12&ndash;24 GB control plane</text>
+            <text x="615" y="239" text-anchor="middle" fill="var(--muted)" class="svg-small">12-24 GB control plane</text>
 
             <!-- Registry -->
             <rect x="385" y="252" width="120" height="30" rx="3" fill="none" stroke="var(--muted)" stroke-width="1"/>
@@ -339,12 +339,12 @@
 
         <p>
             Docker took <a href="https://docs.docker.com/engine/security/" target="_blank" rel="noopener">cgroups and namespaces</a>
-            &mdash; kernel features available since the 1990s &mdash; and added a daemon, a hub,
+            (kernel features available since the 1990s) and added a daemon, a hub,
             and a subscription model. <a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener">FreeBSD jails</a>
             achieved process isolation in 2000, without a background daemon and without phoning home.
             <a href="https://kubernetes.io/docs/setup/production-environment/" target="_blank" rel="noopener">Kubernetes</a>
             buried <code>iptables</code>, <code>cgroups</code>, and <code>etcd</code> under
-            12&ndash;24 GB of control plane RAM. The kernel features are still doing the actual work.
+            12-24 GB of control plane RAM. The kernel features are still doing the actual work.
             They are simply harder to see now, which is rather the point.
         </p>
 
@@ -352,7 +352,7 @@
             This is not an argument against containerisation or orchestration as concepts. Large
             distributed systems face genuine problems that a single machine cannot solve. The
             objection is narrower and, one hopes, more interesting: the industry did not merely
-            adopt Unix principles. It repackaged them &mdash; not to make them more accessible,
+            adopt Unix principles. It repackaged them, not to make them more accessible,
             but to make them more billable. The abstractions rarely subtract complexity. They
             redistribute it, usually into places where it is harder to inspect and more expensive
             to debug.
@@ -388,7 +388,7 @@
                 <rect x="0" y="29" width="600" height="44" fill="var(--surface)" opacity="0.4"/>
                 <text x="16" y="48" fill="var(--text)" class="inv-label">Log search</text>
                 <text x="216" y="48" fill="var(--text)" class="inv-value">grep</text>
-                <text x="216" y="64" fill="var(--muted)" class="inv-value">2 MB RSS &#x2014; $0</text>
+                <text x="216" y="64" fill="var(--muted)" class="inv-value">2 MB RSS, $0</text>
                 <text x="416" y="48" fill="var(--muted)" class="inv-value">Splunk</text>
                 <text x="416" y="64" fill="var(--muted)" class="inv-value">$150+/GB/day</text>
                 <line x1="0" y1="73" x2="600" y2="73" stroke="var(--border)" stroke-width="0.5"/>
@@ -396,24 +396,24 @@
                 <!-- Row 2: Log indexing -->
                 <text x="16" y="92" fill="var(--text)" class="inv-label">Log indexing</text>
                 <text x="216" y="92" fill="var(--text)" class="inv-value">grep + sort + uniq</text>
-                <text x="216" y="108" fill="var(--muted)" class="inv-value">~6 MB RSS &#x2014; $0</text>
+                <text x="216" y="108" fill="var(--muted)" class="inv-value">~6 MB RSS, $0</text>
                 <text x="416" y="92" fill="var(--muted)" class="inv-value">ELK Stack</text>
-                <text x="416" y="108" fill="var(--muted)" class="inv-value">4&#x2013;8 GB heap</text>
+                <text x="416" y="108" fill="var(--muted)" class="inv-value">4-8 GB heap</text>
                 <line x1="0" y1="117" x2="600" y2="117" stroke="var(--border)" stroke-width="0.5"/>
 
                 <!-- Row 3: Monitoring -->
                 <rect x="0" y="118" width="600" height="44" fill="var(--surface)" opacity="0.4"/>
                 <text x="16" y="137" fill="var(--text)" class="inv-label">Monitoring</text>
                 <text x="216" y="137" fill="var(--text)" class="inv-value">ps + awk + cron</text>
-                <text x="216" y="153" fill="var(--muted)" class="inv-value">~1 MB RSS &#x2014; $0</text>
+                <text x="216" y="153" fill="var(--muted)" class="inv-value">~1 MB RSS, $0</text>
                 <text x="416" y="137" fill="var(--muted)" class="inv-value">Datadog</text>
-                <text x="416" y="153" fill="var(--muted)" class="inv-value">$15&#x2013;23/host/month</text>
+                <text x="416" y="153" fill="var(--muted)" class="inv-value">$15-23/host/month</text>
                 <line x1="0" y1="162" x2="600" y2="162" stroke="var(--border)" stroke-width="0.5"/>
 
                 <!-- Row 4: Process isolation -->
                 <text x="16" y="181" fill="var(--text)" class="inv-label">Process isolation</text>
                 <text x="216" y="181" fill="var(--text)" class="inv-value">jails (2000)</text>
-                <text x="216" y="197" fill="var(--muted)" class="inv-value">Kernel-native &#x2014; $0</text>
+                <text x="216" y="197" fill="var(--muted)" class="inv-value">Kernel-native, $0</text>
                 <text x="416" y="181" fill="var(--muted)" class="inv-value">Docker</text>
                 <text x="416" y="197" fill="var(--muted)" class="inv-value">Daemon + registry + sub</text>
                 <line x1="0" y1="206" x2="600" y2="206" stroke="var(--border)" stroke-width="0.5"/>
@@ -422,9 +422,9 @@
                 <rect x="0" y="207" width="600" height="44" fill="var(--surface)" opacity="0.4"/>
                 <text x="16" y="226" fill="var(--text)" class="inv-label">Orchestration</text>
                 <text x="216" y="226" fill="var(--text)" class="inv-value">rc.d + jails</text>
-                <text x="216" y="242" fill="var(--muted)" class="inv-value">0 MB overhead &#x2014; $0</text>
+                <text x="216" y="242" fill="var(--muted)" class="inv-value">0 MB overhead, $0</text>
                 <text x="416" y="226" fill="var(--muted)" class="inv-value">Kubernetes</text>
-                <text x="416" y="242" fill="var(--muted)" class="inv-value">12&#x2013;24 GB control plane</text>
+                <text x="416" y="242" fill="var(--muted)" class="inv-value">12-24 GB control plane</text>
                 <line x1="0" y1="251" x2="600" y2="251" stroke="var(--border)" stroke-width="0.5"/>
 
                 <!-- Row 6: Service discovery -->
@@ -440,10 +440,10 @@
             The <a href="https://www.splunk.com/en_us/products/pricing.html" target="_blank" rel="noopener">Splunk</a>
             pricing page is an education in itself. At $150 or more per gigabyte per day, a moderately
             busy web server generating 10 GB of logs daily would cost $1,500 per day for the privilege
-            of searching text &mdash; a task that <code>grep</code>, a fifty-three-year-old binary,
+            of searching text, a task that <code>grep</code>, a fifty-three-year-old binary,
             performs in milliseconds for the price of a few megabytes of RAM.
             <a href="https://www.datadoghq.com/pricing/" target="_blank" rel="noopener">Datadog</a>
-            charges $15&ndash;23 per host per month for metrics that <code>ps</code>,
+            charges $15-23 per host per month for metrics that <code>ps</code>,
             <code>awk</code>, and <code>cron</code> have collected since before most of its
             engineers were born.
         </p>
@@ -468,7 +468,7 @@
         <p>
             The industry did not ignore the Unix philosophy. It studied it, extracted the principles,
             wrapped them in YAML, and sold them back with a support contract. Not to make them more
-            accessible &mdash; the man pages were always free &mdash; but to make them more billable.
+            accessible (the man pages were always free) but to make them more billable.
         </p>
 
         <p>

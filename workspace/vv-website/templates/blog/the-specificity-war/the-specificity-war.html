@@ -51,13 +51,13 @@
 
         <p>For a quarter of a century, CSS specificity was a medieval
             succession dispute. The throne of &#x201C;which style applies&#x201D;
-            was contested not by merit but by lineage &#x2014; the depth of
+            was contested not by merit but by lineage: the depth of
             your selector chain, the number of classes in your ancestry, the
             presence of an <code>#id</code> somewhere in the bloodline. When
             two rules disagreed, the one with more heraldic weight prevailed.
             When both had equal claim, source order arbitrated like a tired
             magistrate. And when all else failed, the developer reached for
-            <code>!important</code> &#x2014; the nuclear option, the
+            <code>!important</code>, the nuclear option, the
             constitutional crisis, the divine right of kings invoked by
             someone who had simply run out of patience.</p>
 
@@ -90,8 +90,8 @@
             escalation with the nuclear codes on both sides, and the only
             winner was the developer who loaded their stylesheet last.</p>
 
-        <p>The entire discipline of CSS architecture &#x2014; BEM, SMACSS,
-            ITCSS, utility-first &#x2014; was, at its core, a series of
+        <p>The entire discipline of CSS architecture (BEM, SMACSS,
+            ITCSS, utility-first) was, at its core, a series of
             treaties attempting to prevent specificity conflicts through naming
             conventions and file ordering. Diplomatic solutions to a
             constitutional deficiency. The language lacked a way to declare:
@@ -192,30 +192,30 @@
 
 <pre><code>@layer general, extern, components, themes;</code></pre>
 
-        <p><strong>general</strong> &#x2014; your reset, your CSS custom
+        <p><strong>general</strong>: your reset, your CSS custom
             properties, your base typography. The foundation. Everything here
             is meant to be overridden. It sets defaults with the quiet
             confidence of a butler who knows the household will ignore his
             suggestions but makes them anyway.</p>
 
-        <p><strong>extern</strong> &#x2014; third-party CSS. Tailwind.
+        <p><strong>extern</strong>: third-party CSS. Tailwind.
             FontAwesome. That analytics widget your marketing department
             insists upon. Everything you did not write and cannot fully trust.
             Wrapping it in <code>extern</code> means it can never outrank
             your own components, regardless of how many selectors the vendor
             chains together.</p>
 
-        <p><strong>components</strong> &#x2014; your styles. Your buttons,
+        <p><strong>components</strong>: your styles. Your buttons,
             your cards, your layout primitives. This is where the application
             lives. It automatically outranks <code>extern</code> because it
             is declared after it. Third-party CSS wreaking havoc? Not any
             more. Components win. Automatically.</p>
 
-        <p><strong>themes</strong> &#x2014; dark mode, high contrast, visual
+        <p><strong>themes</strong>: dark mode, high contrast, visual
             variations. The final word. A single-class selector in
             <code>themes</code> outranks a five-selector chain in
             <code>components</code>. Not because its specificity is higher
-            &#x2014; it almost certainly is not &#x2014; but because layer
+            (it almost certainly is not) but because layer
             order outranks specificity entirely. The succession is settled
             by constitutional law, not by the size of the army.</p>
 
@@ -364,8 +364,8 @@
 
         <p>There is one important caveat, and it is the kind that will
             catch you precisely once before you remember it for life.
-            Unlayered styles &#x2014; any CSS not assigned to a layer
-            &#x2014; override everything. They sit above the layer stack
+            Unlayered styles (any CSS not assigned to a layer)
+            override everything. They sit above the layer stack
             entirely, as if the constitution does not apply to them.</p>
 
 <pre><code>/* This unlayered rule beats ALL layers */
@@ -441,11 +441,11 @@
     .dark { --bg: oklch(15% 0 0); --text: oklch(90% 0 0); }
 }</code></pre>
 
-            <p>Unlayered styles override everything &#x2014; useful for
+            <p>Unlayered styles override everything, useful for
                 debugging, dangerous in production. Keep all production CSS
                 inside layers.</p>
             <p>Sources:
-                <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer" target="_blank" rel="noopener">MDN &#x2014; @layer</a>,
+                <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer" target="_blank" rel="noopener">MDN: @layer</a>,
                 <a href="https://www.w3.org/TR/css-cascade-5/#layering" target="_blank" rel="noopener">W3C CSS Cascade Level 5</a>.</p>
         </aside>
     </div>

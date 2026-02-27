@@ -1,6 +1,6 @@
 {! extends "../../_base.html" | slotlist !}
 
-{( slot title )}The Kubernetes Tax — Vivian Voss{( endslot )}
+{( slot title )}The Kubernetes Tax &#x2014; Vivian Voss{( endslot )}
 
 {( slot meta )}
 <meta name="description" content="81 resource types. 200 lines of YAML to replace one systemctl command. A platform team before your first customer. The Kubernetes invoice, itemised.">
@@ -8,7 +8,7 @@
 
 {( slot canonical )}/blog/the-kubernetes-tax{( endslot )}
 
-{( slot og-title )}The Kubernetes Tax — Vivian Voss{( endslot )}
+{( slot og-title )}The Kubernetes Tax &#x2014; Vivian Voss{( endslot )}
 
 {( slot og-desc )}81 resource types. 200 lines of YAML to replace one systemctl command. The Kubernetes invoice, itemised.{( endslot )}
 
@@ -52,8 +52,8 @@
         <p>That sentence has cost more engineering hours than any distributed systems
             problem it was deployed to solve. It sounds authoritative. It sounds
             inevitable. And it is the sentence that transforms a perfectly functional
-            deployment &#x2014; one that ran with <code>systemctl start myapp</code>
-            &#x2014; into an orchestration platform with 81 distinct resource types,
+            deployment (one that ran with <code>systemctl start myapp</code>)
+            into an orchestration platform with 81 distinct resource types,
             each carrying its own YAML schema, lifecycle hooks, and failure modes.</p>
 
         <p>Let us examine the invoice.</p>
@@ -71,7 +71,7 @@
         <p>After Kubernetes, deploying the same application requires 200 or more lines
             of YAML spread across five to eight files: a Deployment, a Service, an Ingress,
             a ConfigMap, a Secret, a HorizontalPodAutoscaler, a PersistentVolumeClaim,
-            and &#x2014; depending on how seriously one takes the liturgy &#x2014; a
+            and, depending on how seriously one takes the liturgy, a
             NetworkPolicy, a ServiceAccount, and a PodDisruptionBudget. Each file has its
             own <code>apiVersion</code>, its own <code>kind</code>, and its own quietly
             expanding surface area of things that can go wrong.</p>
@@ -127,7 +127,7 @@
             <text class="k8s-muted" x="445" y="128" text-anchor="middle">NetworkPolicy</text>
 
             <text class="k8s-count" x="385" y="168" text-anchor="middle">200+ lines of YAML</text>
-            <text class="k8s-muted" x="385" y="184" text-anchor="middle">5&#x2013;8 files &#x2022; 81 resource types</text>
+            <text class="k8s-muted" x="385" y="184" text-anchor="middle">5-8 files &#x2022; 81 resource types</text>
 
             <!-- Bottom comparison bar -->
             <line class="k8s-divider" x1="20" y1="210" x2="500" y2="210"/>
@@ -146,8 +146,8 @@
             committed to Git and the configuration actually running in the cluster are,
             in any sufficiently mature deployment, two different things. Discovering which
             of the two is the source of truth requires <code>kubectl</code>,
-            <code>stern</code>, <code>k9s</code>, <code>Lens</code>, and &#x2014; in the
-            more colourful incidents &#x2014; a prayer. One does not debug Kubernetes so
+            <code>stern</code>, <code>k9s</code>, <code>Lens</code>, and, in the
+            more colourful incidents, a prayer. One does not debug Kubernetes so
             much as interrogate it, and it is not always forthcoming.</p>
 
         <h2>The Platform Tax</h2>
@@ -165,8 +165,8 @@
             delivers your milk, when the dairy is across the road.</p>
 
         <p>Developers who previously deployed with <code>git push</code> now open Jira
-            tickets. &#x201C;DevOps&#x201D; &#x2014; a term coined to eliminate the wall
-            between development and operations &#x2014; became, in practice, &#x201C;Dev
+            tickets. &#x201C;DevOps&#x201D;, a term coined to eliminate the wall
+            between development and operations, became, in practice, &#x201C;Dev
             waits for Ops.&#x201D; The wall was not torn down. It was rebuilt in YAML and
             given a service-level agreement.</p>
 
@@ -309,7 +309,7 @@
         <h2>The Service Mesh Surcharge</h2>
 
         <p>Once the cluster is running, someone will suggest a service mesh. Istio, Linkerd,
-            Consul Connect &#x2014; the options are plentiful and the sales pitch is consistent:
+            Consul Connect. The options are plentiful and the sales pitch is consistent:
             observability, mTLS, traffic management, the full ecclesiastical vestments of modern
             infrastructure.</p>
 
@@ -321,7 +321,7 @@
             compounds with every hop in the call chain.</p>
 
         <p>A request that traverses five services accumulates 25 to 75 milliseconds of mesh
-            overhead alone &#x2014; before any business logic has executed. The certificate
+            overhead alone, before any business logic has executed. The certificate
             rotation that underpins the mTLS, meanwhile, fails silently at three in the morning.
             Nobody notices until the dashboards go red, and by then the postmortem is already
             writing itself.</p>
@@ -367,9 +367,9 @@
 
             <!-- Platform Team -->
             <text class="cost-label" x="20" y="55">Platform Team</text>
-            <text class="cost-muted" x="20" y="70">2&#x2013;4 engineers &#x00D7; &#x20AC;80&#x2013;120k</text>
+            <text class="cost-muted" x="20" y="70">2-4 engineers &#x00D7; &#x20AC;80-120k</text>
             <rect class="cost-bar" x="20" y="80" width="400" height="24"/>
-            <text class="cost-value" x="430" y="97">&#x20AC;160&#x2013;480k/yr</text>
+            <text class="cost-value" x="430" y="97">&#x20AC;160-480k/yr</text>
 
             <!-- Cloud Compute -->
             <text class="cost-label" x="20" y="130">Cloud Compute</text>
@@ -430,7 +430,7 @@
             and concluding that the school run requires the same.</p>
 
         <p>Ninety-nine point nine per cent of companies will never have Google&#x2019;s problems.
-            They will, however, have Google&#x2019;s infrastructure costs &#x2014; because they
+            They will, however, have Google&#x2019;s infrastructure costs, because they
             adopted Google&#x2019;s tooling without Google&#x2019;s constraints, Google&#x2019;s
             scale, or Google&#x2019;s budget.</p>
 
@@ -443,7 +443,7 @@
         <p>A <strong>VPS with <code>systemd</code></strong> handles deployment, process supervision,
             log management, and automatic restarts. It has done so reliably since 2010. The
             configuration is a single unit file, not a folder of YAML manifests. Scaling means
-            adding another VPS and a load balancer &#x2014; not another abstraction layer.</p>
+            adding another VPS and a load balancer, not another abstraction layer.</p>
 
         <p><strong>Docker Compose</strong> orchestrates multi-container applications on a single
             host with a clarity that Kubernetes has never managed. It is not suitable for global
@@ -451,7 +451,7 @@
             do not operate at global scale and never will.</p>
 
         <p><a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener"><strong>FreeBSD jails</strong></a>
-            have provided process isolation since the year 2000 &#x2014; twenty-four years before
+            have provided process isolation since the year 2000, twenty-four years before
             the industry collectively decided that containers were a novelty. Jails are lightweight,
             well-documented, and require no orchestration platform. They simply work, in the
             profoundly unglamorous way that well-engineered systems tend to.</p>
@@ -473,7 +473,7 @@
         <blockquote>
             <p>The best infrastructure is the one you do not notice. If you are spending
                 more time maintaining the platform than building the product, the platform
-                has become the product &#x2014; and nobody is buying it.</p>
+                has become the product, and nobody is buying it.</p>
         </blockquote>
 
         <p>Thirteen per cent utilisation. Two hundred lines of YAML. Half a million in platform

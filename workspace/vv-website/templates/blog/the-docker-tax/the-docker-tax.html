@@ -50,7 +50,7 @@
         </blockquote>
 
         <p>That is the pitch, stripped of its marketing. Docker did not arrive because
-            the technology was missing &#x2014; process isolation had existed since 1979.
+            the technology was missing (process isolation had existed since 1979).
             Docker arrived because Linux fragmented so thoroughly that deploying a binary
             across distributions became an exercise in diplomatic negotiation. The industry
             did not solve the fragmentation. It surrendered to it, wrapped the surrender
@@ -58,7 +58,7 @@
 
         <h2>The Fragmentation</h2>
 
-        <p>Linux is not one operating system. It is a kernel with opinions &#x2014;
+        <p>Linux is not one operating system. It is a kernel with opinions:
             hundreds of them, organised into distributions that agree on remarkably little.
             <code>apt</code> or <code>pacman</code> or <code>dnf</code> or <code>apk</code>.
             <a href="https://systemd.io/" target="_blank" rel="noopener">systemd</a> or
@@ -72,20 +72,20 @@
             set of shared libraries than the same package on Ubuntu, despite both claiming
             to be Linux.</p>
 
-        <p>This is not a bug. This is the culture &#x2014; a community that values choice
+        <p>This is not a bug. This is the culture, a community that values choice
             over coherence, which is a perfectly respectable philosophical position right
             up until the moment you need to ship software to someone else&#x2019;s machine.</p>
 
         <h2>The Surrender</h2>
 
         <p>Docker&#x2019;s solution to Linux fragmentation was not to fix it. It was to
-            bypass it entirely. Ship the <em>entire userland</em> &#x2014; libraries, tools,
-            init scripts, the lot &#x2014; bundled alongside your application. The host
+            bypass it entirely. Ship the <em>entire userland</em> (libraries, tools,
+            init scripts, the lot) bundled alongside your application. The host
             kernel provides isolation. Everything above the kernel comes in the image.</p>
 
         <p>A 28 MB Node.js runtime becomes a 1.1 GB container image because the image
-            includes Debian. Not because Debian is needed. Because the alternative &#x2014;
-            trusting the host to provide a consistent environment &#x2014; had been tried
+            includes Debian. Not because Debian is needed. Because the alternative,
+            trusting the host to provide a consistent environment, had been tried
             and found wanting. Docker is what happens when an ecosystem gives up on
             compatibility and decides that duplication is cheaper than coordination.</p>
 
@@ -159,23 +159,23 @@
             <em>base image</em> fragmentation. <code>FROM debian:bookworm</code> or
             <code>FROM alpine:3.19</code> or <code>FROM ubuntu:24.04</code>. The same
             incompatibilities, the same library mismatches, the same arguments about
-            glibc versus musl &#x2014; now happening inside the container instead of
+            glibc versus musl, now happening inside the container instead of
             outside it. The boundary moved. The problem did not.</p>
 
         <h2>The Three-OS Problem</h2>
 
-        <p>Docker uses Linux kernel features &#x2014;
-            <a href="https://man7.org/linux/man-pages/man7/namespaces.7.html" target="_blank" rel="noopener">namespaces</a>
+        <p>Docker uses Linux kernel features
+            (<a href="https://man7.org/linux/man-pages/man7/namespaces.7.html" target="_blank" rel="noopener">namespaces</a>
             and
-            <a href="https://man7.org/linux/man-pages/man7/cgroups.7.html" target="_blank" rel="noopener">cgroups</a>
-            &#x2014; that exist nowhere else. On a Linux server, this is seamless. The
+            <a href="https://man7.org/linux/man-pages/man7/cgroups.7.html" target="_blank" rel="noopener">cgroups</a>)
+            that exist nowhere else. On a Linux server, this is seamless. The
             container shares the host kernel. Overhead is negligible.</p>
 
         <p>On macOS and Windows, Docker cannot run natively. It requires a Linux virtual
             machine.
             <a href="https://docs.docker.com/desktop/setup/install/mac-install/" target="_blank" rel="noopener">Docker Desktop</a>
             on a Mac means: macOS runs a hypervisor, the hypervisor runs Linux, Linux
-            runs the Docker engine, the Docker engine runs the container image &#x2014;
+            runs the Docker engine, the Docker engine runs the container image,
             which contains <em>another</em> Linux distribution. Four layers. Three
             operating systems. Roughly 4 GB of RAM reserved before a single container
             starts.</p>
@@ -233,9 +233,9 @@
         <p>The word &#x201C;portable&#x201D; does rather a lot of work in the Docker
             documentation. What it means, precisely, is: portable between Linux kernels.
             Everywhere else, it is virtualisation wearing the costume of containerisation.
-            The performance penalty &#x2014; bind mounts 2.5 times slower, I/O crossing
+            The performance penalty (bind mounts 2.5 times slower, I/O crossing
             a VM boundary, RAM consumed by a guest OS that exists solely to run the
-            tool that was supposed to simplify things &#x2014; is the cover charge for
+            tool that was supposed to simplify things) is the cover charge for
             the illusion.</p>
 
         <h2>The Prior Art</h2>
@@ -286,13 +286,13 @@
         </svg>
 
         <p><a href="https://wiki.freebsd.org/Jails" target="_blank" rel="noopener">FreeBSD Jails</a>
-            shipped in March 2000 &#x2014; full process isolation, separate networking stacks,
+            shipped in March 2000: full process isolation, separate networking stacks,
             independent filesystems. Solaris Zones followed in 2005 with resource controls
             and ZFS integration. LXC arrived in 2008 and became Docker&#x2019;s original
             backend before Docker replaced it with <code>libcontainer</code> in 2014.</p>
 
         <p>Docker&#x2019;s contribution was not the container. It was the image format,
-            the registry, and &#x2014; critically &#x2014; the narrative. A five-minute
+            the registry, and, critically, the narrative. A five-minute
             lightning talk at PyCon 2013, a company that understood developer experience
             better than any Unix vendor before it, and an industry that was tired of
             fighting with <code>apt-get</code> on twelve different distributions. The
@@ -305,7 +305,7 @@
 
         <p>FreeBSD has one base system. One package manager: <code>pkg</code>. One
             init system: <code>rc</code>. One libc. Packages compiled for FreeBSD 14
-            run on any FreeBSD 14 installation &#x2014; because there is only one
+            run on any FreeBSD 14 installation, because there is only one
             FreeBSD 14. There are no distributions. There is no fragmentation. A binary
             built on one machine runs on every machine with the same major version.</p>
 
@@ -313,7 +313,7 @@
             provide isolation that is native, lightweight, and requires no virtualisation
             on any platform FreeBSD supports. No hypervisor. No guest OS. No 4 GB of
             RAM sacrificed to the abstraction. A jail starts in milliseconds and shares
-            the host kernel directly, because the host kernel was designed for it &#x2014;
+            the host kernel directly, because the host kernel was designed for it,
             not retrofitted with it.</p>
 
         <p>This is not a philosophical preference. It is an engineering decision with
@@ -327,15 +327,15 @@
 
         <p><a href="https://www.docker.com/pricing/" target="_blank" rel="noopener">Docker Desktop</a>:
             free for personal use, &#x20AC;9 per user per month for teams, &#x20AC;21 per
-            user per month for business. For a company of 250 developers &#x2014; the
+            user per month for business. For a company of 250 developers (the
             threshold at which Docker Desktop
-            <a href="https://www.docker.com/blog/updating-product-subscriptions/" target="_blank" rel="noopener">requires a paid subscription</a>
-            &#x2014; the annual bill starts at &#x20AC;27,000 and climbs to &#x20AC;63,000.
+            <a href="https://www.docker.com/blog/updating-product-subscriptions/" target="_blank" rel="noopener">requires a paid subscription</a>),
+            the annual bill starts at &#x20AC;27,000 and climbs to &#x20AC;63,000.
             For the privilege of running a Linux VM on hardware that does not need one.</p>
 
         <p>Image sizes compound the cost. A typical microservices deployment pulls dozens
             of images, each carrying its own copy of an operating system. Registry storage,
-            network transfer, CI build minutes, layer cache invalidation &#x2014; all of it
+            network transfer, CI build minutes, layer cache invalidation: all of it
             scales with the bloat. Two gigabytes per image is not unusual. The bandwidth
             bill for pulling fresh images across a fleet is the line item nobody audits
             until it appears on the quarterly report.</p>
@@ -361,8 +361,8 @@
             the industry accepted it and built a workaround that ships the entire
             operating system alongside every application.</p>
 
-        <p>On macOS and Windows &#x2014; where the majority of developers actually
-            work &#x2014; that workaround requires a virtual machine, consuming
+        <p>On macOS and Windows, where the majority of developers actually
+            work, that workaround requires a virtual machine, consuming
             gigabytes of RAM to simulate the operating system whose fragmentation
             created the need for the tool in the first place. The recursion is
             almost poetic.</p>
