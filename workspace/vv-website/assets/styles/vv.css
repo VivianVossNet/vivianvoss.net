@@ -589,6 +589,94 @@
         user-select: none;
     }
 
+    /* --- Dictionary terms (auto-linked) ----------------------------------- */
+
+    .vv-term {
+        color: var(--text);
+        text-decoration: underline;
+        text-decoration-color: oklch(75% 0.15 85);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+        text-decoration-style: dotted;
+        position: relative;
+        cursor: help;
+    }
+
+    .vv-term:hover {
+        color: oklch(75% 0.15 85);
+    }
+
+    .vv-term::after {
+        content: attr(data-def);
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+        max-width: 320px;
+        padding: calc(var(--unit) * 1.5) calc(var(--unit) * 2);
+        background: var(--surface);
+        color: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--unit) * 0.75);
+        font-size: calc(var(--unit) * 1.75);
+        line-height: 1.5;
+        white-space: normal;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s;
+        z-index: 20;
+        box-shadow: 0 4px 12px oklch(0% 0 0 / 0.15);
+    }
+
+    .vv-term:hover::after,
+    .vv-term.is-touched::after {
+        opacity: 1;
+    }
+
+    /* --- Dictionary page -------------------------------------------------- */
+
+    .vv-dictionary-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: calc(var(--unit) * 6);
+    }
+
+    .vv-dict-heading {
+        font-size: calc(var(--unit) * 2.5);
+        font-weight: 600;
+        color: var(--text);
+        border-bottom: 2px solid var(--accent);
+        padding-bottom: calc(var(--unit) * 1);
+        margin-bottom: calc(var(--unit) * 2);
+    }
+
+    .vv-dictionary h3 {
+        font-size: calc(var(--unit) * 2);
+        font-weight: 400;
+        color: var(--accent);
+        letter-spacing: 0.02em;
+        margin-top: calc(var(--unit) * 4);
+    }
+
+    .vv-dict-entry {
+        padding: calc(var(--unit) * 1.5) 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .vv-dict-entry dt {
+        font-weight: 600;
+        font-size: calc(var(--unit) * 2);
+        color: var(--text);
+    }
+
+    .vv-dict-entry dd {
+        color: var(--muted);
+        line-height: var(--line-height-base);
+        max-width: 65ch;
+        margin: calc(var(--unit) * 0.5) 0 0;
+    }
+
     /* --- Article (blog post) ---------------------------------------------- */
 
     .vv-article {
@@ -1101,6 +1189,11 @@
                 align-self: start;
                 padding-top: calc(var(--unit) * 0.25);
             }
+        }
+
+        .vv-dictionary-grid {
+            grid-template-columns: 1fr 1fr;
+            align-items: start;
         }
     }
 
