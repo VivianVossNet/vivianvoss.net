@@ -9,6 +9,7 @@ local pages = {
     { loc = "/ecosystem",  priority = "0.8",  changefreq = "monthly" },
     { loc = "/writing",    priority = "0.7",  changefreq = "weekly"  },
     { loc = "/blog",       priority = "0.9",  changefreq = "weekly"  },
+    { loc = "/dictionary", priority = "0.6",  changefreq = "monthly" },
     { loc = "/contact",    priority = "0.5",  changefreq = "yearly"  },
     -- blog articles
     { loc = "/blog/the-angular-tax",                   priority = "0.7", changefreq = "yearly" },
