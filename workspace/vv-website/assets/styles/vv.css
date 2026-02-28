@@ -468,6 +468,11 @@
             color: var(--muted);
             line-height: var(--line-height-base);
         }
+
+        & .vv-pills {
+            margin-top: calc(var(--unit) * 0.5);
+            justify-self: start;
+        }
     }
 
     /* --- Tag filter (blog) ------------------------------------------------ */
@@ -1181,13 +1186,28 @@
 
         .vv-series-item {
             grid-template-columns: calc(var(--unit) * 16) 1fr;
-            grid-template-rows: auto auto;
             column-gap: calc(var(--unit) * 3);
 
             & .day {
-                grid-row: 1 / -1;
+                grid-column: 1;
                 align-self: start;
                 padding-top: calc(var(--unit) * 0.25);
+            }
+
+            & .vv-pills {
+                grid-column: 1;
+                margin-top: 0;
+                align-items: start;
+                height: fit-content;
+            }
+
+            & h3 {
+                grid-column: 2;
+                grid-row: 1;
+            }
+
+            & p {
+                grid-column: 2;
             }
         }
 
