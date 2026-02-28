@@ -1,0 +1,335 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: FFmpeg &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Fabrice Bellard started FFmpeg in 2000. The multimedia world was fragmented: dozens of proprietary formats, incompatible codecs, expensive licensing. FFmpeg handles every format ever created. 1.5 million lines of C. Powers YouTube, Netflix, VLC, Spotify. Everything else is a wrapper.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-ffmpeg{( endslot )}
+
+{( slot og-title )}Technical Beauty: FFmpeg &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Fabrice Bellard started FFmpeg in 2000. The multimedia world was fragmented. FFmpeg handles every format ever created. Powers YouTube, Netflix, VLC, Spotify. Everything else is a wrapper.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: FFmpeg",
+    "datePublished": "2026-01-29",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-ffmpeg",
+    "description": "Fabrice Bellard started FFmpeg in 2000. The multimedia world was fragmented: dozens of proprietary formats, incompatible codecs, expensive licensing. FFmpeg handles every format ever created. 1.5 million lines of C. Powers YouTube, Netflix, VLC, Spotify. Everything else is a wrapper.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-29">29 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: FFmpeg</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 12</p>
+
+        <p>In 2000, the multimedia landscape was a balkanised mess of
+            proprietary formats, incompatible codecs, and expensive
+            licensing agreements. Playing a video required three
+            different players and a subscription to at least one of
+            them. Converting between formats required a commercial tool
+            that cost more than the hardware it ran on. The industry had
+            created a problem and was charging admission to the
+            workaround.</p>
+
+        <p><a href="https://bellard.org/" target="_blank" rel="noopener">Fabrice Bellard</a>
+            looked at this arrangement and built FFmpeg. One tool.
+            Every format. Twenty-five years later, it handles virtually
+            every audio and video codec ever created, H.264, HEVC, VP9,
+            AV1, ProRes, DNxHD, FLAC, AAC, Opus, more than a hundred
+            in total. It powers
+            <a href="https://en.wikipedia.org/wiki/FFmpeg" target="_blank" rel="noopener">YouTube, Netflix, VLC, Spotify, Chrome, and Firefox</a>.
+            It runs on the Mars Perseverance rover. It is, by any
+            reasonable measure, the most important piece of multimedia
+            software ever written. Everything else is a wrapper.</p>
+
+        <h2>The Engineer</h2>
+
+        <p>Bellard is not merely productive. He is anomalous. His
+            project list reads like a computer science department with
+            a single employee. He created
+            <a href="https://www.qemu.org/" target="_blank" rel="noopener">QEMU</a>
+            (2003), the processor emulator that became the foundation
+            for KVM and modern cloud virtualisation. He wrote TinyCC, a
+            C compiler in 100 KB that boots Linux in fifteen seconds.
+            He built JSLinux, a complete Linux system running in the
+            browser via JavaScript, years before WebAssembly made such
+            things fashionable. He devised
+            <a href="https://en.wikipedia.org/wiki/Bellard%27s_formula" target="_blank" rel="noopener">Bellard&#x2019;s formula</a>
+            for computing digits of pi and then used a desktop PC to
+            calculate 2.7 trillion of them, briefly holding the world
+            record.</p>
+
+        <p>Each project follows the same pattern: identify a
+            fundamental problem, build the smallest correct solution,
+            then move on. Bellard does not maintain most of his
+            projects long-term. He builds the foundation and leaves.
+            FFmpeg has been led by Michael Niedermayer since 2004.
+            The foundation, as it happens, has held.</p>
+
+        <h2>The Architecture</h2>
+
+        <p>FFmpeg is not a monolith despite its size. It is a set of
+            libraries, each responsible for one concern:</p>
+
+        <ul>
+            <li><strong>libavcodec</strong> &#x2014; the codec library,
+                encoding and decoding more than a hundred formats</li>
+            <li><strong>libavformat</strong> &#x2014; container handling:
+                MP4, MKV, AVI, WebM, and every other envelope that
+                carries audio and video</li>
+            <li><strong>libavfilter</strong> &#x2014; the filter
+                pipeline: scaling, cropping, colour correction,
+                compositing</li>
+            <li><strong>libswscale</strong> &#x2014; pixel format
+                conversion, the unglamorous but essential work of
+                translating between colour spaces</li>
+        </ul>
+
+        <!-- FFmpeg architecture: format universe to unified output -->
+        <svg id="ffmpeg-arch" viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="FFmpeg architecture. On the left, a chaotic collection of input formats: AVI, MKV, MOV, WebM, FLV, TS. These flow into the FFmpeg pipeline consisting of libavformat (demux), libavcodec (decode), libavfilter (process), libavcodec (encode), and libavformat (mux). A single clean output emerges on the right. One command converts anything to anything." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ffmpeg-arch .fa-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ffmpeg-arch .fa-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ffmpeg-arch .fa-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ffmpeg-arch .fa-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ffmpeg-arch .fa-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                #ffmpeg-arch .fa-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #ffmpeg-arch .fa-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                #ffmpeg-arch .fa-fill-in { fill: var(--muted); opacity: 0.06; rx: 3; }
+                #ffmpeg-arch .fa-arrow { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#fa-ah); }
+                #ffmpeg-arch .fa-arrow-accent { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#fa-ah-a); }
+                #ffmpeg-arch .fa-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <defs>
+                <marker id="fa-ah" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+                <marker id="fa-ah-a" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <text class="fa-title" x="260" y="20" text-anchor="middle">The Universal Translator</text>
+
+            <!-- Input formats (chaotic left side) -->
+            <rect class="fa-fill-in" x="20" y="40" width="70" height="22"/>
+            <rect class="fa-box" x="20" y="40" width="70" height="22"/>
+            <text class="fa-mono" x="55" y="55" text-anchor="middle">AVI</text>
+
+            <rect class="fa-fill-in" x="20" y="70" width="70" height="22"/>
+            <rect class="fa-box" x="20" y="70" width="70" height="22"/>
+            <text class="fa-mono" x="55" y="85" text-anchor="middle">MKV</text>
+
+            <rect class="fa-fill-in" x="20" y="100" width="70" height="22"/>
+            <rect class="fa-box" x="20" y="100" width="70" height="22"/>
+            <text class="fa-mono" x="55" y="115" text-anchor="middle">MOV</text>
+
+            <rect class="fa-fill-in" x="20" y="130" width="70" height="22"/>
+            <rect class="fa-box" x="20" y="130" width="70" height="22"/>
+            <text class="fa-mono" x="55" y="145" text-anchor="middle">WebM</text>
+
+            <rect class="fa-fill-in" x="20" y="160" width="70" height="22"/>
+            <rect class="fa-box" x="20" y="160" width="70" height="22"/>
+            <text class="fa-mono" x="55" y="175" text-anchor="middle">FLV</text>
+
+            <rect class="fa-fill-in" x="20" y="190" width="70" height="22"/>
+            <rect class="fa-box" x="20" y="190" width="70" height="22"/>
+            <text class="fa-mono" x="55" y="205" text-anchor="middle">TS</text>
+
+            <text class="fa-sub" x="55" y="228" text-anchor="middle">100+ formats</text>
+
+            <!-- Arrows into pipeline -->
+            <line class="fa-arrow" x1="95" y1="51" x2="140" y2="80"/>
+            <line class="fa-arrow" x1="95" y1="81" x2="140" y2="95"/>
+            <line class="fa-arrow" x1="95" y1="111" x2="140" y2="110"/>
+            <line class="fa-arrow" x1="95" y1="141" x2="140" y2="130"/>
+            <line class="fa-arrow" x1="95" y1="171" x2="140" y2="150"/>
+            <line class="fa-arrow" x1="95" y1="201" x2="140" y2="168"/>
+
+            <!-- Pipeline stages -->
+            <rect class="fa-fill" x="145" y="50" width="90" height="36"/>
+            <rect class="fa-box" x="145" y="50" width="90" height="36" stroke="var(--accent)"/>
+            <text class="fa-accent" x="190" y="66" text-anchor="middle">libavformat</text>
+            <text class="fa-sub" x="190" y="80" text-anchor="middle">demux</text>
+
+            <line class="fa-arrow-accent" x1="190" y1="90" x2="190" y2="104"/>
+
+            <rect class="fa-fill" x="145" y="108" width="90" height="36"/>
+            <rect class="fa-box" x="145" y="108" width="90" height="36" stroke="var(--accent)"/>
+            <text class="fa-accent" x="190" y="124" text-anchor="middle">libavcodec</text>
+            <text class="fa-sub" x="190" y="138" text-anchor="middle">decode</text>
+
+            <line class="fa-arrow-accent" x1="190" y1="148" x2="190" y2="162"/>
+
+            <rect class="fa-fill" x="145" y="166" width="90" height="36"/>
+            <rect class="fa-box" x="145" y="166" width="90" height="36" stroke="var(--accent)"/>
+            <text class="fa-accent" x="190" y="182" text-anchor="middle">libavfilter</text>
+            <text class="fa-sub" x="190" y="196" text-anchor="middle">process</text>
+
+            <!-- Right column of pipeline -->
+            <line class="fa-arrow-accent" x1="240" y1="184" x2="280" y2="184"/>
+
+            <rect class="fa-fill" x="285" y="108" width="90" height="36"/>
+            <rect class="fa-box" x="285" y="108" width="90" height="36" stroke="var(--accent)"/>
+            <text class="fa-accent" x="330" y="124" text-anchor="middle">libavcodec</text>
+            <text class="fa-sub" x="330" y="138" text-anchor="middle">encode</text>
+
+            <line class="fa-arrow-accent" x1="330" y1="148" x2="330" y2="162"/>
+
+            <rect class="fa-fill" x="285" y="166" width="90" height="36"/>
+            <rect class="fa-box" x="285" y="166" width="90" height="36" stroke="var(--accent)"/>
+            <text class="fa-accent" x="330" y="182" text-anchor="middle">libavformat</text>
+            <text class="fa-sub" x="330" y="196" text-anchor="middle">mux</text>
+
+            <!-- Connect filter to encode -->
+            <line class="fa-arrow-accent" x1="280" y1="184" x2="280" y2="126"/>
+            <line class="fa-arrow-accent" x1="280" y1="126" x2="282" y2="126"/>
+
+            <!-- Output -->
+            <line class="fa-arrow-accent" x1="378" y1="184" x2="420" y2="184"/>
+
+            <rect class="fa-fill" x="425" y="168" width="75" height="32"/>
+            <rect class="fa-box" x="425" y="168" width="75" height="32" stroke="var(--accent)"/>
+            <text class="fa-accent" x="462" y="188" text-anchor="middle">MP4</text>
+
+            <text class="fa-sub" x="462" y="216" text-anchor="middle">or any format</text>
+
+            <!-- Bottom info -->
+            <line x1="30" y1="250" x2="490" y2="250" stroke="var(--border)" stroke-width="0.5"/>
+            <text class="fa-mono" x="260" y="272" text-anchor="middle">ffmpeg -i input.avi output.mp4</text>
+            <text class="fa-note" x="260" y="292" text-anchor="middle">One command. No GUI. No subscription. No cloud account.</text>
+            <text class="fa-note" x="260" y="310" text-anchor="middle">1.5 million lines of C. Powers YouTube, Netflix, VLC, Spotify.</text>
+            <text class="fa-note" x="260" y="328" text-anchor="middle">Everything else is a wrapper.</text>
+        </svg>
+
+        <p>The design is clean despite the scale. Each library has a
+            defined responsibility. Codecs do not know about containers.
+            Containers do not know about filters. The pipeline is
+            composable: demux, decode, filter, encode, mux. Any format
+            in, any format out. The complexity of a hundred codecs and
+            dozens of container formats is managed through abstraction,
+            not through configuration.</p>
+
+        <p>One command converts anything to anything:</p>
+
+        <p><code>ffmpeg -i input.avi output.mp4</code></p>
+
+        <p>That is the complete invocation. FFmpeg infers the input
+            format from the file. It infers the output format from the
+            extension. It selects sensible defaults for bitrate, sample
+            rate, and encoding parameters. No configuration file. No
+            daemon. No account. No vendor. The man page is 7,000 lines.
+            Most users need three flags.</p>
+
+        <h2>The Numbers</h2>
+
+        <p>1.5 million lines of C. Twenty-five years in production.
+            The
+            <a href="https://scan.coverity.com/projects/ffmpeg" target="_blank" rel="noopener">Coverity scan</a>
+            defect density is thirty times lower than the open-source
+            average for projects of this size. That number deserves a
+            moment of silence. A codebase of 1.5 million lines that
+            handles over a hundred codec specifications, each with its
+            own edge cases, bit-packing conventions, and patent
+            histories, and maintains defect rates that most teams
+            cannot achieve at one per cent of the scale.</p>
+
+        <p>It runs on the
+            <a href="https://brainnoises.com/blog/ffmpeg-unsung-hero/" target="_blank" rel="noopener">Mars Perseverance rover</a>.
+            When NASA needed to process video on another planet, they
+            did not build a custom multimedia stack. They used FFmpeg.
+            The industry&#x2019;s universal translator works on two
+            planets and counting.</p>
+
+        <h2>The Contrast</h2>
+
+        <p>Adobe Media Encoder wants a monthly fee. HandBrake wraps
+            FFmpeg. VLC wraps FFmpeg. YouTube&#x2019;s transcoding
+            pipeline wraps FFmpeg. Netflix&#x2019;s encoding
+            infrastructure wraps FFmpeg. Spotify wraps FFmpeg. Chrome
+            and Firefox ship FFmpeg&#x2019;s decoders. The industry
+            built graphical interfaces, cloud services, and
+            subscription products around a command-line tool that a
+            French mathematician wrote because he found the existing
+            solutions architecturally insufficient.</p>
+
+        <p>The economics are stark. Adobe Creative Cloud costs $660
+            per year. FFmpeg costs nothing. Adobe supports a dozen
+            formats well. FFmpeg supports a hundred formats correctly.
+            The commercial product is a subset of the free one, sold
+            at a premium, with a graphical interface that most
+            professional workflows bypass in favour of scripted FFmpeg
+            commands anyway.</p>
+
+        <h2>The Reduction</h2>
+
+        <p>What makes FFmpeg technically beautiful is not the
+            exhaustive format support, though that is remarkable. It
+            is the architectural decision to treat every codec and
+            every container as an instance of the same abstraction.
+            A codec is a thing that encodes and decodes. A container
+            is a thing that wraps and unwraps. A filter is a thing that
+            transforms. The pipeline connects these abstractions
+            without any of them knowing about the others.</p>
+
+        <p>Adding a new codec does not require changing the pipeline.
+            Adding a new container does not require changing the codecs.
+            The architecture scales to a hundred formats because it was
+            designed for one, and the design happened to be correct.</p>
+
+        <p>Bellard built the foundation in 2000 and moved on.
+            Niedermayer and the community have maintained it since 2004.
+            The foundation has not changed because it does not need to.
+            The universal translator remains universal, and everything
+            else remains a wrapper.</p>
+
+        <blockquote>
+            <p>One tool. Every format. 1.5 million lines of C with
+                defect rates thirty times below average. Powers two
+                planets. No subscription. FFmpeg does not compete with
+                multimedia tools. It is the multimedia tool.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>On Bellard&#x2019;s other projects</strong></p>
+            <p>FFmpeg alone would secure Bellard&#x2019;s place in
+                computing history. But the same person also built QEMU,
+                the processor emulator that underpins KVM and most cloud
+                virtualisation; TinyCC, a C compiler small enough to fit
+                on a floppy; and JSLinux, Linux running in a browser.
+                In 2009, he computed 2.7 trillion digits of pi on a
+                desktop PC. The pattern is always the same: find the
+                fundamental problem, build the minimal solution, move on.
+                Source:
+                <a href="https://bellard.org/" target="_blank" rel="noopener">bellard.org</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

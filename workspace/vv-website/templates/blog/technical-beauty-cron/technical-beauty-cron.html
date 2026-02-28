@@ -1,0 +1,235 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: cron &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="One loop. One file. Every minute. Since 1975. Ken Thompson wrote the first version at Bell Labs. Paul Vixie rewrote it in 1987. 2,500 lines of C. No dependencies. The modern alternative requires Kubernetes. cron requires a text file.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-cron{( endslot )}
+
+{( slot og-title )}Technical Beauty: cron &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}One loop. One file. Every minute. Since 1975. 2,500 lines of C. No dependencies. The modern alternative requires Kubernetes. cron requires a text file.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: cron",
+    "datePublished": "2026-01-13",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-cron",
+    "description": "One loop. One file. Every minute. Since 1975. Ken Thompson wrote the first version at Bell Labs. Paul Vixie rewrote it in 1987. 2,500 lines of C. No dependencies. The modern alternative requires Kubernetes. cron requires a text file.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-13">13 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: cron</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 16</p>
+
+        <p>One loop. One file. Every minute. Since 1975. Terribly sorry
+            if you expected something more exciting.</p>
+
+        <p>Ken Thompson wrote the first version of
+            <a href="https://en.wikipedia.org/wiki/Cron" target="_blank" rel="noopener">cron</a>
+            at Bell Labs. The algorithm was almost embarrassingly simple:
+            wake up every minute, read a text file, execute what needs
+            executing, go back to sleep.</p>
+
+        <p>That was fifty years ago. The algorithm has not changed. One
+            might call that lazy. I call it finished.</p>
+
+        <h2>Five Fields</h2>
+
+        <p>In 1987,
+            <a href="https://en.wikipedia.org/wiki/Paul_Vixie" target="_blank" rel="noopener">Paul Vixie</a>
+            rewrote cron for multi-user systems. He added the syntax
+            that every sysadmin has typed at least once without
+            consulting the manual, and then immediately consulted the
+            manual:</p>
+
+        <pre><code>0 3 * * * /usr/local/bin/backup.sh</code></pre>
+
+        <p>Five fields. Minute, hour, day of month, month, day of week.
+            A path. That is it. No YAML. No JSON. No "configuration as
+            code" framework. Just text, in a file, parsed by a daemon
+            that asks nothing of you except correct syntax.</p>
+
+        <p>The entire
+            <a href="https://github.com/vixie/cron" target="_blank" rel="noopener">Vixie cron</a>
+            implementation: roughly 2,500 lines of C. Eleven source
+            files. No dependencies beyond libc. No build system beyond
+            <code>make</code>. The name comes from the Greek
+            <em>chronos</em>, meaning time. The daemon has been keeping
+            it reliably for half a century.</p>
+
+        <svg id="cron-algorithm" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The cron algorithm: an infinite loop that sleeps 60 seconds, reads the crontab, checks time matches, and executes jobs. Four boxes connected in a cycle." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #cron-algorithm .ca-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #cron-algorithm .ca-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #cron-algorithm .ca-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #cron-algorithm .ca-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #cron-algorithm .ca-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #cron-algorithm .ca-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #cron-algorithm .ca-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #cron-algorithm .ca-arrow { fill: var(--accent); }
+                #cron-algorithm .ca-line { stroke: var(--accent); stroke-width: 1.5; }
+            </style>
+            <text class="ca-title" x="260" y="18" text-anchor="middle">The Entire Algorithm</text>
+            <text class="ca-sub" x="260" y="34" text-anchor="middle">Unchanged since 1975. Fifty years. One loop.</text>
+            <!-- Sleep -->
+            <rect class="ca-fill" x="20" y="60" width="110" height="50"/>
+            <rect class="ca-box-accent" x="20" y="60" width="110" height="50"/>
+            <text class="ca-accent" x="75" y="82" text-anchor="middle">Sleep</text>
+            <text class="ca-sub" x="75" y="98" text-anchor="middle">60 seconds</text>
+            <!-- Arrow -->
+            <line class="ca-line" x1="130" y1="85" x2="154" y2="85"/>
+            <polygon class="ca-arrow" points="150,79 160,85 150,91"/>
+            <!-- Read -->
+            <rect class="ca-fill" x="160" y="60" width="110" height="50"/>
+            <rect class="ca-box-accent" x="160" y="60" width="110" height="50"/>
+            <text class="ca-accent" x="215" y="82" text-anchor="middle">Read</text>
+            <text class="ca-sub" x="215" y="98" text-anchor="middle">crontab file</text>
+            <!-- Arrow -->
+            <line class="ca-line" x1="270" y1="85" x2="294" y2="85"/>
+            <polygon class="ca-arrow" points="290,79 300,85 290,91"/>
+            <!-- Match -->
+            <rect class="ca-fill" x="300" y="60" width="110" height="50"/>
+            <rect class="ca-box-accent" x="300" y="60" width="110" height="50"/>
+            <text class="ca-accent" x="355" y="82" text-anchor="middle">Match</text>
+            <text class="ca-sub" x="355" y="98" text-anchor="middle">time = schedule?</text>
+            <!-- Arrow -->
+            <line class="ca-line" x1="410" y1="85" x2="434" y2="85"/>
+            <polygon class="ca-arrow" points="430,79 440,85 430,91"/>
+            <!-- Execute -->
+            <rect class="ca-fill" x="440" y="60" width="70" height="50"/>
+            <rect class="ca-box-accent" x="440" y="60" width="70" height="50"/>
+            <text class="ca-accent" x="475" y="82" text-anchor="middle">Execute</text>
+            <text class="ca-sub" x="475" y="98" text-anchor="middle">fork + exec</text>
+            <!-- Return arrow (loop back) -->
+            <line class="ca-line" x1="475" y1="110" x2="475" y2="140"/>
+            <line class="ca-line" x1="475" y1="140" x2="75" y2="140"/>
+            <line class="ca-line" x1="75" y1="140" x2="75" y2="114"/>
+            <polygon class="ca-arrow" points="69,118 75,110 81,118"/>
+            <!-- Loop label -->
+            <text class="ca-sub" x="275" y="156" text-anchor="middle">Repeat. Forever.</text>
+            <!-- Stats -->
+            <text class="ca-sub" x="260" y="186" text-anchor="middle">2,500 lines of C &#x25A0; 11 source files &#x25A0; 0 dependencies</text>
+            <text class="ca-sub" x="260" y="202" text-anchor="middle">Runs on 96% of web servers. 100% of supercomputers.</text>
+        </svg>
+
+        <h2>The Modern Alternative</h2>
+
+        <p>You need to run a backup script at 3 AM. In 2026, the industry
+            offers you options.</p>
+
+        <p><strong>Kubernetes CronJobs.</strong> Which require: a
+            container runtime, an orchestration layer, etcd for
+            distributed state, YAML files longer than the job itself, and
+            a team to maintain it all. Marvellous progress.</p>
+
+        <p><strong>Apache Airflow.</strong> 500,000+ lines of Python.
+            DAGs, executors, schedulers, metadata databases, web
+            interfaces, plugins. For running a backup script at 3 AM.
+            Splendid.</p>
+
+        <p><strong>cron.</strong> A text file.</p>
+
+        <svg id="cron-comparison" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Size comparison: Vixie cron is 2,500 lines of C. Apache Airflow is 500,000+ lines of Python. Kubernetes CronJobs require the entire Kubernetes stack. All three run a backup script at 3 AM." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #cron-comparison .cc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #cron-comparison .cc-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #cron-comparison .cc-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #cron-comparison .cc-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #cron-comparison .cc-bar-hero { fill: var(--accent); opacity: 0.85; }
+                #cron-comparison .cc-bar-ref { fill: var(--muted); opacity: 0.3; }
+                #cron-comparison .cc-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+            <text class="cc-title" x="260" y="18" text-anchor="middle">All Three Run a Backup at 3 AM</text>
+            <text class="cc-sub" x="260" y="34" text-anchor="middle">Lines of code required to schedule a job</text>
+            <!-- cron -->
+            <rect class="cc-bar-hero" x="160" y="56" width="2" height="24" rx="1"/>
+            <text class="cc-label" x="20" y="72">Vixie cron</text>
+            <text class="cc-sub" x="170" y="72">2,500 LOC (C)</text>
+            <!-- Airflow -->
+            <rect class="cc-bar-ref" x="160" y="92" width="360" height="24" rx="2"/>
+            <text class="cc-label" x="20" y="108">Apache Airflow</text>
+            <text class="cc-sub" x="170" y="108">500,000+ LOC (Python)</text>
+            <!-- Kubernetes -->
+            <rect class="cc-bar-ref" x="160" y="128" width="360" height="24" rx="2"/>
+            <text class="cc-label" x="20" y="144">K8s CronJobs</text>
+            <text class="cc-sub" x="170" y="144">Kubernetes + etcd + runtime + YAML</text>
+            <!-- Scale -->
+            <line class="cc-divider" x1="160" y1="168" x2="520" y2="168"/>
+            <text class="cc-sub" x="160" y="180">0</text>
+            <text class="cc-sub" x="520" y="180" text-anchor="end">~500K LOC</text>
+        </svg>
+
+        <h2>The Discipline of Knowing When to Stop</h2>
+
+        <p>cron runs on 96% of the world's web servers. All 500 of the
+            world's fastest supercomputers. Every FreeBSD, Linux, and
+            macOS machine. It has done this for five decades without a
+            rewrite, without a venture-funded pivot, without a conference
+            talk about "next-generation scheduling."</p>
+
+        <p>I have been a FreeBSD administrator for over two decades.
+            Every morning, cron runs my log rotation. Every night, my ZFS
+            snapshots. Every Sunday, my off-site backups. It has never
+            failed to wake up. It has never corrupted its state. It has
+            never required a migration guide. It simply does its job,
+            every minute, without complaint.</p>
+
+        <p>Rather British, come to think of it.</p>
+
+        <p>Some problems were solved correctly the first time. The beauty
+            is not in the elegance of the code (though the code is
+            elegant). It is in the decision, made fifty years ago and
+            honoured every year since, that the algorithm was sufficient
+            and nothing more needed adding.</p>
+
+        <blockquote>
+            <p>The discipline is not in what you build. It is in knowing
+                when to stop.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Technical data.</strong>
+                <a href="https://en.wikipedia.org/wiki/Cron" target="_blank" rel="noopener">cron</a>
+                (from Greek <em>chronos</em>, time). First written by Ken
+                Thompson at Bell Labs, 1975. Multi-user rewrite by
+                <a href="https://en.wikipedia.org/wiki/Paul_Vixie" target="_blank" rel="noopener">Paul Vixie</a>
+                in 1987. Vixie cron:
+                <a href="https://github.com/vixie/cron" target="_blank" rel="noopener">~2,500 lines of C</a>,
+                11 source files, zero dependencies beyond libc. Vixie
+                also created BIND (the DNS server that runs a third of
+                the internet) and was inducted into the Internet Hall of
+                Fame in 2014. The five-field time expression (minute,
+                hour, day, month, weekday) has not changed since 1987.
+                The algorithm has not changed since 1975.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

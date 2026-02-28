@@ -73,6 +73,16 @@ local pages = {
     { loc = "/blog/bytes-of-art-clean-slate", priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/reads-the-five-prefixes",  priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/capsicum-vs-seccomp",     priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-zfs",     priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-openssh", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-rsync",   priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-ffmpeg",  priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-jails-replacement",    priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-rust-replacement",     priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/bytes-of-art-scene-is-dead", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-linux-compatibility-layer", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/agile-estimation-theatre", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-cron", priority = "0.7", changefreq = "yearly" },
 }
 
 function route()
