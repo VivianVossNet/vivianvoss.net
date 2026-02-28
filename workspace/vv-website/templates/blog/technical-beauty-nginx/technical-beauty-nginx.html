@@ -1,0 +1,519 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: nginx &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Igor Sysoev started building nginx in 2002 because Apache's thread-per-connection model was architecturally wrong. Event-driven, pure C, no framework. Handles 10,000 connections on a single process. Serves 34 per cent of all websites. F5 Networks paid $670 million. Twenty years later: still the correct architecture.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-nginx{( endslot )}
+
+{( slot og-title )}Technical Beauty: nginx &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Igor Sysoev built nginx because Apache was architecturally wrong. Event-driven, pure C, no framework. 10,000 connections on one process. 34 per cent of all websites. $670M acquisition. Still the correct architecture.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: nginx",
+    "datePublished": "2025-12-30",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-nginx",
+    "description": "Igor Sysoev started building nginx in 2002 because Apache's thread-per-connection model was architecturally wrong. Event-driven, pure C, no framework. Handles 10,000 connections on a single process. Serves 34 per cent of all websites. F5 Networks paid $670 million. Twenty years later: still the correct architecture.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2025-12-30">30 December 2025</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: nginx</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">nginx</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 03</p>
+
+        <p>In 1999, a software engineer named
+            <a href="https://en.wikipedia.org/wiki/Dan_Kegel" target="_blank" rel="noopener">Dan Kegel</a>
+            published a web page titled
+            <a href="https://www.kegel.com/c10k.html" target="_blank" rel="noopener">&#x201C;The C10K Problem.&#x201D;</a>
+            The question was straightforward: can a single server handle
+            ten thousand concurrent connections? The answer, for every web
+            server in production at the time, was no. Not &#x201C;no, the hardware
+            is too slow.&#x201D; The hardware was fine. The answer was &#x201C;no,
+            the architecture is wrong.&#x201D;</p>
+
+        <p>Five years later, a Russian developer named
+            <a href="https://en.wikipedia.org/wiki/Igor_Sysoev" target="_blank" rel="noopener">Igor Sysoev</a>
+            published a web server that answered the question with a yes, a shrug,
+            and rather elegant C.</p>
+
+        <h2>The Problem</h2>
+
+        <p><a href="https://httpd.apache.org/" target="_blank" rel="noopener">Apache</a>
+            was the web server. In 1999, it held over 60 per cent market share
+            and deserved most of it. The httpd project had built reliable,
+            well-documented, extensible server software that ran the early web.
+            The problem was not quality. The problem was concurrency.</p>
+
+        <p>Apache&#x2019;s original model, the
+            <a href="https://httpd.apache.org/docs/2.4/mod/prefork.html" target="_blank" rel="noopener">prefork MPM</a>,
+            spawned one process per connection. A process with its own
+            memory space, its own file descriptors, its own stack. For
+            fifty concurrent users, this was perfectly reasonable. For five
+            hundred, it was expensive. For ten thousand, it was arithmetic:
+            ten thousand processes, each consuming several megabytes of RAM,
+            each requiring a context switch from the kernel scheduler. The
+            server did not run out of bandwidth. It ran out of processes.
+            Or, more precisely, it ran out of the fiction that processes
+            are free.</p>
+
+        <p>The
+            <a href="https://httpd.apache.org/docs/2.4/mod/worker.html" target="_blank" rel="noopener">worker MPM</a>
+            improved matters by using threads instead of processes. Threads
+            share memory. Threads are lighter. But a thread still represents
+            a dedicated execution context for a single connection, and a
+            connection that is waiting for the client to send the next
+            byte is a thread that is doing nothing whilst occupying a
+            scheduler slot. The web is not computation-bound. The web is
+            I/O-bound. Most of the time, a web server is waiting. Apache
+            assigned a thread to each act of waiting. nginx assigned zero.</p>
+
+        <!-- SVG 1: Apache thread-per-connection vs nginx event loop architecture -->
+        <svg id="nginx-arch" viewBox="0 0 520 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Architecture comparison. Apache: one thread per connection, each thread blocked waiting on I/O. nginx: single event loop, one process multiplexes thousands of connections via epoll/kqueue. Non-blocking I/O eliminates idle threads." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #nginx-arch .nx-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nginx-arch .nx-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nginx-arch .nx-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #nginx-arch .nx-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #nginx-arch .nx-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                #nginx-arch .nx-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #nginx-arch .nx-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #nginx-arch .nx-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                #nginx-arch .nx-fill-dim { fill: var(--muted); opacity: 0.06; rx: 3; }
+                #nginx-arch .nx-idle { fill: var(--muted); opacity: 0.15; rx: 2; }
+                #nginx-arch .nx-active { fill: var(--accent); opacity: 0.7; rx: 2; }
+                #nginx-arch .nx-line { stroke: var(--border); stroke-width: 0.5; }
+                #nginx-arch .nx-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 3; }
+                #nginx-arch .nx-arrow { fill: var(--muted); }
+            </style>
+
+            <text class="nx-title" x="260" y="20" text-anchor="middle">Connection Handling: Two Architectures</text>
+
+            <!-- Apache section -->
+            <text class="nx-accent" x="30" y="50">Apache (prefork / worker)</text>
+            <text class="nx-sub" x="30" y="64">One thread per connection. Blocked threads shown in grey.</text>
+
+            <rect class="nx-fill-dim" x="30" y="74" width="460" height="120"/>
+            <rect class="nx-box" x="30" y="74" width="460" height="120"/>
+
+            <!-- Thread boxes: 8 threads, most idle -->
+            <rect class="nx-idle" x="46" y="90" width="44" height="36"/>
+            <text class="nx-mono" x="68" y="112" text-anchor="middle">T1</text>
+            <text class="nx-sub" x="68" y="126" text-anchor="middle">idle</text>
+
+            <rect class="nx-idle" x="100" y="90" width="44" height="36"/>
+            <text class="nx-mono" x="122" y="112" text-anchor="middle">T2</text>
+            <text class="nx-sub" x="122" y="126" text-anchor="middle">idle</text>
+
+            <rect class="nx-active" x="154" y="90" width="44" height="36"/>
+            <text class="nx-mono" x="176" y="112" text-anchor="middle">T3</text>
+            <text class="nx-sub" x="176" y="126" text-anchor="middle">work</text>
+
+            <rect class="nx-idle" x="208" y="90" width="44" height="36"/>
+            <text class="nx-mono" x="230" y="112" text-anchor="middle">T4</text>
+            <text class="nx-sub" x="230" y="126" text-anchor="middle">idle</text>
+
+            <rect class="nx-idle" x="262" y="90" width="44" height="36"/>
+            <text class="nx-mono" x="284" y="112" text-anchor="middle">T5</text>
+            <text class="nx-sub" x="284" y="126" text-anchor="middle">idle</text>
+
+            <rect class="nx-idle" x="316" y="90" width="44" height="36"/>
+            <text class="nx-mono" x="338" y="112" text-anchor="middle">T6</text>
+            <text class="nx-sub" x="338" y="126" text-anchor="middle">idle</text>
+
+            <rect class="nx-active" x="370" y="90" width="44" height="36"/>
+            <text class="nx-mono" x="392" y="112" text-anchor="middle">T7</text>
+            <text class="nx-sub" x="392" y="126" text-anchor="middle">work</text>
+
+            <rect class="nx-idle" x="424" y="90" width="44" height="36"/>
+            <text class="nx-mono" x="446" y="112" text-anchor="middle">T8</text>
+            <text class="nx-sub" x="446" y="126" text-anchor="middle">idle</text>
+
+            <text class="nx-sub" x="260" y="170" text-anchor="middle">8 connections = 8 threads. 6 idle, burning memory. 10,000 = collapse.</text>
+            <text class="nx-sub" x="260" y="184" text-anchor="middle">Each thread: ~8 MB stack. 10K threads = 80 GB. The maths is unkind.</text>
+
+            <!-- nginx section -->
+            <text class="nx-accent" x="30" y="220">nginx (event-driven)</text>
+            <text class="nx-sub" x="30" y="234">One process, one event loop. Connections multiplexed via epoll/kqueue.</text>
+
+            <rect class="nx-fill" x="30" y="244" width="460" height="120"/>
+            <rect class="nx-box" x="30" y="244" width="460" height="120"/>
+
+            <!-- Single event loop box -->
+            <rect class="nx-active" x="180" y="260" width="160" height="40"/>
+            <text class="nx-label" x="260" y="276" text-anchor="middle" style="fill: var(--text)">Event Loop</text>
+            <text class="nx-mono" x="260" y="292" text-anchor="middle">epoll / kqueue</text>
+
+            <!-- Connection indicators fanning out below -->
+            <text class="nx-mono" x="70" y="330" text-anchor="middle">C1</text>
+            <text class="nx-mono" x="110" y="330" text-anchor="middle">C2</text>
+            <text class="nx-mono" x="150" y="330" text-anchor="middle">C3</text>
+            <text class="nx-mono" x="190" y="330" text-anchor="middle">...</text>
+            <text class="nx-mono" x="230" y="330" text-anchor="middle">C4k</text>
+            <text class="nx-mono" x="280" y="330" text-anchor="middle">...</text>
+            <text class="nx-mono" x="330" y="330" text-anchor="middle">C8k</text>
+            <text class="nx-mono" x="380" y="330" text-anchor="middle">...</text>
+            <text class="nx-accent" x="440" y="330" text-anchor="middle">C10k</text>
+
+            <text class="nx-sub" x="260" y="354" text-anchor="middle">10,000 connections. One process. No idle threads. No wasted memory.</text>
+
+            <!-- Bottom annotation -->
+            <line class="nx-divider" x1="30" y1="380" x2="490" y2="380"/>
+            <text class="nx-note" x="260" y="400" text-anchor="middle">Apache asked: how many threads can we afford?</text>
+            <text class="nx-note" x="260" y="414" text-anchor="middle">nginx asked: why do we need threads at all?</text>
+        </svg>
+
+        <h2>The Man</h2>
+
+        <p>Igor Sysoev was a system administrator in Moscow. Not a computer
+            scientist at a university. Not a researcher at a corporation. A
+            sysadmin who ran
+            <a href="https://www.rambler.ru/" target="_blank" rel="noopener">Rambler</a>,
+            one of the largest Russian-language internet portals, and
+            watched Apache buckle under the load. He began writing nginx
+            in 2002. He released it publicly in October 2004. The name
+            stands for nothing in particular (it is sometimes expanded to
+            &#x201C;engine x&#x201D; but Sysoev has been charmingly
+            non-committal about this). The pronunciation is &#x201C;engine-x,&#x201D;
+            not &#x201C;en-jinx,&#x201D; though one suspects the latter
+            would have been rather apt for Apache&#x2019;s market share.</p>
+
+        <p>Sysoev did not build nginx to compete with Apache. He built it
+            because Apache could not serve Rambler&#x2019;s traffic. The
+            motivation was not ideological. It was operational. The most
+            enduring software tends to begin this way: someone has an actual
+            problem, writes an actual solution, and discovers that the
+            problem is universal.</p>
+
+        <h2>The Architecture</h2>
+
+        <p>nginx&#x2019;s architecture is an event loop. A single worker
+            process (or a small, fixed number of workers, typically one per
+            CPU core) handles all connections. When a connection arrives,
+            the worker registers it with the operating system&#x2019;s
+            event notification mechanism:
+            <a href="https://man.freebsd.org/cgi/man.cgi?query=kqueue" target="_blank" rel="noopener"><code>kqueue</code></a>
+            on FreeBSD,
+            <a href="https://man7.org/linux/man-pages/man7/epoll.7.html" target="_blank" rel="noopener"><code>epoll</code></a>
+            on Linux. The worker then moves on. It does not wait. It does
+            not block. It does not allocate a thread to sit idle until
+            the client sends another byte. When data arrives on any
+            registered connection, the kernel notifies the worker, which
+            processes the data and moves on again.</p>
+
+        <p>This is not a novel idea. Event-driven I/O existed long before
+            nginx. The
+            <a href="https://en.wikipedia.org/wiki/Reactor_pattern" target="_blank" rel="noopener">reactor pattern</a>
+            was documented in the 1990s. What Sysoev did was apply it
+            to a production web server with the discipline to avoid the
+            traps that had ensnared earlier attempts. No callbacks into
+            user-supplied modules that might block. No thread pools hidden
+            behind the event loop &#x201C;just in case.&#x201D; No
+            abstraction layers that reintroduce the overhead the event
+            model was meant to eliminate. Pure, uncompromising
+            non-blocking I/O from the socket to the response.</p>
+
+        <p>The result: a single nginx worker process can handle tens of
+            thousands of simultaneous connections with a memory footprint
+            measured in megabytes. Not gigabytes. Megabytes. An Apache
+            prefork configuration serving the same number of connections
+            would require a thread count that exceeds the kernel&#x2019;s
+            scheduler limits before it exceeds the available RAM. The
+            C10K problem was not solved by faster hardware or cleverer
+            thread pools. It was solved by refusing to create threads in
+            the first place.</p>
+
+        <h2>The C</h2>
+
+        <p>nginx is written in
+            <a href="https://en.wikipedia.org/wiki/C_(programming_language)" target="_blank" rel="noopener">C</a>.
+            Not C++. Not Rust. Not Go. C. The language that trusts you
+            with pointers, expects you to manage your own memory, and
+            offers precisely zero opinions about how you structure your
+            programme. Sysoev chose C because C is the language of systems
+            programming, and a web server is a systems programme that
+            happens to speak HTTP.</p>
+
+        <p>The codebase is clean. Not &#x201C;clean for C&#x201D; (the
+            qualifier that damns with faint praise). Clean. The naming
+            conventions are consistent. The memory management is
+            explicit and auditable. The module system is a set of function
+            pointers and configuration callbacks, not a framework. There
+            is no runtime. There is no garbage collector. There is no
+            interpreter. There is a binary, a configuration file, and
+            the operating system. The dependency list is: libc, and
+            whatever TLS library you choose to compile against. That is
+            the entire supply chain.</p>
+
+        <h2>The Numbers</h2>
+
+        <p>According to
+            <a href="https://www.netcraft.com/blog/" target="_blank" rel="noopener">Netcraft</a>
+            surveys, nginx serves approximately 34 per cent of all
+            websites globally. Apache has declined to roughly 30 per cent.
+            The crossover happened in the mid-2010s and the gap has
+            widened since. This is not a story of marketing. nginx had
+            no marketing budget. It had no venture capital (until much
+            later). It had no corporate sponsor. It had a binary that
+            handled more connections with less memory, and word travels
+            in operations teams.</p>
+
+        <!-- SVG 2: Web server market share timeline -->
+        <svg id="nginx-share" viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Web server market share timeline from 2004 to 2025. Apache starts at 68 per cent and declines to 30 per cent. nginx starts near zero and rises to 34 per cent. The crossover occurs around 2019." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #nginx-share .ns-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nginx-share .ns-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nginx-share .ns-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #nginx-share .ns-value { font: 700 10px/1 ui-monospace, monospace; fill: var(--accent); }
+                #nginx-share .ns-value-dim { font: 700 10px/1 ui-monospace, monospace; fill: var(--muted); }
+                #nginx-share .ns-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #nginx-share .ns-year { font: 400 10px/1 ui-monospace, monospace; fill: var(--muted); }
+                #nginx-share .ns-axis { stroke: var(--border); stroke-width: 1; }
+                #nginx-share .ns-grid { stroke: var(--border); stroke-width: 0.3; stroke-dasharray: 2 3; }
+                #nginx-share .ns-line-nginx { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+                #nginx-share .ns-line-apache { fill: none; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 6 3; }
+                #nginx-share .ns-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 3; }
+                #nginx-share .ns-dot { fill: var(--accent); }
+                #nginx-share .ns-dot-dim { fill: var(--muted); }
+                #nginx-share .ns-cross { stroke: var(--accent); stroke-width: 0.5; stroke-dasharray: 2 2; opacity: 0.5; }
+            </style>
+
+            <text class="ns-title" x="260" y="20" text-anchor="middle">Web Server Market Share (active sites)</text>
+            <text class="ns-sub" x="260" y="36" text-anchor="middle">Source: Netcraft surveys, 2004&#x2013;2025</text>
+
+            <!-- Y-axis -->
+            <line class="ns-axis" x1="60" y1="56" x2="60" y2="256"/>
+            <!-- X-axis -->
+            <line class="ns-axis" x1="60" y1="256" x2="490" y2="256"/>
+
+            <!-- Y-axis labels -->
+            <text class="ns-sub" x="55" y="60" text-anchor="end">70%</text>
+            <text class="ns-sub" x="55" y="100" text-anchor="end">55%</text>
+            <text class="ns-sub" x="55" y="140" text-anchor="end">40%</text>
+            <text class="ns-sub" x="55" y="180" text-anchor="end">25%</text>
+            <text class="ns-sub" x="55" y="220" text-anchor="end">10%</text>
+            <text class="ns-sub" x="55" y="256" text-anchor="end">0%</text>
+
+            <!-- Grid lines -->
+            <line class="ns-grid" x1="60" y1="100" x2="490" y2="100"/>
+            <line class="ns-grid" x1="60" y1="140" x2="490" y2="140"/>
+            <line class="ns-grid" x1="60" y1="180" x2="490" y2="180"/>
+            <line class="ns-grid" x1="60" y1="220" x2="490" y2="220"/>
+
+            <!-- X-axis labels (years) -->
+            <text class="ns-year" x="60" y="272" text-anchor="middle">2004</text>
+            <text class="ns-year" x="143" y="272" text-anchor="middle">2008</text>
+            <text class="ns-year" x="224" y="272" text-anchor="middle">2012</text>
+            <text class="ns-year" x="305" y="272" text-anchor="middle">2016</text>
+            <text class="ns-year" x="387" y="272" text-anchor="middle">2020</text>
+            <text class="ns-year" x="490" y="272" text-anchor="middle">2025</text>
+
+            <!-- Apache line (declining from ~68% to ~30%) -->
+            <!-- 70%=56, 0%=256. Range=200px for 70%. Per %: 200/70=2.857px -->
+            <!-- Apache: 2004=68%, 2008=50%, 2012=42%, 2016=35%, 2019=32%, 2020=31%, 2025=30% -->
+            <polyline class="ns-line-apache" points="60,62 143,105 224,130 305,162 387,170 490,175"/>
+            <circle class="ns-dot-dim" cx="60" cy="62" r="3"/>
+            <circle class="ns-dot-dim" cx="490" cy="175" r="3"/>
+
+            <!-- nginx line (rising from ~0% to ~34%) -->
+            <!-- nginx: 2004=0%, 2008=1%, 2012=10%, 2016=19%, 2019=30%, 2020=32%, 2025=34% -->
+            <polyline class="ns-line-nginx" points="60,256 143,253 224,227 305,202 387,165 490,159"/>
+            <circle class="ns-dot" cx="60" cy="256" r="3"/>
+            <circle class="ns-dot" cx="490" cy="159" r="3"/>
+
+            <!-- Crossover indicator -->
+            <line class="ns-cross" x1="395" y1="56" x2="395" y2="256"/>
+            <text class="ns-sub" x="395" y="52" text-anchor="middle">crossover</text>
+
+            <!-- Legend -->
+            <line x1="80" y1="290" x2="110" y2="290" stroke="var(--accent)" stroke-width="2.5"/>
+            <text class="ns-label" x="116" y="294">nginx</text>
+            <text class="ns-value" x="155" y="294">~34%</text>
+
+            <line x1="200" y1="290" x2="230" y2="290" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 3"/>
+            <text class="ns-label" x="236" y="294">Apache</text>
+            <text class="ns-value-dim" x="282" y="294">~30%</text>
+
+            <!-- Bottom annotation -->
+            <line class="ns-divider" x1="30" y1="310" x2="490" y2="310"/>
+            <text class="ns-note" x="260" y="330" text-anchor="middle">No marketing budget. No venture capital. Just fewer context switches.</text>
+        </svg>
+
+        <p>In 2011, Sysoev co-founded
+            <a href="https://en.wikipedia.org/wiki/Nginx" target="_blank" rel="noopener">Nginx, Inc.</a>
+            to provide commercial support and develop
+            <a href="https://www.nginx.com/products/nginx/" target="_blank" rel="noopener">NGINX Plus</a>.
+            In 2019,
+            <a href="https://www.f5.com/" target="_blank" rel="noopener">F5 Networks</a>
+            acquired the company for
+            <a href="https://www.f5.com/company/news/press-releases/f5-acquires-nginx" target="_blank" rel="noopener">$670 million</a>.
+            Six hundred and seventy million dollars for a web server written
+            by a sysadmin in Moscow who was irritated by Apache. One
+            suspects the return on irritation has rarely been higher.</p>
+
+        <h2>The Roles</h2>
+
+        <p>nginx is described as a web server, which is accurate in the
+            same way that describing a Swiss Army knife as a blade is
+            accurate. nginx serves static files. It also operates as a
+            <a href="https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/" target="_blank" rel="noopener">reverse proxy</a>,
+            forwarding requests to upstream application servers. It
+            operates as a
+            <a href="https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/" target="_blank" rel="noopener">load balancer</a>,
+            distributing traffic across multiple backends. It operates as
+            an HTTP cache, a TLS terminator, a
+            <a href="https://docs.nginx.com/nginx/admin-guide/mail-proxy/mail-proxy/" target="_blank" rel="noopener">mail proxy</a>,
+            a gzip compressor, a rate limiter, and a WebSocket proxy. All
+            from the same binary. All configured in the same file. All
+            running in the same event loop.</p>
+
+        <p>The typical production deployment in 2025 does not use nginx
+            to serve static files to end users (though it does that
+            superbly). It uses nginx as the front door: terminating TLS,
+            compressing responses, caching assets, rate-limiting abusive
+            clients, and proxying clean requests to whatever application
+            server sits behind it. The application server speaks to the
+            database. nginx speaks to the internet. The division of labour
+            is clean, and nginx handles its side of the arrangement with
+            the quiet efficiency of a butler who has seen everything and
+            is surprised by nothing.</p>
+
+        <h2>The Configuration</h2>
+
+        <p>nginx&#x2019;s configuration language is its own invention.
+            Not YAML. Not JSON. Not XML. Not TOML. A bespoke syntax of
+            directives and blocks that reads like a cross between a shell
+            script and a declaration of intent:</p>
+
+        <pre><code>server {
+    listen       80;
+    server_name  example.com;
+
+    location / {
+        proxy_pass  http://backend;
+    }
+}</code></pre>
+
+        <p>Seven lines. A complete reverse proxy. The configuration is
+            declarative: you state what you want, not how to achieve it.
+            There are no loops, no conditionals (well, there is
+            <code>if</code>, but the
+            <a href="https://www.nginx.com/resources/wiki/start/topics/depth/ifisevil/" target="_blank" rel="noopener">official documentation</a>
+            famously warns that &#x201C;if is evil&#x201D;), no
+            imperative logic. This is not a programming language. It is a
+            description of the server you want, written in a syntax that
+            happens to be machine-readable. The machine reads it once at
+            startup and does precisely what you described.</p>
+
+        <p>The module system follows the same philosophy. nginx modules
+            are compiled into the binary (or, since 1.9.11, loaded
+            dynamically). They are not runtime plugins. They are not
+            scripts. They are C code that registers callbacks at specific
+            phases of request processing. The overhead of a module is the
+            overhead of a function pointer dereference. In a world where
+            &#x201C;extensibility&#x201D; typically means &#x201C;an
+            interpreter embedded in your server,&#x201D; nginx&#x2019;s
+            approach is refreshingly mechanical.</p>
+
+        <h2>The Event MPM Postscript</h2>
+
+        <p>Apache did eventually address the C10K problem. The
+            <a href="https://httpd.apache.org/docs/2.4/mod/event.html" target="_blank" rel="noopener">Event MPM</a>,
+            introduced experimentally in Apache 2.2 and stabilised
+            in 2.4, uses a hybrid model: an event loop for keep-alive
+            connections, threads for request processing. It is a genuine
+            improvement. It handles concurrency far better than prefork
+            or worker ever did. It arrived in 2012.</p>
+
+        <p>By 2012, nginx had been in production for eight years. It had
+            already solved the problem. It had already proven the architecture.
+            It had already captured the mindshare of every operations engineer
+            who had benchmarked both servers and noticed that one of them
+            used a fraction of the memory. Apache&#x2019;s Event MPM is
+            the right answer, delivered after the exam has been marked and
+            the results published. Technically correct. Strategically
+            irrelevant. The web had moved on, and it had moved on behind
+            nginx.</p>
+
+        <h2>The Philosophy</h2>
+
+        <p>What makes nginx technically beautiful is the same thing that
+            makes <code>sed</code>, <code>curl</code>, and WireGuard beautiful:
+            a root-cause analysis followed by a root-cause elimination. Sysoev
+            did not optimise Apache. He did not write a faster thread scheduler.
+            He did not propose a patch to the prefork MPM that squeezed another
+            ten per cent from the existing architecture. He looked at the
+            architecture, identified the structural flaw (one execution context
+            per connection), and built a server that did not have it.</p>
+
+        <p>This is the difference between optimisation and architecture.
+            Optimisation makes the wrong thing faster. Architecture
+            replaces the wrong thing with the right thing. Apache spent a
+            decade optimising thread pools. nginx spent 2002 to 2004
+            eliminating them. Twenty years later, the event-driven model
+            is not merely the dominant architecture for web servers. It is
+            the dominant architecture for network software: Node.js, HAProxy,
+            <a href="https://www.envoyproxy.io/" target="_blank" rel="noopener">Envoy</a>,
+            <a href="https://caddyserver.com/" target="_blank" rel="noopener">Caddy</a>
+            (via Go&#x2019;s goroutines, which are green threads on an event
+            loop). Every modern proxy, every modern load balancer, every modern
+            API gateway uses the pattern that nginx popularised. Not because
+            Sysoev invented the event loop. Because he proved, at scale, in
+            production, on one of Russia&#x2019;s busiest websites, that it
+            was the correct architecture for serving the web.</p>
+
+        <blockquote>
+            <p>Pure C. No framework. One binary. Event-driven since 2004.
+                The C10K problem was never a hardware problem. It was an
+                architecture problem. Sysoev solved it by refusing to
+                allocate a thread for the act of waiting. Twenty years
+                later, the industry agrees. Root-cause elimination beats
+                optimisation. Every time.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The $670 million sysadmin</strong></p>
+            <p>nginx currently serves approximately 34 per cent of all active
+                websites (Netcraft, 2025). The open-source project has no
+                external dependencies beyond libc and an optional TLS library.
+                A single worker process handles upwards of 10,000 concurrent
+                connections. F5 Networks acquired Nginx, Inc. for $670 million
+                in March 2019. Igor Sysoev stepped down from the project in
+                January 2022 after twenty years. The server he built because
+                Apache could not handle Rambler&#x2019;s traffic now handles
+                a third of all traffic on the internet. Sources:
+                <a href="https://nginx.org/" target="_blank" rel="noopener">nginx.org</a>,
+                <a href="https://www.kegel.com/c10k.html" target="_blank" rel="noopener">C10K problem</a>,
+                <a href="https://www.netcraft.com/blog/" target="_blank" rel="noopener">Netcraft surveys</a>,
+                <a href="https://www.f5.com/company/news/press-releases/f5-acquires-nginx" target="_blank" rel="noopener">F5 acquisition</a>,
+                <a href="https://en.wikipedia.org/wiki/Nginx" target="_blank" rel="noopener">Wikipedia</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

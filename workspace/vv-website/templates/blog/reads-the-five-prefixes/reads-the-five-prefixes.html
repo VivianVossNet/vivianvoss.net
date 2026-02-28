@@ -1,0 +1,571 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}READS: The Five Prefixes &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="OOCSS arrived in 2009. BEM arrived in 2010. Both produce identical specificity (0,1,0). One reads like a sentence. The other reads like a German compound noun. READS: REadable Attribute Description Syntax, an OOCSS dialect with five prefixes.">
+{( endslot )}
+
+{( slot canonical )}/blog/reads-the-five-prefixes{( endslot )}
+
+{( slot og-title )}READS: The Five Prefixes &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}OOCSS arrived in 2009. BEM arrived in 2010. Both produce identical specificity. One reads like a sentence. READS: five prefixes, one meaning each.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "READS: The Five Prefixes",
+    "datePublished": "2026-02-05",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/reads-the-five-prefixes",
+    "description": "OOCSS arrived in 2009. BEM arrived in 2010. Both produce identical specificity (0,1,0). One reads like a sentence. The other reads like a German compound noun. READS: REadable Attribute Description Syntax, an OOCSS dialect with five prefixes.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-05">5 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>READS: The Five Prefixes</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">css</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 02</p>
+
+        <blockquote>
+            <p>&#x201C;Read it, understand it. No derivation required.&#x201D;</p>
+        </blockquote>
+
+        <p>In 2009,
+            <a href="https://www.slideshare.net/stubbornella/object-oriented-css" target="_blank" rel="noopener">Nicole Sullivan</a>
+            presented Object-Oriented CSS at a Yahoo engineering talk. The
+            premise was startlingly simple: separate structure from skin,
+            separate container from content. Write classes that describe
+            what a thing <em>is</em>, not where it <em>lives</em>. The DOM
+            becomes a composition of small, reusable objects rather than a
+            tree of deeply nested, location-dependent rules.</p>
+
+        <p>One year later, in 2010, Yandex published
+            <a href="https://getbem.com/" target="_blank" rel="noopener">BEM</a>:
+            Block, Element, Modifier. Rather more aggressive marketing.
+            Conference talks. Blog posts. Official documentation with diagrams.
+            The message was clear: specificity wars are over, because we have
+            invented underscores.</p>
+
+        <p>Guess which one won the popularity contest.</p>
+
+        <p>Not the clever one. The loud one. Marvellous.</p>
+
+        <h2>The Specificity Myth</h2>
+
+        <p>BEM's central claim was that it &#x201C;prevents specificity
+            wars.&#x201D; This is worth examining, because it is the
+            foundational argument that justified fifteen years of
+            <code>card__footer-btn--primary</code> chains polluting every
+            DOM in the industry.</p>
+
+        <p>Consider the specificity of a BEM selector:</p>
+
+<pre><code>.card__footer-btn--primary { color: coral; }
+/* Specificity: 0,1,0 */</code></pre>
+
+        <p>Now consider the specificity of an OOCSS selector:</p>
+
+<pre><code>.like-primary { color: coral; }
+/* Specificity: 0,1,0 */</code></pre>
+
+        <p>Identical. <code>(0,1,0)</code> in both cases. A single class
+            selector is a single class selector, regardless of how many
+            hyphens and underscores one embeds within it. BEM does not
+            lower specificity. It does not raise specificity. It produces
+            precisely the same specificity as any other single-class
+            methodology, but with considerably longer strings.</p>
+
+        <p>The &#x201C;specificity prevention&#x201D; was never a technical
+            mechanism. It was a social contract: &#x201C;If everyone uses
+            only single classes, no one escalates.&#x201D; Which is true, and
+            also true of OOCSS, SMACSS, Atomic CSS, and simply agreeing not
+            to use IDs for styling. The contract is the solution. The naming
+            convention is decoration.</p>
+
+        <p>In 2026, of course, the actual solution to specificity conflicts
+            is
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer" target="_blank" rel="noopener"><code>@layer</code></a>.
+            Layer order outranks specificity entirely. But that is the subject of
+            <a href="/blog/the-specificity-war">another episode</a>.</p>
+
+        <h2>What Sullivan Actually Said</h2>
+
+        <p><a href="https://github.com/stubbornella/oocss/wiki" target="_blank" rel="noopener">OOCSS</a>
+            introduced two principles that remain as sound today as they were
+            in 2009:</p>
+
+        <ol>
+            <li><strong>Separate structure from skin.</strong> Layout
+                (grid, flex, spacing) belongs in one set of classes. Visual
+                appearance (colour, shadow, border-radius) belongs in
+                another. A card's structure does not change when the theme
+                does.</li>
+            <li><strong>Separate container from content.</strong> A heading
+                inside a sidebar should not be styled differently merely
+                because it lives inside a sidebar. The heading's classes
+                describe <em>what</em> it is, not <em>where</em> it is.</li>
+        </ol>
+
+        <p>These are architectural principles. They say nothing about
+            underscores, double hyphens, or encoding the entire DOM tree
+            into a class name. Sullivan was describing how to think about
+            CSS objects. BEM was describing how to <em>spell</em> them.</p>
+
+        <h2>The Five Prefixes</h2>
+
+        <p>READS (REadable Attribute Description Syntax) is an OOCSS
+            dialect that takes Sullivan's principles and gives them a
+            vocabulary. Five prefixes. One meaning each. No ambiguity.</p>
+
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The five READS prefixes shown as a visual system: as (structure), like (variant), show (feature toggle), has (capability), is (state), with examples for each prefix and arrows indicating the reading order from semantic identity through structure, variant, feature, to state." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .reads-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .reads-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .reads-accent { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .reads-code { font: 400 11px/1 ui-monospace, monospace; fill: var(--muted); }
+                .reads-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .reads-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .reads-fill { fill: var(--accent); opacity: 0.04; rx: 3; }
+                .reads-fill-accent { fill: var(--accent); opacity: 0.10; rx: 3; }
+                .reads-arrow { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#reads-arrow-head); }
+                .reads-num { font: 700 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); opacity: 0.5; }
+            </style>
+            <defs>
+                <marker id="reads-arrow-head" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+                </marker>
+            </defs>
+
+            <text class="reads-label" x="260" y="18" text-anchor="middle">READS: The Five Prefixes</text>
+            <text class="reads-sub" x="260" y="34" text-anchor="middle">semantic &#x2192; structure &#x2192; variant &#x2192; feature &#x2192; state</text>
+
+            <!-- 1. as-* -->
+            <text class="reads-num" x="20" y="72">1</text>
+            <rect class="reads-fill-accent" x="36" y="50" width="474" height="44"/>
+            <rect class="reads-box-accent" x="36" y="50" width="474" height="44"/>
+            <text class="reads-accent" x="50" y="70">as-*</text>
+            <text class="reads-label" x="120" y="70">Structure</text>
+            <text class="reads-code" x="50" y="86">as-grid   as-stack   as-sidebar   as-btn   as-card</text>
+
+            <!-- 2. like-* -->
+            <text class="reads-num" x="20" y="126">2</text>
+            <rect class="reads-fill" x="36" y="104" width="474" height="44"/>
+            <rect class="reads-box" x="36" y="104" width="474" height="44"/>
+            <text class="reads-accent" x="50" y="124">like-*</text>
+            <text class="reads-label" x="120" y="124">Variant</text>
+            <text class="reads-code" x="50" y="140">like-primary   like-ghost   like-large   like-compact</text>
+
+            <!-- Arrow 1->2 -->
+            <path class="reads-arrow" d="M16,80 L16,108"/>
+
+            <!-- 3. show-* -->
+            <text class="reads-num" x="20" y="180">3</text>
+            <rect class="reads-fill" x="36" y="158" width="474" height="44"/>
+            <rect class="reads-box" x="36" y="158" width="474" height="44"/>
+            <text class="reads-accent" x="50" y="178">show-*</text>
+            <text class="reads-label" x="120" y="178">Feature toggle</text>
+            <text class="reads-code" x="50" y="194">show-icon   show-badge   show-avatar   show-close</text>
+
+            <!-- Arrow 2->3 -->
+            <path class="reads-arrow" d="M16,134 L16,162"/>
+
+            <!-- 4. has-* -->
+            <text class="reads-num" x="20" y="234">4</text>
+            <rect class="reads-fill" x="36" y="212" width="474" height="44"/>
+            <rect class="reads-box" x="36" y="212" width="474" height="44"/>
+            <text class="reads-accent" x="50" y="232">has-*</text>
+            <text class="reads-label" x="120" y="232">Capability</text>
+            <text class="reads-code" x="50" y="248">has-shadow   has-border   has-divider   has-scroll</text>
+
+            <!-- Arrow 3->4 -->
+            <path class="reads-arrow" d="M16,188 L16,216"/>
+
+            <!-- 5. is-* -->
+            <text class="reads-num" x="20" y="288">5</text>
+            <rect class="reads-fill-accent" x="36" y="266" width="474" height="44"/>
+            <rect class="reads-box-accent" x="36" y="266" width="474" height="44"/>
+            <text class="reads-accent" x="50" y="286">is-*</text>
+            <text class="reads-label" x="120" y="286">State</text>
+            <text class="reads-code" x="50" y="302">is-active   is-hidden   is-disabled   is-loading</text>
+
+            <!-- Arrow 4->5 -->
+            <path class="reads-arrow" d="M16,242 L16,270"/>
+
+            <!-- Bottom note -->
+            <text class="reads-sub" x="260" y="332" text-anchor="middle">Order matters. State last: it changes at runtime.</text>
+        </svg>
+
+        <p><strong><code>as-*</code></strong> declares structure. What
+            <em>is</em> this element? A grid, a stack, a sidebar, a button,
+            a card. The structural identity. In Sullivan's terms, this is
+            the &#x201C;object&#x201D; itself.</p>
+
+        <p><strong><code>like-*</code></strong> declares variant. How does
+            it <em>differ</em> from the default? Primary, ghost, large,
+            compact. This is the skin, separated from structure exactly as
+            OOCSS prescribes.</p>
+
+        <p><strong><code>show-*</code></strong> is a feature toggle. The
+            component <em>can</em> display an icon, a badge, a close button.
+            Whether it does is a matter of composition, not a separate
+            component class.</p>
+
+        <p><strong><code>has-*</code></strong> declares a capability. The
+            element possesses a shadow, a border, a divider. These are
+            visual attributes that apply independently of structure or
+            variant.</p>
+
+        <p><strong><code>is-*</code></strong> declares state. Active,
+            hidden, disabled, loading. State comes last because it changes
+            at runtime. Everything before it is static. The order is not
+            arbitrary; it reflects the lifecycle of the element.</p>
+
+        <p>One semantic class is permitted for identity:
+            <code>footer-cta</code>, <code>main-nav</code>,
+            <code>hero-title</code>. This is the element's proper name,
+            unique within the page. IDs are reserved for CSS anchors,
+            fragment targets, and JavaScript hooks.</p>
+
+        <h2>The Same Button, Two Philosophies</h2>
+
+        <p>The difference becomes visceral when you see it in the DOM.
+            Here is the same button, described once in BEM and once in
+            READS:</p>
+
+<pre><code>&lt;!-- BEM --&gt;
+&lt;button class="card__footer-btn card__footer-btn--primary
+               card__footer-btn--large card__footer-btn--disabled
+               card__footer-btn--icon"&gt;
+    Submit
+&lt;/button&gt;
+
+&lt;!-- READS --&gt;
+&lt;button class="footer-cta as-btn like-large like-primary
+               show-icon is-disabled"&gt;
+    Submit
+&lt;/button&gt;</code></pre>
+
+        <p>The BEM version encodes <em>location</em>. This button is the
+            footer button of the card. It is primary, large, disabled, and
+            has an icon. To understand what
+            <code>card__footer-btn--primary</code> means, you must first
+            parse the block (<code>card</code>), then the element
+            (<code>footer-btn</code>), then the modifier
+            (<code>primary</code>). Three levels of derivation. Every
+            class repeats the full ancestry.</p>
+
+        <p>The READS version encodes <em>meaning</em>. Read it aloud:</p>
+
+        <blockquote>
+            <p>&#x201C;The footer-cta is a button, like large and primary,
+                that shows an icon and is disabled.&#x201D;</p>
+        </blockquote>
+
+        <p>It reads like a sentence. No derivation required. A developer
+            seeing this markup for the first time understands the element's
+            role, its visual treatment, its features, and its state. The
+            prefix tells you the <em>category</em> of the class before you
+            even read its name.</p>
+
+        <svg viewBox="0 0 520 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Side-by-side comparison of BEM class chains versus READS class chains on the same button element. The BEM side shows five classes with the card__footer-btn prefix repeated in each. The READS side shows six short classes, each with a distinct prefix indicating its role." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .reads-cmp-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .reads-cmp-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .reads-cmp-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .reads-cmp-code { font: 400 10px/1 ui-monospace, monospace; fill: var(--muted); }
+                .reads-cmp-code-accent { font: 400 10px/1 ui-monospace, monospace; fill: var(--accent); }
+                .reads-cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .reads-cmp-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .reads-cmp-fill { fill: var(--accent); opacity: 0.04; rx: 3; }
+                .reads-cmp-fill-accent { fill: var(--accent); opacity: 0.10; rx: 3; }
+                .reads-cmp-tag { font: 600 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); opacity: 0.7; }
+            </style>
+
+            <text class="reads-cmp-label" x="260" y="18" text-anchor="middle">The Same Button</text>
+
+            <!-- BEM side -->
+            <text class="reads-cmp-sub" x="130" y="42" text-anchor="middle">BEM</text>
+            <text class="reads-cmp-sub" x="130" y="56" text-anchor="middle">encodes location</text>
+
+            <rect class="reads-cmp-fill" x="10" y="66" width="240" height="30"/>
+            <rect class="reads-cmp-box" x="10" y="66" width="240" height="30"/>
+            <text class="reads-cmp-code" x="20" y="85">card__footer-btn</text>
+
+            <rect class="reads-cmp-fill" x="10" y="102" width="240" height="30"/>
+            <rect class="reads-cmp-box" x="10" y="102" width="240" height="30"/>
+            <text class="reads-cmp-code" x="20" y="121">card__footer-btn--primary</text>
+
+            <rect class="reads-cmp-fill" x="10" y="138" width="240" height="30"/>
+            <rect class="reads-cmp-box" x="10" y="138" width="240" height="30"/>
+            <text class="reads-cmp-code" x="20" y="157">card__footer-btn--large</text>
+
+            <rect class="reads-cmp-fill" x="10" y="174" width="240" height="30"/>
+            <rect class="reads-cmp-box" x="10" y="174" width="240" height="30"/>
+            <text class="reads-cmp-code" x="20" y="193">card__footer-btn--disabled</text>
+
+            <rect class="reads-cmp-fill" x="10" y="210" width="240" height="30"/>
+            <rect class="reads-cmp-box" x="10" y="210" width="240" height="30"/>
+            <text class="reads-cmp-code" x="20" y="229">card__footer-btn--icon</text>
+
+            <text class="reads-cmp-sub" x="130" y="262" text-anchor="middle">5 classes, 120 characters</text>
+            <text class="reads-cmp-sub" x="130" y="276" text-anchor="middle">Specificity per selector: 0,1,0</text>
+
+            <!-- READS side -->
+            <text class="reads-cmp-accent" x="390" y="42" text-anchor="middle">READS</text>
+            <text class="reads-cmp-sub" x="390" y="56" text-anchor="middle">encodes meaning</text>
+
+            <rect class="reads-cmp-fill-accent" x="270" y="66" width="240" height="30"/>
+            <rect class="reads-cmp-box-accent" x="270" y="66" width="240" height="30"/>
+            <text class="reads-cmp-code-accent" x="280" y="85">footer-cta</text>
+            <text class="reads-cmp-tag" x="500" y="85" text-anchor="end">semantic</text>
+
+            <rect class="reads-cmp-fill-accent" x="270" y="102" width="240" height="30"/>
+            <rect class="reads-cmp-box-accent" x="270" y="102" width="240" height="30"/>
+            <text class="reads-cmp-code-accent" x="280" y="121">as-btn</text>
+            <text class="reads-cmp-tag" x="500" y="121" text-anchor="end">structure</text>
+
+            <rect class="reads-cmp-fill-accent" x="270" y="138" width="240" height="30"/>
+            <rect class="reads-cmp-box-accent" x="270" y="138" width="240" height="30"/>
+            <text class="reads-cmp-code-accent" x="280" y="157">like-large like-primary</text>
+            <text class="reads-cmp-tag" x="500" y="157" text-anchor="end">variant</text>
+
+            <rect class="reads-cmp-fill-accent" x="270" y="174" width="240" height="30"/>
+            <rect class="reads-cmp-box-accent" x="270" y="174" width="240" height="30"/>
+            <text class="reads-cmp-code-accent" x="280" y="193">show-icon</text>
+            <text class="reads-cmp-tag" x="500" y="193" text-anchor="end">feature</text>
+
+            <rect class="reads-cmp-fill-accent" x="270" y="210" width="240" height="30"/>
+            <rect class="reads-cmp-box-accent" x="270" y="210" width="240" height="30"/>
+            <text class="reads-cmp-code-accent" x="280" y="229">is-disabled</text>
+            <text class="reads-cmp-tag" x="500" y="229" text-anchor="end">state</text>
+
+            <text class="reads-cmp-accent" x="390" y="262" text-anchor="middle">6 classes, 62 characters</text>
+            <text class="reads-cmp-sub" x="390" y="276" text-anchor="middle">Specificity per selector: 0,1,0</text>
+
+            <!-- Bottom -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="10" y1="294" x2="510" y2="294"/>
+            <text class="reads-cmp-sub" x="260" y="312" text-anchor="middle">Same specificity. Same result. Half the characters.</text>
+            <text class="reads-cmp-accent" x="260" y="328" text-anchor="middle">One encodes location. One encodes meaning.</text>
+        </svg>
+
+        <h2>Order as Grammar</h2>
+
+        <p>The sequence of classes is not aesthetic preference. It is
+            grammar. The reading order follows a deliberate hierarchy:</p>
+
+        <ol>
+            <li><strong>Semantic identity</strong>
+                (<code>footer-cta</code>) answers &#x201C;What is this
+                element's unique role on the page?&#x201D;</li>
+            <li><strong>Structure</strong> (<code>as-btn</code>) answers
+                &#x201C;What structural pattern does it follow?&#x201D;</li>
+            <li><strong>Variant</strong> (<code>like-large</code>,
+                <code>like-primary</code>) answers &#x201C;How does this
+                instance differ from the default?&#x201D;</li>
+            <li><strong>Feature</strong> (<code>show-icon</code>) answers
+                &#x201C;What optional features are enabled?&#x201D;</li>
+            <li><strong>State</strong> (<code>is-disabled</code>) answers
+                &#x201C;What is its current runtime condition?&#x201D;</li>
+        </ol>
+
+        <p>The progression moves from the most permanent to the most
+            volatile. Identity never changes. Structure rarely does.
+            Variants are set once per instance. Features may toggle. State
+            changes constantly. When JavaScript adds or removes a class at
+            runtime, it is always a state class. Always at the end.
+            Always <code>is-*</code>.</p>
+
+        <p>This is not a convention you must memorise. It is a convention
+            you read. The prefix tells you where in the sentence you are.</p>
+
+        <h2>The CSS Side</h2>
+
+        <p>READS truly comes into its own when you write the stylesheet.
+            Each prefix maps to a clear category of rules, and
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting" target="_blank" rel="noopener">native CSS nesting</a>
+            makes the structure almost absurdly clean:</p>
+
+<pre><code>.as-card {
+    padding: var(--space-m);
+    border-radius: var(--radius-m);
+    background: var(--surface);
+
+    &amp;.like-primary { background: var(--colour-primary); }
+    &amp;.like-ghost   { background: transparent; border: 1px solid var(--border); }
+
+    &amp;.show-badge::after { content: attr(data-count); /* badge */ }
+
+    &amp;.has-shadow { box-shadow: var(--shadow-m); }
+    &amp;.has-border { border: 1px solid var(--border); }
+
+    &amp;.is-active  { outline: 2px solid var(--colour-focus); }
+    &amp;.is-hidden  { display: none; }
+}</code></pre>
+
+        <p>Every rule nests under the structural class. Every nested rule
+            uses a compound selector (<code>&amp;.like-primary</code>),
+            which produces specificity <code>(0,2,0)</code>: still flat,
+            still predictable, still trivially overridable in a higher
+            <code>@layer</code>. The prefix categorises the rule visually
+            in the stylesheet just as it categorises the class in the
+            markup.</p>
+
+        <p>Compare this with the BEM equivalent:</p>
+
+<pre><code>.card { padding: 1rem; }
+.card--primary { background: coral; }
+.card--ghost { background: transparent; }
+.card--shadow { box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.card--active { outline: 2px solid blue; }</code></pre>
+
+        <p>Every modifier is a flat sibling. There is no visual hierarchy
+            in the stylesheet. &#x201C;Primary&#x201D; sits next to
+            &#x201C;shadow&#x201D; sits next to &#x201C;active.&#x201D;
+            Are they variants? Features? States? The naming convention does
+            not distinguish. The developer must remember. READS prefixes
+            make remembering unnecessary.</p>
+
+        <h2>BEM's Real Contribution</h2>
+
+        <p>It would be uncharitable to dismiss BEM entirely. Its genuine
+            contribution was popularising the idea that CSS classes should be
+            flat (single-class selectors, no nesting, no IDs for styling).
+            Before BEM, it was entirely normal to encounter selectors like
+            <code>#main .sidebar ul li a.active</code> with a specificity
+            of <code>(1,2,3)</code>. BEM's &#x201C;only use classes&#x201D;
+            convention was a meaningful improvement.</p>
+
+        <p>The error was in conflating the <em>convention</em> (use flat
+            selectors) with the <em>syntax</em> (encode the DOM tree into
+            the class name). The convention was sound. The syntax was
+            unnecessary. OOCSS had the same convention a year earlier,
+            without the syntactic overhead.</p>
+
+        <p>And in 2026, neither convention solves specificity conflicts on
+            its own. That is what
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer" target="_blank" rel="noopener"><code>@layer</code></a>
+            does. Naming conventions handle <em>readability</em>.
+            <code>@layer</code> handles <em>precedence</em>. Confusing the
+            two is how the industry spent fifteen years solving the wrong
+            problem with the wrong tool.</p>
+
+        <h2>The Compound Noun Problem</h2>
+
+        <p>There is a linguistic observation that rarely gets made about
+            BEM, though it explains much of the friction developers feel
+            without being able to articulate it. BEM class names are
+            compound nouns. German-style compound nouns, in fact: the
+            meaning is built by agglutination, and the reader must
+            decompose the compound mentally before comprehension arrives.</p>
+
+        <p><code>card__footer-btn--primary--large--disabled</code> is the
+            CSS equivalent of
+            <em>Kartenfussbereichsschaltflaechenhauptgrossdeaktiviert</em>.
+            Perfectly logical. Entirely parseable. And no one would call it
+            readable.</p>
+
+        <p>READS classes are adjectives. They describe. They modify.
+            They compose. <code>as-btn like-large like-primary is-disabled</code>
+            is English prose: subject, description, state. The cognitive
+            cost is not zero, but it is dramatically lower, because the
+            reader processes each class independently rather than
+            decomposing a single monolithic string.</p>
+
+        <h2>When READS Meets @layer</h2>
+
+        <p>The combination of READS prefixes with CSS Cascade Layers
+            produces an architecture that is both readable and conflict-free.
+            Structure, variant, feature, and state can each live in their
+            own layer if the project demands it:</p>
+
+<pre><code>@layer base, structure, variants, features, states, themes;
+
+@layer structure {
+    .as-card  { display: grid; padding: var(--space-m); }
+    .as-stack { display: flex; flex-direction: column; gap: var(--space-s); }
+    .as-btn   { display: inline-flex; padding: var(--space-xs) var(--space-m); }
+}
+
+@layer variants {
+    .like-primary { background: var(--colour-primary); color: var(--colour-on-primary); }
+    .like-ghost   { background: transparent; }
+    .like-large   { font-size: var(--text-lg); padding: var(--space-s) var(--space-l); }
+}
+
+@layer states {
+    .is-active   { outline: 2px solid var(--colour-focus); }
+    .is-disabled { opacity: 0.5; pointer-events: none; }
+    .is-hidden   { display: none; }
+}</code></pre>
+
+        <p>State always wins over variant. Variant always wins over
+            structure. Not because of
+            <a href="https://specificity.keegan.st/" target="_blank" rel="noopener">specificity arithmetic</a>,
+            but because layer order dictates precedence. The naming
+            convention and the cascade architecture reinforce each other.
+            READS tells you what a class <em>means</em>. <code>@layer</code>
+            tells the browser what <em>wins</em>.</p>
+
+        <h2>The Acronym</h2>
+
+        <p>READS: REadable Attribute Description Syntax.</p>
+
+        <p>It is not a framework. There is no npm package. There is no CLI.
+            There is no build step. It is a naming convention: five prefixes,
+            one semantic class, a defined order. The entire specification
+            fits in a single paragraph. The entire philosophy fits in a
+            single sentence: read it, understand it, no derivation
+            required.</p>
+
+        <p>Nicole Sullivan described the architecture in 2009. READS simply
+            gives it a spelling that the next developer can parse without a
+            README.</p>
+
+        <aside class="vv-aside">
+            <p><strong>READS with native CSS nesting</strong></p>
+
+<pre><code>.as-card {
+    padding: var(--space-m);
+
+    &amp;.like-primary { background: var(--colour-primary); }
+    &amp;.like-ghost   { background: transparent; }
+
+    &amp;.is-active { outline: 2px solid var(--colour-focus); }
+    &amp;.has-shadow { box-shadow: var(--shadow-m); }
+}</code></pre>
+
+            <p>OOCSS (2009):
+                <a href="https://github.com/stubbornella/oocss/wiki" target="_blank" rel="noopener">Nicole Sullivan, Yahoo</a>.
+                Structure from skin, container from content.
+                BEM (2010):
+                <a href="https://getbem.com/" target="_blank" rel="noopener">Yandex</a>.
+                Claimed to &#x201C;solve specificity&#x201D; whilst producing
+                identical specificity <code>(0,1,0)</code> with longer selectors.
+                CSS nesting:
+                <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting" target="_blank" rel="noopener">shipped in all browsers since December 2023</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,474 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}HTTP/2: The Bundling Myth &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="HTTP/1.1 made bundling necessary. HTTP/2 made it obsolete. Multiplexing, granular caching, and the rule that inverted itself a decade ago. The fastest bundle might be no bundle at all.">
+{( endslot )}
+
+{( slot canonical )}/blog/http2-the-bundling-myth{( endslot )}
+
+{( slot og-title )}HTTP/2: The Bundling Myth &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}HTTP/1.1 made bundling necessary. HTTP/2 made it obsolete. Multiplexing, granular caching, and the rule that inverted itself a decade ago.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "HTTP/2: The Bundling Myth",
+    "datePublished": "2026-02-10",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/http2-the-bundling-myth",
+    "description": "HTTP/1.1 made bundling necessary. HTTP/2 made it obsolete. Multiplexing, granular caching, and the rule that inverted itself a decade ago. The fastest bundle might be no bundle at all.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-10">10 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>HTTP/2: The Bundling Myth</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Lean Web</em> &#x25A0; Episode 01</p>
+
+        <p>&#x201C;Minimise HTTP requests. Bundle everything into one file. Otherwise
+            your page gets too slow!&#x201D;</p>
+
+        <p>This was excellent advice. In 2010.</p>
+
+        <p>In 2007, Steve Souders published
+            <a href="https://stevesouders.com/hpws/" target="_blank" rel="noopener"><em>High
+            Performance Web Sites</em></a>, the book that codified front-end optimisation
+            as a discipline. Rule number one, printed in bold, underlined by every conference
+            talk that followed: <strong>Minimise HTTP Requests</strong>. Concatenate your
+            scripts. Merge your stylesheets. Sprite your images. Every request is a round trip.
+            Every round trip is latency. Every millisecond is a user you might lose.</p>
+
+        <p>The rule was correct. The protocol made it so. HTTP/1.1 imposed a strict constraint:
+            one request per connection, processed sequentially, with a practical ceiling of six
+            parallel connections per origin. Six files could load simultaneously. The seventh
+            queued. The eighth queued behind the seventh. A page with forty assets was a waterfall
+            of serial waiting, and the only sensible response was to reduce the number of
+            waterfalls by reducing the number of files.</p>
+
+        <p>Bundling was not a choice. It was engineering under constraint.</p>
+
+        <p>Then the constraint was removed. And the industry kept bundling.</p>
+
+        <h2>The Protocol That Changed the Equation</h2>
+
+        <p>In May 2015, the IETF published
+            <a href="https://tools.ietf.org/html/rfc7540" target="_blank" rel="noopener">RFC 7540</a>,
+            the specification for HTTP/2. The headline feature was multiplexing: the ability to
+            send and receive multiple requests and responses simultaneously over a single TCP
+            connection, without head-of-line blocking at the application layer.</p>
+
+        <p>The implications were immediate and structural. Under HTTP/1.1, each request
+            occupied an entire connection for its duration. A browser loading a CSS file could
+            not use that connection for anything else until the response completed. Six
+            connections, six files, everything else in the queue. Under HTTP/2, a single
+            connection carries hundreds of concurrent streams. Each stream is an independent
+            request-response pair, interleaved at the frame level. There is no queue. There
+            is no waiting. The connection simply handles what you give it.</p>
+
+        <p>Alongside multiplexing, HTTP/2 introduced
+            <a href="https://httpwg.org/specs/rfc7541.html" target="_blank" rel="noopener">HPACK
+            header compression</a>. HTTP/1.1 headers are plain text, repeated in full
+            on every request. A typical request carries 500 to 800 bytes of headers, cookies
+            included. Multiply that by forty assets and the overhead is considerable. HPACK
+            compresses headers using a static table of common fields and a dynamic table of
+            previously seen values. The second request for the same origin carries a fraction
+            of the header cost. By the tenth request, the headers are virtually free.</p>
+
+        <svg id="http2-waterfall" viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison of HTTP/1.1 sequential waterfall loading versus HTTP/2 multiplexed parallel loading. HTTP/1.1 shows six connection lanes with requests queuing sequentially. HTTP/2 shows all requests streaming simultaneously over one connection." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #http2-waterfall .hw-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #http2-waterfall .hw-label { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #http2-waterfall .hw-sub { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #http2-waterfall .hw-bar { fill: var(--accent); opacity: 0.5; rx: 2; }
+                #http2-waterfall .hw-bar-wait { fill: var(--muted); opacity: 0.15; rx: 2; }
+                #http2-waterfall .hw-bar-hl { fill: var(--accent); opacity: 0.7; rx: 2; }
+                #http2-waterfall .hw-axis { stroke: var(--border); stroke-width: 1; }
+                #http2-waterfall .hw-conn { stroke: var(--border); stroke-width: 1; stroke-dasharray: 3,3; }
+                #http2-waterfall .hw-conn-hl { stroke: var(--accent); stroke-width: 1.5; }
+                #http2-waterfall .hw-vs { font: 700 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <!-- Titles -->
+            <text class="hw-title" x="130" y="18" text-anchor="middle">HTTP/1.1</text>
+            <text class="hw-sub" x="130" y="32" text-anchor="middle">6 connections, sequential</text>
+            <text class="hw-title" x="400" y="18" text-anchor="middle">HTTP/2</text>
+            <text class="hw-sub" x="400" y="32" text-anchor="middle">1 connection, multiplexed</text>
+
+            <!-- HTTP/1.1 waterfall (left) -->
+            <!-- Time axis -->
+            <line class="hw-axis" x1="30" y1="48" x2="30" y2="320"/>
+            <text class="hw-sub" x="22" y="56" text-anchor="end">0ms</text>
+            <text class="hw-sub" x="22" y="320" text-anchor="end">time</text>
+
+            <!-- Connection labels -->
+            <text class="hw-sub" x="55" y="56">C1</text>
+            <text class="hw-sub" x="90" y="56">C2</text>
+            <text class="hw-sub" x="125" y="56">C3</text>
+            <text class="hw-sub" x="160" y="56">C4</text>
+            <text class="hw-sub" x="195" y="56">C5</text>
+            <text class="hw-sub" x="230" y="56">C6</text>
+
+            <!-- Connection lanes -->
+            <line class="hw-conn" x1="60" y1="62" x2="60" y2="310"/>
+            <line class="hw-conn" x1="95" y1="62" x2="95" y2="310"/>
+            <line class="hw-conn" x1="130" y1="62" x2="130" y2="310"/>
+            <line class="hw-conn" x1="165" y1="62" x2="165" y2="310"/>
+            <line class="hw-conn" x1="200" y1="62" x2="200" y2="310"/>
+            <line class="hw-conn" x1="235" y1="62" x2="235" y2="310"/>
+
+            <!-- Round 1: 6 files load in parallel -->
+            <rect class="hw-bar" x="48" y="66" width="24" height="50"/>
+            <rect class="hw-bar" x="83" y="66" width="24" height="40"/>
+            <rect class="hw-bar" x="118" y="66" width="24" height="55"/>
+            <rect class="hw-bar" x="153" y="66" width="24" height="35"/>
+            <rect class="hw-bar" x="188" y="66" width="24" height="45"/>
+            <rect class="hw-bar" x="223" y="66" width="24" height="60"/>
+
+            <!-- Round 2: next 6 files queue after round 1 completes -->
+            <rect class="hw-bar-wait" x="48" y="116" width="24" height="8"/>
+            <rect class="hw-bar" x="48" y="124" width="24" height="45"/>
+            <rect class="hw-bar-wait" x="83" y="106" width="24" height="14"/>
+            <rect class="hw-bar" x="83" y="120" width="24" height="40"/>
+            <rect class="hw-bar-wait" x="118" y="121" width="24" height="4"/>
+            <rect class="hw-bar" x="118" y="125" width="24" height="50"/>
+            <rect class="hw-bar-wait" x="153" y="101" width="24" height="24"/>
+            <rect class="hw-bar" x="153" y="125" width="24" height="35"/>
+            <rect class="hw-bar-wait" x="188" y="111" width="24" height="14"/>
+            <rect class="hw-bar" x="188" y="125" width="24" height="42"/>
+            <rect class="hw-bar-wait" x="223" y="126" width="24" height="4"/>
+            <rect class="hw-bar" x="223" y="130" width="24" height="55"/>
+
+            <!-- Round 3: remaining files -->
+            <rect class="hw-bar-wait" x="48" y="169" width="24" height="10"/>
+            <rect class="hw-bar" x="48" y="179" width="24" height="40"/>
+            <rect class="hw-bar-wait" x="83" y="160" width="24" height="19"/>
+            <rect class="hw-bar" x="83" y="179" width="24" height="45"/>
+            <rect class="hw-bar-wait" x="118" y="175" width="24" height="8"/>
+            <rect class="hw-bar" x="118" y="183" width="24" height="38"/>
+            <rect class="hw-bar-wait" x="153" y="160" width="24" height="28"/>
+            <rect class="hw-bar" x="153" y="188" width="24" height="30"/>
+
+            <!-- Queue indicator -->
+            <text class="hw-sub" x="140" y="300" text-anchor="middle">14 files &#x2192; 3 rounds</text>
+            <text class="hw-sub" x="140" y="312" text-anchor="middle">Files 7-14 wait in queue</text>
+
+            <!-- VS separator -->
+            <text class="hw-vs" x="280" y="190" text-anchor="middle">vs</text>
+
+            <!-- HTTP/2 multiplexed (right) -->
+            <!-- Single connection -->
+            <line class="hw-conn-hl" x1="400" y1="62" x2="400" y2="310"/>
+            <text class="hw-sub" x="400" y="56" text-anchor="middle">1 connection</text>
+
+            <!-- All streams fire simultaneously -->
+            <rect class="hw-bar-hl" x="320" y="66" width="16" height="50"/>
+            <rect class="hw-bar-hl" x="340" y="66" width="16" height="40"/>
+            <rect class="hw-bar-hl" x="360" y="66" width="16" height="55"/>
+            <rect class="hw-bar-hl" x="380" y="66" width="16" height="35"/>
+            <rect class="hw-bar-hl" x="400" y="66" width="16" height="45"/>
+            <rect class="hw-bar-hl" x="420" y="66" width="16" height="60"/>
+            <rect class="hw-bar-hl" x="440" y="66" width="16" height="42"/>
+            <rect class="hw-bar-hl" x="460" y="66" width="16" height="50"/>
+            <rect class="hw-bar-hl" x="320" y="70" width="16" height="38"/>
+            <rect class="hw-bar-hl" x="340" y="68" width="16" height="48"/>
+            <rect class="hw-bar-hl" x="360" y="72" width="16" height="30"/>
+            <rect class="hw-bar-hl" x="380" y="66" width="16" height="55"/>
+            <rect class="hw-bar-hl" x="400" y="70" width="16" height="36"/>
+            <rect class="hw-bar-hl" x="420" y="68" width="16" height="44"/>
+
+            <!-- All done marker -->
+            <line class="hw-axis" x1="315" y1="130" x2="480" y2="130" style="stroke-dasharray: 4,3;"/>
+            <text class="hw-sub" x="400" y="148" text-anchor="middle">14 files &#x2192; 1 round</text>
+            <text class="hw-sub" x="400" y="160" text-anchor="middle">All streams in parallel</text>
+            <text class="hw-sub" x="400" y="178" text-anchor="middle">No queue. No waiting.</text>
+
+            <!-- Footnotes -->
+            <text class="hw-sub" x="130" y="342" text-anchor="middle">6 connections max per origin</text>
+            <text class="hw-sub" x="130" y="354" text-anchor="middle">Head-of-line blocking</text>
+            <text class="hw-sub" x="400" y="342" text-anchor="middle">Hundreds of concurrent streams</text>
+            <text class="hw-sub" x="400" y="354" text-anchor="middle">HPACK header compression</text>
+
+            <!-- Source -->
+            <text class="hw-sub" x="260" y="375" text-anchor="middle">Source: RFC 7540 &#x25A0; tools.ietf.org/html/rfc7540</text>
+        </svg>
+
+        <p>The result is a protocol that actively rewards what HTTP/1.1 punished. Under the
+            old regime, forty files meant queueing, latency, and wasted connections. Under the
+            new one, forty files arrive in parallel, compressed, over a single connection. The
+            tax on small files is gone. The incentive to concatenate disappeared with it.</p>
+
+        <h2>The Rule That Inverted</h2>
+
+        <p>Souders&#x2019;s first rule was not wrong. It was correct for its era, and
+            spectacularly so. HTTP/1.1 was the dominant protocol from 1997 to roughly 2020, and
+            during those two decades, minimising requests was the single most effective
+            performance optimisation a front-end developer could make. Sprite sheets,
+            concatenated scripts, inlined CSS: all of it made measurable differences on real
+            connections for real users.</p>
+
+        <p>But protocols change. And when the underlying constraint disappears, the rules
+            derived from that constraint do not become neutral. They invert.</p>
+
+        <p>Under HTTP/2, many small files <em>outperform</em> one large bundle. Not
+            marginally. Structurally. The reason is not the protocol alone. It is what
+            the protocol enables downstream: granular caching.</p>
+
+        <h2>The Cache Invalidation Problem</h2>
+
+        <p>Consider a typical bundled application. Your CSS, JavaScript, and possibly some
+            templates are concatenated into a single file. It might be 350 KB. It might
+            be 500 KB. The number hardly matters; what matters is the unit of invalidation.</p>
+
+        <p>You deploy a fix. One line of CSS changes. A border radius. A colour value. Two
+            kilobytes of actual difference. But the browser does not know that. The browser
+            knows one thing: the hash of the bundle changed. The entire file is stale. The
+            entire file must be downloaded again. Your user, on a mobile connection, on a
+            train, on the underground, re-downloads 500 KB because you changed two.</p>
+
+        <p>Now consider the same application split into thirty modules. You deploy the same
+            fix. The same border radius. The same colour value. One file changes. One file
+            gets a new hash. Twenty-nine files remain cached. The browser fetches 2 KB.
+            The other 498 KB never leave the cache.</p>
+
+        <svg id="http2-cache" viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cache invalidation comparison: a single 500KB bundle requires full re-download when one line changes, while modular files only invalidate the 2KB changed file and keep 498KB cached." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #http2-cache .hc-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #http2-cache .hc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #http2-cache .hc-sub { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #http2-cache .hc-value { font: 700 16px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #http2-cache .hc-stale { fill: var(--muted); opacity: 0.12; stroke: var(--border); stroke-width: 1; rx: 3; stroke-dasharray: 4,3; }
+                #http2-cache .hc-cached { fill: var(--accent); opacity: 0.15; stroke: var(--accent); stroke-width: 1; rx: 2; }
+                #http2-cache .hc-changed { fill: var(--accent); opacity: 0.6; stroke: var(--accent); stroke-width: 1.5; rx: 2; }
+                #http2-cache .hc-arrow { stroke: var(--border); stroke-width: 1; fill: none; marker-end: url(#http2-arrowhead); }
+                #http2-cache .hc-vs { font: 700 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <defs>
+                <marker id="http2-arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--border)" stroke-width="1"/>
+                </marker>
+            </defs>
+
+            <!-- Title -->
+            <text class="hc-title" x="260" y="20" text-anchor="middle">CACHE INVALIDATION: ONE LINE CHANGED</text>
+
+            <!-- Left: Bundled -->
+            <text class="hc-label" x="120" y="50" text-anchor="middle">Bundled (1 file)</text>
+
+            <!-- Big stale block -->
+            <rect class="hc-stale" x="30" y="60" width="180" height="120"/>
+            <text class="hc-sub" x="120" y="105" text-anchor="middle">bundle.min.js</text>
+            <text class="hc-sub" x="120" y="120" text-anchor="middle">500 KB</text>
+            <text class="hc-sub" x="120" y="140" text-anchor="middle">1 line changed</text>
+            <text class="hc-sub" x="120" y="155" text-anchor="middle">&#x2192; entire file invalidated</text>
+
+            <!-- Arrow to download -->
+            <line class="hc-arrow" x1="120" y1="185" x2="120" y2="210"/>
+            <text class="hc-value" x="120" y="240" text-anchor="middle">500 KB</text>
+            <text class="hc-sub" x="120" y="256" text-anchor="middle">re-downloaded</text>
+
+            <!-- VS -->
+            <text class="hc-vs" x="260" y="130" text-anchor="middle">vs</text>
+
+            <!-- Right: Modular -->
+            <text class="hc-label" x="400" y="50" text-anchor="middle">Modular (30 files)</text>
+
+            <!-- Grid of small cached modules -->
+            <rect class="hc-cached" x="310" y="60" width="26" height="20"/>
+            <rect class="hc-cached" x="340" y="60" width="26" height="20"/>
+            <rect class="hc-cached" x="370" y="60" width="26" height="20"/>
+            <rect class="hc-changed" x="400" y="60" width="26" height="20"/>
+            <rect class="hc-cached" x="430" y="60" width="26" height="20"/>
+            <rect class="hc-cached" x="460" y="60" width="26" height="20"/>
+
+            <rect class="hc-cached" x="310" y="84" width="26" height="20"/>
+            <rect class="hc-cached" x="340" y="84" width="26" height="20"/>
+            <rect class="hc-cached" x="370" y="84" width="26" height="20"/>
+            <rect class="hc-cached" x="400" y="84" width="26" height="20"/>
+            <rect class="hc-cached" x="430" y="84" width="26" height="20"/>
+            <rect class="hc-cached" x="460" y="84" width="26" height="20"/>
+
+            <rect class="hc-cached" x="310" y="108" width="26" height="20"/>
+            <rect class="hc-cached" x="340" y="108" width="26" height="20"/>
+            <rect class="hc-cached" x="370" y="108" width="26" height="20"/>
+            <rect class="hc-cached" x="400" y="108" width="26" height="20"/>
+            <rect class="hc-cached" x="430" y="108" width="26" height="20"/>
+            <rect class="hc-cached" x="460" y="108" width="26" height="20"/>
+
+            <rect class="hc-cached" x="310" y="132" width="26" height="20"/>
+            <rect class="hc-cached" x="340" y="132" width="26" height="20"/>
+            <rect class="hc-cached" x="370" y="132" width="26" height="20"/>
+            <rect class="hc-cached" x="400" y="132" width="26" height="20"/>
+            <rect class="hc-cached" x="430" y="132" width="26" height="20"/>
+            <rect class="hc-cached" x="460" y="132" width="26" height="20"/>
+
+            <rect class="hc-cached" x="310" y="156" width="26" height="20"/>
+            <rect class="hc-cached" x="340" y="156" width="26" height="20"/>
+            <rect class="hc-cached" x="370" y="156" width="26" height="20"/>
+            <rect class="hc-cached" x="400" y="156" width="26" height="20"/>
+            <rect class="hc-cached" x="430" y="156" width="26" height="20"/>
+            <rect class="hc-cached" x="460" y="156" width="26" height="20"/>
+
+            <!-- Legend -->
+            <rect class="hc-changed" x="310" y="190" width="10" height="10"/>
+            <text class="hc-sub" x="325" y="199">Changed (2 KB)</text>
+            <rect class="hc-cached" x="410" y="190" width="10" height="10"/>
+            <text class="hc-sub" x="425" y="199">Cached (498 KB)</text>
+
+            <!-- Arrow to download -->
+            <line class="hc-arrow" x1="400" y1="210" x2="400" y2="235"/>
+            <text class="hc-value" x="400" y="260" text-anchor="middle">2 KB</text>
+            <text class="hc-sub" x="400" y="276" text-anchor="middle">re-downloaded</text>
+
+            <!-- Bottom comparison -->
+            <text class="hc-sub" x="120" y="290" text-anchor="middle">250x more data transferred</text>
+            <text class="hc-sub" x="400" y="290" text-anchor="middle">29 files untouched</text>
+
+            <!-- Source -->
+            <text class="hc-sub" x="260" y="314" text-anchor="middle">Every deployment. Every user. Every time.</text>
+        </svg>
+
+        <p>This is not a marginal improvement. It is a 250x reduction in transfer size for
+            the most common deployment scenario: a small fix to a large application. And it
+            requires no tooling. No configuration. No plugin. Just the file structure the
+            protocol was designed to serve.</p>
+
+        <h2>The Adoption Nobody Noticed</h2>
+
+        <p><a href="https://caniuse.com/http2" target="_blank" rel="noopener">HTTP/2 browser
+            support stands at 97% globally</a>. Every major browser has supported it since
+            2015. Chrome, Firefox, Safari, Edge: all of them negotiate HTTP/2 automatically
+            when the server supports it, which, in 2026, virtually every server does.</p>
+
+        <p>Nginx has served HTTP/2 since version 1.9.5, released in September 2015.
+            <a href="https://caddyserver.com/" target="_blank" rel="noopener">Caddy</a>
+            has served HTTP/2 by default since its first release. Apache supports it via
+            mod_http2. Cloudflare enables it automatically for every domain behind its
+            proxy. AWS CloudFront, Fastly, Akamai: all of them speak HTTP/2 without
+            configuration.</p>
+
+        <p>The protocol is not a proposal. It is not behind a flag. It is not experimental.
+            It has been the default transport layer of the web for the better part of a
+            decade. The transition happened so quietly that most developers never noticed.
+            They certainly never revisited the assumptions built on the protocol it replaced.</p>
+
+        <h2>What Bundlers Still Do Well</h2>
+
+        <p>This is not, to be clear, a funeral notice for Webpack. Bundlers perform three
+            operations that remain genuinely valuable regardless of the protocol.</p>
+
+        <p><strong>Tree-shaking.</strong> If your application imports a utility library of
+            two hundred functions and uses three, a bundler can eliminate the other 197 from
+            the output. The browser cannot. Dead code elimination at build time is a real
+            optimisation, and HTTP/2 does nothing to replicate it.</p>
+
+        <p><strong>Minification.</strong> Removing whitespace, shortening variable names, and
+            stripping comments reduces file size. Gzip and Brotli handle compression at the
+            transport layer, but minification reduces the input to the compressor. The gains
+            compound.</p>
+
+        <p><strong>Transpilation.</strong> If your codebase uses syntax that not all target
+            browsers understand, a build step transforms it. This is increasingly rare
+            (ES2015 support is universal, and most modern syntax has shipped in all evergreen
+            browsers) but it remains a legitimate use case for organisations supporting older
+            environments.</p>
+
+        <p>These are real capabilities. They are not, however, the reason most teams configure
+            a bundler. Most teams configure a bundler because &#x201C;that is how it is
+            done.&#x201D; The boilerplate is copied from a starter template. The configuration
+            is inherited from a previous project. The assumption is never questioned because
+            the assumption was correct once, and once is apparently sufficient.</p>
+
+        <h2>What Bundlers No Longer Need to Do</h2>
+
+        <p><strong>Reduce request count.</strong> This was the original purpose. This was the
+            reason <code>webpack.config.js</code> exists. This was Rule #1 in the book that
+            defined the discipline. And it is obsolete. HTTP/2 multiplexing handles hundreds
+            of parallel requests over a single connection. The protocol solved the problem.
+            The tooling that solved it before the protocol did has not noticed.</p>
+
+        <p><strong>Concatenate for performance.</strong> Under HTTP/1.1, fewer files meant
+            fewer connections, fewer round trips, and faster page loads. Under HTTP/2, the
+            relationship has inverted. More files (within reason) means better caching, smaller
+            invalidation units, and faster subsequent visits. Concatenation is no longer an
+            optimisation. It is a de-optimisation, a deliberate choice to make cache
+            invalidation coarser than the protocol requires.</p>
+
+        <h2>The Archaeology of Best Practices</h2>
+
+        <p>The industry has a particular talent for preserving advice long after its
+            expiration date. CSS sprites survived until 2020 in production codebases, a
+            full five years after HTTP/2 made them unnecessary. Inline CSS for
+            &#x201C;above-the-fold&#x201D; content persists in lighthouse recommendations
+            despite HTTP/2 server push (now deprecated, admittedly) and preload hints making
+            the technique redundant for most cases.</p>
+
+        <p>Bundling follows the same pattern. The practice originated from a genuine
+            constraint. The constraint was removed. The practice persisted. Not because it
+            was re-evaluated and found still useful. Because it was never re-evaluated at all.</p>
+
+        <p>Souders wrote his book in 2007. The web he optimised ran on HTTP/1.1, IE6, and
+            dial-up connections that charged by the minute. The web of 2026 runs on HTTP/2
+            (and increasingly
+            <a href="https://www.rfc-editor.org/rfc/rfc9114.html" target="_blank" rel="noopener">HTTP/3</a>),
+            evergreen browsers with native ES Module support, and connections that
+            handle hundreds of parallel streams without blinking. Applying 2007 rules to
+            2026 infrastructure is not cautious engineering. It is cargo culting.</p>
+
+        <h2>The Invoice</h2>
+
+        <p>What bundling costs in 2026: a build step that adds seconds or minutes to every
+            deployment; a configuration file that nobody fully understands; a cache
+            invalidation strategy that punishes users for your deployment frequency; a
+            <code>node_modules</code> directory that exists primarily to support the
+            concatenation of files that the protocol can serve in parallel.</p>
+
+        <p>What HTTP/2 provides for free: multiplexed loading of as many files as you need,
+            HPACK header compression, granular caching with per-file invalidation, and a
+            protocol that every server, every CDN, and every browser has spoken natively for
+            over a decade.</p>
+
+        <blockquote>
+            <p>The fastest bundle might be no bundle at all.</p>
+        </blockquote>
+
+        <p>HTTP/2 has been the default since 2015. The rule inverted itself a decade ago.
+            The question is not whether your server supports it. The question is why your
+            build pipeline still assumes it does not.</p>
+
+        <aside class="vv-aside">
+            <p><strong>From the first comment</strong></p>
+            <p>HTTP/2 has been standard since 2015, practically universally available since
+                2020. Yet we treat bundling like a law of nature. The reason for
+                &#x201C;everything in one file&#x201D; was HTTP/1.1&#x2019;s TCP connection
+                limit. With multiplexing, that is obsolete. This does not mean bundlers are
+                useless: tree-shaking and minification still have their place. But the basic
+                assumption &#x201C;many requests = slow&#x201D; no longer holds. The edge
+                case (500+ module applications with aggressive dead code) has been speaking
+                for the entire room.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

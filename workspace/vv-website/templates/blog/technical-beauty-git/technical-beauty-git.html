@@ -1,0 +1,462 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: git &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Linus Torvalds built git in ten days. 10 MB, no server, no database, no dependencies beyond libc. Content-addressable, distributed, backwards compatible since 2005. The tooling around it weighs more than the tool itself.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-git{( endslot )}
+
+{( slot og-title )}Technical Beauty: git &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Linus Torvalds built git in ten days. 10 MB, no server, no database, no dependencies. Content-addressable, distributed, backwards compatible since 2005. The tooling around it weighs more than the tool itself.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: git",
+    "datePublished": "2025-12-23",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-git",
+    "description": "Linus Torvalds built git in ten days. 10 MB, no server, no database, no dependencies beyond libc. Content-addressable, distributed, backwards compatible since 2005. The tooling around it weighs more than the tool itself.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2025-12-23">23 December 2025</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: git</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">git</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 02</p>
+
+        <p>In April 2005, Linus Torvalds sat down and, in what one might
+            charitably describe as a fit of productive rage, wrote a version
+            control system. Ten days later, git hosted its own source code.
+            Twenty years on, it powers over
+            <a href="https://github.blog/news-insights/octoverse/octoverse-2024/" target="_blank" rel="noopener">100 million repositories</a>
+            on GitHub alone. It has never shipped a breaking change. The
+            binary is roughly 10 MB. It requires no server, no database,
+            and no dependencies beyond libc. The rest of the industry, in
+            the same twenty years, has built an entire civilisation of
+            runners, registries, and orchestration layers on top of it.
+            The foundation weighs less than the scaffolding.</p>
+
+        <h2>The Provocation</h2>
+
+        <p>The origin story is, by any reasonable measure, absurd. The Linux
+            kernel had been using
+            <a href="https://www.bitkeeper.org/" target="_blank" rel="noopener">BitKeeper</a>,
+            a proprietary distributed version control system, since 2002.
+            Larry McVoy, BitKeeper&#x2019;s creator, offered free licences to
+            open-source projects on the condition that nobody reverse-engineered
+            the protocol. In 2005, Andrew Tridgell (of Samba fame) did precisely
+            that, telnetted to a BitKeeper server, typed <code>help</code>, and
+            recorded the output. McVoy revoked the free licence. The kernel
+            community, the largest collaborative software project in human
+            history, suddenly had no version control system.</p>
+
+        <p>Torvalds evaluated the existing alternatives. CVS was, in his
+            <a href="https://www.youtube.com/watch?v=4XpnKHJAok8" target="_blank" rel="noopener">own words</a>,
+            the example of what not to build. Subversion aimed to be
+            &#x201C;CVS done right,&#x201D; which he considered to be missing the
+            point entirely. Nothing met his requirements: performance,
+            distributed operation, data integrity, and the ability to
+            handle the kernel&#x2019;s scale (tens of thousands of files,
+            thousands of contributors, a history measured in hundreds of
+            thousands of commits). So he wrote his own. He named it
+            &#x201C;git,&#x201D; which in British English is slang for an
+            unpleasant person, and which Torvalds has cheerfully acknowledged
+            was self-referential.</p>
+
+        <h2>The Architecture</h2>
+
+        <p>What makes git remarkable is not the interface. The interface, as
+            anyone who has attempted to explain <code>git rebase --onto</code>
+            to a colleague will confirm, is not git&#x2019;s strongest suit. The
+            beauty is in the data model.</p>
+
+        <p>Git is, at its core, a
+            <a href="https://git-scm.com/book/en/v2/Git-Internals-Git-Objects" target="_blank" rel="noopener">content-addressable filesystem</a>.
+            Every piece of data is stored as an object, identified by the
+            SHA-1 hash of its content. There are precisely four object types:
+            blobs (file content), trees (directory listings), commits (snapshots
+            with metadata), and tags (named references to commits). That is the
+            entire data model. Four nouns. Everything else in git, every branch,
+            every merge, every rebase, every cherry-pick, is an operation on
+            these four objects.</p>
+
+        <!-- SVG 1: Git object model -->
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Git&#x2019;s object model: four object types form the entire data structure. Blobs store content, trees reference blobs and other trees, commits reference trees and parent commits, and refs point to commits. Content-addressable via SHA-1 hashes." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #git-obj .git-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #git-obj .git-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #git-obj .git-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #git-obj .git-desc { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #git-obj .git-hash { font: 400 9px/1 ui-monospace, monospace; fill: var(--accent); }
+                #git-obj .git-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #git-obj .git-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #git-obj .git-box-accent { fill: var(--accent); opacity: 0.08; stroke: var(--accent); stroke-width: 1; rx: 4; }
+                #git-obj .git-arrow { fill: none; stroke: var(--muted); stroke-width: 1.2; marker-end: url(#git-arrowhead); }
+                #git-obj .git-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <defs>
+                <marker id="git-arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--muted)" stroke-width="1"/>
+                </marker>
+            </defs>
+            <g id="git-obj">
+                <text class="git-title" x="260" y="20" text-anchor="middle">The Object Model</text>
+                <text class="git-sub" x="260" y="36" text-anchor="middle">Four types. Every operation derives from these.</text>
+
+                <!-- ref (leftmost) -->
+                <rect class="git-box" x="20" y="60" width="100" height="60"/>
+                <text class="git-accent" x="70" y="82" text-anchor="middle">ref</text>
+                <text class="git-desc" x="70" y="98" text-anchor="middle">Named pointer</text>
+                <text class="git-hash" x="70" y="112" text-anchor="middle">main, v2.0</text>
+
+                <!-- commit -->
+                <rect class="git-box-accent" x="160" y="60" width="120" height="60"/>
+                <text class="git-accent" x="220" y="82" text-anchor="middle">commit</text>
+                <text class="git-desc" x="220" y="98" text-anchor="middle">Snapshot + metadata</text>
+                <text class="git-hash" x="220" y="112" text-anchor="middle">a1b2c3...</text>
+
+                <!-- tree -->
+                <rect class="git-box" x="320" y="60" width="100" height="60"/>
+                <text class="git-label" x="370" y="82" text-anchor="middle">tree</text>
+                <text class="git-desc" x="370" y="98" text-anchor="middle">Directory listing</text>
+                <text class="git-hash" x="370" y="112" text-anchor="middle">d4e5f6...</text>
+
+                <!-- blob -->
+                <rect class="git-box" x="440" y="140" width="60" height="60"/>
+                <text class="git-label" x="470" y="164" text-anchor="middle">blob</text>
+                <text class="git-desc" x="470" y="180" text-anchor="middle">Content</text>
+                <text class="git-hash" x="470" y="194" text-anchor="middle">7a8b...</text>
+
+                <!-- sub-tree -->
+                <rect class="git-box" x="320" y="140" width="100" height="60"/>
+                <text class="git-label" x="370" y="164" text-anchor="middle">tree</text>
+                <text class="git-desc" x="370" y="180" text-anchor="middle">Subdirectory</text>
+                <text class="git-hash" x="370" y="194" text-anchor="middle">c9d0e1...</text>
+
+                <!-- parent commit -->
+                <rect class="git-box" x="160" y="140" width="120" height="60"/>
+                <text class="git-label" x="220" y="164" text-anchor="middle">commit</text>
+                <text class="git-desc" x="220" y="180" text-anchor="middle">Parent</text>
+                <text class="git-hash" x="220" y="194" text-anchor="middle">f2e3d4...</text>
+
+                <!-- Arrows: ref -> commit -->
+                <path class="git-arrow" d="M120,90 L158,90"/>
+
+                <!-- commit -> tree -->
+                <path class="git-arrow" d="M280,90 L318,90"/>
+
+                <!-- commit -> parent commit -->
+                <path class="git-arrow" d="M220,120 L220,138"/>
+
+                <!-- tree -> blob -->
+                <path class="git-arrow" d="M420,100 L452,138"/>
+
+                <!-- tree -> sub-tree -->
+                <path class="git-arrow" d="M370,120 L370,138"/>
+
+                <!-- sub-tree -> blob -->
+                <path class="git-arrow" d="M420,170 L438,170"/>
+
+                <!-- Legend -->
+                <line x1="20" y1="230" x2="500" y2="230" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+
+                <text class="git-label" x="20" y="254">The principle:</text>
+                <text class="git-desc" x="20" y="270">Same content &#x2192; same hash &#x2192; stored once.</text>
+                <text class="git-desc" x="20" y="286">Change one byte &#x2192; different hash &#x2192; new object.</text>
+                <text class="git-desc" x="20" y="302">Corruption changes the hash &#x2192; instant detection.</text>
+
+                <text class="git-note" x="260" y="330" text-anchor="middle">Content-addressable. Immutable. Verifiable. Four types.</text>
+            </g>
+        </svg>
+
+        <p>The content-addressable design is what gives git its integrity
+            guarantees. If a single byte changes anywhere in the history,
+            the hash changes. If the hash changes, every object that
+            references it must also change. Corruption is not merely
+            detectable; it is structurally impossible to hide. You cannot
+            tamper with a git repository without altering every hash from
+            the point of tampering to the present. This is not a feature
+            that was bolted on after a security audit. It is the
+            architecture itself.</p>
+
+        <h2>The Distribution</h2>
+
+        <p>Before git, version control was centralised. Subversion, CVS,
+            Perforce: they all operated on the assumption that there was
+            one true repository, stored on a server, and developers would
+            check out working copies. The server was the authority. If the
+            server was down, you could not commit. If the server was lost,
+            you had lost your history. The entire development workflow
+            depended on network connectivity to a single point of failure.</p>
+
+        <p>Git inverted this. Every clone is a complete repository. Every
+            developer has the full history, every branch, every tag, every
+            commit, stored locally. You can commit, branch, merge, bisect,
+            and search history on an aeroplane with the Wi-Fi off. The
+            &#x201C;server&#x201D; in a git workflow (GitHub, GitLab, Bitbucket)
+            is not architecturally special. It is simply another clone that
+            everyone has agreed to treat as canonical. The protocol does not
+            enforce this convention. The humans do.</p>
+
+        <!-- SVG 2: Centralised vs Distributed -->
+        <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Centralised version control (SVN) uses a star topology with a single server. Distributed version control (git) gives every node a full copy, forming a mesh. If the central node fails in SVN, work stops. If any node fails in git, every other node still has the complete history." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #git-dist .git-d-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #git-dist .git-d-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #git-dist .git-d-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #git-dist .git-d-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #git-dist .git-d-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #git-dist .git-d-server { fill: var(--accent); opacity: 0.15; }
+                #git-dist .git-d-client { fill: var(--muted); opacity: 0.10; }
+                #git-dist .git-d-full { fill: var(--accent); opacity: 0.10; }
+                #git-dist .git-d-line { stroke: var(--border); stroke-width: 1; }
+                #git-dist .git-d-mesh { stroke: var(--accent); stroke-width: 0.8; opacity: 0.4; }
+                #git-dist .git-d-x { stroke: var(--accent); stroke-width: 2; }
+            </style>
+            <g id="git-dist">
+                <text class="git-d-title" x="260" y="20" text-anchor="middle">Centralised vs Distributed</text>
+                <text class="git-d-sub" x="260" y="36" text-anchor="middle">Star topology vs full-copy mesh</text>
+
+                <!-- LEFT: Centralised (SVN) -->
+                <text class="git-d-label" x="130" y="62" text-anchor="middle">SVN / CVS / Perforce</text>
+
+                <!-- Server node (centre) -->
+                <circle class="git-d-server" cx="130" cy="150" r="28"/>
+                <circle cx="130" cy="150" r="28" fill="none" stroke="var(--accent)" stroke-width="1"/>
+                <text class="git-d-accent" x="130" y="154" text-anchor="middle">Server</text>
+
+                <!-- Client nodes -->
+                <circle class="git-d-client" cx="50" cy="90" r="18"/>
+                <circle cx="50" cy="90" r="18" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <text class="git-d-note" x="50" y="94" text-anchor="middle">WC</text>
+
+                <circle class="git-d-client" cx="210" cy="90" r="18"/>
+                <circle cx="210" cy="90" r="18" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <text class="git-d-note" x="210" y="94" text-anchor="middle">WC</text>
+
+                <circle class="git-d-client" cx="50" cy="210" r="18"/>
+                <circle cx="50" cy="210" r="18" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <text class="git-d-note" x="50" y="214" text-anchor="middle">WC</text>
+
+                <circle class="git-d-client" cx="210" cy="210" r="18"/>
+                <circle cx="210" cy="210" r="18" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <text class="git-d-note" x="210" y="214" text-anchor="middle">WC</text>
+
+                <!-- Lines to server -->
+                <line class="git-d-line" x1="68" y1="98" x2="104" y2="132"/>
+                <line class="git-d-line" x1="192" y1="98" x2="156" y2="132"/>
+                <line class="git-d-line" x1="68" y1="202" x2="104" y2="168"/>
+                <line class="git-d-line" x1="192" y1="202" x2="156" y2="168"/>
+
+                <!-- Failure indicator -->
+                <text class="git-d-note" x="130" y="256" text-anchor="middle">Server down?</text>
+                <text class="git-d-accent" x="130" y="272" text-anchor="middle">Work stops.</text>
+
+                <!-- Divider -->
+                <line x1="260" y1="55" x2="260" y2="290" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+
+                <!-- RIGHT: Distributed (git) -->
+                <text class="git-d-label" x="390" y="62" text-anchor="middle">git</text>
+
+                <!-- All nodes are full repos -->
+                <circle class="git-d-full" cx="390" cy="100" r="22"/>
+                <circle cx="390" cy="100" r="22" fill="none" stroke="var(--accent)" stroke-width="1"/>
+                <text class="git-d-note" x="390" y="104" text-anchor="middle">Full</text>
+
+                <circle class="git-d-full" cx="310" cy="150" r="22"/>
+                <circle cx="310" cy="150" r="22" fill="none" stroke="var(--accent)" stroke-width="1"/>
+                <text class="git-d-note" x="310" y="154" text-anchor="middle">Full</text>
+
+                <circle class="git-d-full" cx="470" cy="150" r="22"/>
+                <circle cx="470" cy="150" r="22" fill="none" stroke="var(--accent)" stroke-width="1"/>
+                <text class="git-d-note" x="470" y="154" text-anchor="middle">Full</text>
+
+                <circle class="git-d-full" cx="340" cy="220" r="22"/>
+                <circle cx="340" cy="220" r="22" fill="none" stroke="var(--accent)" stroke-width="1"/>
+                <text class="git-d-note" x="340" y="224" text-anchor="middle">Full</text>
+
+                <circle class="git-d-full" cx="440" cy="220" r="22"/>
+                <circle cx="440" cy="220" r="22" fill="none" stroke="var(--accent)" stroke-width="1"/>
+                <text class="git-d-note" x="440" y="224" text-anchor="middle">Full</text>
+
+                <!-- Mesh connections -->
+                <line class="git-d-mesh" x1="372" y1="112" x2="328" y2="136"/>
+                <line class="git-d-mesh" x1="408" y1="112" x2="452" y2="136"/>
+                <line class="git-d-mesh" x1="328" y1="164" x2="350" y2="204"/>
+                <line class="git-d-mesh" x1="452" y1="164" x2="430" y2="204"/>
+                <line class="git-d-mesh" x1="362" y1="220" x2="418" y2="220"/>
+                <line class="git-d-mesh" x1="390" y1="122" x2="390" y2="196" opacity="0"/>
+                <line class="git-d-mesh" x1="330" y1="158" x2="422" y2="212"/>
+                <line class="git-d-mesh" x1="450" y1="158" x2="358" y2="212"/>
+
+                <!-- Benefit -->
+                <text class="git-d-note" x="390" y="262" text-anchor="middle">Any node down?</text>
+                <text class="git-d-accent" x="390" y="278" text-anchor="middle">Everyone has everything.</text>
+
+                <!-- Bottom note -->
+                <line x1="20" y1="298" x2="500" y2="298" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+                <text class="git-d-note" x="260" y="316" text-anchor="middle">WC = Working Copy (no history). Full = complete repository with all history.</text>
+            </g>
+        </svg>
+
+        <p>This design decision was not academic. Torvalds built git to
+            solve a specific problem: the Linux kernel has contributors
+            across every timezone, many of them working offline, all of
+            them generating patches that must eventually converge into
+            a single tree. A centralised system would have been a
+            bottleneck. A distributed system turned every contributor
+            into a potential backup. The architecture matched the
+            social structure of the project.</p>
+
+        <h2>The Custodian</h2>
+
+        <p>Torvalds wrote git. He did not maintain it. In July 2005, three
+            months after the first commit,
+            <a href="https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git" target="_blank" rel="noopener">Junio C. Hamano</a>
+            took over as maintainer. He has held that position for twenty
+            years. This is not a footnote; it is the central fact of
+            git&#x2019;s success.</p>
+
+        <p>Torvalds built a prototype that worked. Hamano turned it into
+            infrastructure that lasts. He has reviewed every merge into the
+            mainline. He has maintained backwards compatibility across
+            twenty years of releases. He has shepherded the codebase through
+            the transition from SHA-1 to
+            <a href="https://git-scm.com/docs/hash-function-transition" target="_blank" rel="noopener">SHA-256</a>,
+            a cryptographic migration that most projects would treat as
+            a licence to ship a breaking v2. Git is doing it without
+            breaking a single workflow. Code written against git in 2005
+            still works in 2025. Not approximately. Exactly.</p>
+
+        <p>The industry rarely celebrates maintainers. It celebrates
+            creators, founders, people who &#x201C;ship fast.&#x201D; Hamano
+            did not ship fast. He shipped correctly, repeatedly, for two
+            decades. The Linux kernel may be Torvalds&#x2019;s cathedral,
+            but git is Hamano&#x2019;s.</p>
+
+        <h2>The Footprint</h2>
+
+        <p>The git binary is approximately 10 MB. It depends on libc,
+            zlib for compression, and OpenSSL or a compatible library for
+            transport encryption. That is it. No runtime. No virtual
+            machine. No garbage collector. No package manager pulling
+            in transitive dependencies from a registry that anyone can
+            publish to.</p>
+
+        <p>10 MB to track every file you will ever write. To branch
+            instantaneously (a branch is a 41-byte file containing a
+            SHA-1 hash). To merge with a three-way algorithm that handles
+            the majority of conflicts automatically. To bisect a regression
+            across ten thousand commits in O(log n) steps. To search the
+            entire history of a project with <code>git log -S</code> and
+            find the exact commit that introduced or removed a string.</p>
+
+        <p>For context: a fresh <code>create-react-app</code> installation
+            (before you have written a single component) weighs
+            approximately 300 MB across 2,839 packages. Git tracks
+            the entire Linux kernel, 35 million lines of code with
+            a history spanning two decades, in a <code>.git</code>
+            directory smaller than that.</p>
+
+        <h2>The Contrast</h2>
+
+        <p>Git itself is 10 MB. The infrastructure the industry has built
+            around git is considerably larger. GitLab runners. Docker
+            registries. Kubernetes clusters to host the runners that run
+            the containers that execute the pipelines that test the code
+            that git already tracks. Branch protection rules implemented in
+            a SaaS platform that charges per seat for the privilege of
+            enforcing policies on a tool that is free. Code review
+            interfaces that require a browser, a login, an internet
+            connection, and occasionally a prayer to render the diff
+            that <code>git diff</code> would have shown you locally
+            in milliseconds.</p>
+
+        <p>The pipeline breaks every sprint. Not because git broke. Git
+            has never broken. The pipeline breaks because the sixteen
+            layers of abstraction between &#x201C;developer pushes
+            code&#x201D; and &#x201C;code runs in production&#x201D; each
+            introduce their own failure modes, their own configuration
+            languages, their own versioning schemes, and their own
+            opinions about how software should be deployed. Git&#x2019;s
+            opinion is simple: here is the content, here is the hash,
+            here is the history. What you do with it is your problem.</p>
+
+        <p>This is not git&#x2019;s limitation. This is git&#x2019;s
+            discipline. A tool that tries to solve every problem solves
+            none of them well. A tool that solves one problem, content
+            tracking, and solves it completely, becomes the foundation
+            upon which everything else is built. The foundation does not
+            need to know about CI/CD. The CI/CD needs to know about the
+            foundation.</p>
+
+        <h2>The Longevity</h2>
+
+        <p>Git has been backwards compatible since 2005. Repositories
+            created twenty years ago can be cloned, inspected, and
+            worked on with the latest release. The
+            <a href="https://git-scm.com/docs/gitformat-pack" target="_blank" rel="noopener">pack format</a>
+            has evolved (packfile bitmaps, multi-pack indices, commit
+            graphs), but the fundamental object model has not changed.
+            A blob is still a blob. A tree still references blobs and
+            other trees. A commit still references a tree and zero or
+            more parents.</p>
+
+        <p>Twenty years of backwards compatibility in a tool used by
+            millions of developers across every operating system,
+            every programming language, every industry. The
+            <a href="https://lore.kernel.org/git/" target="_blank" rel="noopener">mailing list</a>
+            still operates. Patches are still reviewed. The release
+            cadence is still regular. No venture capital. No
+            acquisition. No pivot to enterprise. No pivot at all.
+            Just a content-addressable filesystem that does what it
+            says and says what it does.</p>
+
+        <blockquote>
+            <p>10 MB. No server. No database. No dependencies. Twenty
+                years, zero breaking changes. They built what lasts.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>By the numbers</strong></p>
+            <p>The git binary: ~10 MB. Time from first line of code to
+                self-hosting: 10 days (first commit:
+                <a href="https://github.com/git/git/commit/e83c5163316f89bfbde7d9ab23ca2e25604af290" target="_blank" rel="noopener">e83c516</a>,
+                3 April 2005). Maintainer handover to Junio Hamano:
+                July 2005, still active. GitHub repositories:
+                <a href="https://github.blog/news-insights/octoverse/octoverse-2024/" target="_blank" rel="noopener">100+ million</a>.
+                Object types: 4 (blob, tree, commit, tag). A git branch:
+                41 bytes (one SHA-1 hash plus a newline). The SHA-256
+                transition: in progress, backwards compatible, no breaking
+                changes. <code>create-react-app node_modules</code>:
+                ~300 MB. The <code>.git</code> directory of the Linux kernel:
+                ~3.5 GB for 35 million lines of code and 20 years of history.
+                Ratio of foundation to scaffolding: instructive.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
