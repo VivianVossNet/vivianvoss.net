@@ -1,0 +1,379 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: OpenSSH &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Theo de Raadt forked SSH in 1999. The original was accumulating licence restrictions and complexity. OpenSSH stripped it down, audited everything, and assumed the network is hostile. 32 million servers. 25 years. One serious vulnerability. The paranoia paid off.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-openssh{( endslot )}
+
+{( slot og-title )}Technical Beauty: OpenSSH &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Theo de Raadt forked SSH in 1999. OpenSSH stripped it down, audited everything, and assumed the network is hostile. 32 million servers. 25 years. One serious vulnerability. The paranoia paid off.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: OpenSSH",
+    "datePublished": "2026-02-01",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-openssh",
+    "description": "Theo de Raadt forked SSH in 1999. The original was accumulating licence restrictions and complexity. OpenSSH stripped it down, audited everything, and assumed the network is hostile. 32 million servers. 25 years. One serious vulnerability. The paranoia paid off.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-01">1 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: OpenSSH</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">ssh</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 10</p>
+
+        <p>In 1999, the original SSH implementation was drifting in a
+            direction that open-source projects drift when a commercial
+            entity starts adding licence restrictions. Features accumulated.
+            The codebase grew. Audit coverage did not keep pace. The tool
+            that was supposed to secure every remote connection was itself
+            becoming a liability.</p>
+
+        <p><a href="https://en.wikipedia.org/wiki/Theo_de_Raadt" target="_blank" rel="noopener">Theo de Raadt</a>
+            and the OpenBSD team looked at this trajectory and did what they
+            have always done when software disappoints them: they forked it,
+            stripped it down, and audited every line. The result is OpenSSH.
+            It runs on
+            <a href="https://www.shodan.io/search?query=ssh" target="_blank" rel="noopener">32 million internet-facing servers</a>.
+            It is the default on every Linux distribution, every BSD, macOS,
+            and Windows since 2018. Not because it is feature-rich. Because
+            it is correct.</p>
+
+        <h2>The Architect</h2>
+
+        <p>De Raadt founded the OpenBSD project in 1995 with a single
+            conviction: security is not a feature you add; it is a property
+            that emerges from removing everything that is not necessary. He
+            has maintained this position for three decades with a consistency
+            that borders on the geological. The OpenBSD team does not ship
+            code that has not been audited. They do not enable features by
+            default that increase attack surface. They do not trust vendor
+            claims about hardware, about compilers, about operating system
+            guarantees.</p>
+
+        <p>&#x201C;I have always felt that vendor systems were not designed for
+            quality.&#x201D; That is not cynicism. It is an engineering
+            observation with thirty years of evidence behind it.</p>
+
+        <h2>The Problem</h2>
+
+        <p>Every server that faces the internet exposes a surface. The
+            question is not whether attackers will probe it but how little
+            they will find when they do. The original SSH solved the
+            encryption problem: your credentials no longer crossed the wire
+            in plain text. But the daemon itself was a monolithic process
+            running as root. If an attacker found a vulnerability in the
+            parsing code, in the key exchange, in any of the thousand lines
+            that handle network input, they owned the machine. Root. Game
+            over. The lock on the front door was excellent, but the entire
+            house was a single room.</p>
+
+        <!-- OpenSSH privilege separation architecture -->
+        <svg id="ssh-privsep" viewBox="0 0 520 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="OpenSSH privilege separation architecture. A monolithic SSH daemon on the left runs entirely as root: one vulnerability means full compromise. On the right, OpenSSH splits into a small privileged monitor and a large unprivileged worker. 75 per cent of code runs without root. An attacker who compromises the worker is contained by the separation boundary." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ssh-privsep .sp-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-privsep .sp-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-privsep .sp-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ssh-privsep .sp-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ssh-privsep .sp-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                #ssh-privsep .sp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #ssh-privsep .sp-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                #ssh-privsep .sp-fill-warn { fill: var(--muted); opacity: 0.06; rx: 3; }
+                #ssh-privsep .sp-arrow { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#sp-ah); }
+                #ssh-privsep .sp-arrow-accent { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#sp-ah-a); }
+                #ssh-privsep .sp-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 3; }
+                #ssh-privsep .sp-danger { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: oklch(55% 0.2 25); }
+                #ssh-privsep .sp-wall { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 3; }
+                #ssh-privsep .sp-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <defs>
+                <marker id="sp-ah" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+                <marker id="sp-ah-a" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <text class="sp-title" x="260" y="20" text-anchor="middle">Privilege Separation</text>
+
+            <!-- LEFT: Monolithic -->
+            <text class="sp-label" x="125" y="46" text-anchor="middle">Monolithic sshd</text>
+            <text class="sp-sub" x="125" y="60" text-anchor="middle">Everything runs as root</text>
+
+            <rect class="sp-fill-warn" x="45" y="72" width="160" height="180"/>
+            <rect class="sp-box" x="45" y="72" width="160" height="180"/>
+            <text class="sp-mono" x="125" y="92" text-anchor="middle">root (PID 1)</text>
+            <line x1="65" y1="100" x2="185" y2="100" stroke="var(--border)" stroke-width="0.5"/>
+            <text class="sp-mono" x="125" y="118" text-anchor="middle">Key exchange</text>
+            <text class="sp-mono" x="125" y="134" text-anchor="middle">Authentication</text>
+            <text class="sp-mono" x="125" y="150" text-anchor="middle">Channel handling</text>
+            <text class="sp-mono" x="125" y="166" text-anchor="middle">Network parsing</text>
+            <text class="sp-mono" x="125" y="182" text-anchor="middle">Compression</text>
+            <text class="sp-mono" x="125" y="198" text-anchor="middle">Session management</text>
+            <text class="sp-mono" x="125" y="218" text-anchor="middle">Packet dispatch</text>
+            <text class="sp-mono" x="125" y="240" text-anchor="middle">100% as root</text>
+
+            <text class="sp-danger" x="125" y="274" text-anchor="middle">One bug = full compromise</text>
+
+            <!-- Divider -->
+            <line class="sp-divider" x1="260" y1="40" x2="260" y2="320"/>
+
+            <!-- RIGHT: OpenSSH privsep -->
+            <text class="sp-accent" x="395" y="46" text-anchor="middle">OpenSSH privsep</text>
+            <text class="sp-sub" x="395" y="60" text-anchor="middle">Split at the trust boundary</text>
+
+            <!-- Privileged (small) -->
+            <rect class="sp-fill" x="315" y="72" width="160" height="60"/>
+            <rect class="sp-box" x="315" y="72" width="160" height="60" stroke="var(--accent)"/>
+            <text class="sp-accent" x="395" y="90" text-anchor="middle">Privileged monitor</text>
+            <text class="sp-mono" x="395" y="106" text-anchor="middle">Authentication only</text>
+            <text class="sp-mono" x="395" y="122" text-anchor="middle">~25% of code</text>
+
+            <!-- Separation wall -->
+            <line class="sp-wall" x1="315" y1="148" x2="475" y2="148"/>
+            <text class="sp-accent" x="395" y="162" text-anchor="middle">&#x25A0; separation boundary</text>
+
+            <!-- Unprivileged (large) -->
+            <rect class="sp-fill" x="315" y="172" width="160" height="80"/>
+            <rect class="sp-box" x="315" y="172" width="160" height="80" stroke="var(--accent)"/>
+            <text class="sp-accent" x="395" y="192" text-anchor="middle">Unprivileged worker</text>
+            <text class="sp-mono" x="395" y="208" text-anchor="middle">Network, parsing, channels</text>
+            <text class="sp-mono" x="395" y="224" text-anchor="middle">Sandboxed &#x2022; chroot &#x2022; no root</text>
+            <text class="sp-mono" x="395" y="242" text-anchor="middle">~75% of code</text>
+
+            <text class="sp-accent" x="395" y="274" text-anchor="middle">Bug in worker &#x2260; root access</text>
+
+            <line x1="30" y1="302" x2="490" y2="302" stroke="var(--border)" stroke-width="0.5"/>
+            <text class="sp-note" x="260" y="324" text-anchor="middle">Not &#x201C;how do we prevent bugs?&#x201D; but &#x201C;how do we contain them when they exist?&#x201D;</text>
+            <text class="sp-note" x="260" y="340" text-anchor="middle">Privilege separation since 2002. Sandboxing since 2012.</text>
+        </svg>
+
+        <h2>The Architecture</h2>
+
+        <p>In 2002, Niels Provos and the OpenSSH team introduced
+            <a href="https://css.csail.mit.edu/6.858/2024/readings/openssh-privsep.pdf" target="_blank" rel="noopener">privilege separation</a>.
+            The design is disarmingly simple. When a connection arrives, the
+            SSH daemon forks into two processes. One is the <em>privileged
+            monitor</em>: a small, tightly audited process that handles
+            authentication and retains root access. The other is the
+            <em>unprivileged worker</em>: it handles everything else,
+            network parsing, channel management, compression, packet
+            dispatch, all running in a chroot with no root privileges and,
+            since 2012,
+            <a href="https://jfrog.com/blog/examining-openssh-sandboxing-and-privilege-separation-attack-surface-analysis/" target="_blank" rel="noopener">sandboxed by the operating system</a>.</p>
+
+        <p>Seventy-five per cent of the codebase runs unprivileged. The
+            attack surface that faces the network, the parsing, the
+            decompression, the protocol negotiation, all the code most
+            likely to contain a vulnerability, runs without the ability to
+            do anything catastrophic even if compromised. The privileged
+            monitor communicates with the worker through a narrow, well-defined
+            interface. It does not trust the worker. It validates every
+            request. The architecture assumes that the unprivileged code
+            <em>will</em> be compromised, and contains the damage when it
+            is.</p>
+
+        <p>This is not defence in depth. Defence in depth implies layers
+            of mitigation around a single process. This is structural
+            separation. The question is not &#x201C;how do we prevent
+            bugs?&#x201D; but &#x201C;how do we ensure that bugs in 75 per
+            cent of the codebase cannot escalate to root?&#x201D;</p>
+
+        <h2>The Track Record</h2>
+
+        <p>Twenty-five years in production. Default on every major
+            operating system. Thirty-two million internet-facing instances
+            counted by
+            <a href="https://www.shodan.io/search?query=ssh" target="_blank" rel="noopener">Shodan</a>.
+            And for eighteen of those years, not a single remote code
+            execution vulnerability.</p>
+
+        <p>In 2024, that record ended. CVE-2024-6387, named
+            <a href="https://www.qualys.com/regresshion-cve-2024-6387" target="_blank" rel="noopener">regreSSHion</a>
+            by the Qualys research team, was a signal handler race condition
+            in the authentication timeout code. It was a regression: a bug
+            that had been fixed in 2006, reintroduced in 2020 during a
+            refactor. The irony was noted. The patch shipped within days.
+            The vulnerability required approximately 10,000 connection
+            attempts over several hours to exploit on 64-bit systems, a
+            theoretical threat that was nonetheless taken seriously because
+            the OpenBSD team does not grade vulnerabilities on a curve.</p>
+
+        <!-- OpenSSH security timeline -->
+        <svg id="ssh-timeline" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="OpenSSH security timeline from 1999 to 2026. A 27-year horizontal bar shows continuous stable operation. Key milestones: 1999 fork from SSH, 2002 privilege separation, 2012 sandboxing, 2018 Windows ships OpenSSH, 2024 first RCE (regreSSHion, quickly patched). 32 million servers trust this record." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ssh-timeline .st-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-timeline .st-label { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ssh-timeline .st-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ssh-timeline .st-year { font: 600 10px/1 ui-monospace, monospace; fill: var(--text); }
+                #ssh-timeline .st-dot { fill: var(--accent); }
+                #ssh-timeline .st-dot-warn { fill: oklch(55% 0.2 25); }
+                #ssh-timeline .st-line { stroke: var(--border); stroke-width: 2; }
+                #ssh-timeline .st-line-accent { stroke: var(--accent); stroke-width: 2; }
+                #ssh-timeline .st-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ssh-timeline .st-warn { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: oklch(55% 0.2 25); }
+            </style>
+
+            <text class="st-title" x="260" y="20" text-anchor="middle">25 Years. One Incident.</text>
+
+            <!-- Main timeline bar -->
+            <line class="st-line-accent" x1="40" y1="80" x2="480" y2="80"/>
+
+            <!-- 1999: Fork -->
+            <circle class="st-dot" cx="58" cy="80" r="4"/>
+            <text class="st-year" x="58" y="70" text-anchor="middle">1999</text>
+            <text class="st-sub" x="58" y="100" text-anchor="middle">Fork</text>
+
+            <!-- 2002: Privsep -->
+            <circle class="st-dot" cx="146" cy="80" r="4"/>
+            <text class="st-year" x="146" y="70" text-anchor="middle">2002</text>
+            <text class="st-sub" x="146" y="100" text-anchor="middle">Privsep</text>
+
+            <!-- 2012: Sandbox -->
+            <circle class="st-dot" cx="284" cy="80" r="4"/>
+            <text class="st-year" x="284" y="70" text-anchor="middle">2012</text>
+            <text class="st-sub" x="284" y="100" text-anchor="middle">Sandbox</text>
+
+            <!-- 2018: Windows -->
+            <circle class="st-dot" cx="368" cy="80" r="4"/>
+            <text class="st-year" x="368" y="70" text-anchor="middle">2018</text>
+            <text class="st-sub" x="368" y="100" text-anchor="middle">Windows</text>
+
+            <!-- 2024: regreSSHion -->
+            <circle class="st-dot-warn" cx="450" cy="80" r="4"/>
+            <text class="st-year" x="450" y="70" text-anchor="middle">2024</text>
+            <text class="st-warn" x="450" y="100" text-anchor="middle">CVE</text>
+            <text class="st-sub" x="450" y="114" text-anchor="middle">Patched</text>
+
+            <!-- Span annotations -->
+            <line x1="58" y1="130" x2="450" y2="130" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3"/>
+            <text class="st-label" x="254" y="146" text-anchor="middle">18 years without a single RCE</text>
+
+            <!-- Stats -->
+            <text class="st-sub" x="260" y="176" text-anchor="middle">Default on Linux, macOS, BSD, Windows. 32 million internet-facing servers.</text>
+            <text class="st-sub" x="260" y="194" text-anchor="middle">The first serious vulnerability was a regression. It was patched in days.</text>
+            <text class="st-note" x="260" y="212" text-anchor="middle">Designed for paranoia. The paranoia paid off.</text>
+        </svg>
+
+        <p>Eighteen years without a remote code execution vulnerability
+            in the most attacked service on the internet. The comparison
+            writes itself. Apache httpd has had dozens. Sendmail, dozens
+            more. Microsoft&#x2019;s IIS has lost count. OpenSSH ran for
+            nearly two decades without a single critical remotely
+            exploitable flaw, and when one finally appeared, it was a
+            regression of a bug that had been fixed eighteen years earlier.
+            The original fix was correct. The reintroduction was the error.</p>
+
+        <h2>The Philosophy</h2>
+
+        <p>De Raadt&#x2019;s approach to security is often described as
+            paranoid, usually by people who mean it as a criticism. It is
+            not. It is a methodology. Assume the network is hostile. Assume
+            your own code contains bugs. Assume the compiler will not
+            optimise correctly. Assume the hardware will lie. Then design
+            so that none of these assumptions, when they prove correct, can
+            escalate to a catastrophe.</p>
+
+        <p>When the industry added features to SSH, de Raadt removed
+            attack surface. When vendors shipped default configurations
+            with everything enabled, OpenSSH shipped with the minimum
+            necessary to function. When other projects relied on automated
+            testing to catch bugs, the OpenBSD team read the code. Line by
+            line. Function by function. The audit culture is not a process
+            bolted on after development. It is development.</p>
+
+        <p>This philosophy extends beyond OpenSSH. The OpenBSD project
+            has produced
+            <a href="https://www.openssh.com/" target="_blank" rel="noopener">OpenSSH</a>,
+            OpenBGPD, OpenNTPD, LibreSSL, and the
+            <code>pledge()</code> and <code>unveil()</code> system calls.
+            Each one follows the same principle: less code, fewer
+            privileges, smaller attack surface. The project does not
+            accept that software must be complex to be capable.</p>
+
+        <h2>The Portability</h2>
+
+        <p>OpenSSH was written for OpenBSD. The rest of the world wanted
+            it too. Rather than compromise the clean codebase with
+            portability ifdefs, the project maintains a separate
+            <em>portable</em> layer that wraps the OpenBSD-native code
+            with compatibility shims for Linux, macOS, Solaris, AIX, and
+            everything else. The core code remains clean. The portability
+            complexity is quarantined. It is, in miniature, the same
+            architectural instinct that produced privilege separation:
+            separate the concerns, contain the mess.</p>
+
+        <p>In 2018, Microsoft shipped OpenSSH as a default component of
+            Windows 10. The most commercially paranoid operating system
+            vendor on earth chose the tool built by the most technically
+            paranoid open-source project on earth. The irony was lost on
+            no one. The quality was lost on no one either.</p>
+
+        <h2>The Reduction</h2>
+
+        <p>What makes OpenSSH technically beautiful is not its feature
+            list. The feature list is deliberately short. It is the
+            discipline of refusal. Every line of code is an opportunity
+            for a bug. Every feature is an expansion of attack surface.
+            Every default-enabled option is a door that an attacker might
+            find before you remember to close it.</p>
+
+        <p>De Raadt and the OpenBSD team have maintained this discipline
+            for twenty-five years. The result is not a tool that does
+            everything. It is a tool that does one thing, secure remote
+            access, with a correctness record that no comparable project
+            can match. Thirty-two million servers. One serious vulnerability
+            in a quarter century. Not because the code is perfect, but
+            because the architecture assumes it is not.</p>
+
+        <blockquote>
+            <p>Privilege separation. Sandboxing. Audited code. Minimal
+                defaults. 32 million servers. 25 years. The most paranoid
+                design philosophy in open source, vindicated by the only
+                metric that matters: the absence of catastrophe.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>On privilege separation as a design pattern</strong></p>
+            <p>Privilege separation is not unique to OpenSSH, but OpenSSH
+                demonstrated it at scale before anyone else. The pattern has
+                since been adopted by Chromium (site isolation), Postfix
+                (multiple cooperating daemons), and qmail. The core insight
+                remains: do not ask whether your code has bugs. Ask what
+                happens when the bug is found. If the answer is &#x201C;full
+                root compromise,&#x201D; your architecture is wrong,
+                regardless of how well-tested the code is. Sources:
+                <a href="https://css.csail.mit.edu/6.858/2024/readings/openssh-privsep.pdf" target="_blank" rel="noopener">Provos et al.</a>,
+                <a href="https://www.openssh.com/security.html" target="_blank" rel="noopener">OpenSSH Security</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

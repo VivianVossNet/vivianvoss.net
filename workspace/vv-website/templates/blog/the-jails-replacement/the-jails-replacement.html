@@ -1,0 +1,305 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Replacement: FreeBSD Jails &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Docker needs a daemon, image layers, a registry, overlay networks, and volume mounts. FreeBSD Jails need a directory and a config file. Native kernel isolation since 2000. ZFS snapshots in milliseconds. No daemon. No images. No layers. The replacement, not the alternative.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-jails-replacement{( endslot )}
+
+{( slot og-title )}The Replacement: FreeBSD Jails &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Docker needs a daemon, image layers, a registry, overlay networks, and volume mounts. FreeBSD Jails need a directory and a config file. Native kernel isolation since 2000. No daemon. No images. No layers.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Replacement: FreeBSD Jails",
+    "datePublished": "2026-01-28",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-jails-replacement",
+    "description": "Docker needs a daemon, image layers, a registry, overlay networks, and volume mounts. FreeBSD Jails need a directory and a config file. Native kernel isolation since 2000. ZFS snapshots in milliseconds. No daemon. No images. No layers. The replacement, not the alternative.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-28">28 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Replacement: FreeBSD Jails</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">docker</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Replacement</em> &#x25A0; Episode 03</p>
+
+        <p>Docker requires a daemon, a container runtime, image layers,
+            a build cache, a registry, volume mounts, and overlay
+            networks. The question that precedes all of this machinery
+            is deceptively simple: what are you actually trying to do?</p>
+
+        <p>Process isolation.</p>
+
+        <p>FreeBSD Jails have provided process isolation since
+            <a href="https://www.freebsd.org/releases/4.0R/announce/" target="_blank" rel="noopener">FreeBSD 4.0 in March 2000</a>.
+            Twenty-six years of kernel-level isolation, no daemon, no
+            images, no layers, no registry. A directory and a
+            configuration file. The technology predates Docker by
+            fourteen years. It predates Docker&#x2019;s creators&#x2019;
+            first commit by a comfortable margin.</p>
+
+        <h2>The Setup</h2>
+
+        <p>The entire lifecycle of a jail, from creation to service
+            management to destruction, fits on one screen. No YAML. No
+            Dockerfile. No multi-stage build. No registry login.</p>
+
+<pre><code># Create and enter
+jail -c name=web path=/jails/web \
+  ip4.addr=10.0.0.2 command=/bin/sh
+
+# Install software (from the host)
+pkg -j web install nginx
+
+# Copy configuration
+cp /templates/nginx.conf \
+  /jails/web/usr/local/etc/nginx/
+
+# Start the service inside the jail
+jexec web service nginx start
+
+# Start and stop the jail itself
+service jail start web
+service jail stop web</code></pre>
+
+        <p>That is the complete workflow. The jail is a directory tree
+            with its own process space, its own network address, and its
+            own package management. You can edit its files from the host.
+            You can make it read-only. You can snapshot it with ZFS
+            before every change and roll back in seconds if the change
+            was wrong.</p>
+
+<pre><code># Snapshot before a risky change
+zfs snapshot zroot/jails/web@before-update
+
+# Something broke? Rollback in seconds
+zfs rollback zroot/jails/web@before-update
+
+# Replicate to another server
+zfs send zroot/jails/web@backup \
+  | ssh mirror zfs recv tank/jails/web</code></pre>
+
+        <!-- Docker stack vs Jails comparison -->
+        <svg id="jails-compare" viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Docker versus FreeBSD Jails comparison. Left: Docker requires a Docker daemon, container runtime, image layers, build cache, registry, Dockerfile, volume mounts, overlay networks, and iptables rules. Right: FreeBSD Jails require jail.conf and a directory. Both achieve process isolation. The difference is the machinery required to get there." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #jails-compare .jc-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #jails-compare .jc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #jails-compare .jc-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #jails-compare .jc-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #jails-compare .jc-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                #jails-compare .jc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #jails-compare .jc-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                #jails-compare .jc-fill-warn { fill: var(--muted); opacity: 0.06; rx: 3; }
+                #jails-compare .jc-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 3; }
+                #jails-compare .jc-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <text class="jc-title" x="260" y="20" text-anchor="middle">Process Isolation: Two Approaches</text>
+
+            <!-- LEFT: Docker -->
+            <text class="jc-label" x="125" y="46" text-anchor="middle">Docker</text>
+            <text class="jc-sub" x="125" y="60" text-anchor="middle">Since 2013</text>
+
+            <rect class="jc-fill-warn" x="35" y="70" width="180" height="22"/>
+            <rect class="jc-box" x="35" y="70" width="180" height="22"/>
+            <text class="jc-mono" x="125" y="85" text-anchor="middle">Docker daemon</text>
+
+            <rect class="jc-fill-warn" x="35" y="96" width="180" height="22"/>
+            <rect class="jc-box" x="35" y="96" width="180" height="22"/>
+            <text class="jc-mono" x="125" y="111" text-anchor="middle">Container runtime</text>
+
+            <rect class="jc-fill-warn" x="35" y="122" width="180" height="22"/>
+            <rect class="jc-box" x="35" y="122" width="180" height="22"/>
+            <text class="jc-mono" x="125" y="137" text-anchor="middle">Image layers</text>
+
+            <rect class="jc-fill-warn" x="35" y="148" width="180" height="22"/>
+            <rect class="jc-box" x="35" y="148" width="180" height="22"/>
+            <text class="jc-mono" x="125" y="163" text-anchor="middle">Build cache</text>
+
+            <rect class="jc-fill-warn" x="35" y="174" width="180" height="22"/>
+            <rect class="jc-box" x="35" y="174" width="180" height="22"/>
+            <text class="jc-mono" x="125" y="189" text-anchor="middle">Image registry</text>
+
+            <rect class="jc-fill-warn" x="35" y="200" width="180" height="22"/>
+            <rect class="jc-box" x="35" y="200" width="180" height="22"/>
+            <text class="jc-mono" x="125" y="215" text-anchor="middle">Dockerfile</text>
+
+            <rect class="jc-fill-warn" x="35" y="226" width="180" height="22"/>
+            <rect class="jc-box" x="35" y="226" width="180" height="22"/>
+            <text class="jc-mono" x="125" y="241" text-anchor="middle">Volume mounts</text>
+
+            <rect class="jc-fill-warn" x="35" y="252" width="180" height="22"/>
+            <rect class="jc-box" x="35" y="252" width="180" height="22"/>
+            <text class="jc-mono" x="125" y="267" text-anchor="middle">Overlay networks</text>
+
+            <rect class="jc-fill-warn" x="35" y="278" width="180" height="22"/>
+            <rect class="jc-box" x="35" y="278" width="180" height="22"/>
+            <text class="jc-mono" x="125" y="293" text-anchor="middle">iptables rules</text>
+
+            <text class="jc-sub" x="125" y="316" text-anchor="middle">Daemon crashes &#x2192; all containers down</text>
+
+            <!-- Divider -->
+            <line class="jc-divider" x1="260" y1="40" x2="260" y2="340"/>
+
+            <!-- RIGHT: Jails -->
+            <text class="jc-accent" x="390" y="46" text-anchor="middle">FreeBSD Jails</text>
+            <text class="jc-sub" x="390" y="60" text-anchor="middle">Since 2000</text>
+
+            <rect class="jc-fill" x="310" y="70" width="160" height="22"/>
+            <rect class="jc-box" x="310" y="70" width="160" height="22" stroke="var(--accent)"/>
+            <text class="jc-accent" x="390" y="85" text-anchor="middle">jail.conf</text>
+
+            <rect class="jc-fill" x="310" y="96" width="160" height="22"/>
+            <rect class="jc-box" x="310" y="96" width="160" height="22" stroke="var(--accent)"/>
+            <text class="jc-accent" x="390" y="111" text-anchor="middle">A directory</text>
+
+            <!-- Empty space emphasising simplicity -->
+            <text class="jc-sub" x="390" y="160" text-anchor="middle">No daemon</text>
+            <text class="jc-sub" x="390" y="178" text-anchor="middle">No images</text>
+            <text class="jc-sub" x="390" y="196" text-anchor="middle">No layers</text>
+            <text class="jc-sub" x="390" y="214" text-anchor="middle">No registry</text>
+            <text class="jc-sub" x="390" y="232" text-anchor="middle">No overlay network</text>
+
+            <text class="jc-accent" x="390" y="268" text-anchor="middle">Native kernel isolation</text>
+            <text class="jc-accent" x="390" y="286" text-anchor="middle">ZFS snapshots in ms</text>
+            <text class="jc-accent" x="390" y="304" text-anchor="middle">VNET for real isolation</text>
+
+            <line x1="30" y1="336" x2="490" y2="336" stroke="var(--border)" stroke-width="0.5"/>
+            <text class="jc-note" x="260" y="356" text-anchor="middle">Both achieve process isolation. The difference is the machinery.</text>
+            <text class="jc-note" x="260" y="372" text-anchor="middle">The best container runtime is the one your kernel already has.</text>
+        </svg>
+
+        <h2>The Advantages</h2>
+
+        <p>No daemon. Docker runs a persistent daemon process. If the
+            daemon crashes, every container goes with it. Jails are
+            kernel-level constructs. There is no intermediary process to
+            fail. The kernel manages isolation directly. The jail starts
+            when you tell it to and stops when you tell it to. It does
+            not depend on a userspace daemon remaining healthy.</p>
+
+        <p>ZFS integration. A jail is a directory tree. A ZFS dataset
+            is a directory tree. The marriage is natural and powerful.
+            Snapshot a jail before an update. Clone a jail for testing.
+            Send a jail to another server with <code>zfs send</code>.
+            Roll back a failed deployment in seconds, not minutes. The
+            filesystem and the isolation layer speak the same language
+            because they were designed by the same community.</p>
+
+        <p>Shared base system. Fifty jails can share a single copy of
+            <code>/usr</code> via nullfs mounts. Each jail sees its own
+            root filesystem, but the underlying binaries are shared.
+            Docker achieves something similar with layers, but layers
+            bring complexity: cache invalidation, storage drivers,
+            overlay merges. Nullfs mounts are a filesystem feature. The
+            kernel handles them. There is nothing to misconfigure.</p>
+
+        <p>VNET for genuine network isolation. Each jail can have its
+            own virtual network stack: its own interfaces, its own
+            routing table, its own firewall rules. This is not an
+            overlay network bolted on top of iptables. It is a
+            kernel-native virtual network stack. You can inspect it
+            with the same tools you use for the host network. No
+            <code>docker network inspect</code>. Just <code>ifconfig</code>.</p>
+
+        <h2>The Honest Trade-offs</h2>
+
+        <p>Docker has its place. For local development with heterogeneous
+            teams, where the alternative is &#x201C;works on my
+            machine,&#x201D; Docker provides a common denominator.
+            For CI/CD pipelines that need disposable, reproducible
+            environments, Docker images are convenient. For organisations
+            that have already invested in Kubernetes, the ecosystem
+            integration is real.</p>
+
+        <p>What you lose with Jails: Docker Hub&#x2019;s eight million
+            images, and their eight million potential vulnerabilities.
+            The warm feeling of running someone else&#x2019;s mystery
+            binaries in production. &#x201C;Works on my machine&#x201D;
+            portability across Linux distributions, traded for
+            &#x201C;works on any FreeBSD&#x201D; consistency.</p>
+
+        <p>What you gain: native kernel isolation without a hypervisor.
+            ZFS integration that makes snapshots, clones, and
+            replication trivial. A shared base system. A network stack
+            you actually understand. Resource limits via
+            <code>rctl</code>. Everything in the kernel. Everything
+            documented. Everything stable for twenty-six years.</p>
+
+        <h2>The Evidence</h2>
+
+        <p><a href="https://papers.freebsd.org/2019/FOSDEM/looney-Netflix_and_FreeBSD/" target="_blank" rel="noopener">Netflix</a>
+            streams 15 per cent of global internet traffic on FreeBSD.
+            <a href="https://blog.whatsapp.com/1-million-is-so-2011" target="_blank" rel="noopener">WhatsApp</a>
+            scaled to two million connections per server on FreeBSD.
+            PlayStation 4 and PlayStation 5 run a FreeBSD derivative.
+            Juniper builds its router operating system on FreeBSD.
+            NetApp runs storage on FreeBSD.</p>
+
+        <p>The technology powers critical infrastructure worldwide.
+            It is not fashionable. FreeBSD has no marketing department.
+            It has no venture capital. It has engineers building open
+            source, quietly, correctly, for three decades. Docker has
+            VC millions and a marketing team. Draw your own
+            conclusions about which factor determines what you hear
+            about.</p>
+
+        <h2>The Reduction</h2>
+
+        <p>The best container runtime is the one your kernel already
+            has. Jails do not replace Docker in every context. They
+            replace the assumption that process isolation requires a
+            daemon, an image format, a registry, and an overlay
+            network. It does not. It requires a kernel that understands
+            isolation. FreeBSD&#x2019;s kernel has understood isolation
+            since 2000.</p>
+
+        <blockquote>
+            <p>A directory and a config file. No daemon. No images. No
+                layers. No registry. Native kernel isolation, ZFS
+                snapshots in milliseconds, and a network stack you can
+                actually read. Twenty-six years of stability. The
+                replacement, not the alternative.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>For Linux users: systemd-nspawn</strong></p>
+            <p>If FreeBSD is not an option, <code>systemd-nspawn</code>
+                provides surprisingly capable container isolation on
+                Linux without Docker. No daemon. No images. A directory
+                tree and a command. It is not as mature as Jails, and
+                it lacks ZFS&#x2019;s integration elegance, but it
+                demonstrates the same principle: your kernel already
+                knows how to isolate processes. The tooling is already
+                installed. Source:
+                <a href="https://www.freedesktop.org/software/systemd/man/systemd-nspawn.html" target="_blank" rel="noopener">systemd-nspawn</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

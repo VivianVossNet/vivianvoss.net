@@ -1,0 +1,262 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Replacement: From PHP to Rust &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="After 20 years of PHP, I needed something new for backend work. Everyone said Go. I looked at it. I chose Rust instead. The compiler is your private tutor. No null, no exceptions, no garbage collector. One binary. A twentieth of the memory.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-rust-replacement{( endslot )}
+
+{( slot og-title )}The Replacement: From PHP to Rust &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}After 20 years of PHP, I needed something new. Everyone said Go. I chose Rust. The compiler is your private tutor. No null, no exceptions, no garbage collector. One binary. A twentieth of the memory.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Replacement: From PHP to Rust",
+    "datePublished": "2026-01-27",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-rust-replacement",
+    "description": "After 20 years of PHP, I needed something new for backend work. Everyone said Go. I looked at it. I chose Rust instead. The compiler is your private tutor. No null, no exceptions, no garbage collector. One binary. A twentieth of the memory.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-27">27 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Replacement: From PHP to Rust</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">rust</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Replacement</em> &#x25A0; Episode 05</p>
+
+        <p>After twenty years of PHP, I needed something new for
+            backend work. The obvious choice, according to the
+            consensus, was Go. Everyone said so. The job listings said
+            so. The conference talks said so. I looked at Go. I spent
+            two weeks with it. I chose Rust instead.</p>
+
+        <p>This is not a theoretical comparison. This is the reasoning
+            of someone who writes server software for a living and had
+            to pick a tool for the next decade.</p>
+
+        <h2>Why Not Go</h2>
+
+        <p>Go felt like a step sideways. Yes, it compiles to a single
+            binary. Yes, it is fast. But the details accumulated into
+            a pattern that I recognised from languages I was trying to
+            leave behind.</p>
+
+        <p>The garbage collector. Someone else deciding when to pause
+            your programme. That is the programming equivalent of a
+            flatmate who takes out the rubbish whenever <em>they</em>
+            feel like it, not when the bin is actually full. You have
+            no control over the timing, no control over the duration,
+            and the pause happens precisely when you can least afford
+            it: under load.</p>
+
+        <p><code>if err != nil</code> in every second line. Error
+            handling from the 1970s, without the excuse of the 1970s.
+            No enums. No sum types. No pattern matching. Generics
+            arrived in 2022, a decade late and half-baked. The language
+            calls this &#x201C;simplicity.&#x201D; What it actually
+            does is push complexity into your application code, where
+            it is harder to audit and easier to get wrong.</p>
+
+        <h2>Why Rust</h2>
+
+        <p>Rust felt like a step forward. The first thing you notice
+            is the compiler. It does not merely reject your code. It
+            <em>teaches</em> you.</p>
+
+        <p>It tells you what is wrong. It tells you <em>why</em> it
+            is wrong. It tells you how to fix it. It gives you the
+            example code. Which other language does that? C gives you
+            &#x201C;Segmentation fault&#x201D; and wishes you luck.
+            C++ template errors span five hundred lines. Go says
+            <code>err != nil</code> and leaves you alone. PHP gives
+            you a stack trace if you are lucky.</p>
+
+        <p>Rust refuses to compile until your code is correct. That
+            is not a steep learning curve. That is a safety net with
+            instructions.</p>
+
+        <!-- Rust compiler as private tutor vs other languages -->
+        <svg id="rust-errors" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Error handling comparison across languages. C: Segmentation fault. C++: 500 lines of template errors. Go: if err != nil, repeated forever. PHP: stack trace if lucky. Rust: what is wrong, why it is wrong, how to fix it, example code. The compiler as private tutor." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #rust-errors .re-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #rust-errors .re-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #rust-errors .re-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #rust-errors .re-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #rust-errors .re-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                #rust-errors .re-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #rust-errors .re-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                #rust-errors .re-fill-warn { fill: var(--muted); opacity: 0.06; rx: 3; }
+                #rust-errors .re-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #rust-errors .re-danger { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: oklch(55% 0.2 25); }
+            </style>
+
+            <text class="re-title" x="260" y="20" text-anchor="middle">When Your Code Is Wrong</text>
+
+            <!-- Other languages -->
+            <rect class="re-fill-warn" x="30" y="36" width="200" height="26"/>
+            <rect class="re-box" x="30" y="36" width="200" height="26"/>
+            <text class="re-mono" x="40" y="53">C</text>
+            <text class="re-danger" x="80" y="53">Segmentation fault</text>
+
+            <rect class="re-fill-warn" x="30" y="68" width="200" height="26"/>
+            <rect class="re-box" x="30" y="68" width="200" height="26"/>
+            <text class="re-mono" x="40" y="85">C++</text>
+            <text class="re-danger" x="80" y="85">500 lines of templates</text>
+
+            <rect class="re-fill-warn" x="30" y="100" width="200" height="26"/>
+            <rect class="re-box" x="30" y="100" width="200" height="26"/>
+            <text class="re-mono" x="40" y="117">Go</text>
+            <text class="re-danger" x="80" y="117">if err != nil { ... }</text>
+
+            <rect class="re-fill-warn" x="30" y="132" width="200" height="26"/>
+            <rect class="re-box" x="30" y="132" width="200" height="26"/>
+            <text class="re-mono" x="40" y="149">PHP</text>
+            <text class="re-danger" x="80" y="149">Stack trace (maybe)</text>
+
+            <!-- Rust -->
+            <rect class="re-fill" x="260" y="36" width="230" height="122"/>
+            <rect class="re-box" x="260" y="36" width="230" height="122" stroke="var(--accent)"/>
+            <text class="re-accent" x="275" y="55">Rust</text>
+            <text class="re-mono" x="275" y="75">&#x2713; What is wrong</text>
+            <text class="re-mono" x="275" y="93">&#x2713; Why it is wrong</text>
+            <text class="re-mono" x="275" y="111">&#x2713; How to fix it</text>
+            <text class="re-mono" x="275" y="129">&#x2713; Example code</text>
+            <text class="re-accent" x="275" y="149">The compiler as private tutor</text>
+
+            <!-- Memory comparison -->
+            <line x1="30" y1="180" x2="490" y2="180" stroke="var(--border)" stroke-width="0.5"/>
+            <text class="re-label" x="260" y="200" text-anchor="middle">Memory: Same Workload</text>
+
+            <rect class="re-fill-warn" x="40" y="212" width="200" height="26"/>
+            <rect class="re-box" x="40" y="212" width="200" height="26"/>
+            <text class="re-mono" x="140" y="229" text-anchor="middle">PHP-FPM: ~4 GB (100 workers)</text>
+
+            <rect class="re-fill" x="280" y="212" width="180" height="26"/>
+            <rect class="re-box" x="280" y="212" width="180" height="26" stroke="var(--accent)"/>
+            <text class="re-accent" x="370" y="229" text-anchor="middle">Rust + Tokio: ~150 MB</text>
+
+            <text class="re-accent" x="260" y="260" text-anchor="middle">A twentieth of the memory. Same job.</text>
+            <text class="re-note" x="260" y="280" text-anchor="middle">No null. No exceptions. No garbage collector. One binary.</text>
+        </svg>
+
+        <h2>The Learning Curve</h2>
+
+        <p>&#x201C;But Rust is hard!&#x201D; I hear this constantly.
+            Allow me to offer a different perspective.</p>
+
+        <p>Week one and two: fighting the borrow checker. The compiler
+            rejects your code with messages that are, admittedly,
+            unfamiliar. You are accustomed to languages that accept
+            your code now and punish you later. Rust punishes you now
+            and accepts your code later. The adjustment is real. It
+            is also temporary.</p>
+
+        <p>Week three: something clicks. Ownership, borrowing,
+            lifetimes, these are not arbitrary obstacles. They are the
+            rules that every other language enforces at runtime, with
+            garbage collectors, with null pointer exceptions, with
+            segmentation faults. Rust enforces them at compile time.
+            The information is the same. The timing is different. And
+            the timing is better.</p>
+
+        <p>After that: you do not want to go back. Once you have a
+            compiler that prevents data races, null pointer
+            dereferences, use-after-free errors, and buffer overflows
+            <em>before</em> your code runs, every other language feels
+            like driving without a seatbelt.</p>
+
+        <h2>The Numbers</h2>
+
+        <p>PHP-FPM allocates approximately 40 MB of RAM per worker
+            process. A hundred concurrent requests means four gigabytes
+            of RAM consumed by PHP alone, before your application has
+            done anything interesting. Rust with
+            <a href="https://tokio.rs/" target="_blank" rel="noopener">Tokio</a>,
+            the async runtime, handles the same workload in
+            approximately 150 MB total. That is a twentieth of the
+            memory for the same job.</p>
+
+        <p>The arithmetic extends to server costs. If your PHP
+            application needs a server with 16 GB of RAM, your Rust
+            application needs one with 1 GB. If your PHP application
+            needs four servers, your Rust application needs one. The
+            reduction compounds with scale, and scale is where the
+            invoices become interesting.</p>
+
+        <h2>The Ecosystem</h2>
+
+        <p>&#x201C;But can I replace everything PHP does?&#x201D;
+            Yes. <a href="https://actix.rs/" target="_blank" rel="noopener">Actix</a>,
+            <a href="https://github.com/tokio-rs/axum" target="_blank" rel="noopener">Axum</a>,
+            Rocket, mature web frameworks. Diesel, SQLx, database
+            access with compile-time query checking. MiniJinja, Tera,
+            Askama, templating engines. Serde, serialisation that is
+            faster than most languages&#x2019; built-in JSON parsers.
+            The
+            <a href="https://survey.stackoverflow.co/2024/technology" target="_blank" rel="noopener">Stack Overflow survey</a>
+            has named Rust the most admired language for eight
+            consecutive years. The ecosystem is not catching up. It
+            has caught up.</p>
+
+        <h2>The Reduction</h2>
+
+        <p>No null. No exceptions. No garbage collector pauses. No
+            runtime dependencies. One binary. Copy it to the server.
+            Run it. There is no interpreter to install, no runtime to
+            version-manage, no dependency tree to resolve at
+            deployment time. The binary is the deployment. The
+            deployment is a file copy.</p>
+
+        <p>The Rust compiler taught me more about programming than
+            any book. Ownership, borrowing, lifetimes, these are not
+            Rust-specific concepts. They are universal concepts that
+            other languages let you ignore. Rust does not let you
+            ignore them. That is not a weakness. That is the point.</p>
+
+        <blockquote>
+            <p>No null. No exceptions. No garbage collector. One binary.
+                A twentieth of the memory. The compiler as private tutor.
+                Rust is not hard. It is honest. And honesty, in the long
+                run, is cheaper than pretending.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>On the borrow checker</strong></p>
+            <p>The borrow checker is the most misunderstood feature in
+                modern programming. It does not restrict what you can do.
+                It prevents you from doing things that are always wrong:
+                using freed memory, mutating shared state, racing between
+                threads. Every other language allows these bugs and
+                catches them at runtime, if at all. Rust catches them
+                at compile time. The learning curve is real. The payoff
+                is permanent. Source:
+                <a href="https://doc.rust-lang.org/book/" target="_blank" rel="noopener">The Rust Book</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

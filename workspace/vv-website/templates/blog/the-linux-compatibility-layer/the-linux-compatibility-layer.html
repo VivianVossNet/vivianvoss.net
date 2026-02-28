@@ -1,0 +1,278 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Linux Compatibility Layer &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="FreeBSD runs Linux binaries natively. No emulator. No VM. No container. The kernel translates syscalls in real time, with less than 1% overhead. Since 1995. The reverse does not exist.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-linux-compatibility-layer{( endslot )}
+
+{( slot og-title )}The Linux Compatibility Layer &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}FreeBSD runs Linux binaries natively. No emulator, no VM, no container. Kernel-level syscall translation with less than 1% overhead. Since 1995. The reverse does not exist.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Linux Compatibility Layer",
+    "datePublished": "2026-01-26",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-linux-compatibility-layer",
+    "description": "FreeBSD runs Linux binaries natively. No emulator. No VM. No container. The kernel translates syscalls in real time, with less than 1% overhead. Since 1995. The reverse does not exist.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-26">26 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Linux Compatibility Layer</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 02</p>
+
+        <p>You need a Linux binary on your server. A proprietary backup
+            agent your client insists on. A vendor tool compiled for RHEL.
+            Spotify, because even sysadmins have feelings. The binary
+            exists. The source does not. It was built for Linux and Linux
+            alone.</p>
+
+        <p>On FreeBSD, you type three commands:</p>
+
+        <pre><code>sysrc linux_enable="YES"
+service linux start
+pkg install linux-rl9-base</code></pre>
+
+        <p>Done. Linux binaries run. Natively. No emulator. No container.
+            No virtual machine. No 2 GB RAM overhead. The FreeBSD kernel
+            translates Linux system calls to FreeBSD system calls in real
+            time, at less than 1% overhead, and has been doing so since
+            <a href="https://docs.freebsd.org/en/books/handbook/linuxemu/" target="_blank" rel="noopener">1995</a>.</p>
+
+        <pre><code>$ file /compat/linux/usr/bin/bash
+ELF 64-bit LSB executable, x86-64, for GNU/Linux
+
+$ /compat/linux/usr/bin/bash --version
+GNU bash, version 5.2.15 (x86_64-redhat-linux-gnu)</code></pre>
+
+        <p>A real Linux binary. Running on a FreeBSD kernel. Without
+            virtualisation. The door is open, and it only swings one way.</p>
+
+        <h2>How It Works</h2>
+
+        <p>The mechanism is called the
+            <a href="https://wiki.freebsd.org/Linuxulator" target="_blank" rel="noopener">Linuxulator</a>,
+            and it is far more elegant than the name suggests. When a
+            Linux binary makes a system call, the FreeBSD kernel
+            recognises the Linux ABI and routes the call through a
+            translation layer that maps it to the equivalent FreeBSD
+            syscall. No userspace emulation. No binary translation. No
+            instruction-set simulation. The work happens in the kernel
+            itself, where it costs almost nothing.</p>
+
+        <svg id="linuxulator-arch" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Linuxulator architecture: Linux binaries make Linux syscalls, the FreeBSD kernel intercepts them and translates to FreeBSD syscalls. Native FreeBSD binaries use FreeBSD syscalls directly. Both share the same kernel." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #linuxulator-arch .la-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #linuxulator-arch .la-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #linuxulator-arch .la-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #linuxulator-arch .la-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #linuxulator-arch .la-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #linuxulator-arch .la-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #linuxulator-arch .la-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #linuxulator-arch .la-fill-muted { fill: var(--muted); opacity: 0.08; rx: 4; }
+                #linuxulator-arch .la-arrow { fill: var(--accent); }
+                #linuxulator-arch .la-arrow-muted { fill: var(--muted); }
+                #linuxulator-arch .la-line { stroke: var(--accent); stroke-width: 1.5; }
+                #linuxulator-arch .la-line-muted { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; }
+            </style>
+            <text class="la-title" x="260" y="18" text-anchor="middle">The Linuxulator</text>
+            <text class="la-sub" x="260" y="34" text-anchor="middle">Kernel-native syscall translation. No emulation.</text>
+            <!-- Linux binary -->
+            <rect class="la-fill" x="30" y="54" width="130" height="44"/>
+            <rect class="la-box-accent" x="30" y="54" width="130" height="44"/>
+            <text class="la-accent" x="95" y="74" text-anchor="middle">Linux Binary</text>
+            <text class="la-sub" x="95" y="90" text-anchor="middle">ELF, GNU/Linux ABI</text>
+            <!-- FreeBSD binary -->
+            <rect class="la-fill-muted" x="360" y="54" width="130" height="44"/>
+            <rect class="la-box" x="360" y="54" width="130" height="44"/>
+            <text class="la-label" x="425" y="74" text-anchor="middle">FreeBSD Binary</text>
+            <text class="la-sub" x="425" y="90" text-anchor="middle">ELF, FreeBSD ABI</text>
+            <!-- Arrows down -->
+            <line class="la-line" x1="95" y1="98" x2="95" y2="130"/>
+            <polygon class="la-arrow" points="89,126 95,136 101,126"/>
+            <line class="la-line-muted" x1="425" y1="98" x2="425" y2="130"/>
+            <polygon class="la-arrow-muted" points="419,126 425,136 431,126"/>
+            <!-- Syscall labels -->
+            <text class="la-accent" x="95" y="122" text-anchor="middle">Linux syscalls</text>
+            <text class="la-sub" x="425" y="122" text-anchor="middle">FreeBSD syscalls</text>
+            <!-- Linuxulator box -->
+            <rect class="la-fill" x="30" y="140" width="200" height="44"/>
+            <rect class="la-box-accent" x="30" y="140" width="200" height="44"/>
+            <text class="la-accent" x="130" y="160" text-anchor="middle">Linuxulator</text>
+            <text class="la-sub" x="130" y="176" text-anchor="middle">Syscall translation layer</text>
+            <!-- Arrow from linuxulator to kernel -->
+            <line class="la-line" x1="130" y1="184" x2="260" y2="220"/>
+            <polygon class="la-arrow" points="254,216 262,226 262,214"/>
+            <!-- Direct arrow from FreeBSD binary to kernel -->
+            <line class="la-line-muted" x1="425" y1="184" x2="295" y2="220"/>
+            <polygon class="la-arrow-muted" points="290,214 290,226 300,216"/>
+            <!-- FreeBSD Kernel -->
+            <rect class="la-fill-muted" x="160" y="224" width="200" height="50"/>
+            <rect class="la-box" x="160" y="224" width="200" height="50"/>
+            <text class="la-label" x="260" y="248" text-anchor="middle">FreeBSD Kernel</text>
+            <text class="la-sub" x="260" y="264" text-anchor="middle">One kernel. Both ABIs.</text>
+        </svg>
+
+        <p>The current base is Rocky Linux 9 (<code>linux-rl9-base</code>),
+            previously CentOS 7. The Linuxulator provides <code>/compat/linux</code>,
+            a directory tree containing the Linux userland: libraries,
+            dynamic linker, filesystem hierarchy. Linux binaries see a
+            Linux world. FreeBSD binaries see a FreeBSD world. Both share
+            the same kernel, the same network stack, the same hardware
+            drivers.</p>
+
+        <p>What runs: most Linux command-line tools, commercial software
+            (Spotify, Discord, Zoom), Steam and Proton for gaming,
+            proprietary backup and monitoring agents, and containers via
+            Linux jails. The list is longer than the list of things that
+            do not run, which should tell you something about thirty years
+            of engineering.</p>
+
+        <h2>The Reverse Does Not Exist</h2>
+
+        <p>Now try it the other way. You want a FreeBSD binary on Linux.</p>
+
+        <p><strong>Option A: virtual machine.</strong> Install FreeBSD
+            inside QEMU/KVM. Allocate 2 GB of RAM. Wait for it to boot.
+            Configure networking. Maintain a second operating system. For
+            one binary.</p>
+
+        <p><strong>Option B: container.</strong> A FreeBSD userland in
+            Docker? The container runtime assumes a Linux kernel. FreeBSD
+            userland on a Linux kernel is not a supported configuration.
+            The door is locked.</p>
+
+        <p><strong>Option C: recompile.</strong> Port the software. Fix
+            the libc differences. Replace kqueue with epoll. Chase the
+            divergence between POSIX-conformant and POSIX-adjacent. Pack
+            a lunch.</p>
+
+        <p>There is no "FreeBSD Compatibility Layer" for Linux. The
+            direction does not exist. This is not a criticism of Linux.
+            It is a consequence of how the two systems were designed.</p>
+
+        <svg id="compat-comparison" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison: FreeBSD runs Linux binaries with 3 commands and less than 1% overhead. Linux runs FreeBSD binaries only via VM with 2 GB RAM overhead, or recompilation." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #compat-comparison .cc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #compat-comparison .cc-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #compat-comparison .cc-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #compat-comparison .cc-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #compat-comparison .cc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #compat-comparison .cc-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #compat-comparison .cc-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #compat-comparison .cc-fill-muted { fill: var(--muted); opacity: 0.08; rx: 4; }
+                #compat-comparison .cc-check { font: 600 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #compat-comparison .cc-cross { font: 600 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <text class="cc-title" x="260" y="18" text-anchor="middle">The Door Swings One Way</text>
+            <!-- FreeBSD side -->
+            <rect class="cc-fill" x="20" y="38" width="230" height="170"/>
+            <rect class="cc-box-accent" x="20" y="38" width="230" height="170"/>
+            <text class="cc-accent" x="135" y="60" text-anchor="middle">FreeBSD runs Linux</text>
+            <text class="cc-sub" x="135" y="82" text-anchor="middle">3 commands</text>
+            <text class="cc-sub" x="135" y="98" text-anchor="middle">&lt;1% overhead</text>
+            <text class="cc-sub" x="135" y="114" text-anchor="middle">Since 1995</text>
+            <text class="cc-sub" x="135" y="130" text-anchor="middle">Kernel-native translation</text>
+            <text class="cc-sub" x="135" y="150" text-anchor="middle">Spotify, Steam, Zoom, CLI tools</text>
+            <text class="cc-sub" x="135" y="166" text-anchor="middle">Proprietary agents</text>
+            <text class="cc-check" x="135" y="194" text-anchor="middle">&#x2714; Works</text>
+            <!-- Linux side -->
+            <rect class="cc-fill-muted" x="270" y="38" width="230" height="170"/>
+            <rect class="cc-box" x="270" y="38" width="230" height="170"/>
+            <text class="cc-label" x="385" y="60" text-anchor="middle">Linux runs FreeBSD</text>
+            <text class="cc-sub" x="385" y="82" text-anchor="middle">VM: 2 GB RAM, boot time</text>
+            <text class="cc-sub" x="385" y="98" text-anchor="middle">Container: not supported</text>
+            <text class="cc-sub" x="385" y="114" text-anchor="middle">Recompile: libc, kqueue/epoll</text>
+            <text class="cc-sub" x="385" y="130" text-anchor="middle">No compatibility layer</text>
+            <text class="cc-sub" x="385" y="150" text-anchor="middle">No kernel-level support</text>
+            <text class="cc-sub" x="385" y="166" text-anchor="middle">Direction does not exist</text>
+            <text class="cc-cross" x="385" y="194" text-anchor="middle">&#x2718; Not available</text>
+        </svg>
+
+        <h2>Why the Asymmetry?</h2>
+
+        <p>FreeBSD is an operating system. Kernel, userland, documentation,
+            ports tree: all developed together, by one project, under one
+            umbrella. When the FreeBSD project decided in 1995 that Linux
+            binary compatibility would be useful, they could implement it
+            because they controlled the entire stack. The kernel's syscall
+            layer was designed with clean abstraction in mind. Adding a
+            second ABI was an engineering project, not a political one.</p>
+
+        <p>Linux is a kernel. Everything else, the distributions, the
+            package managers, the init systems, the C libraries, is
+            maintained by separate teams with separate goals. Nobody
+            "owns" Linux in the way the FreeBSD project owns FreeBSD.
+            Implementing a FreeBSD compatibility layer would require
+            coordination across projects that do not coordinate. It would
+            require syscall abstraction that was never a design goal. It
+            would require someone to care enough to maintain it for
+            thirty years.</p>
+
+        <p>This is not a deficiency. It is a design decision, made decades
+            ago, with consequences that compound. FreeBSD chose
+            integration. Linux chose modularity. Both are valid. But only
+            one of them lets you run the other's binaries.</p>
+
+        <h2>Best of Both Worlds</h2>
+
+        <p>The practical upshot is this: on FreeBSD, you do not have to
+            choose. You get ZFS, Jails, pf, DTrace, and a kernel
+            developed as a coherent whole. And when you need that one
+            Linux binary, the proprietary agent, the vendor tool, the
+            application that only ships as an <code>.rpm</code>, the door
+            is open.</p>
+
+        <p>Sometimes the question is not "why switch?" It is "why limit
+            yourself?"</p>
+
+        <blockquote>
+            <p>FreeBSD can run Linux. Linux cannot run FreeBSD. The door
+                swings one way. It has for thirty years.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>How the Linuxulator works.</strong> FreeBSD's
+                kernel implements the
+                <a href="https://wiki.freebsd.org/Linuxulator" target="_blank" rel="noopener">Linux syscall ABI</a>.
+                When a Linux binary makes a syscall, the kernel intercepts
+                it and translates to the FreeBSD equivalent. No emulation.
+                No userspace translation. Kernel-native. Current base:
+                Rocky Linux 9 (<code>linux-rl9-base</code>), previously
+                CentOS 7. Performance benchmarks typically show less than
+                1% difference from native execution. The
+                <a href="https://docs.freebsd.org/en/books/handbook/linuxemu/" target="_blank" rel="noopener">FreeBSD Handbook</a>
+                documents the setup. Three commands. Thirty years of
+                engineering.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

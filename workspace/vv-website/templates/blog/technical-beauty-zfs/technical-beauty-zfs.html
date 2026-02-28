@@ -1,0 +1,429 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: ZFS &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Jeff Bonwick and Matthew Ahrens built ZFS at Sun Microsystems in 2005. One problem: filesystems trusted hardware that lies. One solution: trust mathematics, not hardware. Copy-on-Write, end-to-end checksumming, instant snapshots. The filesystem that assumes nothing and verifies everything.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-zfs{( endslot )}
+
+{( slot og-title )}Technical Beauty: ZFS &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Jeff Bonwick and Matthew Ahrens built ZFS at Sun Microsystems in 2005. Filesystems trusted hardware that lies. ZFS trusts mathematics instead. Copy-on-Write, checksumming, instant snapshots. The filesystem that verifies everything.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: ZFS",
+    "datePublished": "2026-02-01",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-zfs",
+    "description": "Jeff Bonwick and Matthew Ahrens built ZFS at Sun Microsystems in 2005. One problem: filesystems trusted hardware that lies. One solution: trust mathematics, not hardware. Copy-on-Write, end-to-end checksumming, instant snapshots. The filesystem that assumes nothing and verifies everything.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-01">1 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: ZFS</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">zfs</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">security</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 06</p>
+
+        <p>In 2005, the storage industry had a dirty secret. Filesystems
+            trusted hardware. Hard drives reported writes as complete when
+            they were still in a volatile cache. Controllers silently
+            flipped bits. RAID arrays rebuilt from corrupted parity without
+            telling anyone. The entire tower of abstraction, from
+            application to spinning platter, was built on a gentleman&#x2019;s
+            agreement that the gentleman had stopped honouring somewhere
+            around 1998.</p>
+
+        <p><a href="https://en.wikipedia.org/wiki/Jeff_Bonwick" target="_blank" rel="noopener">Jeff Bonwick</a>
+            and <a href="https://github.com/ahrens" target="_blank" rel="noopener">Matthew Ahrens</a>
+            at Sun Microsystems looked at this arrangement and decided
+            the correct response was not to trust harder, but to stop
+            trusting entirely. The filesystem they built does not believe
+            your hardware. It does not believe your controller. It does
+            not believe your cable. It verifies. Every block, every read,
+            every time. The name is ZFS, and it has been proving hardware
+            wrong for twenty years.</p>
+
+        <h2>The Engineers</h2>
+
+        <p>Bonwick was not new to solving problems that others preferred
+            to ignore. Before ZFS, he designed the
+            <a href="https://en.wikipedia.org/wiki/Slab_allocation" target="_blank" rel="noopener">Slab Allocator</a>
+            for the Solaris kernel, a memory allocation strategy so
+            effective that it was adopted by Linux, FreeBSD, and virtually
+            every operating system that takes performance seriously. The
+            man understood what happens at the boundary between software
+            and silicon. Ahrens, his co-architect, had the same instinct
+            for reduction. Together, they spent four years building a
+            filesystem that merged volume management, RAID, and data
+            integrity into a single coherent layer. The industry had kept
+            these concerns separate for decades. Bonwick and Ahrens
+            argued, correctly, that keeping them separate was the reason
+            they kept failing together.</p>
+
+        <h2>The Problem</h2>
+
+        <p>Silent data corruption. The term sounds like a minor
+            inconvenience. It is not. A bit flips in a file, and no one
+            notices. The backup runs, dutifully copying the corrupted
+            file. The previous backup is rotated out. Three weeks later,
+            someone opens the file and discovers it is damaged. The
+            backup is damaged too. Every copy, on every server, in every
+            data centre, is silently, irreversibly wrong.</p>
+
+        <p>Traditional filesystems had no defence against this. Ext4 does
+            not checksum data blocks. XFS does not checksum data blocks.
+            NTFS does not checksum data blocks. They trust the hardware
+            to deliver what was written. When the hardware lies, they
+            have nothing to cross-reference. The corruption propagates,
+            undetected, through every layer of redundancy that was
+            supposed to prevent exactly this outcome.</p>
+
+        <!-- ZFS integrity model vs traditional filesystem -->
+        <svg id="zfs-integrity" viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison of traditional filesystem integrity versus ZFS. Left: traditional filesystem where data flows from application through filesystem to disk without verification, and silent corruption propagates undetected through backups. Right: ZFS where every block is checksummed in a Merkle tree, corruption is detected on read, and self-healing restores the correct copy from a mirror." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #zfs-integrity .zfs-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #zfs-integrity .zfs-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #zfs-integrity .zfs-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #zfs-integrity .zfs-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #zfs-integrity .zfs-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                #zfs-integrity .zfs-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #zfs-integrity .zfs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #zfs-integrity .zfs-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                #zfs-integrity .zfs-fill-warn { fill: var(--muted); opacity: 0.06; rx: 3; }
+                #zfs-integrity .zfs-arrow { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#zfs-ah); }
+                #zfs-integrity .zfs-arrow-accent { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#zfs-ah-a); }
+                #zfs-integrity .zfs-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 3; }
+                #zfs-integrity .zfs-danger { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: oklch(55% 0.2 25); }
+            </style>
+            <defs>
+                <marker id="zfs-ah" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+                <marker id="zfs-ah-a" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <text class="zfs-title" x="260" y="20" text-anchor="middle">The Integrity Problem</text>
+
+            <!-- LEFT: Traditional -->
+            <text class="zfs-label" x="125" y="46" text-anchor="middle">Traditional Filesystem</text>
+            <text class="zfs-sub" x="125" y="60" text-anchor="middle">Trusts the hardware</text>
+
+            <rect class="zfs-fill-warn" x="55" y="72" width="140" height="24"/>
+            <rect class="zfs-box" x="55" y="72" width="140" height="24"/>
+            <text class="zfs-mono" x="125" y="88" text-anchor="middle">Application writes</text>
+
+            <line class="zfs-arrow" x1="125" y1="96" x2="125" y2="118"/>
+
+            <rect class="zfs-fill-warn" x="55" y="120" width="140" height="24"/>
+            <rect class="zfs-box" x="55" y="120" width="140" height="24"/>
+            <text class="zfs-mono" x="125" y="136" text-anchor="middle">ext4 / XFS / NTFS</text>
+
+            <line class="zfs-arrow" x1="125" y1="144" x2="125" y2="166"/>
+
+            <rect class="zfs-fill-warn" x="55" y="168" width="140" height="24"/>
+            <rect class="zfs-box" x="55" y="168" width="140" height="24"/>
+            <text class="zfs-mono" x="125" y="184" text-anchor="middle">Disk (bit rot)</text>
+
+            <line class="zfs-arrow" x1="125" y1="192" x2="125" y2="214"/>
+
+            <rect class="zfs-fill-warn" x="55" y="216" width="140" height="24"/>
+            <rect class="zfs-box" x="55" y="216" width="140" height="24"/>
+            <text class="zfs-mono" x="125" y="232" text-anchor="middle">Backup (corrupted)</text>
+
+            <text class="zfs-danger" x="125" y="260" text-anchor="middle">No checksums</text>
+            <text class="zfs-sub" x="125" y="274" text-anchor="middle">Corruption propagates silently</text>
+            <text class="zfs-sub" x="125" y="288" text-anchor="middle">Detected weeks later, if ever</text>
+
+            <!-- Divider -->
+            <line class="zfs-divider" x1="260" y1="40" x2="260" y2="310"/>
+
+            <!-- RIGHT: ZFS -->
+            <text class="zfs-accent" x="390" y="46" text-anchor="middle">ZFS</text>
+            <text class="zfs-sub" x="390" y="60" text-anchor="middle">Trusts mathematics</text>
+
+            <rect class="zfs-fill" x="320" y="72" width="140" height="24"/>
+            <rect class="zfs-box" x="320" y="72" width="140" height="24"/>
+            <text class="zfs-mono" x="390" y="88" text-anchor="middle">Application writes</text>
+
+            <line class="zfs-arrow-accent" x1="390" y1="96" x2="390" y2="118"/>
+
+            <rect class="zfs-fill" x="320" y="120" width="140" height="24"/>
+            <rect class="zfs-box" x="320" y="120" width="140" height="24" stroke="var(--accent)"/>
+            <text class="zfs-accent" x="390" y="136" text-anchor="middle">Checksum (Merkle)</text>
+
+            <line class="zfs-arrow-accent" x1="390" y1="144" x2="390" y2="166"/>
+
+            <rect class="zfs-fill" x="320" y="168" width="140" height="24"/>
+            <rect class="zfs-box" x="320" y="168" width="140" height="24" stroke="var(--accent)"/>
+            <text class="zfs-accent" x="390" y="184" text-anchor="middle">Copy-on-Write</text>
+
+            <line class="zfs-arrow-accent" x1="390" y1="192" x2="390" y2="214"/>
+
+            <rect class="zfs-fill" x="320" y="216" width="140" height="24"/>
+            <rect class="zfs-box" x="320" y="216" width="140" height="24" stroke="var(--accent)"/>
+            <text class="zfs-accent" x="390" y="232" text-anchor="middle">Self-healing mirror</text>
+
+            <text class="zfs-accent" x="390" y="260" text-anchor="middle">Every block verified</text>
+            <text class="zfs-sub" x="390" y="274" text-anchor="middle">Corruption detected on read</text>
+            <text class="zfs-sub" x="390" y="288" text-anchor="middle">Correct copy restored instantly</text>
+
+            <line x1="30" y1="302" x2="490" y2="302" stroke="var(--border)" stroke-width="0.5"/>
+            <text class="zfs-note" x="260" y="324" text-anchor="middle">The filesystem that assumes nothing and verifies everything.</text>
+        </svg>
+
+        <h2>The Architecture</h2>
+
+        <p>ZFS solves this with end-to-end checksumming. Every data block
+            carries a
+            <a href="https://en.wikipedia.org/wiki/Merkle_tree" target="_blank" rel="noopener">Merkle tree</a>
+            checksum stored in its parent block pointer, not alongside the
+            data itself. This distinction is crucial. A traditional
+            filesystem that checksums a block and stores the checksum next
+            to it has achieved nothing: if the disc corrupts the data, it
+            can just as easily corrupt the checksum. ZFS stores the
+            checksum one level up in the tree. To fool ZFS, you would
+            need to corrupt both the data block and its parent&#x2019;s
+            pointer simultaneously, in a way that produces a valid
+            checksum. The probability is, for practical purposes, zero.</p>
+
+        <p>On top of this sits Copy-on-Write. ZFS never overwrites data
+            in place. A write operation allocates a new block, writes the
+            data there, updates the parent pointer, and only then frees
+            the old block. If power fails mid-write, the old data is
+            still intact at the old location. The tree is always
+            consistent. There is no <code>fsck</code>. There is no
+            journal replay. There is no anxious wait after an unexpected
+            reboot while the filesystem attempts to reconstruct what it
+            was doing when the lights went out. ZFS simply loads the last
+            consistent root pointer, and the tree is exactly as it was
+            before the interruption.</p>
+
+        <h2>Snapshots</h2>
+
+        <p>Copy-on-Write has a side effect so useful it would justify
+            the entire architecture on its own: snapshots are free.
+            A snapshot is not a copy. It is a preserved root pointer.
+            The blocks do not move. The data is not duplicated. ZFS
+            simply marks the current set of block pointers as immutable
+            and continues writing new data to new blocks. The snapshot
+            is instant, it takes milliseconds regardless of dataset
+            size, and it costs zero additional storage until the live
+            data diverges from it.</p>
+
+        <p>In an era of ransomware, this property is worth more than
+            it appears. A ransomware attack encrypts your files. With
+            a traditional backup, recovery means restoring from an
+            off-site copy, a process that takes hours and assumes the
+            backup was not compromised. With ZFS snapshots, recovery
+            means <code>zfs rollback</code>. The encrypted files
+            vanish. The original data reappears. The operation takes
+            seconds. The snapshots were immutable. The ransomware
+            could not touch them.</p>
+
+        <!-- ZFS snapshot timeline -->
+        <svg id="zfs-snap" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ZFS snapshot timeline. A horizontal timeline shows three snapshots taken at different points, each preserving block pointers without copying data. New writes go to new blocks. Rollback is instant because the old block pointers still exist." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #zfs-snap .zs-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #zfs-snap .zs-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #zfs-snap .zs-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #zfs-snap .zs-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                #zfs-snap .zs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #zfs-snap .zs-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                #zfs-snap .zs-dot { fill: var(--accent); }
+                #zfs-snap .zs-line { stroke: var(--border); stroke-width: 1.5; }
+                #zfs-snap .zs-arrow { stroke: var(--accent); stroke-width: 1; fill: none; marker-end: url(#zs-ah); }
+            </style>
+            <defs>
+                <marker id="zs-ah" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <text class="zs-title" x="260" y="20" text-anchor="middle">Snapshots: Preserved Pointers, Not Copies</text>
+
+            <!-- Timeline -->
+            <line class="zs-line" x1="50" y1="70" x2="470" y2="70"/>
+
+            <!-- Snapshot 1 -->
+            <circle class="zs-dot" cx="100" cy="70" r="5"/>
+            <text class="zs-label" x="100" y="56" text-anchor="middle">@daily-1</text>
+            <rect class="zs-fill" x="60" y="84" width="80" height="20"/>
+            <rect class="zs-box" x="60" y="84" width="80" height="20"/>
+            <text class="zs-mono" x="100" y="98" text-anchor="middle">root ptr A</text>
+
+            <!-- Snapshot 2 -->
+            <circle class="zs-dot" cx="260" cy="70" r="5"/>
+            <text class="zs-label" x="260" y="56" text-anchor="middle">@daily-2</text>
+            <rect class="zs-fill" x="220" y="84" width="80" height="20"/>
+            <rect class="zs-box" x="220" y="84" width="80" height="20"/>
+            <text class="zs-mono" x="260" y="98" text-anchor="middle">root ptr B</text>
+
+            <!-- Live -->
+            <circle class="zs-dot" cx="420" cy="70" r="5"/>
+            <text class="zs-label" x="420" y="56" text-anchor="middle">live</text>
+            <rect class="zs-fill" x="380" y="84" width="80" height="20"/>
+            <rect class="zs-box" x="380" y="84" width="80" height="20"/>
+            <text class="zs-mono" x="420" y="98" text-anchor="middle">root ptr C</text>
+
+            <!-- Rollback arrow -->
+            <path class="zs-arrow" d="M 420,116 C 420,146 260,146 260,116"/>
+            <text class="zs-sub" x="340" y="156" text-anchor="middle">zfs rollback @daily-2</text>
+
+            <!-- Notes -->
+            <text class="zs-sub" x="260" y="180" text-anchor="middle">No data copied. Pointers preserved. Rollback in seconds.</text>
+            <text class="zs-sub" x="260" y="194" text-anchor="middle">Ransomware encrypted your files? The snapshot never noticed.</text>
+        </svg>
+
+        <h2>The Numbers</h2>
+
+        <p>128-bit block addressing. The theoretical maximum storage
+            capacity is 256 quadrillion zettabytes. This is not a
+            practical number. It is a statement of intent. ZFS was not
+            designed for the storage capacities of 2005. It was designed
+            so that storage capacity would never again be a constraint
+            on filesystem design. Whether this ambition was prophetic
+            or merely extravagant depends on your time horizon, but
+            twenty years in, no one has yet complained that 128 bits
+            was too many.</p>
+
+        <p>Transparent compression is built in.
+            <a href="https://en.wikipedia.org/wiki/LZ4_(compression_algorithm)" target="_blank" rel="noopener">LZ4</a>
+            compression, the default on modern deployments, typically
+            achieves 2:1 compression on text-heavy workloads while
+            adding negligible CPU overhead. On many storage systems,
+            enabling compression makes I/O <em>faster</em>, not slower.
+            The arithmetic is straightforward: compressed data means fewer
+            blocks to read from disc, and disc I/O is orders of magnitude
+            slower than the CPU time needed to decompress. The bottleneck
+            moves from the spindle to the silicon, and the silicon is
+            faster. It is one of those rare optimisations where you get
+            more space <em>and</em> more speed, and the only cost is
+            the courage to enable it.</p>
+
+        <h2>The Adoption</h2>
+
+        <p>FreeBSD adopted ZFS as a
+            <a href="https://wiki.freebsd.org/ZFS" target="_blank" rel="noopener">first-class citizen in 2008</a>,
+            with native kernel support. Root-on-ZFS became the default
+            installer option. No external modules. No DKMS rebuilds after
+            kernel updates. No licence gymnastics. ZFS is to FreeBSD what
+            the foundation is to a house: it is not a feature you enable;
+            it is the surface everything else stands on.</p>
+
+        <p>Linux adopted ZFS more cautiously. The CDDL licence under
+            which ZFS was released is not compatible with the GPL, which
+            means ZFS cannot be distributed as part of the Linux kernel.
+            It runs as a DKMS module, rebuilt against each kernel update,
+            functional but never quite native. Ubuntu offered it as an
+            installer option in 2019. Proxmox supports it well. The
+            integration works, but it carries an asterisk that FreeBSD
+            users do not have to read.</p>
+
+        <p>Today,
+            <a href="https://www.truenas.com/" target="_blank" rel="noopener">TrueNAS</a>,
+            the most widely deployed open-source storage platform, runs
+            on FreeBSD with ZFS at its core. Millions of storage systems
+            worldwide trust their data to the filesystem that trusts
+            nothing.</p>
+
+        <h2>The Fork</h2>
+
+        <p>After Oracle acquired Sun Microsystems in 2010, the ZFS
+            development community watched with the resignation of
+            people who have seen this film before. Oracle closed the
+            source. Two-thirds of the core development team left. In
+            2013, they founded
+            <a href="https://openzfs.org/" target="_blank" rel="noopener">OpenZFS</a>,
+            an independent project that unified the FreeBSD and Linux
+            implementations under a single codebase. The architecture
+            survived the corporate acquisition. The code survived the
+            licence dispute. The community survived the diaspora. The
+            checksums, as always, remained correct.</p>
+
+        <h2>The Honesty</h2>
+
+        <p>ZFS is software, and software has bugs. In 2023, a
+            <a href="https://github.com/openzfs/zfs/issues/15526" target="_blank" rel="noopener">block cloning bug</a>
+            in OpenZFS 2.2.0 caused data corruption under specific
+            conditions. In 2024, a native encryption bug affected
+            send/receive operations. Both were identified, reported,
+            and fixed. Neither was silent. Neither propagated undetected
+            through backup chains. The checksumming architecture that
+            protects against hardware failures also protects against
+            software failures: the system that verifies everything
+            includes verifying itself.</p>
+
+        <h2>The Reduction</h2>
+
+        <p>What makes ZFS technically beautiful is not any single
+            feature. It is the architectural decision to unify filesystem,
+            volume manager, and integrity verification into a single
+            coherent system, and then to follow that decision through to
+            every consequence. Copy-on-Write is not a feature; it is a
+            consequence of never trusting in-place updates. Snapshots are
+            not a feature; they are a consequence of Copy-on-Write. Self-
+            healing is not a feature; it is a consequence of checksumming
+            combined with redundancy. Each capability emerges from the
+            one before it, like a proof where each line follows from
+            the previous.</p>
+
+        <p>The storage industry spent decades building layers of
+            redundancy on top of filesystems that could not verify their
+            own data. RAID protected against drive failure but not against
+            silent corruption. Backups protected against data loss but
+            faithfully copied corrupted files. Checksums existed in
+            transport protocols but stopped at the filesystem boundary.
+            Bonwick and Ahrens extended the chain of verification from
+            application to platter and refused to leave a gap for
+            corruption to hide in.</p>
+
+        <blockquote>
+            <p>128-bit addressing. End-to-end checksumming. Copy-on-Write.
+                Instant snapshots. Self-healing mirrors. The filesystem
+                that trusts mathematics, not hardware. Twenty years on,
+                the mathematics has yet to disappoint.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>On ZFS and ransomware</strong></p>
+            <p>ZFS snapshots are immutable by design. A ransomware attack
+                that encrypts your live data cannot touch existing snapshots
+                because Copy-on-Write never modifies historical blocks.
+                Recovery is <code>zfs rollback</code>, which takes seconds
+                regardless of dataset size. No agents. No backup windows.
+                No trust required. This is not a bolted-on security feature.
+                It is a structural consequence of the architecture. Sources:
+                <a href="https://openzfs.org/" target="_blank" rel="noopener">OpenZFS</a>,
+                <a href="https://klarasystems.com/articles/history-of-zfs-part-1-the-birth-of-zfs/" target="_blank" rel="noopener">Klara Systems</a>,
+                <a href="https://klarasystems.com/articles/openzfs-openzfs-your-data-and-the-challenge-of-ransomware/" target="_blank" rel="noopener">ZFS and Ransomware</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

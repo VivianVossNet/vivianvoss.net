@@ -1,0 +1,317 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: rsync &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Andrew Tridgell had a problem in 1996: synchronising files over slow links. The naive approach copies everything. rsync splits files into chunks, computes rolling checksums, and transfers only the differences. 29 years. One algorithm. No vendor. No subscription.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-rsync{( endslot )}
+
+{( slot og-title )}Technical Beauty: rsync &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Andrew Tridgell had a problem in 1996: synchronising files over slow links. rsync splits files into chunks, computes rolling checksums, and transfers only the differences. 29 years. One algorithm. No vendor.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: rsync",
+    "datePublished": "2026-01-30",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-rsync",
+    "description": "Andrew Tridgell had a problem in 1996: synchronising files over slow links. rsync splits files into chunks, computes rolling checksums, and transfers only the differences. 29 years. One algorithm. No vendor. No subscription.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-30">30 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: rsync</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 11</p>
+
+        <p>In 1996,
+            <a href="https://www.samba.org/~tridge/" target="_blank" rel="noopener">Andrew Tridgell</a>
+            had a problem that anyone who has waited for a file transfer
+            will recognise: synchronising data over slow links. The naive
+            approach is to copy everything. Every file, every time, even if
+            only a single byte has changed. This is not synchronisation. It
+            is capitulation. It is an admission that you cannot determine
+            what has changed, so you transfer the lot and hope the pipe is
+            wide enough.</p>
+
+        <p>Tridgell decided that the pipe was not wide enough and never
+            would be. The correct solution was not a faster pipe. It was to
+            stop sending data that the other end already had. The tool he
+            built is rsync. It has been the default answer to file
+            synchronisation on every Unix system for twenty-nine years,
+            and the algorithm at its core remains, in the strictest sense,
+            beautiful.</p>
+
+        <h2>The Engineer</h2>
+
+        <p>Tridgell is one of those quietly devastating contributors whom
+            the industry relies upon without quite acknowledging. He wrote
+            rsync for his PhD thesis at the Australian National University.
+            He also wrote
+            <a href="https://www.samba.org/" target="_blank" rel="noopener">Samba</a>,
+            which allows Unix systems to speak Windows file-sharing
+            protocols, a reverse-engineering effort of such thoroughness
+            that Microsoft eventually published the specifications rather
+            than continue losing the arms race. He co-developed the delta
+            compression in Git with Linus Torvalds. He wrote ccache, a
+            compiler cache that silently halves build times. Each project
+            follows the same instinct: identify the redundant work and
+            eliminate it.</p>
+
+        <h2>The Problem</h2>
+
+        <p>You have a file on machine A. You have an older version of
+            the same file on machine B. The file is one gigabyte. The
+            change is one kilobyte. The traditional approach transfers
+            one gigabyte. The time required is one gigabyte divided by
+            your bandwidth. If the link is slow, as most links were in
+            1996 and many still are, you wait. If the file is large, you
+            wait longer. If both, you go for lunch.</p>
+
+        <p>The problem is that both machines have almost identical data,
+            but neither knows which parts are identical without comparing
+            them. And comparing them byte-by-byte requires transferring
+            the entire file, which defeats the purpose. You need a way
+            to determine what has changed without looking at every byte.
+            You need checksums. But not just any checksums.</p>
+
+        <!-- rsync delta algorithm diagram -->
+        <svg id="rsync-algo" viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The rsync delta algorithm. Step 1: the receiver splits its copy into fixed-size blocks and computes a rolling checksum and a strong checksum for each block. Step 2: checksums are sent to the sender. Step 3: the sender rolls a window over its copy, comparing rolling checksums. On a match, the strong checksum confirms identity. Step 4: only non-matching bytes are transferred. Result: a 1 GB file with 1 KB of changes transfers approximately 1 KB." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #rsync-algo .ra-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #rsync-algo .ra-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #rsync-algo .ra-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #rsync-algo .ra-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #rsync-algo .ra-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                #rsync-algo .ra-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #rsync-algo .ra-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                #rsync-algo .ra-fill-match { fill: var(--accent); opacity: 0.15; rx: 2; }
+                #rsync-algo .ra-fill-diff { fill: oklch(55% 0.2 25); opacity: 0.15; rx: 2; }
+                #rsync-algo .ra-arrow { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#ra-ah); }
+                #rsync-algo .ra-arrow-accent { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#ra-ah-a); }
+                #rsync-algo .ra-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #rsync-algo .ra-diff { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: oklch(55% 0.2 25); }
+            </style>
+            <defs>
+                <marker id="ra-ah" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+                <marker id="ra-ah-a" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <text class="ra-title" x="260" y="20" text-anchor="middle">The Delta Algorithm</text>
+
+            <!-- Step 1: Receiver splits into blocks -->
+            <text class="ra-accent" x="30" y="50">1</text>
+            <text class="ra-label" x="48" y="50">Receiver splits file into blocks, computes checksums</text>
+
+            <!-- Block visualisation -->
+            <rect class="ra-fill-match" x="50" y="60" width="80" height="24"/>
+            <rect class="ra-box" x="50" y="60" width="80" height="24"/>
+            <text class="ra-mono" x="90" y="76" text-anchor="middle">Block A</text>
+
+            <rect class="ra-fill-match" x="140" y="60" width="80" height="24"/>
+            <rect class="ra-box" x="140" y="60" width="80" height="24"/>
+            <text class="ra-mono" x="180" y="76" text-anchor="middle">Block B</text>
+
+            <rect class="ra-fill-match" x="230" y="60" width="80" height="24"/>
+            <rect class="ra-box" x="230" y="60" width="80" height="24"/>
+            <text class="ra-mono" x="270" y="76" text-anchor="middle">Block C</text>
+
+            <rect class="ra-fill-match" x="320" y="60" width="80" height="24"/>
+            <rect class="ra-box" x="320" y="60" width="80" height="24"/>
+            <text class="ra-mono" x="360" y="76" text-anchor="middle">Block D</text>
+
+            <text class="ra-sub" x="430" y="76">&#x2190; rolling + strong</text>
+
+            <!-- Step 2: Checksums sent to sender -->
+            <text class="ra-accent" x="30" y="116">2</text>
+            <text class="ra-label" x="48" y="116">Checksums sent to sender (tiny payload)</text>
+            <line class="ra-arrow" x1="230" y1="90" x2="230" y2="126"/>
+
+            <!-- Step 3: Sender compares -->
+            <text class="ra-accent" x="30" y="156">3</text>
+            <text class="ra-label" x="48" y="156">Sender rolls window over its copy, finds matches</text>
+
+            <rect class="ra-fill-match" x="50" y="168" width="80" height="24"/>
+            <rect class="ra-box" x="50" y="168" width="80" height="24" stroke="var(--accent)"/>
+            <text class="ra-mono" x="90" y="184" text-anchor="middle">Block A &#x2713;</text>
+
+            <rect class="ra-fill-diff" x="140" y="168" width="80" height="24"/>
+            <rect class="ra-box" x="140" y="168" width="80" height="24"/>
+            <text class="ra-diff" x="180" y="184" text-anchor="middle">CHANGED</text>
+
+            <rect class="ra-fill-match" x="230" y="168" width="80" height="24"/>
+            <rect class="ra-box" x="230" y="168" width="80" height="24" stroke="var(--accent)"/>
+            <text class="ra-mono" x="270" y="184" text-anchor="middle">Block C &#x2713;</text>
+
+            <rect class="ra-fill-match" x="320" y="168" width="80" height="24"/>
+            <rect class="ra-box" x="320" y="168" width="80" height="24" stroke="var(--accent)"/>
+            <text class="ra-mono" x="360" y="184" text-anchor="middle">Block D &#x2713;</text>
+
+            <!-- Step 4: Only diff transferred -->
+            <text class="ra-accent" x="30" y="224">4</text>
+            <text class="ra-label" x="48" y="224">Only non-matching data is transferred</text>
+
+            <line class="ra-arrow-accent" x1="180" y1="198" x2="180" y2="240"/>
+
+            <rect class="ra-fill" x="120" y="244" width="120" height="28"/>
+            <rect class="ra-box" x="120" y="244" width="120" height="28" stroke="var(--accent)"/>
+            <text class="ra-accent" x="180" y="262" text-anchor="middle">Transfer: 1 block</text>
+
+            <!-- Result -->
+            <line x1="30" y1="290" x2="490" y2="290" stroke="var(--border)" stroke-width="0.5"/>
+            <text class="ra-accent" x="260" y="312" text-anchor="middle">1 GB file, 1 KB changed &#x2192; transfer &#x2248; 1 KB</text>
+            <text class="ra-note" x="260" y="330" text-anchor="middle">Rolling checksum: fast but approximate. Strong checksum: slow but certain.</text>
+            <text class="ra-note" x="260" y="348" text-anchor="middle">Two-pass verification. Minimum bandwidth. Maximum correctness.</text>
+            <text class="ra-note" x="260" y="366" text-anchor="middle">The algorithm that made backups survivable since 1996.</text>
+        </svg>
+
+        <h2>The Algorithm</h2>
+
+        <p>The rsync algorithm operates in four steps, each elegant in
+            its economy.</p>
+
+        <p>First, the receiving machine splits its version of the file
+            into fixed-size blocks and computes two checksums for each
+            block: a fast rolling checksum (cheap to compute, prone to
+            false positives) and a strong cryptographic hash (expensive
+            to compute, essentially certain). These checksums are sent
+            to the sender. The payload is small: a few bytes per block,
+            regardless of how large the file is.</p>
+
+        <p>Second, the sender takes its version of the file and slides
+            a window across it, computing the rolling checksum at each
+            byte position. The rolling checksum is the key innovation.
+            It can be updated incrementally: when the window slides one
+            byte forward, the new checksum is computed from the old
+            checksum, the byte entering the window, and the byte leaving
+            it. No re-reading the entire block. The cost per position is
+            constant.</p>
+
+        <p>When the rolling checksum matches one of the receiver&#x2019;s
+            blocks, the sender computes the strong checksum and compares
+            it. If both match, the block is identical. The sender records
+            a reference: &#x201C;use the receiver&#x2019;s block N
+            here.&#x201D; If neither checksum matches, the byte is new.
+            The sender collects these non-matching bytes and transmits
+            them. The receiver reconstructs the file from its existing
+            blocks and the new bytes. The transfer contains only what
+            changed.</p>
+
+        <p>A one-gigabyte file with one kilobyte of changes transfers
+            approximately one kilobyte. The rest is already there. rsync
+            knows it, proves it, and does not waste the pipe.</p>
+
+        <h2>The Contrast</h2>
+
+        <p>Modern &#x201C;sync&#x201D; solutions want a cloud account.
+            They want a subscription. They want a proprietary protocol.
+            They want your data on their servers, encrypted with their
+            keys, governed by their terms of service, available until
+            the company pivots, merges, or discovers that your tier is
+            no longer profitable.</p>
+
+        <p>rsync wants a source, a destination, and optionally SSH.</p>
+
+        <p><code>rsync -avz source/ destination/</code></p>
+
+        <p>That is the complete invocation. <code>-a</code> for archive
+            mode: preserve permissions, timestamps, symlinks, ownership.
+            <code>-v</code> for verbose: show what is happening.
+            <code>-z</code> for compression during transfer. No
+            configuration file. No daemon requirement. No account. No
+            vendor. No subscription. No terms of service. The man page,
+            one should note, is longer than most modern tools&#x2019;
+            dependency lists.</p>
+
+        <h2>The Legacy</h2>
+
+        <p>rsync is not merely a tool. It is an algorithm that has been
+            adopted, adapted, and embedded across the industry.
+            <a href="https://rsync.samba.org/" target="_blank" rel="noopener">Apple&#x2019;s Time Machine</a>
+            used rsync-style delta transfers. rclone, the cloud storage
+            synchronisation tool, implements the same algorithmic
+            principles. duplicity and borgbackup build on rsync for
+            incremental encrypted backups. The <code>--link-dest</code>
+            flag alone, which creates hard-linked snapshot trees for
+            zero-cost incremental backups, has saved more disk space
+            than most compression algorithms.</p>
+
+        <p>Eighteen thousand lines of C. No external dependencies beyond
+            a C library and optionally SSH. Compiles on everything. Runs
+            on everything. Handles interruptions: if the transfer fails
+            halfway, rsync resumes from where it stopped, not from the
+            beginning. This is not a feature that was requested. It is a
+            consequence of the block-level architecture. When your
+            algorithm tracks which blocks have been acknowledged, resume
+            is free.</p>
+
+        <h2>The Reduction</h2>
+
+        <p>What makes rsync technically beautiful is the rolling
+            checksum. Everything else, the resume capability, the
+            bandwidth efficiency, the incremental backups, follows from
+            a single insight: you can compute a checksum incrementally,
+            and therefore you can find matching blocks without comparing
+            every byte. The entire algorithm is a consequence of one
+            mathematical property of one hash function.</p>
+
+        <p>Tridgell described this in his
+            <a href="https://rsync.samba.org/tech_report/" target="_blank" rel="noopener">1996 technical report</a>,
+            and the industry has been using the result for three decades
+            without improving upon it. There have been faster
+            implementations. There have been alternative checksums. There
+            have been wrappers, frontends, and entire businesses built
+            on top. But the core algorithm, split, checksum, compare,
+            transfer only differences, has not changed because it does
+            not need to. It was correct in 1996. It is correct now.</p>
+
+        <blockquote>
+            <p>One algorithm. One command. Twenty-nine years. rsync does
+                not synchronise your data. It synchronises only the
+                differences. That distinction is the entire tool.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>On the rolling checksum</strong></p>
+            <p>The rolling checksum in rsync is based on Mark Adler&#x2019;s
+                adler-32, modified by Tridgell for rsync&#x2019;s specific
+                requirements. The crucial property: when the window slides
+                one byte, the new checksum can be derived from the old one
+                in constant time. This transforms an O(n&#x00B2;) comparison
+                into O(n). The difference between &#x201C;feasible&#x201D;
+                and &#x201C;unusable&#x201D; for large files over slow links.
+                Source:
+                <a href="https://rsync.samba.org/tech_report/" target="_blank" rel="noopener">Tridgell, 1996</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}
