@@ -1,0 +1,513 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: Redis &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Salvatore Sanfilippo built Redis in 2009. Single-threaded by design. One event loop, no locks. 100,000+ operations per second on modest hardware. Sub-millisecond latency. 90,000 lines of C. The industry spent decades believing concurrency requires threads. Redis proved it requires architecture.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-redis{( endslot )}
+
+{( slot og-title )}Technical Beauty: Redis &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Salvatore Sanfilippo built Redis in 2009. Single-threaded by design. One event loop, no locks. 100,000+ ops/sec. Sub-millisecond latency. 90,000 lines of C. Concurrency requires architecture, not threads.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: Redis",
+    "datePublished": "2026-02-04",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-redis",
+    "description": "Salvatore Sanfilippo built Redis in 2009. Single-threaded by design. One event loop, no locks. 100,000+ operations per second on modest hardware. Sub-millisecond latency. 90,000 lines of C. The industry spent decades believing concurrency requires threads. Redis proved it requires architecture.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-04">4 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: Redis</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">redis</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 09</p>
+
+        <p>In 2009, the database world had a problem it refused to name.
+            Relational databases were slow, and the diagnosis was always
+            the same: not enough threads. Add more threads. Add a connection
+            pool. Add a thread pool for the connection pool. Add a lock
+            manager to coordinate the threads that coordinate the pools.
+            The patient was drowning, and the prescribed treatment was
+            more water.</p>
+
+        <p><a href="http://antirez.com/" target="_blank" rel="noopener">Salvatore Sanfilippo</a>,
+            known as antirez, looked at this arrangement and arrived at
+            a conclusion so obvious it bordered on impolite: the databases
+            were not slow because they lacked threads. They were slow
+            because the threads were fighting each other. His solution
+            was not to add better threads. It was to remove them entirely.</p>
+
+        <h2>The Man</h2>
+
+        <p>Sanfilippo is a Sicilian developer whose career predates the
+            web as most people understand it. Before Redis, he built
+            <a href="https://github.com/antirez" target="_blank" rel="noopener">hping</a>,
+            a network security tool used by penetration testers worldwide.
+            He understood systems programming at the socket level, the
+            level where bytes meet file descriptors and abstractions
+            dissolve into system calls. This matters. Redis is not the
+            product of a database theorist. It is the product of a systems
+            programmer who understood what the kernel actually does when
+            you ask it to wait.</p>
+
+        <p>Sanfilippo maintained Redis personally for fifteen years. He
+            wrote the code. He answered the issues. He wrote the
+            documentation. He resisted, with remarkable consistency, every
+            suggestion to make Redis do more things in more ways for more
+            use cases. The discipline of saying &#x201C;no&#x201D; to a
+            feature request is not glamorous work, but it is the work that
+            keeps a codebase from collapsing under the weight of its own
+            accommodations.</p>
+
+        <h2>The Architecture</h2>
+
+        <p>Redis is
+            <a href="https://redis.io/docs/get-started/faq/" target="_blank" rel="noopener">single-threaded</a>.
+            One thread. One event loop. Every operation executes sequentially
+            on a single CPU core. The industry&#x2019;s immediate reaction to
+            this design, in 2009, was disbelief. A database that uses one
+            core? On a 64-core server? Surely this is a limitation, a
+            prototype constraint that the author will fix in the next
+            release?</p>
+
+        <p>It was not a limitation. It was the entire point.</p>
+
+        <p>Multi-threaded databases spend a non-trivial portion of their
+            CPU time not processing data but managing access to data.
+            Mutexes. Spinlocks. Read-write locks. Compare-and-swap loops.
+            Cache-line bouncing between cores. Every thread that touches
+            a shared data structure must first negotiate permission to do
+            so, and that negotiation has a cost that scales
+            superlinearly with the number of threads. On modern hardware,
+            a lock contention event can cost hundreds of nanoseconds. At
+            100,000 operations per second, hundreds of nanoseconds per
+            operation is the difference between fast and unusable.</p>
+
+        <!-- Multi-threaded vs single-threaded architecture diagram -->
+        <svg id="redis-arch" viewBox="0 0 520 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Architecture comparison. Left: multi-threaded database with lock contention, threads competing for shared data through a lock manager. Right: Redis single-threaded model with one event loop processing requests sequentially from a queue. No locks, no contention, no coordination overhead." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #redis-arch .redis-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #redis-arch .redis-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #redis-arch .redis-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #redis-arch .redis-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #redis-arch .redis-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                #redis-arch .redis-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #redis-arch .redis-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #redis-arch .redis-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                #redis-arch .redis-fill-warn { fill: var(--muted); opacity: 0.06; rx: 3; }
+                #redis-arch .redis-arrow { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#redis-arrowhead); }
+                #redis-arch .redis-arrow-accent { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#redis-arrowhead-accent); }
+                #redis-arch .redis-contention { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+                #redis-arch .redis-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 3; }
+            </style>
+            <defs>
+                <marker id="redis-arrowhead" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+                <marker id="redis-arrowhead-accent" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <text class="redis-title" x="260" y="20" text-anchor="middle">The Concurrency Problem</text>
+
+            <!-- LEFT: Multi-threaded -->
+            <text class="redis-label" x="125" y="46" text-anchor="middle">Multi-threaded DB</text>
+            <text class="redis-sub" x="125" y="60" text-anchor="middle">Threads compete for shared state</text>
+
+            <!-- Threads -->
+            <rect class="redis-fill-warn" x="30" y="74" width="60" height="24"/>
+            <rect class="redis-box" x="30" y="74" width="60" height="24"/>
+            <text class="redis-mono" x="60" y="90" text-anchor="middle">Thread 1</text>
+
+            <rect class="redis-fill-warn" x="96" y="74" width="60" height="24"/>
+            <rect class="redis-box" x="96" y="74" width="60" height="24"/>
+            <text class="redis-mono" x="126" y="90" text-anchor="middle">Thread 2</text>
+
+            <rect class="redis-fill-warn" x="162" y="74" width="60" height="24"/>
+            <rect class="redis-box" x="162" y="74" width="60" height="24"/>
+            <text class="redis-mono" x="192" y="90" text-anchor="middle">Thread N</text>
+
+            <!-- Arrows to lock manager -->
+            <line class="redis-arrow" x1="60" y1="98" x2="60" y2="136"/>
+            <line class="redis-arrow" x1="126" y1="98" x2="126" y2="136"/>
+            <line class="redis-arrow" x1="192" y1="98" x2="192" y2="136"/>
+
+            <!-- Lock manager -->
+            <rect class="redis-fill-warn" x="40" y="138" width="172" height="28"/>
+            <rect class="redis-box" x="40" y="138" width="172" height="28"/>
+            <text class="redis-label" x="126" y="156" text-anchor="middle">Lock Manager</text>
+
+            <!-- Contention arrows -->
+            <line class="redis-contention" x1="70" y1="146" x2="96" y2="158"/>
+            <line class="redis-contention" x1="156" y1="146" x2="182" y2="158"/>
+
+            <!-- Arrow to shared data -->
+            <line class="redis-arrow" x1="126" y1="166" x2="126" y2="196"/>
+
+            <!-- Shared data -->
+            <rect class="redis-fill-warn" x="56" y="198" width="140" height="28"/>
+            <rect class="redis-box" x="56" y="198" width="140" height="28"/>
+            <text class="redis-label" x="126" y="216" text-anchor="middle">Shared Data</text>
+
+            <!-- Costs -->
+            <text class="redis-sub" x="126" y="248" text-anchor="middle">Mutex waits: ~200 ns each</text>
+            <text class="redis-sub" x="126" y="262" text-anchor="middle">Cache-line bouncing</text>
+            <text class="redis-sub" x="126" y="276" text-anchor="middle">Lock contention scales O(n&#xB2;)</text>
+
+            <!-- Vertical divider -->
+            <line class="redis-divider" x1="260" y1="40" x2="260" y2="380"/>
+
+            <!-- RIGHT: Redis single-threaded -->
+            <text class="redis-accent" x="390" y="46" text-anchor="middle">Redis</text>
+            <text class="redis-sub" x="390" y="60" text-anchor="middle">One thread, one event loop</text>
+
+            <!-- Client connections (queue) -->
+            <rect class="redis-fill" x="310" y="74" width="160" height="24"/>
+            <rect class="redis-box" x="310" y="74" width="160" height="24"/>
+            <text class="redis-mono" x="390" y="90" text-anchor="middle">Client connections (fd queue)</text>
+
+            <!-- Arrow to event loop -->
+            <line class="redis-arrow-accent" x1="390" y1="98" x2="390" y2="128"/>
+
+            <!-- Event loop -->
+            <rect class="redis-fill" x="330" y="130" width="120" height="38"/>
+            <rect class="redis-box" x="330" y="130" width="120" height="38" stroke="var(--accent)"/>
+            <text class="redis-accent" x="390" y="148" text-anchor="middle">Event Loop</text>
+            <text class="redis-sub" x="390" y="162" text-anchor="middle">epoll / kqueue</text>
+
+            <!-- Arrow to data -->
+            <line class="redis-arrow-accent" x1="390" y1="168" x2="390" y2="196"/>
+
+            <!-- Data (no locks) -->
+            <rect class="redis-fill" x="320" y="198" width="140" height="28"/>
+            <rect class="redis-box" x="320" y="198" width="140" height="28" stroke="var(--accent)"/>
+            <text class="redis-accent" x="390" y="216" text-anchor="middle">In-Memory Data</text>
+
+            <!-- Benefits -->
+            <text class="redis-sub" x="390" y="248" text-anchor="middle">Zero locks: 0 ns overhead</text>
+            <text class="redis-sub" x="390" y="262" text-anchor="middle">No cache-line bouncing</text>
+            <text class="redis-sub" x="390" y="276" text-anchor="middle">Latency: predictable O(1)</text>
+
+            <!-- Bottom comparison -->
+            <line x1="30" y1="300" x2="490" y2="300" stroke="var(--border)" stroke-width="0.5"/>
+            <text class="redis-sub" x="126" y="322" text-anchor="middle">~40,000 ops/sec</text>
+            <text class="redis-sub" x="126" y="338" text-anchor="middle">(lock-bound ceiling)</text>
+            <text class="redis-accent" x="390" y="322" text-anchor="middle">100,000+ ops/sec</text>
+            <text class="redis-sub" x="390" y="338" text-anchor="middle">(memory-bandwidth ceiling)</text>
+
+            <text class="redis-note" x="260" y="370" text-anchor="middle">The fastest lock is the one you never acquire.</text>
+            <text class="redis-note" x="260" y="386" text-anchor="middle">Redis removed the locks. The performance followed.</text>
+        </svg>
+
+        <p>Redis sidesteps the entire problem. One thread means one
+            execution context. One execution context means no concurrent
+            access to shared state. No concurrent access means no locks.
+            No locks means no contention. No contention means the CPU
+            spends its cycles doing the thing you asked it to do: reading
+            and writing data. The event loop, built on
+            <a href="https://en.wikipedia.org/wiki/Epoll" target="_blank" rel="noopener">epoll</a>
+            on Linux and
+            <a href="https://en.wikipedia.org/wiki/Kqueue" target="_blank" rel="noopener">kqueue</a>
+            on BSD, multiplexes thousands of client connections onto that
+            single thread without blocking. A <code>GET</code> takes
+            roughly one microsecond. A <code>SET</code> takes roughly
+            the same. The event loop processes them in sequence, one after
+            another, faster than the network can deliver them.</p>
+
+        <h2>The Numbers</h2>
+
+        <p>Approximately
+            <a href="https://github.com/redis/redis" target="_blank" rel="noopener">90,000 lines of C</a>.
+            Fifteen years of production use. Sub-millisecond latency on
+            commodity hardware. Over 100,000 operations per second on a
+            single core, and substantially more with pipelining. No
+            garbage collection pauses, because there is no garbage
+            collector. No thread pool tuning, because there is no thread
+            pool. No lock contention analysis, because there are no locks
+            to contend.</p>
+
+        <p>The users read like a roll call of the internet&#x2019;s
+            infrastructure:
+            <a href="https://redis.io/docs/get-started/faq/" target="_blank" rel="noopener">X (formerly Twitter), GitHub, Stack Overflow, Instagram</a>,
+            and a rather long list of others that prefer not to discuss
+            their infrastructure choices in public. When a social network
+            serving hundreds of millions of requests per day chooses a
+            single-threaded database, it is not because the engineering
+            team misread the documentation. It is because the engineering
+            team understood the documentation.</p>
+
+        <h2>The Data Structures</h2>
+
+        <p>Redis is frequently described as a key-value store, in much
+            the same way that a Swiss Army knife is frequently described
+            as a blade. The description is technically accurate and
+            comprehensively misleading. Redis is a data structure server.
+            The distinction matters.</p>
+
+        <p>A key-value store maps strings to strings. Redis maps strings
+            to data structures: strings, hashes, lists, sets, sorted sets,
+            bitmaps, hyperloglogs, and streams. Each structure is
+            implemented with the correct algorithm for its access patterns.
+            Sorted sets use skip lists, providing O(log n) insertion and
+            range queries. Lists are implemented as quicklists (linked lists
+            of ziplists), optimised for both ends. Hashes use a compact
+            ziplist encoding for small cardinalities and transition to
+            hash tables when the data outgrows it. These are not
+            afterthoughts bolted onto a string store. They are the
+            reason Redis exists.</p>
+
+        <!-- Redis data structures diagram -->
+        <svg id="redis-ds" viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Redis data structures overview. Six core structures: String (binary-safe, 512 MB max), Hash (field-value pairs, O(1) access), List (doubly-linked quicklist, O(1) push/pop), Set (unique members, O(1) add/remove), Sorted Set (skip list, O(log n) rank queries), and Stream (append-only log, consumer groups). Each with its internal implementation and time complexity." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #redis-ds .redis-ds-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #redis-ds .redis-ds-name { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #redis-ds .redis-ds-desc { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #redis-ds .redis-ds-impl { font: 400 10px/1 ui-monospace, monospace; fill: var(--muted); }
+                #redis-ds .redis-ds-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #redis-ds .redis-ds-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #redis-ds .redis-ds-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+            </style>
+
+            <text class="redis-ds-title" x="260" y="20" text-anchor="middle">Data Structure Server, Not Key-Value Store</text>
+            <text class="redis-ds-note" x="260" y="36" text-anchor="middle">Six core structures. Correct algorithms. Constant-time where it matters.</text>
+
+            <!-- Row 1: String -->
+            <rect class="redis-ds-fill" x="20" y="52" width="236" height="50"/>
+            <rect class="redis-ds-box" x="20" y="52" width="236" height="50"/>
+            <text class="redis-ds-name" x="32" y="70">String</text>
+            <text class="redis-ds-desc" x="32" y="84">Binary-safe, 512 MB max</text>
+            <text class="redis-ds-impl" x="32" y="96">O(1) GET/SET, SDS encoding</text>
+
+            <!-- Row 1: Hash -->
+            <rect class="redis-ds-fill" x="268" y="52" width="232" height="50"/>
+            <rect class="redis-ds-box" x="268" y="52" width="232" height="50"/>
+            <text class="redis-ds-name" x="280" y="70">Hash</text>
+            <text class="redis-ds-desc" x="280" y="84">Field-value pairs per key</text>
+            <text class="redis-ds-impl" x="280" y="96">O(1) HGET/HSET, ziplist &#x2192; ht</text>
+
+            <!-- Row 2: List -->
+            <rect class="redis-ds-fill" x="20" y="114" width="236" height="50"/>
+            <rect class="redis-ds-box" x="20" y="114" width="236" height="50"/>
+            <text class="redis-ds-name" x="32" y="132">List</text>
+            <text class="redis-ds-desc" x="32" y="146">Doubly-linked quicklist</text>
+            <text class="redis-ds-impl" x="32" y="158">O(1) LPUSH/RPOP, blocking ops</text>
+
+            <!-- Row 2: Set -->
+            <rect class="redis-ds-fill" x="268" y="114" width="232" height="50"/>
+            <rect class="redis-ds-box" x="268" y="114" width="232" height="50"/>
+            <text class="redis-ds-name" x="280" y="132">Set</text>
+            <text class="redis-ds-desc" x="280" y="146">Unique members, intersections</text>
+            <text class="redis-ds-impl" x="280" y="158">O(1) SADD/SISMEMBER, intset &#x2192; ht</text>
+
+            <!-- Row 3: Sorted Set -->
+            <rect class="redis-ds-fill" x="20" y="176" width="236" height="50"/>
+            <rect class="redis-ds-box" x="20" y="176" width="236" height="50"/>
+            <text class="redis-ds-name" x="32" y="194">Sorted Set</text>
+            <text class="redis-ds-desc" x="32" y="208">Score-ordered, range queries</text>
+            <text class="redis-ds-impl" x="32" y="220">O(log n) ZADD, skip list + ht</text>
+
+            <!-- Row 3: Stream -->
+            <rect class="redis-ds-fill" x="268" y="176" width="232" height="50"/>
+            <rect class="redis-ds-box" x="268" y="176" width="232" height="50"/>
+            <text class="redis-ds-name" x="280" y="194">Stream</text>
+            <text class="redis-ds-desc" x="280" y="208">Append-only log, consumer groups</text>
+            <text class="redis-ds-impl" x="280" y="220">O(1) XADD, radix tree + listpack</text>
+
+            <!-- Bottom section: the point -->
+            <line x1="20" y1="248" x2="500" y2="248" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="redis-ds-note" x="260" y="272" text-anchor="middle">Each structure uses the optimal algorithm for its access pattern.</text>
+            <text class="redis-ds-note" x="260" y="288" text-anchor="middle">Sorted sets: skip lists. Hashes: ziplist to hash table promotion.</text>
+            <text class="redis-ds-note" x="260" y="304" text-anchor="middle">These are not bolted-on features. They are the reason Redis exists.</text>
+
+            <!-- Usage examples -->
+            <text class="redis-ds-note" x="260" y="332" text-anchor="middle">Leaderboards &#x2192; ZRANGEBYSCORE. Sessions &#x2192; HGETALL + EXPIRE.</text>
+            <text class="redis-ds-note" x="260" y="348" text-anchor="middle">Rate limiting &#x2192; INCR + EXPIRE. Message queue &#x2192; XREADGROUP.</text>
+            <text class="redis-ds-note" x="260" y="370" text-anchor="middle">The right data structure at the right time. In memory. Sub-millisecond.</text>
+        </svg>
+
+        <p>A leaderboard is a sorted set. A session store is a hash with
+            an expiry. A rate limiter is an incrementing key with a TTL.
+            A message queue is a stream with consumer groups. Each of
+            these problems, in a traditional database, requires a table
+            schema, an index strategy, and a query plan. In Redis, each
+            is a single command with constant-time or logarithmic
+            complexity. The abstraction is not hiding complexity. The
+            abstraction <em>is</em> the correct solution.</p>
+
+        <h2>The Event Loop</h2>
+
+        <p>The mechanism that makes single-threaded concurrency possible
+            is the event loop, and it is worth understanding precisely
+            what this means. Redis does not wait for I/O. It never blocks
+            on a socket read. It never blocks on a socket write. It
+            registers interest in file descriptor events with the kernel
+            (via epoll on Linux, kqueue on FreeBSD and macOS) and then
+            processes whichever descriptors are ready. If Client A&#x2019;s
+            data has arrived and Client B&#x2019;s has not, Redis processes
+            Client A and moves on. Client B will be processed when its
+            data arrives. No thread sits idle waiting. No thread exists
+            to sit idle.</p>
+
+        <p>This is the same model that powers nginx. It is the same
+            model that Node.js adopted six years later. It is, if one
+            traces the lineage far enough, the model that Unix file
+            descriptor multiplexing was designed for in the first place.
+            The <code>select()</code> system call has existed since 4.2BSD
+            in 1983. The idea that a single process can handle thousands
+            of concurrent connections is not new. It is, in fact,
+            forty-three years old. Redis merely applied it to a domain
+            where the prevailing wisdom insisted it could not work.</p>
+
+        <h2>The Persistence</h2>
+
+        <p>&#x201C;But it&#x2019;s in-memory,&#x201D; says the sceptic. &#x201C;What
+            happens when the power goes out?&#x201D; This is a reasonable
+            question, and Redis provides two answers, both of which
+            the sceptic tends to find unsatisfying because they are
+            not dramatic enough to justify the concern.</p>
+
+        <p>The first answer is
+            <a href="https://redis.io/docs/management/persistence/" target="_blank" rel="noopener">RDB snapshots</a>:
+            periodic point-in-time dumps of the entire dataset to disc.
+            Redis forks the process, the child serialises the data, the
+            parent continues serving requests. Copy-on-write semantics
+            mean the fork is nearly instant regardless of dataset size.
+            The snapshot lands on disc. The parent never noticed.</p>
+
+        <p>The second answer is the Append-Only File (AOF): a write-ahead
+            log that records every mutation. On restart, Redis replays
+            the log and reconstructs the dataset. The AOF can be
+            <code>fsync</code>&#x2019;d every second (the default, and
+            sensible for most workloads) or after every write (for those
+            who require the belt, the braces, and the structural engineer
+            to verify both). In practice, most deployments use both
+            mechanisms: RDB for fast restarts, AOF for minimal data loss.
+            The combination provides durability guarantees that satisfy
+            everyone except those who were not really asking about
+            durability but about finding a reason not to use Redis.</p>
+
+        <h2>The Scaling</h2>
+
+        <p>A single Redis instance handles 100,000 operations per second.
+            For most applications, this is more than sufficient. For those
+            where it is not, Redis scales the way Unix scales: by running
+            more processes. Redis Cluster shards data across multiple
+            nodes using hash slots (16,384 of them, for those who
+            appreciate specificity). Each node is an independent
+            single-threaded instance. Each handles its own subset of the
+            keyspace. The cluster coordinates via a gossip protocol.
+            There is no central coordinator. There is no single point
+            of failure. There is no distributed lock manager, because
+            each shard owns its data exclusively.</p>
+
+        <p>This is horizontal scaling without the usual horizontal
+            complexity. No two-phase commit. No distributed transaction
+            coordinator. No consensus protocol for every write. Each
+            shard is autonomous, single-threaded, and fast. The cluster
+            is a collection of independent fast things, not a single
+            complicated slow thing pretending to be fast. The distinction
+            is architectural, and it is the reason Redis Cluster works
+            in practice rather than merely in conference presentations.</p>
+
+        <h2>The Licence</h2>
+
+        <p>For fifteen years, Redis was BSD-licensed. In March 2024,
+            Redis Ltd
+            <a href="https://redis.io/blog/redis-adopts-dual-source-available-licensing/" target="_blank" rel="noopener">changed the licence</a>
+            to a dual RSALv2/SSPLv1 model. The change was, depending on
+            one&#x2019;s perspective, either a necessary defence against
+            cloud providers reselling open-source work without
+            contributing back, or a corporate appropriation of a
+            community project. Both perspectives contain truth. Neither
+            contains all of it.</p>
+
+        <p>The community&#x2019;s response was
+            <a href="https://github.com/valkey-io/valkey" target="_blank" rel="noopener">Valkey</a>,
+            a fork maintained by the Linux Foundation with contributions
+            from AWS, Google, Oracle, and others. The architecture remains
+            identical. The codebase diverged at Redis 7.2. The lesson is
+            one the industry has learned before: a licence can change, but
+            an architecture, once proven, is forked rather than abandoned.
+            The single-threaded event loop will outlast the corporate
+            entity that changed the licence, in the same way that Unix
+            outlasted AT&amp;T.</p>
+
+        <h2>The Reduction</h2>
+
+        <p>What makes Redis technically beautiful is not its speed, though
+            it is fast. It is not its data structures, though they are
+            well-chosen. It is not its ubiquity, though it is everywhere.
+            What makes Redis beautiful is the clarity of a single
+            architectural decision and the discipline to follow it
+            through to every consequence.</p>
+
+        <p>One thread. Therefore no locks. Therefore no contention.
+            Therefore predictable latency. Therefore simple debugging.
+            Therefore auditable code. Therefore correct code. Each
+            consequence follows from the one before it. The entire
+            system is a syllogism in C, ninety thousand lines long,
+            and every line follows from the premise that concurrency
+            is not a threading problem but a design problem.</p>
+
+        <p>The industry spent decades throwing threads at latency and
+            wondering why the latency got worse. Sanfilippo spent 2009
+            removing the threads and watching the latency disappear.
+            The difference between the two approaches is not technical
+            talent. It is the willingness to question the assumption
+            that everyone else had stopped questioning.</p>
+
+        <blockquote>
+            <p>One thread. One event loop. One hundred thousand
+                operations per second. No locks required. The fastest
+                path through a problem is sometimes around it.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>On the single-threaded &#x201C;limitation&#x201D;</strong></p>
+            <p>The single-threaded approach is not a limitation but
+                an architecture decision. Modern CPUs spend more time
+                on lock management than actual computation when too many
+                threads compete for shared resources. Redis bypasses the
+                problem entirely: one thread, one event loop, no locks.
+                Predictable latencies and linear scaling through sharding.
+                Since 2024 under
+                <a href="https://redis.io/blog/redis-adopts-dual-source-available-licensing/" target="_blank" rel="noopener">new licence</a>
+                (no longer BSD), but the architecture remains a masterclass.
+                The community forked it as
+                <a href="https://github.com/valkey-io/valkey" target="_blank" rel="noopener">Valkey</a>.
+                The event loop endures. Sources:
+                <a href="https://redis.io/docs/get-started/faq/" target="_blank" rel="noopener">Redis FAQ</a>,
+                <a href="https://redis.io/docs/management/optimization/benchmarks/" target="_blank" rel="noopener">benchmarks</a>,
+                <a href="http://antirez.com/" target="_blank" rel="noopener">antirez blog</a>,
+                <a href="https://github.com/redis/redis" target="_blank" rel="noopener">GitHub</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

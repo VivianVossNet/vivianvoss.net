@@ -17,10 +17,15 @@ local pages = {
     { loc = "/blog/the-ssh-replacement",               priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-event-sourcing-tax",            priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-sass-replacement",              priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-sqlite",            priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-nginx",             priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/technical-beauty-wireguard",        priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/technical-beauty-curl",             priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/technical-beauty-lua",              priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/technical-beauty-postgresql",       priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-git",              priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-jails",             priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-redis",             priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/technical-beauty-make",             priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-dialog-element",              priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/technical-beauty-sed",            priority = "0.7", changefreq = "yearly" },
@@ -61,6 +66,12 @@ local pages = {
     { loc = "/blog/the-kubernetes-tax",         priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-framework-tax",          priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/unit-tests-for-everything",  priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-permanent-beta",        priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/http2-the-bundling-myth",  priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/bytes-of-art-zetsubo",    priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/bytes-of-art-clean-slate", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/reads-the-five-prefixes",  priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/capsicum-vs-seccomp",     priority = "0.7", changefreq = "yearly" },
 }
 
 function route()
