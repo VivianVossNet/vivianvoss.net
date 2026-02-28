@@ -895,12 +895,28 @@
         renderPager(pagerBot, total);
     }
 
+    function pageRange(current, total) {
+        /* Up to 6 pages: show all. From 7+: show 3 left, ellipsis, 3 right. */
+        if (total <= 6) {
+            var seq = [];
+            for (var i = 1; i <= total; i++) seq.push(i);
+            return seq;
+        }
+        return [1, 2, 3, 0, total - 2, total - 1, total]; /* 0 = ellipsis */
+    }
+
     function renderPager(nav, total) {
         if (total <= 1) { nav.innerHTML = ''; return; }
         var html = '';
         html += '<button class="vv-pager-btn"' + (page <= 1 ? ' disabled' : '') + ' data-page="' + (page - 1) + '">&lsaquo;</button>';
-        for (var i = 1; i <= total; i++) {
-            html += '<button class="vv-pager-btn' + (i === page ? ' is-active' : '') + '" data-page="' + i + '">' + i + '</button>';
+        var range = pageRange(page, total);
+        for (var i = 0; i < range.length; i++) {
+            var p = range[i];
+            if (p === 0) {
+                html += '<span class="vv-pager-ellipsis">&ndash;</span>';
+            } else {
+                html += '<button class="vv-pager-btn' + (p === page ? ' is-active' : '') + '" data-page="' + p + '">' + p + '</button>';
+            }
         }
         html += '<button class="vv-pager-btn"' + (page >= total ? ' disabled' : '') + ' data-page="' + (page + 1) + '">&rsaquo;</button>';
         nav.innerHTML = html;
