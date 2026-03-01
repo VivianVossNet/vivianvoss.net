@@ -101,6 +101,11 @@
         pointer-events: none;
     }
 
+    .game-mode #stars {
+        z-index: 0;
+        pointer-events: auto;
+    }
+
     /* --- Skip link -------------------------------------------------------- */
 
     .skip-link {
@@ -285,13 +290,13 @@
         max-width: calc(var(--unit) * 160);
         margin: 0 auto;
         width: 100%;
-        gap: calc(var(--unit) * 8);
+        gap: calc(var(--unit) * 4);
     }
 
     /* --- Section ---------------------------------------------------------- */
 
     .vv-section {
-        gap: calc(var(--unit) * 3);
+        gap: calc(var(--unit) * 1.5);
     }
 
     .vv-section h1 {
@@ -316,6 +321,10 @@
         line-height: 1.6;
     }
 
+    .vv-section > :is(p, h1, h2, h3, ul, ol, dl, table, figure, details, blockquote) {
+        margin: 0;
+    }
+
     .vv-section p {
         line-height: var(--line-height-base);
         color: var(--muted);
@@ -331,13 +340,13 @@
 
     .vv-hero {
         padding: calc(var(--unit) * 6) 0;
-        gap: calc(var(--unit) * 3);
+        gap: calc(var(--unit) * 1.5);
     }
 
     .vv-hero-intro {
         display: flex;
         align-items: flex-start;
-        gap: calc(var(--unit) * 3);
+        gap: calc(var(--unit) * 1.5);
         max-width: 65ch;
     }
 
@@ -380,7 +389,7 @@
 
     .vv-cards {
         display: grid;
-        gap: calc(var(--unit) * 3);
+        gap: calc(var(--unit) * 1.5);
     }
 
     .vv-card {
@@ -407,6 +416,7 @@
             color: var(--muted);
             line-height: var(--line-height-base);
             align-self: start;
+            margin: 0;
         }
 
         & .size {
@@ -442,7 +452,7 @@
 
     .vv-series {
         display: grid;
-        gap: calc(var(--unit) * 2);
+        gap: calc(var(--unit) * 1);
     }
 
     .vv-series-item {
@@ -467,10 +477,10 @@
         & p {
             color: var(--muted);
             line-height: var(--line-height-base);
+            margin: 0;
         }
 
         & .vv-pills {
-            margin-top: calc(var(--unit) * 0.5);
             justify-self: start;
         }
     }
@@ -644,7 +654,11 @@
     .vv-dictionary-grid {
         display: grid;
         grid-template-columns: 1fr;
-        gap: calc(var(--unit) * 6);
+        gap: calc(var(--unit) * 3);
+    }
+
+    .vv-dictionary {
+        gap: calc(var(--unit) * 1);
     }
 
     .vv-dict-heading {
@@ -653,7 +667,6 @@
         color: var(--text);
         border-bottom: 2px solid var(--accent);
         padding-bottom: calc(var(--unit) * 1);
-        margin-bottom: calc(var(--unit) * 2);
     }
 
     .vv-dictionary h3 {
@@ -661,10 +674,12 @@
         font-weight: 400;
         color: var(--accent);
         letter-spacing: 0.02em;
-        margin-top: calc(var(--unit) * 4);
+        padding-top: calc(var(--unit) * 2);
     }
 
     .vv-dict-entry {
+        display: grid;
+        gap: calc(var(--unit) * 0.5);
         padding: calc(var(--unit) * 1.5) 0;
         border-bottom: 1px solid var(--border);
     }
@@ -679,17 +694,17 @@
         color: var(--muted);
         line-height: var(--line-height-base);
         max-width: 65ch;
-        margin: calc(var(--unit) * 0.5) 0 0;
+        margin: 0;
     }
 
     /* --- Article (blog post) ---------------------------------------------- */
 
     .vv-article {
-        gap: calc(var(--unit) * 6);
+        gap: calc(var(--unit) * 3);
     }
 
     .vv-article-header {
-        gap: calc(var(--unit) * 2);
+        gap: calc(var(--unit) * 1);
 
         & h1 {
             font-size: calc(var(--unit) * 2.5);
@@ -718,7 +733,15 @@
 
     .vv-article-body {
         display: grid;
-        gap: calc(var(--unit) * 6);
+        gap: calc(var(--unit) * 3);
+
+        & :is(p, h2, h3, blockquote, ul, ol, dl, table, figure, details, pre, aside, svg) {
+            margin: 0;
+        }
+
+        & li {
+            margin: 0;
+        }
 
         & p {
             line-height: var(--line-height-base);
@@ -732,6 +755,11 @@
             letter-spacing: 0.02em;
             line-height: 1.6;
             color: var(--accent);
+            padding-top: calc(var(--unit) * 1.5);
+        }
+
+        & h3 {
+            padding-top: calc(var(--unit) * 1.25);
         }
 
         & blockquote {
@@ -742,6 +770,12 @@
                 color: var(--text);
                 font-style: italic;
             }
+        }
+
+        & .vv-aside {
+            gap: calc(var(--unit) * 1.5);
+            border-left: 3px solid var(--border);
+            padding-left: calc(var(--unit) * 3);
         }
     }
 
@@ -765,6 +799,10 @@
     .vv-contact {
         display: grid;
         gap: calc(var(--unit) * 2);
+
+        & p {
+            margin: 0;
+        }
 
         & a {
             color: var(--accent);
@@ -854,7 +892,7 @@
 
     .vv-form {
         display: grid;
-        gap: calc(var(--unit) * 3);
+        gap: calc(var(--unit) * 1.5);
         max-width: 50ch;
     }
 
@@ -949,13 +987,13 @@
     .vv-lighthouse {
         display: flex;
         flex-wrap: wrap;
-        gap: calc(var(--unit) * 4);
+        gap: calc(var(--unit) * 2);
     }
 
     .vv-lh-score {
         display: grid;
         justify-items: center;
-        gap: calc(var(--unit) * 1.5);
+        gap: calc(var(--unit) * 0.75);
 
         & span {
             font-size: calc(var(--unit) * 1.75);
@@ -1015,9 +1053,13 @@
         padding: calc(var(--unit) * 4) calc(var(--unit) * 3);
         border-top: 1px solid var(--border);
         text-align: center;
-        gap: calc(var(--unit) * 2);
+        gap: calc(var(--unit) * 1);
         color: var(--muted);
         font-size: calc(var(--unit) * 1.75);
+
+        & p {
+            margin: 0;
+        }
 
         & .powered-by {
             display: flex;
@@ -1041,8 +1083,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: calc(var(--unit) * 3);
-            margin-top: 32px;
+            gap: calc(var(--unit) * 1.5);
         }
 
         & .footer-social a {
@@ -1156,7 +1197,7 @@
 
         main#content {
             padding: calc(var(--unit) * 8) calc(var(--unit) * 6);
-            gap: calc(var(--unit) * 12);
+            gap: calc(var(--unit) * 6);
         }
 
         .vv-hero {
@@ -1195,7 +1236,6 @@
 
             & .vv-pills {
                 grid-column: 1;
-                margin-top: 0;
                 align-items: start;
                 height: fit-content;
             }
@@ -1247,6 +1287,27 @@
    ======================================================================== */
 
 @layer castd.game {
+
+    /* --- Game mode: fullscreen canvas, no chrome ------------------------- */
+
+    html:has(.game-mode) {
+        overflow: hidden;
+    }
+
+    .game-mode {
+        overflow: hidden;
+        height: 100dvh;
+    }
+
+    .game-mode header[role="banner"],
+    .game-mode footer,
+    .game-mode main#content,
+    .game-mode .skip-link {
+        display: none !important;
+    }
+
+    /* --- HUD elements (hidden by default, shown by JS via inline style) --- */
+
     .game-score,
     .game-lives,
     .game-pause-wrap,
@@ -1255,94 +1316,253 @@
         display: none;
     }
 
+    /* --- HUD shared styles (positioned but hidden until JS activates) ----- */
+
+    .game-score {
+        position: fixed;
+        z-index: 5;
+        font-family: var(--font-heading);
+        color: var(--accent);
+        opacity: 0.15;
+        pointer-events: none;
+        text-align: center;
+    }
+
+    .game-lives,
+    .game-restart {
+        position: fixed;
+        z-index: 5;
+        font-family: var(--font-heading);
+        color: var(--accent);
+        opacity: 0.3;
+        pointer-events: none;
+    }
+
+    .game-level {
+        display: block;
+        opacity: 1;
+    }
+
+    .game-lives {
+        letter-spacing: 0.25em;
+    }
+
+    .game-pause-wrap {
+        position: fixed;
+        z-index: 5;
+        justify-items: center;
+    }
+
+    .game-pause {
+        font-family: var(--font-heading);
+        color: var(--accent);
+        opacity: 0.15;
+        cursor: pointer;
+        user-select: none;
+        line-height: 1;
+    }
+
+    .game-pause:hover {
+        opacity: 0.3;
+    }
+
+    .game-pause-hint {
+        font-family: var(--font-heading);
+        color: var(--accent);
+        opacity: 0.3;
+        pointer-events: none;
+    }
+
+    .game-audio {
+        position: fixed;
+        z-index: 5;
+        color: var(--accent);
+        opacity: 0.15;
+        cursor: pointer;
+        user-select: none;
+        line-height: 1;
+    }
+
+    .game-audio:hover {
+        opacity: 0.3;
+    }
+
+    /* --- Desktop (>=560px): HUD visible on all pages --------------------- */
+
     @media (min-width: 560px) {
         .game-score {
             display: block;
-            position: fixed;
             top: calc(var(--unit) * 15);
             right: 50px;
-            z-index: 5;
-            font-family: var(--font-heading);
             font-size: calc(var(--unit) * 10);
-            color: var(--accent);
-            opacity: 0.15;
-            pointer-events: none;
-            text-align: center;
         }
 
         .game-lives,
         .game-restart {
             display: block;
-            position: fixed;
             bottom: calc(var(--unit) * 3);
             right: calc(var(--unit) * 3);
-            z-index: 5;
-            font-family: var(--font-heading);
             font-size: calc(var(--unit) * 2.25);
-            color: var(--accent);
-            opacity: 0.3;
-            pointer-events: none;
         }
 
         .game-level {
-            display: block;
             font-size: calc(var(--unit) * 2.25);
-            opacity: 1;
         }
 
         .game-lives {
             bottom: calc(var(--unit) * 6);
-            letter-spacing: 0.25em;
         }
 
         .game-pause-wrap {
             display: grid;
-            position: fixed;
             bottom: calc(var(--unit) * 3);
             left: calc(var(--unit) * 3);
-            z-index: 5;
-            justify-items: center;
             gap: 16px;
         }
 
         .game-pause {
-            font-family: var(--font-heading);
             font-size: calc(var(--unit) * 13.3);
-            color: var(--accent);
-            opacity: 0.15;
-            cursor: pointer;
-            user-select: none;
-            line-height: 1;
-        }
-
-        .game-pause:hover {
-            opacity: 0.3;
         }
 
         .game-pause-hint {
-            font-family: var(--font-heading);
             font-size: calc(var(--unit) * 2.25);
-            color: var(--accent);
-            opacity: 0.3;
-            pointer-events: none;
         }
 
         .game-audio {
             display: block;
-            position: fixed;
             top: calc(var(--unit) * 15);
             left: calc(var(--unit) * 3);
-            z-index: 5;
             font-size: calc(var(--unit) * 4);
-            color: var(--accent);
-            opacity: 0.15;
-            cursor: pointer;
-            user-select: none;
-            line-height: 1;
+        }
+    }
+
+    /* --- Game page mobile: minimal HUD ----------------------------------- */
+    /* Score top-right, Lives top-left, Pause button below canvas.
+       No symbols — text only. Audio bottom-left. */
+
+    @media (max-width: 559px) {
+        .game-mode #stars {
+            bottom: calc(var(--unit) * 6);
+            height: auto;
         }
 
-        .game-audio:hover {
+        .game-mode .game-score {
+            display: block;
+            top: calc(var(--unit) * 1);
+            right: calc(var(--unit) * 1.5);
+            font-size: calc(var(--unit) * 3);
+        }
+
+        .game-mode .game-level {
+            font-size: calc(var(--unit) * 1.5);
+        }
+
+        .game-mode .game-lives {
+            display: block;
+            top: calc(var(--unit) * 1);
+            bottom: unset;
+            left: calc(var(--unit) * 1.5);
+            right: unset;
+            font-size: calc(var(--unit) * 1.5);
+        }
+
+        .game-mode .game-restart {
+            display: none;
+        }
+
+        .game-mode .game-pause-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: unset;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(var(--unit) * 6);
+            transform: none;
+            gap: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .game-mode .game-pause-hint {
+            pointer-events: auto;
+        }
+
+        .game-mode .game-pause {
+            display: none;
+        }
+
+        .game-mode .game-pause-hint {
+            font-size: calc(var(--unit) * 1.5);
+            opacity: 0.35;
+            padding: calc(var(--unit) * 0.8) calc(var(--unit) * 2);
+            border: 1px solid currentColor;
+            border-radius: calc(var(--unit) * 3);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .game-mode .game-audio {
+            display: block;
+            bottom: calc(var(--unit) * 1);
+            left: calc(var(--unit) * 1.5);
+            top: unset;
+            font-size: calc(var(--unit) * 2);
+        }
+    }
+
+    /* --- Game page desktop: full-size HUD -------------------------------- */
+
+    @media (min-width: 560px) {
+        .game-mode .game-score {
+            top: calc(var(--unit) * 15);
+            right: 50px;
+            font-size: calc(var(--unit) * 10);
+        }
+
+        .game-mode .game-level {
+            font-size: calc(var(--unit) * 2.25);
+        }
+
+        .game-mode .game-lives {
+            top: unset;
+            bottom: calc(var(--unit) * 6);
+            left: unset;
+            right: calc(var(--unit) * 3);
+            font-size: calc(var(--unit) * 2.25);
+        }
+
+        .game-mode .game-restart {
+            display: block;
+            bottom: calc(var(--unit) * 3);
+            right: calc(var(--unit) * 3);
+            font-size: calc(var(--unit) * 2.25);
+        }
+
+        .game-mode .game-pause-wrap {
+            bottom: calc(var(--unit) * 3);
+            left: calc(var(--unit) * 3);
+            transform: none;
+            gap: 16px;
+        }
+
+        .game-mode .game-pause {
+            display: block;
+            font-size: calc(var(--unit) * 13.3);
+        }
+
+        .game-mode .game-pause-hint {
+            font-size: calc(var(--unit) * 2.25);
             opacity: 0.3;
+        }
+
+        .game-mode .game-audio {
+            top: calc(var(--unit) * 15);
+            bottom: unset;
+            left: calc(var(--unit) * 3);
+            font-size: calc(var(--unit) * 4);
         }
     }
 
