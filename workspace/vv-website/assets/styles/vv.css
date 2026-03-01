@@ -613,12 +613,12 @@
 
     .vv-term::after {
         content: attr(data-def);
-        position: absolute;
-        bottom: calc(100% + 8px);
-        left: 50%;
-        transform: translateX(-50%);
-        width: max-content;
-        max-width: 320px;
+        position: fixed;
+        left: calc(var(--unit) * 3);
+        right: calc(var(--unit) * 3);
+        bottom: calc(var(--unit) * 3);
+        width: auto;
+        max-width: none;
         padding: calc(var(--unit) * 1.5) calc(var(--unit) * 2);
         background: var(--surface);
         color: var(--muted);
@@ -1209,6 +1209,16 @@
             & p {
                 grid-column: 2;
             }
+        }
+
+        .vv-term::after {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            right: auto;
+            transform: translateX(-50%);
+            width: max-content;
+            max-width: 320px;
         }
 
         .vv-dictionary-grid {
