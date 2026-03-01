@@ -17,6 +17,7 @@
     var w, h;
     var mx = 0, my = 0;
     var hasMouse = false;
+    var isTouch = "ontouchstart" in window;
 
     var STORAGE_KEY = "vv-invaders";
 
@@ -1029,8 +1030,8 @@
         playerQualified = false;
         nameEntryActive = false;
         nameEntry = "";
-        if (pauseEl) { pauseEl.innerHTML = "&#x23F8;"; pauseEl.style.fontSize = ""; }
-        if (pauseHintEl) pauseHintEl.textContent = "Space Pause";
+        if (pauseEl && !isTouch) { pauseEl.innerHTML = "&#x23F8;"; pauseEl.style.fontSize = ""; }
+        if (pauseHintEl) pauseHintEl.textContent = isTouch ? "Press stop" : "Space pause";
         if (scoreEl) scoreEl.textContent = "0";
         updateLevel();
         updateLivesDisplay();
@@ -1218,11 +1219,17 @@
             }
             startMusic();
         }
-        if (pauseEl) {
+        if (pauseEl && !isTouch) {
             pauseEl.innerHTML = paused ? "&#x25B6;" : "&#x23F8;";
             pauseEl.style.fontSize = paused ? "calc(var(--unit) * 8)" : "";
         }
-        if (pauseHintEl) pauseHintEl.textContent = paused ? "Space Resume" : "Space Pause";
+        if (pauseHintEl) {
+            if (isTouch) {
+                pauseHintEl.textContent = paused ? "Press start" : "Press stop";
+            } else {
+                pauseHintEl.textContent = paused ? "Space resume" : "Space pause";
+            }
+        }
         saveState();
     }
 
@@ -1232,6 +1239,20 @@
     var restartEl = document.querySelector(".game-restart");
     var isGamePage = !document.querySelector("main#content") ||
                      !document.querySelector("main#content").children.length;
+
+    if (isGamePage) {
+        document.body.classList.add("game-mode");
+        /* Ensure canvas is visible and interactive on game page */
+        c.style.zIndex = "0";
+        c.style.pointerEvents = "auto";
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.overflow = "hidden";
+        /* Touch: show "Press start" button immediately */
+        if (isTouch) {
+            if (pauseWrapEl) pauseWrapEl.style.display = "";
+            if (pauseHintEl) pauseHintEl.textContent = "Press start";
+        }
+    }
 
     /* --- Leaderboard ------------------------------------------------------ */
     var PLAYER_NAME_KEY = "vv-invaders-name";
@@ -1399,9 +1420,24 @@
                     }
                 }
                 if (qualifies && isGamePage) {
-                    playerQualified = true;
-                    nameEntryActive = true;
-                    nameEntry = savedName;
+                    if (isTouch) {
+                        /* On touch: use native prompt for name entry */
+                        var touchName = prompt("HIGH SCORE! Enter your name:", savedName || "");
+                        if (touchName) {
+                            touchName = touchName.toUpperCase().replace(/[^A-Z0-9\-]/g, "").slice(0, 16);
+                        }
+                        if (touchName && touchName.length > 0) {
+                            nameEntry = touchName;
+                            saveName(nameEntry);
+                            playerQualified = true;
+                            nameEntryActive = false;
+                            submitScore(nameEntry, finalScore);
+                        }
+                    } else {
+                        playerQualified = true;
+                        nameEntryActive = true;
+                        nameEntry = savedName;
+                    }
                 }
             });
         }
@@ -1497,9 +1533,9 @@
         if (nameEntryActive) {
             drawGradientText("WINNER", centreX, bottomY, smallSize, now);
         } else {
-            /* PRESS KEY blink */
+            /* PRESS KEY / TAP blink */
             if (Math.floor(now / 500) % 2 === 0) {
-                drawGradientText("PRESS KEY", centreX, bottomY, smallSize, now);
+                drawGradientText(isTouch ? "TAP" : "PRESS KEY", centreX, bottomY, smallSize, now);
             }
         }
     }
@@ -1555,7 +1591,7 @@
             }
         } else {
             if (restartEl) {
-                restartEl.textContent = "PRESS KEY";
+                restartEl.textContent = isTouch ? "TAP TO RESTART" : "PRESS KEY";
                 restartEl.style.animation = "blink 1s step-end infinite";
             }
         }
@@ -1575,7 +1611,7 @@
             if (pauseWrapEl) pauseWrapEl.style.display = "";
             if (scoreEl) scoreEl.parentElement.style.display = "";
             if (livesEl) livesEl.style.display = "";
-            if (restartEl) {
+            if (restartEl && !isTouch) {
                 restartEl.textContent = "Ctrl+G Restart";
                 restartEl.style.animation = "";
                 restartEl.style.display = "";
@@ -1601,6 +1637,7 @@
         countdown = false;
         initTimers();
         if (pauseWrapEl) pauseWrapEl.style.display = "";
+        if (pauseHintEl) pauseHintEl.textContent = isTouch ? "Press stop" : "Space pause";
         if (scoreEl) scoreEl.parentElement.style.display = "";
         if (livesEl) livesEl.style.display = "";
         if (restartEl) restartEl.style.display = "";
@@ -1702,9 +1739,11 @@
     /* --- Main loop -------------------------------------------------------- */
     var saveTimer = 0;
 
+    var touchBarH = (isTouch && isGamePage) ? 48 : 0; /* matches --unit * 6 */
+
     function resize() {
         w = c.width = window.innerWidth;
-        h = c.height = window.innerHeight;
+        h = c.height = window.innerHeight - touchBarH;
     }
 
     function frame(now) {
@@ -1722,6 +1761,7 @@
                 drawExplosions();
                 drawGameOverSplash(now);
             } else {
+                updateTouchShip();
                 if (lives > 0) spawnAlien(now);
                 updateAliens(now);
                 updateBullets();
@@ -1745,6 +1785,8 @@
                         ctx.fillRect(mx - 18, my - 14, 36, 28);
                     }
                 }
+
+                drawTouchControls();
 
                 if (now - saveTimer > 5000) {
                     saveTimer = now;
@@ -1770,7 +1812,7 @@
 
     window.addEventListener("resize", resize);
 
-    var gameEnabled = window.matchMedia("(min-width: 560px)").matches;
+    var gameEnabled = isTouch || window.matchMedia("(min-width: 560px)").matches;
 
     document.addEventListener("mousemove", function (e) {
         mx = e.clientX;
@@ -1787,7 +1829,7 @@
                     pauseEl.innerHTML = "&#x25B6;";
                     pauseEl.style.fontSize = "calc(var(--unit) * 8)";
                 }
-                if (pauseHintEl) pauseHintEl.textContent = "Space Resume";
+                if (pauseHintEl) pauseHintEl.textContent = isTouch ? "Press start" : "Space resume";
                 if (scoreEl) scoreEl.parentElement.style.display = "";
                 if (livesEl) livesEl.style.display = "";
                 if (restartEl) restartEl.style.display = "";
@@ -1806,13 +1848,13 @@
                         pauseEl.innerHTML = "&#x25B6;";
                         pauseEl.style.fontSize = "calc(var(--unit) * 8)";
                     }
-                    if (pauseHintEl) pauseHintEl.textContent = "Space Resume";
+                    if (pauseHintEl) pauseHintEl.textContent = isTouch ? "Press start" : "Space resume";
                 }
             }
         }
     });
 
-    c.style.pointerEvents = "none";
+    if (!isTouch) c.style.pointerEvents = "none";
     document.addEventListener("click", function (e) {
         if (!gameEnabled) return;
         initAudio();
@@ -1904,15 +1946,150 @@
         }
     });
 
-    /* Touch: ambient drift only, no game */
-    if ("ontouchstart" in window) {
+    /* --- Touch controls (mobile/tablet) -------------------------------------- */
+    /* Tap anywhere: ship glides to tap position and fires.
+       Hold and drag: ship follows finger, auto-fires.
+       Bottom-centre tap zone: pause toggle.
+       No virtual controls drawn — clean screen. */
+
+    var touchActive = false;
+    var touchTargetX = 0, touchTargetY = 0;
+    var touchMoving = false;
+    var touchShipSpeed = 6;
+    var touchFireInterval = null;
+    function activateTouch() {
+        if (touchActive) return;
+        touchActive = true;
+        hasMouse = true;
+        mx = w / 2;
+        my = h * 0.65;
+        touchTargetX = mx;
+        touchTargetY = my;
+        updateLivesDisplay();
+        if (isGamePage && audioEl) audioEl.style.display = "";
+        if (isGamePage && !gameOver) {
+            /* Always unpause and start countdown — one tap to play */
+            paused = false;
+            startCountdown();
+        } else if (!gameOver) {
+            if (scoreEl) scoreEl.parentElement.style.display = "";
+            if (livesEl) livesEl.style.display = "";
+            if (pauseWrapEl) pauseWrapEl.style.display = "";
+        }
+    }
+
+    function touchStartFire() {
+        if (touchFireInterval) return;
+        shoot();
+        touchFireInterval = setInterval(function () {
+            shoot();
+        }, 180);
+    }
+
+    function touchStopFire() {
+        if (touchFireInterval) {
+            clearInterval(touchFireInterval);
+            touchFireInterval = null;
+        }
+    }
+
+    if (isTouch) {
+        c.style.pointerEvents = "auto";
+        c.style.touchAction = "none";
+
+        c.addEventListener("touchstart", function (e) {
+            e.preventDefault();
+            if (!touchActive) return;
+            initAudio();
+
+            var t = e.changedTouches[0];
+            var tx = t.clientX, ty = t.clientY;
+
+            /* Game over — tap to restart */
+            if (gameOver) {
+                if (showLeaderboard && !nameEntryActive) {
+                    leaveGameOver();
+                }
+                return;
+            }
+
+            /* Paused — ignore canvas taps (only pause button unpauses) */
+            if (paused) return;
+
+            if (countdown) return;
+
+            /* Tap: set target, fire */
+            touchTargetX = tx;
+            touchTargetY = ty;
+            touchMoving = true;
+            touchStartFire();
+        }, { passive: false });
+
+        c.addEventListener("touchmove", function (e) {
+            e.preventDefault();
+            if (paused || countdown || gameOver) return;
+            var t = e.changedTouches[0];
+            touchTargetX = t.clientX;
+            touchTargetY = t.clientY;
+            touchMoving = true;
+        }, { passive: false });
+
+        c.addEventListener("touchend", function () {
+            touchMoving = false;
+            touchStopFire();
+        });
+
+        c.addEventListener("touchcancel", function () {
+            touchMoving = false;
+            touchStopFire();
+        });
+
+        /* Pause button — only the text element, not the surrounding area */
+        if (pauseHintEl) {
+            pauseHintEl.addEventListener("touchstart", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                initAudio();
+                /* First tap ever — activate and start game */
+                if (!touchActive) {
+                    activateTouch();
+                    return;
+                }
+                if (!gameOver && !countdown) togglePause();
+            }, { passive: false });
+        }
+    }
+
+    /* Smooth ship movement towards touch target */
+    function updateTouchShip() {
+        if (!isTouch || !touchActive) return;
+        var dx = touchTargetX - mx;
+        var dy = touchTargetY - my;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > 2) {
+            var speed = Math.min(touchShipSpeed, dist * 0.15);
+            mx += (dx / dist) * speed;
+            my += (dy / dist) * speed;
+        }
+        /* Clamp to viewport */
+        if (mx < 15) mx = 15;
+        if (mx > w - 15) mx = w - 15;
+        if (my < 15) my = 15;
+        if (my > h - 15) my = h - 15;
+    }
+
+    /* No visual touch controls — clean screen */
+    function drawTouchControls() {}
+
+    /* Non-game pages: ambient starfield drift */
+    if (isTouch && !isGamePage) {
         mx = w / 2;
         my = h / 2;
-        var t = 0;
+        var driftT = 0;
         (function drift() {
-            t += 0.002;
-            mx = w * (0.5 + Math.sin(t) * 0.15);
-            my = h * (0.5 + Math.cos(t * 0.7) * 0.1);
+            driftT += 0.002;
+            mx = w * (0.5 + Math.sin(driftT) * 0.15);
+            my = h * (0.5 + Math.cos(driftT * 0.7) * 0.1);
             requestAnimationFrame(drift);
         })();
     }
