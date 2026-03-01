@@ -1,0 +1,469 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}GraphQL: The Query You Didn&#x2019;t Need &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="GraphQL was built at Facebook for the News Feed: hundreds of content types, three platforms, billions of requests. You have 12 endpoints. The performance tax, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-graphql-tax{( endslot )}
+
+{( slot og-title )}GraphQL: The Query You Didn&#x2019;t Need &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}REST is up to 50% faster on relational databases. REST with eager loading is 34x faster than GraphQL with DataLoader. The query language you adopted for 12 endpoints, examined.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "GraphQL: The Query You Didn't Need",
+    "datePublished": "2026-03-01",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-graphql-tax",
+    "description": "GraphQL was built at Facebook for the News Feed: hundreds of content types, three platforms, billions of requests. You have 12 endpoints. The performance tax, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-01">1 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>GraphQL: The Query You Didn&#x2019;t Need</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">graphql</span>
+            <span class="vv-pill">rest</span>
+            <span class="vv-pill">api</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Performance-Fresser</em> &#x25A0; Episode 15</p>
+
+        <h2>The Origin Story</h2>
+
+        <p>In 2012, three engineers at Facebook &#x2014;
+            <a href="https://blog.postman.com/what-is-graphql-part-one-the-facebook-years/" target="_blank" rel="noopener">Nick Schrock, Dan Schafer, and Lee Byron</a>
+            &#x2014; had a genuine problem. The News Feed served hundreds of content
+            types across three platforms, each requiring different data shapes.
+            Billions of API calls per day. REST endpoints were multiplying faster
+            than the team could maintain them. So they built a query language
+            that let each client ask for precisely the fields it needed.</p>
+
+        <p>Facebook
+            <a href="https://engineering.fb.com/2015/09/14/core-infra/graphql-a-data-query-language/" target="_blank" rel="noopener">reported 67 per cent less bandwidth</a>
+            on mobile.
+            <a href="https://shopify.engineering/solving-the-n-1-problem-for-graphql-through-batching" target="_blank" rel="noopener">Shopify measured a 41 per cent data reduction</a>.
+            At that scale, with that problem, GraphQL is genuinely the right tool.</p>
+
+        <p>You have 12 endpoints. Terribly sorry.</p>
+
+        <h2>The Promise</h2>
+
+        <p>&#x201C;Ask for exactly what you need.&#x201D; No over-fetching,
+            no under-fetching. One request, precisely shaped. The pitch is
+            elegant, the schema is typed, and the developer experience on day
+            one is genuinely pleasant. Everyone on the conference circuit nodded.</p>
+
+        <p>Then the invoices arrived.</p>
+
+        <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison of REST and GraphQL request processing: REST goes directly from request to response, while GraphQL adds query parsing, schema validation, and resolver chains." style="max-width: 600px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .gql-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .gql-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .gql-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .gql-num { font: 700 22px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .gql-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .gql-fill { fill: var(--accent); opacity: 0.08; rx: 3; }
+                .gql-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#gql-head); }
+            </style>
+            <defs>
+                <marker id="gql-head" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text class="gql-label" x="300" y="18" text-anchor="middle">Request Processing: REST vs GraphQL</text>
+
+            <!-- REST path -->
+            <text class="gql-accent" x="20" y="60">REST</text>
+            <rect class="gql-fill" x="70" y="44" width="100" height="30"/>
+            <rect class="gql-box" x="70" y="44" width="100" height="30"/>
+            <text class="gql-label" x="120" y="64" text-anchor="middle">Request</text>
+            <line class="gql-arrow" x1="170" y1="59" x2="220" y2="59"/>
+            <rect class="gql-fill" x="224" y="44" width="100" height="30"/>
+            <rect class="gql-box" x="224" y="44" width="100" height="30"/>
+            <text class="gql-label" x="274" y="64" text-anchor="middle">Route + SQL</text>
+            <line class="gql-arrow" x1="324" y1="59" x2="374" y2="59"/>
+            <rect class="gql-fill" x="378" y="44" width="100" height="30"/>
+            <rect class="gql-box" x="378" y="44" width="100" height="30"/>
+            <text class="gql-label" x="428" y="64" text-anchor="middle">Response</text>
+            <text class="gql-sub" x="530" y="64">2 steps</text>
+
+            <!-- GraphQL path -->
+            <text class="gql-accent" x="20" y="140">GraphQL</text>
+            <rect class="gql-fill" x="70" y="124" width="80" height="30"/>
+            <rect class="gql-box" x="70" y="124" width="80" height="30"/>
+            <text class="gql-label" x="110" y="143" text-anchor="middle">Request</text>
+            <line class="gql-arrow" x1="150" y1="139" x2="164" y2="139"/>
+            <rect class="gql-fill" x="168" y="124" width="80" height="30"/>
+            <rect class="gql-box" x="168" y="124" width="80" height="30"/>
+            <text class="gql-label" x="208" y="138" text-anchor="middle">Parse</text>
+            <text class="gql-sub" x="208" y="150" text-anchor="middle">query</text>
+            <line class="gql-arrow" x1="248" y1="139" x2="262" y2="139"/>
+            <rect class="gql-fill" x="266" y="124" width="80" height="30"/>
+            <rect class="gql-box" x="266" y="124" width="80" height="30"/>
+            <text class="gql-label" x="306" y="138" text-anchor="middle">Validate</text>
+            <text class="gql-sub" x="306" y="150" text-anchor="middle">schema</text>
+            <line class="gql-arrow" x1="346" y1="139" x2="360" y2="139"/>
+            <rect class="gql-fill" x="364" y="124" width="80" height="30"/>
+            <rect class="gql-box" x="364" y="124" width="80" height="30"/>
+            <text class="gql-label" x="404" y="138" text-anchor="middle">Resolve</text>
+            <text class="gql-sub" x="404" y="150" text-anchor="middle">chain</text>
+            <line class="gql-arrow" x1="444" y1="139" x2="458" y2="139"/>
+            <rect class="gql-fill" x="462" y="124" width="80" height="30"/>
+            <rect class="gql-box" x="462" y="124" width="80" height="30"/>
+            <text class="gql-label" x="502" y="143" text-anchor="middle">Response</text>
+            <text class="gql-sub" x="570" y="143">5 steps</text>
+
+            <!-- Bottom stats -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="30" y1="190" x2="570" y2="190"/>
+            <text class="gql-num" x="150" y="224" text-anchor="middle">50%</text>
+            <text class="gql-sub" x="150" y="242" text-anchor="middle">REST faster on</text>
+            <text class="gql-sub" x="150" y="256" text-anchor="middle">relational DBs</text>
+            <text class="gql-sub" x="150" y="270" text-anchor="middle">(Lawi et al., 2021)</text>
+            <text class="gql-num" x="380" y="224" text-anchor="middle">34x</text>
+            <text class="gql-sub" x="380" y="242" text-anchor="middle">REST eager loading</text>
+            <text class="gql-sub" x="380" y="256" text-anchor="middle">vs GraphQL + DataLoader</text>
+            <text class="gql-sub" x="380" y="270" text-anchor="middle">(FreeCodeCamp)</text>
+        </svg>
+
+        <h2>The Tax</h2>
+
+        <p>Every GraphQL request pays an entry fee that REST does not charge.
+            The query string must be parsed. The schema must be validated. The
+            resolver chain must be walked. REST routes directly to a handler
+            and executes one query. The overhead is not theoretical.</p>
+
+        <p>A
+            <a href="https://www.mdpi.com/2073-431X/10/11/138" target="_blank" rel="noopener">2021 peer-reviewed study by Lawi et al.</a>
+            found REST up to 50 per cent faster than GraphQL on relational
+            databases. A
+            <a href="https://www.freecodecamp.org/news/n-plus-one-query-problem/" target="_blank" rel="noopener">FreeCodeCamp benchmark</a>
+            measured REST with eager loading at 34 times faster than GraphQL
+            with DataLoader &#x2014; on 1,000 posts with 50 comments each.</p>
+
+        <p>The industry's response: adopt both. The
+            <a href="https://www.postman.com/state-of-api/2025/" target="_blank" rel="noopener">Postman State of API 2025</a>
+            report (5,700 respondents) found 93 per cent of developers use REST.
+            33 per cent use GraphQL, mostly in addition. RapidAPI's
+            <a href="https://jsonconsole.com/blog/rest-api-vs-graphql-statistics-trends-performance-comparison-2025" target="_blank" rel="noopener">2024 data</a>
+            shows 83 per cent of public APIs use REST. The industry adopted
+            a solution and kept the problem.</p>
+
+        <h2>The N+1 Inheritance</h2>
+
+        <p>GraphQL resolvers fire per field. Query 10 posts with their
+            comments: one query for the posts, then one query per post for the
+            comments. Eleven queries where REST with a SQL JOIN does it in one.</p>
+
+        <svg viewBox="0 0 560 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="N+1 query problem: GraphQL fires 11 queries for 10 posts with comments, while REST uses a single JOIN." style="max-width: 560px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .n1-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .n1-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .n1-accent { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .n1-num { font: 700 28px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .n1-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 2; }
+                .n1-fill { fill: var(--accent); opacity: 0.08; rx: 2; }
+                .n1-db { fill: var(--accent); opacity: 0.12; rx: 3; }
+                .n1-arrow { stroke: var(--accent); stroke-width: 1; fill: none; marker-end: url(#n1-head); }
+            </style>
+            <defs>
+                <marker id="n1-head" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+                    <polygon points="0 0, 7 2.5, 0 5" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text class="n1-label" x="280" y="18" text-anchor="middle">The N+1 Problem: 10 Posts With Comments</text>
+
+            <!-- GraphQL side -->
+            <text class="n1-accent" x="140" y="46" text-anchor="middle">GraphQL</text>
+            <rect class="n1-fill" x="60" y="54" width="160" height="26"/>
+            <rect class="n1-box" x="60" y="54" width="160" height="26"/>
+            <text class="n1-label" x="140" y="72" text-anchor="middle">SELECT * FROM posts</text>
+            <!-- 10 sub-queries -->
+            <rect class="n1-fill" x="60" y="86" width="160" height="16"/>
+            <rect class="n1-box" x="60" y="86" width="160" height="16"/>
+            <text class="n1-sub" x="140" y="98" text-anchor="middle">SELECT comments WHERE post=1</text>
+            <rect class="n1-fill" x="60" y="104" width="160" height="16"/>
+            <rect class="n1-box" x="60" y="104" width="160" height="16"/>
+            <text class="n1-sub" x="140" y="116" text-anchor="middle">SELECT comments WHERE post=2</text>
+            <rect class="n1-fill" x="60" y="122" width="160" height="16"/>
+            <rect class="n1-box" x="60" y="122" width="160" height="16"/>
+            <text class="n1-sub" x="140" y="134" text-anchor="middle">SELECT comments WHERE post=3</text>
+            <text class="n1-sub" x="140" y="156" text-anchor="middle">&#x22EE;</text>
+            <rect class="n1-fill" x="60" y="162" width="160" height="16"/>
+            <rect class="n1-box" x="60" y="162" width="160" height="16"/>
+            <text class="n1-sub" x="140" y="174" text-anchor="middle">SELECT comments WHERE post=10</text>
+            <text class="n1-num" x="140" y="210" text-anchor="middle">11</text>
+            <text class="n1-sub" x="140" y="226" text-anchor="middle">queries</text>
+
+            <!-- Divider -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3" x1="280" y1="38" x2="280" y2="240"/>
+
+            <!-- REST side -->
+            <text class="n1-accent" x="420" y="46" text-anchor="middle">REST + JOIN</text>
+            <rect class="n1-db" x="320" y="54" width="200" height="40"/>
+            <rect class="n1-box" x="320" y="54" width="200" height="40"/>
+            <text class="n1-label" x="420" y="72" text-anchor="middle">SELECT p.*, c.*</text>
+            <text class="n1-sub" x="420" y="86" text-anchor="middle">FROM posts p JOIN comments c</text>
+            <text class="n1-num" x="420" y="144" text-anchor="middle">1</text>
+            <text class="n1-sub" x="420" y="160" text-anchor="middle">query</text>
+
+            <!-- DataLoader note -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="30" y1="248" x2="530" y2="248"/>
+            <text class="n1-sub" x="280" y="268" text-anchor="middle">DataLoader batches the 10 into 2. Quite clever. REST&#x2019;s default is still 1.</text>
+            <text class="n1-sub" x="280" y="284" text-anchor="middle">The mitigation is still slower than the behaviour it mitigates.</text>
+        </svg>
+
+        <p><a href="https://github.com/graphql/dataloader" target="_blank" rel="noopener">DataLoader</a>
+            batches those 10 into 2. Quite clever. But REST with a SQL JOIN
+            still does it in one. The mitigation is architecturally sound and
+            measurably slower than REST&#x2019;s default behaviour. You are
+            adding a caching layer to restore what the query layer removed.</p>
+
+        <h2>The Caching Void</h2>
+
+        <p>REST uses GET requests. GET requests are cacheable by definition.
+            CDNs cache GET responses at the edge.
+            <a href="https://www.fastly.com/" target="_blank" rel="noopener">Fastly</a>
+            reports 78 per cent average cache hit rates for REST APIs.</p>
+
+        <p>GraphQL uses POST by default. CDNs cache GET, not POST. Your
+            query is in the request body, invisible to the cache layer. The
+            GraphQL specification
+            <a href="https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md" target="_blank" rel="noopener">permits GET</a>,
+            but the ecosystem defaults to POST. Apollo&#x2019;s
+            <a href="https://www.apollographql.com/docs/apollo-server/performance/apq" target="_blank" rel="noopener">Automatic Persisted Queries</a>
+            work around this by hashing queries into GET parameters &#x2014; an
+            additional layer to restore what REST had natively. The
+            <a href="https://www.apollographql.com/blog/graphql-caching-the-elephant-in-the-room" target="_blank" rel="noopener">Apollo team themselves</a>
+            called caching &#x201C;the elephant in the room.&#x201D;</p>
+
+        <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Caching comparison: REST with 78% cache hit rate via CDN edge caching, versus GraphQL with POST requests that bypass CDN caching entirely." style="max-width: 560px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cache-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cache-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cache-accent { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cache-num { font: 700 26px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cache-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .cache-fill { fill: var(--accent); opacity: 0.08; rx: 3; }
+                .cache-miss { fill: var(--muted); opacity: 0.06; rx: 3; }
+                .cache-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#cache-head); }
+                .cache-blocked { stroke: var(--muted); stroke-width: 1.5; fill: none; stroke-dasharray: 4 3; }
+            </style>
+            <defs>
+                <marker id="cache-head" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text class="cache-label" x="280" y="18" text-anchor="middle">HTTP Caching: GET vs POST</text>
+
+            <!-- REST path -->
+            <text class="cache-accent" x="30" y="60">REST</text>
+            <text class="cache-sub" x="30" y="74">GET /api/posts</text>
+            <rect class="cache-fill" x="160" y="48" width="100" height="36"/>
+            <rect class="cache-box" x="160" y="48" width="100" height="36"/>
+            <text class="cache-label" x="210" y="65" text-anchor="middle">CDN Edge</text>
+            <text class="cache-sub" x="210" y="78" text-anchor="middle">cache: HIT</text>
+            <line class="cache-arrow" x1="260" y1="66" x2="310" y2="66"/>
+            <rect class="cache-fill" x="314" y="48" width="100" height="36"/>
+            <rect class="cache-box" x="314" y="48" width="100" height="36"/>
+            <text class="cache-label" x="364" y="70" text-anchor="middle">Response</text>
+            <text class="cache-num" x="470" y="72" text-anchor="middle">78%</text>
+            <text class="cache-sub" x="470" y="86" text-anchor="middle">hit rate</text>
+
+            <!-- GraphQL path -->
+            <text class="cache-accent" x="30" y="140">GraphQL</text>
+            <text class="cache-sub" x="30" y="154">POST /graphql</text>
+            <rect class="cache-miss" x="160" y="128" width="100" height="36"/>
+            <rect class="cache-box" x="160" y="128" width="100" height="36"/>
+            <text class="cache-label" x="210" y="145" text-anchor="middle">CDN Edge</text>
+            <text class="cache-sub" x="210" y="158" text-anchor="middle">cache: SKIP</text>
+            <line class="cache-blocked" x1="260" y1="146" x2="310" y2="146"/>
+            <text class="cache-sub" x="285" y="140">&#x2717;</text>
+            <rect class="cache-miss" x="314" y="128" width="100" height="36"/>
+            <rect class="cache-box" x="314" y="128" width="100" height="36"/>
+            <text class="cache-label" x="364" y="145" text-anchor="middle">Origin</text>
+            <text class="cache-sub" x="364" y="158" text-anchor="middle">every time</text>
+            <text class="cache-num" x="470" y="152" text-anchor="middle">0%</text>
+            <text class="cache-sub" x="470" y="166" text-anchor="middle">hit rate</text>
+
+            <!-- Bottom note -->
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="30" y1="190" x2="530" y2="190"/>
+            <text class="cache-sub" x="280" y="210" text-anchor="middle">Apollo Persisted Queries: hash queries into GET parameters.</text>
+            <text class="cache-sub" x="280" y="226" text-anchor="middle">An additional layer to restore what REST had natively.</text>
+        </svg>
+
+        <h2>The 200 Problem</h2>
+
+        <p>REST uses HTTP status codes. 200 means success. 404 means not found.
+            500 means the server is having a bad day. Your monitoring, your CDN
+            routing, your alerting: built on these codes. They work.</p>
+
+        <p>GraphQL returns 200 for everything. Success, partial failure,
+            catastrophe: all 200. Errors live in the response body, in a JSON
+            field your monitoring has to learn to read. Your existing
+            infrastructure &#x2014; load balancers, CDN rules, Grafana dashboards,
+            PagerDuty triggers &#x2014; all built on status codes. All blind.</p>
+
+        <p>Fixable, yes. You add software to solve what the software introduced.</p>
+
+        <h2>The Client Tax</h2>
+
+        <p>The browser ships the Fetch API. Built-in. Zero kilobytes. A REST
+            call is one function invocation:</p>
+
+        <pre><code>const data = await fetch('/api/posts').then(r =&gt; r.json());</code></pre>
+
+        <p><a href="https://github.com/apollographql/apollo-client/issues/8705" target="_blank" rel="noopener">Apollo Client</a>:
+            137 KB minified. Plus the <code>graphql</code> dependency. Plus code
+            generation. Plus schema management. Plus query complexity analysis.
+            You added an API query language to avoid writing a second endpoint.</p>
+
+        <svg viewBox="0 0 520 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Client bundle size comparison: fetch() at 0 KB versus Apollo Client at 137 KB plus dependencies." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .bundle-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .bundle-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .bundle-num { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .bundle-bar-rest { fill: var(--accent); opacity: 0.7; rx: 2; }
+                .bundle-bar-gql { fill: var(--muted); opacity: 0.25; rx: 2; }
+            </style>
+            <text class="bundle-label" x="260" y="18" text-anchor="middle">Client Bundle: What You Ship Before Your Code Runs</text>
+
+            <!-- fetch() -->
+            <text class="bundle-label" x="10" y="52">fetch()</text>
+            <rect class="bundle-bar-rest" x="100" y="40" width="2" height="22"/>
+            <text class="bundle-sub" x="112" y="56">0 KB (built-in)</text>
+
+            <!-- Apollo Client -->
+            <text class="bundle-label" x="10" y="92">Apollo Client</text>
+            <rect class="bundle-bar-gql" x="100" y="80" width="380" height="22"/>
+            <text class="bundle-num" x="488" y="96" text-anchor="end">137 KB min</text>
+
+            <!-- graphql dep -->
+            <text class="bundle-label" x="10" y="126">+ graphql</text>
+            <rect class="bundle-bar-gql" x="100" y="114" width="120" height="22"/>
+            <text class="bundle-sub" x="228" y="130">dependency</text>
+
+            <!-- codegen -->
+            <text class="bundle-label" x="10" y="158">+ codegen</text>
+            <rect class="bundle-bar-gql" x="100" y="146" width="80" height="22"/>
+            <text class="bundle-sub" x="188" y="162">tooling</text>
+
+            <!-- schema -->
+            <text class="bundle-label" x="10" y="190">+ schema</text>
+            <rect class="bundle-bar-gql" x="100" y="178" width="60" height="22"/>
+            <text class="bundle-sub" x="168" y="194">management</text>
+
+            <text class="bundle-sub" x="260" y="224" text-anchor="middle">You added an API query language to avoid writing a second endpoint.</text>
+        </svg>
+
+        <h2>The Security Surface</h2>
+
+        <p>REST exposes a finite set of endpoints. You can enumerate them,
+            audit them, rate-limit them individually. Each endpoint returns a
+            predictable shape.</p>
+
+        <p>GraphQL exposes a single endpoint with an infinite query space.
+            <a href="https://www.imperva.com/blog/graphql-vulnerabilities-and-common-attacks-seen-in-the-wild/" target="_blank" rel="noopener">Imperva analysed 6,000 GraphQL endpoints</a>
+            and found 50 per cent had been targeted with introspection attacks.
+            <a href="https://www.ibm.com/support/pages/security-bulletin-ibm-websphere-application-server-liberty-vulnerable-denial-service-due-graphql-java-cve-2022-37734" target="_blank" rel="noopener">CVE-2022-37734</a>
+            demonstrated denial-of-service via directive overloading. There are
+            no default depth limits. No default complexity limits. Every guard
+            rail is opt-in, and every opt-in is a line of code somebody has to
+            remember to write.</p>
+
+        <h2>The Adoption Arithmetic</h2>
+
+        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="API adoption rates from Postman 2025: REST at 93%, GraphQL at 33%, gRPC at 11%. 83% of public APIs use REST." style="max-width: 560px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .adopt-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .adopt-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .adopt-num { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .adopt-bar { fill: var(--accent); opacity: 0.6; rx: 2; }
+                .adopt-bar-dim { fill: var(--muted); opacity: 0.2; rx: 2; }
+            </style>
+            <text class="adopt-label" x="280" y="18" text-anchor="middle">API Adoption (Postman 2025, 5,700 respondents)</text>
+
+            <text class="adopt-label" x="10" y="54">REST</text>
+            <rect class="adopt-bar" x="80" y="40" width="420" height="22"/>
+            <text class="adopt-num" x="508" y="56">93%</text>
+
+            <text class="adopt-label" x="10" y="90">GraphQL</text>
+            <rect class="adopt-bar-dim" x="80" y="76" width="149" height="22"/>
+            <text class="adopt-num" x="237" y="92">33%</text>
+
+            <text class="adopt-label" x="10" y="126">gRPC</text>
+            <rect class="adopt-bar-dim" x="80" y="112" width="50" height="22"/>
+            <text class="adopt-num" x="138" y="128">11%</text>
+
+            <line stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 4" x1="30" y1="150" x2="530" y2="150"/>
+            <text class="adopt-sub" x="280" y="170" text-anchor="middle">83% of public APIs use REST (RapidAPI 2024).</text>
+            <text class="adopt-sub" x="280" y="186" text-anchor="middle">GraphQL is mostly used in addition, not as replacement.</text>
+        </svg>
+
+        <h2>The Admission</h2>
+
+        <p>I have used GraphQL professionally for years. The schema was
+            elegant. The developer experience was pleasant. The tooling was
+            polished. But none of the projects required it. REST would have
+            served every one of them with less overhead, better caching, and
+            simpler monitoring.</p>
+
+        <p>The honest question is not &#x201C;Does GraphQL work?&#x201D; It
+            does. The question is: &#x201C;Does your problem require it?&#x201D;</p>
+
+        <p>If you are Facebook, yes. If you serve multiple clients with
+            genuinely different data needs across platforms, perhaps. If you
+            have one backend serving one frontend: you are paying the tax for
+            someone else&#x2019;s problem.</p>
+
+        <blockquote>
+            <p>GraphQL was built for hundreds of content types across three
+                platforms. You have 12 endpoints. The query language is not
+                solving your problem. It is the problem you are solving.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The numbers, for those who prefer their APIs with data</strong></p>
+            <p>Performance: REST up to 50% faster response time
+                (<a href="https://www.mdpi.com/2073-431X/10/11/138" target="_blank" rel="noopener">Lawi et al., 2021</a>).
+                REST eager loading 34x faster than GraphQL + DataLoader
+                (<a href="https://www.freecodecamp.org/news/n-plus-one-query-problem/" target="_blank" rel="noopener">FreeCodeCamp</a>).
+                GraphQL: higher latency, better stability under stress.</p>
+            <p>Adoption
+                (<a href="https://www.postman.com/state-of-api/2025/" target="_blank" rel="noopener">Postman 2025</a>,
+                5,700 respondents):
+                REST 93%. GraphQL 33%. gRPC 11%. 83% of public APIs use REST
+                (<a href="https://jsonconsole.com/blog/rest-api-vs-graphql-statistics-trends-performance-comparison-2025" target="_blank" rel="noopener">RapidAPI 2024</a>).</p>
+            <p>Caching: REST average cache hit rate 78% (Fastly).
+                GraphQL: POST by default, no HTTP caching.</p>
+            <p>Client overhead: fetch() 0 KB (built-in). Apollo Client 137 KB
+                min, 39 KB gzipped. Plus graphql dep, codegen, schema tooling.</p>
+            <p>Security surface
+                (<a href="https://www.imperva.com/blog/graphql-vulnerabilities-and-common-attacks-seen-in-the-wild/" target="_blank" rel="noopener">Imperva</a>,
+                6,000 endpoints): 50% targeted with introspection attacks.
+                CVE-2022-37734: DoS via directive overloading. No default depth
+                or complexity limits.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

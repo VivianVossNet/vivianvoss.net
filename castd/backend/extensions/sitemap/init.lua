@@ -67,6 +67,7 @@ local pages = {
     { loc = "/blog/the-kubernetes-tax",         priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-framework-tax",          priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/unit-tests-for-everything",  priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-graphql-tax",            priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-permanent-beta",        priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/http2-the-bundling-myth",  priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/bytes-of-art-zetsubo",    priority = "0.7", changefreq = "yearly" },
