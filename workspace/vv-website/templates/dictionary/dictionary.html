@@ -73,6 +73,10 @@
             <dd>Amazon Web Services. The dominant cloud computing platform offering IaaS, PaaS, and managed services.</dd>
         </dl>
         <h3 id="letter-B">B</h3>
+        <dl class="vv-dict-entry" id="bpf">
+            <dt>BPF</dt>
+            <dd>Berkeley Packet Filter. Originally a packet capture mechanism, extended in Linux as eBPF for programmable kernel-level filtering. Used by seccomp-bpf to inspect and decide on every syscall at runtime.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="bun">
             <dt>Bun</dt>
             <dd>An all-in-one JavaScript runtime, bundler, transpiler, and package manager. Written in Zig, designed for speed.</dd>
@@ -82,9 +86,13 @@
             <dt>Caddy</dt>
             <dd>A web server with automatic HTTPS via built-in ACME client. Written in Go. Often used as a reverse proxy.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="ambient-authority">
+            <dt>Ambient Authority</dt>
+            <dd>The security property where a process inherits all the permissions of the user who launched it. The default Unix model since 1969. Capsicum eliminates it; seccomp restricts it.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="capsicum">
             <dt>Capsicum</dt>
-            <dd>A capability-based security framework in FreeBSD. Sandboxes processes by restricting system calls to pre-granted capabilities.</dd>
+            <dd>A capability-based security framework in FreeBSD. One syscall (cap_enter) permanently removes all access to global namespaces. The process keeps only its existing file descriptors, each restricted via cap_rights_limit(). Irreversible. Compiled into FreeBSD 10.0 by default since 2014.</dd>
         </dl>
         <dl class="vv-dict-entry" id="cast">
             <dt>CAST</dt>
@@ -118,6 +126,10 @@
             <dt>cron</dt>
             <dd>The Unix job scheduler. Executes commands at specified times using a five-field time expression (minute, hour, day, month, weekday).</dd>
         </dl>
+        <dl class="vv-dict-entry" id="crowdstrike-incident">
+            <dt>CrowdStrike Incident</dt>
+            <dd>On 19 July 2024, a rapid content update to CrowdStrike's Falcon Sensor bypassed quality control and crashed 8.5 million Windows machines globally. Airlines, hospitals, banks, and emergency services were affected. $5.4 billion in Fortune 500 damages.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="csr">
             <dt>CSR</dt>
             <dd>Client-Side Rendering. Building the page DOM entirely in the browser via JavaScript after an initial empty HTML shell is delivered.</dd>
@@ -131,6 +143,10 @@
             <dd>A pattern where CSS is authored inside JavaScript files, generating styles at runtime. Adds bundle weight and runtime overhead.</dd>
         </dl>
         <h3 id="letter-D">D</h3>
+        <dl class="vv-dict-entry" id="debian">
+            <dt>Debian</dt>
+            <dd>A community-driven Linux distribution known for its stability-first release policy. Debian Stable freezes packages and releases when ready, not on a schedule. The reference for conservative, tested software deployment.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="demoscene">
             <dt>Demoscene</dt>
             <dd>A computer art subculture producing real-time audiovisual presentations (demos) within extreme size constraints, often 64 KB or less.</dd>
@@ -143,6 +159,10 @@
             <dt>DKMS</dt>
             <dd>Dynamic Kernel Module Support. A framework for building kernel modules that automatically recompile when the kernel is updated. Used by ZFS on Linux.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="dependabot">
+            <dt>Dependabot</dt>
+            <dd>A GitHub-integrated bot that automatically opens pull requests to update dependencies. On a monorepo, it can generate hundreds of PRs per week, each requiring review and testing.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="docker">
             <dt>Docker</dt>
             <dd>A container runtime that packages applications with their dependencies into isolated filesystem images, sharing the host kernel.</dd>
@@ -152,6 +172,10 @@
             <dd>A dynamic tracing framework for real-time analysis of running systems. Originated in Solaris, ported to FreeBSD and macOS. Traces kernel and userspace with near-zero overhead when idle.</dd>
         </dl>
         <h3 id="letter-E">E</h3>
+        <dl class="vv-dict-entry" id="enshittification">
+            <dt>Enshittification</dt>
+            <dd>The process by which platforms degrade their product to extract value. Coined by Cory Doctorow in 2022. Three phases: attract users, lock in businesses at users' expense, extract value for shareholders at everyone's expense. Word of the Year 2023 (American Dialect Society) and 2024 (Macquarie Dictionary).</dd>
+        </dl>
         <dl class="vv-dict-entry" id="es-modules">
             <dt>ES Modules</dt>
             <dd>The native JavaScript module system using import/export syntax, loaded by browsers without a bundler.</dd>
@@ -181,6 +205,14 @@
         <dl class="vv-dict-entry" id="gdpr">
             <dt>GDPR</dt>
             <dd>General Data Protection Regulation. EU law governing the collection, processing, and storage of personal data. Effective since 2018.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="gil">
+            <dt>GIL</dt>
+            <dd>Global Interpreter Lock. A mutex in CPython that allows only one thread to execute Python bytecode at a time, serialising CPU-bound work. Elegant until load disagrees.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="goroutine">
+            <dt>Goroutine</dt>
+            <dd>A lightweight thread managed by the Go runtime. Multiplexed onto OS threads. Enables high concurrency but subject to garbage collection pauses.</dd>
         </dl>
         <dl class="vv-dict-entry" id="grafana">
             <dt>Grafana</dt>
@@ -225,6 +257,10 @@
             <dt>Jails</dt>
             <dd>FreeBSD's OS-level virtualisation. Lightweight isolation of processes, filesystems, and network stacks without a hypervisor.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="jq">
+            <dt>jq</dt>
+            <dd>A functional programming language for transforming JSON on the command line. Generators, backtracking, immutable values, compiled to a stack-based bytecode VM. 822 KB binary. Written in C by Stephen Dolan in 2012. MIT licence.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="json-rpc">
             <dt>JSON-RPC</dt>
             <dd>JSON Remote Procedure Call. A lightweight protocol that encodes function calls and responses as JSON objects, transported over HTTP or WebSockets.</dd>
@@ -239,6 +275,10 @@
             <dd>An orchestration platform for managing containerised workloads across clusters. Handles scheduling, scaling, and self-healing.</dd>
         </dl>
         <h3 id="letter-L">L</h3>
+        <dl class="vv-dict-entry" id="landlock">
+            <dt>Landlock</dt>
+            <dd>A Linux security module (merged in 5.13, 2021) that adds unprivileged filesystem sandboxing. Moves closer to Capsicum's capability model but does not yet match the simplicity of cap_enter().</dd>
+        </dl>
         <dl class="vv-dict-entry" id="light-dark">
             <dt>light-dark()</dt>
             <dd>A CSS function that returns one of two values depending on the computed color-scheme. Eliminates media-query duplication for dark mode.</dd>
@@ -246,6 +286,10 @@
         <dl class="vv-dict-entry" id="linuxulator">
             <dt>Linuxulator</dt>
             <dd>FreeBSD's Linux binary compatibility layer. Translates Linux system calls to FreeBSD equivalents in the kernel, running Linux binaries natively without emulation. Active since 1995.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="lts">
+            <dt>LTS</dt>
+            <dd>Long-Term Support. A release designated for extended maintenance, typically receiving only security patches and critical bug fixes. Node.js LTS lasts 30 months. PostgreSQL supports each major for 5 years.</dd>
         </dl>
         <dl class="vv-dict-entry" id="lua">
             <dt>Lua</dt>
@@ -273,6 +317,10 @@
             <dd>Multi-Version Concurrency Control. A database technique where readers see a consistent snapshot without blocking writers. Used in PostgreSQL.</dd>
         </dl>
         <h3 id="letter-N">N</h3>
+        <dl class="vv-dict-entry" id="network-effect">
+            <dt>Network Effect</dt>
+            <dd>The phenomenon where a product becomes more valuable as more people use it. The mechanism that creates lock-in: leaving the network means losing the connections you built on it.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="nftables">
             <dt>nftables</dt>
             <dd>The Linux packet classification framework replacing iptables. Uses a unified syntax for filtering, NAT, and mangling.</dd>
@@ -286,6 +334,10 @@
             <dd>Node Package Manager. The default registry and CLI for JavaScript packages. Manages dependency trees in node_modules.</dd>
         </dl>
         <h3 id="letter-O">O</h3>
+        <dl class="vv-dict-entry" id="organic-reach">
+            <dt>Organic Reach</dt>
+            <dd>The percentage of a page's followers who see a post without paid promotion. Facebook organic reach for business pages fell from 16% in 2012 to 1.37% in 2024, the canonical example of platform enshittification.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="oklch">
             <dt>OKLCH</dt>
             <dd>A perceptually uniform colour space using Lightness, Chroma, and Hue. Produces consistent perceived brightness across all hues, unlike HSL.</dd>
@@ -315,6 +367,10 @@
             <dt>pf</dt>
             <dd>Packet Filter. The firewall in FreeBSD (and OpenBSD). Stateful, with anchors, tables, and a concise rule syntax.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="php-fpm">
+            <dt>PHP-FPM</dt>
+            <dd>FastCGI Process Manager for PHP. Manages a pool of PHP worker processes, each handling one request at a time. Typical memory: 40-128 MB per worker.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="posix">
             <dt>POSIX</dt>
             <dd>Portable Operating System Interface. A family of IEEE standards defining Unix-compatible APIs, shell behaviour, and utility conventions.</dd>
@@ -336,6 +392,10 @@
             <dd>The annual Python community conference. Held in multiple countries, featuring talks, sprints, and community gatherings.</dd>
         </dl>
         <h3 id="letter-R">R</h3>
+        <dl class="vv-dict-entry" id="raii">
+            <dt>RAII</dt>
+            <dd>Resource Acquisition Is Initialisation. A pattern where resources are tied to object lifetimes: acquired in the constructor, released in the destructor. Rust enforces this through ownership. No garbage collector needed.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="redis">
             <dt>Redis</dt>
             <dd>An in-memory data structure store used as database, cache, and message broker. Single-threaded, sub-millisecond latency.</dd>
@@ -347,6 +407,10 @@
         <dl class="vv-dict-entry" id="rolling-checksum">
             <dt>Rolling Checksum</dt>
             <dd>A hash that can be updated incrementally as a window slides across data. Enables rsync to find matching blocks in O(n) instead of O(n&#x00B2;). Based on Adler-32.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="rolling-release">
+            <dt>Rolling Release</dt>
+            <dd>A software distribution model where updates ship continuously rather than in discrete versions. No fixed release date, no frozen state. The system is always current, never finished.</dd>
         </dl>
         <dl class="vv-dict-entry" id="rsync">
             <dt>rsync</dt>
@@ -368,6 +432,18 @@
         <dl class="vv-dict-entry" id="scrum">
             <dt>Scrum</dt>
             <dd>An agile framework using fixed-length Sprints, daily stand-ups, and defined roles (Product Owner, Scrum Master, Development Team).</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="seccomp">
+            <dt>seccomp</dt>
+            <dd>Secure Computing mode. A Linux kernel facility that restricts which system calls a process may invoke. Strict mode (2005) permits four calls. seccomp-bpf (2012) allows programmable filters via BPF programmes.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="semver">
+            <dt>SemVer</dt>
+            <dd>Semantic Versioning. A versioning scheme using MAJOR.MINOR.PATCH where major means breaking changes, minor means new features, patch means bug fixes. The contract is voluntary and routinely violated.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="share-nothing">
+            <dt>Share-Nothing</dt>
+            <dd>An architecture where each request handler starts with no shared state. Every request is isolated. PHP's default model. Beautiful for safety, structural impediment for persistent connections.</dd>
         </dl>
         <dl class="vv-dict-entry" id="serverless">
             <dt>Serverless</dt>
@@ -454,6 +530,15 @@
 
     <section class="vv-dictionary" aria-labelledby="dict-people-title">
         <h2 id="dict-people-title" class="vv-dict-heading">People</h2>
+        <h3 id="person-A">A</h3>
+        <dl class="vv-dict-entry" id="jonathan-anderson">
+            <dt>Jonathan Anderson</dt>
+            <dd>Computer scientist, co-creator of Capsicum with Robert Watson. Their 2010 USENIX Security paper introduced capability-based sandboxing to FreeBSD. Now at Memorial University of Newfoundland.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="andrea-arcangeli">
+            <dt>Andrea Arcangeli</dt>
+            <dd>Linux kernel developer. Created the original seccomp strict mode in 2005 (Linux 2.6.12), permitting only four syscalls. Also known for work on KVM and Transparent Huge Pages.</dd>
+        </dl>
         <h3 id="person-B">B</h3>
         <dl class="vv-dict-entry" id="kent-beck">
             <dt>Kent Beck</dt>
@@ -468,6 +553,18 @@
             <dd>Engineer at Sun Microsystems who designed the Slab Allocator and co-created ZFS with Matthew Ahrens. Built the filesystem that trusts mathematics over hardware.</dd>
         </dl>
         <h3 id="person-D">D</h3>
+        <dl class="vv-dict-entry" id="cory-doctorow">
+            <dt>Cory Doctorow</dt>
+            <dd>Canadian-British author, journalist, and digital rights activist. Coined 'enshittification' in November 2022. Published on Pluralistic. Won Word of the Year 2023. Author of Little Brother, Walkaway, and the 2025 book Enshittification.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="stephen-dolan">
+            <dt>Stephen Dolan</dt>
+            <dd>Creator of jq (2012). PhD in Algebraic Subtyping at the University of Cambridge, supervised by Alan Mycroft. Now at Jane Street, working on the OCaml compiler. Wrote a functional language for JSON in 510 KB of C.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="will-drewry">
+            <dt>Will Drewry</dt>
+            <dd>Google engineer who introduced seccomp-bpf in Linux 3.5 (2012). Extended seccomp from a binary four-syscall mode to programmable BPF-based filtering, enabling practical process sandboxing on Linux.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="dubmood">
             <dt>Dubmood</dt>
             <dd>Swedish chiptune musician and demoscene legend. Two decades of tracker music across Amiga, C64, and PC platforms. Composed the soundtrack for Razor 1911's 'The Scene Is Dead' (2012).</dd>
@@ -476,6 +573,10 @@
         <dl class="vv-dict-entry" id="rich-felker">
             <dt>Rich Felker</dt>
             <dd>Author of musl libc, a clean-room lightweight C standard library for Linux. Vocal advocate for POSIX correctness and minimal PID 1 design.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="michael-faerber">
+            <dt>Michael F&#x00E4;rber</dt>
+            <dd>Computer scientist. Published the first formal specification of the jq language in 2024 (arXiv:2403.20132), twelve years after Dolan wrote the implementation. Also wrote jaq, a Rust reimplementation of jq that is 5-10x faster.</dd>
         </dl>
         <dl class="vv-dict-entry" id="martin-fowler">
             <dt>Martin Fowler</dt>
@@ -508,6 +609,11 @@
         <dl class="vv-dict-entry" id="james-lewis">
             <dt>James Lewis</dt>
             <dd>Software architect at ThoughtWorks. Co-coined the term 'Microservices' with Martin Fowler in their 2014 article defining the architectural style.</dd>
+        </dl>
+        <h3 id="person-M">M</h3>
+        <dl class="vv-dict-entry" id="alan-mycroft">
+            <dt>Alan Mycroft</dt>
+            <dd>Professor of Computing at the University of Cambridge. Supervised Stephen Dolan's PhD in Algebraic Subtyping. Co-designed the Nanopass framework and contributed to static analysis research spanning four decades.</dd>
         </dl>
         <h3 id="person-P">P</h3>
         <dl class="vv-dict-entry" id="lennart-poettering">
@@ -549,6 +655,11 @@
         <dl class="vv-dict-entry" id="paul-vixie">
             <dt>Paul Vixie</dt>
             <dd>Author of Vixie cron (1987), BIND (the DNS server running a third of the internet), and numerous RFCs. Internet Hall of Fame inductee (2014). The five-field crontab syntax is his.</dd>
+        </dl>
+        <h3 id="person-W">W</h3>
+        <dl class="vv-dict-entry" id="robert-watson">
+            <dt>Robert Watson</dt>
+            <dd>Computer scientist at the University of Cambridge. Co-created Capsicum with Jonathan Anderson (2010, Best Student Paper at USENIX Security). Also contributed to FreeBSD's MAC framework and TrustedBSD.</dd>
         </dl>
         <h3 id="person-Y">Y</h3>
         <dl class="vv-dict-entry" id="greg-young">

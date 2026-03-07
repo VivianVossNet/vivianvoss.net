@@ -1,0 +1,496 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Server Question &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="72% of the web runs on PHP. Not an accident. But the web has moved: persistent connections, live pushes, minimal memory. Five languages, one task, a 128x difference in memory. Two survive.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-server-question{( endslot )}
+
+{( slot og-title )}The Server Question &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}72% of the web runs on PHP. Not an accident. But the web has moved: persistent connections, live pushes, minimal memory. Five languages, one task, a 128x difference in memory. Two survive.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Server Question",
+    "datePublished": "2026-03-04",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-server-question",
+    "description": "72% of the web runs on PHP. Not an accident. But the web has moved: persistent connections, live pushes, minimal memory. Five languages, one task, a 128x difference in memory. Two survive.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-04">04 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Server Question</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">rust</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 06</p>
+
+        <h2>Seventy-Two Per Cent</h2>
+
+        <p>
+            <a href="https://w3techs.com/technologies/overview/programming_language" target="_blank" rel="noopener">72% of the web</a>
+            runs on PHP. This is not an accident. Upload a file, it executes. No
+            build step. No compilation. No deployment pipeline. WordPress powers
+            <a href="https://kinsta.com/wordpress-market-share/" target="_blank" rel="noopener">43% of all websites</a>.
+            Laravel made it elegant. PHP 8.4 ships enums, readonly properties,
+            and a JIT compiler. For request-response work, PHP is rather
+            good at its job.
+        </p>
+
+        <p>
+            It also carries thirty years of luggage. Type coercion that surprises
+            even its advocates. A security history that required rewriting entire
+            APIs from scratch. Legacy it cannot retire without breaking the web
+            it runs on.
+        </p>
+
+        <p>
+            But the more interesting observation is architectural. The web has
+            moved. Persistent connections. Live data pushes. Minimal memory
+            footprints. PHP was not built for this. Not a criticism. A design
+            decision, made in 1995, when "the server" meant "generate HTML and
+            close the connection."
+        </p>
+
+        <h2>The Architecture</h2>
+
+        <p>
+            PHP's share-nothing architecture is one of the cleanest ideas in
+            web development: every request starts from scratch. No shared state.
+            No leaked context. No previous request contaminating the next one.
+            Beautiful for isolation. Structural impediment for anything that
+            requires keeping a connection open.
+        </p>
+
+        <!-- SVG 1: Share-nothing architecture -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 300" role="img" aria-label="PHP share-nothing architecture: each request spawns a worker, processes the request, returns the response, and discards everything. Beautiful for isolation. Impossible for persistence." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .sq1-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; }
+                .sq1-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sq1-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sq1-mono { font: 400 10.5px/1 ui-monospace, monospace; fill: var(--text); }
+                .sq1-accent { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sq1-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .sq1-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+            <defs>
+                <marker id="sq1-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+                <marker id="sq1-arr-dim" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+            </defs>
+
+            <text class="sq1-title" x="270" y="20" text-anchor="middle" fill="var(--text)">PHP: Share-Nothing Architecture</text>
+            <text class="sq1-muted" x="270" y="38" text-anchor="middle">Every request starts from scratch. Every response ends in oblivion.</text>
+
+            <!-- Request flow -->
+            <rect class="sq1-box" x="20" y="60" width="100" height="32"/>
+            <text class="sq1-label" x="70" y="81" text-anchor="middle">Request 1</text>
+            <line x1="120" y1="76" x2="170" y2="76" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sq1-arr)"/>
+            <rect class="sq1-box-accent" x="172" y="60" width="120" height="32"/>
+            <text class="sq1-mono" x="232" y="81" text-anchor="middle">Worker A</text>
+            <line x1="292" y1="76" x2="342" y2="76" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sq1-arr)"/>
+            <rect class="sq1-box" x="344" y="60" width="100" height="32"/>
+            <text class="sq1-label" x="394" y="81" text-anchor="middle">Response</text>
+            <line x1="444" y1="76" x2="494" y2="76" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#sq1-arr-dim)"/>
+            <text class="sq1-muted" x="510" y="81" text-anchor="start">&#x2717;</text>
+
+            <rect class="sq1-box" x="20" y="108" width="100" height="32"/>
+            <text class="sq1-label" x="70" y="129" text-anchor="middle">Request 2</text>
+            <line x1="120" y1="124" x2="170" y2="124" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sq1-arr)"/>
+            <rect class="sq1-box-accent" x="172" y="108" width="120" height="32"/>
+            <text class="sq1-mono" x="232" y="129" text-anchor="middle">Worker B</text>
+            <line x1="292" y1="124" x2="342" y2="124" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sq1-arr)"/>
+            <rect class="sq1-box" x="344" y="108" width="100" height="32"/>
+            <text class="sq1-label" x="394" y="129" text-anchor="middle">Response</text>
+            <line x1="444" y1="124" x2="494" y2="124" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#sq1-arr-dim)"/>
+            <text class="sq1-muted" x="510" y="129" text-anchor="start">&#x2717;</text>
+
+            <rect class="sq1-box" x="20" y="156" width="100" height="32"/>
+            <text class="sq1-label" x="70" y="177" text-anchor="middle">Request 3</text>
+            <line x1="120" y1="172" x2="170" y2="172" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sq1-arr)"/>
+            <rect class="sq1-box-accent" x="172" y="156" width="120" height="32"/>
+            <text class="sq1-mono" x="232" y="177" text-anchor="middle">Worker A (new)</text>
+            <line x1="292" y1="172" x2="342" y2="172" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sq1-arr)"/>
+            <rect class="sq1-box" x="344" y="156" width="100" height="32"/>
+            <text class="sq1-label" x="394" y="177" text-anchor="middle">Response</text>
+            <line x1="444" y1="172" x2="494" y2="172" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#sq1-arr-dim)"/>
+            <text class="sq1-muted" x="510" y="177" text-anchor="start">&#x2717;</text>
+
+            <!-- Annotations -->
+            <line x1="30" y1="208" x2="510" y2="208" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="sq1-accent" x="270" y="232" text-anchor="middle">Worker A has no memory of Request 1 when Request 3 arrives.</text>
+            <text class="sq1-muted" x="270" y="252" text-anchor="middle">16 GB server / 128 MB per worker = 96 concurrent workers maximum.</text>
+            <text class="sq1-muted" x="270" y="272" text-anchor="middle">Persistent connection? The worker dies after response.</text>
+            <text class="sq1-muted" x="270" y="292" text-anchor="middle">Like fixing a dripping tap by replacing the sink every hour.</text>
+        </svg>
+
+        <p>
+            Async PHP exists. Swoole, ReactPHP, Revolt. They are real engineering
+            efforts and they work. They also fight the language's fundamental
+            design: PHP never returns freed memory to the operating system.
+            Long-running processes leak. The workaround is to restart worker
+            processes periodically, which is rather like fixing a dripping tap
+            by replacing the sink every hour.
+        </p>
+
+        <h2>Five Languages, One Task</h2>
+
+        <p>
+            The task is simple in specification and revealing in execution:
+            hold persistent connections and push live data. WebSocket, Server-Sent
+            Events, long-polling. The kind of workload that keeps connections open
+            for minutes or hours rather than milliseconds. Five languages. Same
+            task. Rather different outcomes.
+        </p>
+
+        <!-- SVG 2: Five languages comparison -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 380" role="img" aria-label="Five languages compared: Java 200 MB binary and 256 MB per instance. PHP 80 MB runtime and 40 to 128 MB per worker. Python 50 MB runtime and 30 to 60 MB per process. Go 15 MB binary and 10 to 20 MB per instance. Rust 2 MB binary and 2 to 5 MB per instance." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .sq2-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; }
+                .sq2-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sq2-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sq2-big { font: 700 16px/1 'Oxanium', system-ui, sans-serif; }
+                .sq2-accent { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sq2-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .sq2-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .sq2-bar { rx: 2; }
+            </style>
+
+            <text class="sq2-title" x="270" y="20" text-anchor="middle" fill="var(--text)">Memory per Instance (Persistent Connections)</text>
+            <text class="sq2-muted" x="270" y="38" text-anchor="middle">Same task: hold connections open, push live data.</text>
+
+            <!-- Java -->
+            <text class="sq2-label" x="70" y="70" text-anchor="end">Java</text>
+            <rect class="sq2-bar" x="80" y="58" width="420" height="20" fill="var(--muted)" opacity="0.2"/>
+            <rect class="sq2-bar" x="80" y="58" width="420" height="20" fill="var(--muted)" opacity="0.3"/>
+            <text class="sq2-big" x="90" y="74" fill="var(--muted)">256 MB</text>
+            <text class="sq2-muted" x="500" y="74" text-anchor="end">Spring Boot + JVM</text>
+
+            <!-- PHP -->
+            <text class="sq2-label" x="70" y="110" text-anchor="end">PHP</text>
+            <rect class="sq2-bar" x="80" y="98" width="210" height="20" fill="var(--muted)" opacity="0.2"/>
+            <rect class="sq2-bar" x="80" y="98" width="210" height="20" fill="var(--muted)" opacity="0.25"/>
+            <text class="sq2-big" x="90" y="114" fill="var(--muted)">128 MB</text>
+            <text class="sq2-muted" x="290" y="114" text-anchor="start">Swoole / ReactPHP</text>
+
+            <!-- Python -->
+            <text class="sq2-label" x="70" y="150" text-anchor="end">Python</text>
+            <rect class="sq2-bar" x="80" y="138" width="100" height="20" fill="var(--muted)" opacity="0.2"/>
+            <rect class="sq2-bar" x="80" y="138" width="100" height="20" fill="var(--muted)" opacity="0.2"/>
+            <text class="sq2-big" x="90" y="154" fill="var(--muted)">60 MB</text>
+            <text class="sq2-muted" x="185" y="154" text-anchor="start">GIL serialises CPU</text>
+
+            <!-- Go -->
+            <text class="sq2-label" x="70" y="190" text-anchor="end">Go</text>
+            <rect class="sq2-bar" x="80" y="178" width="33" height="20" fill="var(--border)" opacity="0.4"/>
+            <text class="sq2-big" x="90" y="194" fill="var(--text)">20 MB</text>
+            <text class="sq2-muted" x="185" y="194" text-anchor="start">Goroutines, GC pauses</text>
+
+            <!-- Rust -->
+            <text class="sq2-label" x="70" y="230" text-anchor="end">Rust</text>
+            <rect class="sq2-bar" x="80" y="218" width="8" height="20" fill="var(--accent)" opacity="0.6"/>
+            <text class="sq2-big" x="90" y="234" fill="var(--accent)">5 MB</text>
+            <text class="sq2-muted" x="185" y="234" text-anchor="start">No GC, no runtime</text>
+
+            <!-- Summary -->
+            <line x1="30" y1="262" x2="510" y2="262" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+
+            <text class="sq2-accent" x="270" y="286" text-anchor="middle">Three eliminated by overhead. Two remain.</text>
+
+            <rect class="sq2-box" x="80" y="300" width="180" height="50" rx="5"/>
+            <text class="sq2-label" x="170" y="320" text-anchor="middle">Go</text>
+            <text class="sq2-muted" x="170" y="338" text-anchor="middle">15 MB binary, GC pauses</text>
+
+            <rect class="sq2-box-accent" x="280" y="300" width="180" height="50" rx="5"/>
+            <text class="sq2-accent" x="370" y="320" text-anchor="middle">Rust</text>
+            <text class="sq2-muted" x="370" y="338" text-anchor="middle">2 MB binary, no pauses</text>
+
+            <text class="sq2-muted" x="270" y="372" text-anchor="middle">256 MB vs 5 MB. Not a rounding error. A 50x difference.</text>
+        </svg>
+
+        <p>
+            Java brings Spring Boot and the JVM. Approximately 200 MB before the
+            first byte of application code runs. Deployed before the deployment
+            finishes. PHP needs Swoole or ReactPHP to hold connections at all,
+            and each worker process carries 40 to 128 MB of
+            <a href="https://docs.platform.sh/languages/php/fpm.html" target="_blank" rel="noopener">memory overhead</a>.
+            On a 16 GB server, that is 96 concurrent workers. Python brings
+            elegance and the GIL, which serialises all CPU-bound work onto a
+            single thread. Elegant until load disagrees.
+        </p>
+
+        <p>
+            Three eliminated by overhead. Two remain.
+        </p>
+
+        <h2>The Fair Fight</h2>
+
+        <p>
+            Go versus Rust. Both compile to a single binary. Both handle ten
+            thousand concurrent connections without visible strain. Both have
+            communities that would rather debate the other's shortcomings than
+            examine their own. The comparison, then, must be structural.
+        </p>
+
+        <p>
+            Go assumed garbage collection was free. It is not. Every few
+            milliseconds, the garbage collector pauses to inspect memory, decide
+            what is still alive, and reclaim what is not. For a web server
+            handling short-lived HTTP requests, these pauses are invisible. For
+            a server holding ten thousand persistent connections, every connected
+            client feels every stutter.
+        </p>
+
+        <p>
+            Rust has no garbage collector. Memory is freed deterministically
+            when ownership ends. No pauses. No tuning. No prayer-based capacity
+            planning.
+        </p>
+
+        <!-- SVG 3: Discord Go vs Rust latency -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 320" role="img" aria-label="Discord production comparison: Go showed latency spikes of 10 to 40 milliseconds every 2 minutes from garbage collection. Rust showed consistent microsecond latency with no spikes. They did not switch back." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .sq3-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; }
+                .sq3-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sq3-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sq3-big { font: 700 18px/1 'Oxanium', system-ui, sans-serif; }
+                .sq3-accent { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sq3-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .sq3-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+
+            <text class="sq3-title" x="270" y="20" text-anchor="middle" fill="var(--text)">Discord: Go &#x2192; Rust (Production)</text>
+            <text class="sq3-muted" x="270" y="38" text-anchor="middle">Same service. Same traffic. Measured in production.</text>
+
+            <!-- Go side -->
+            <rect class="sq3-box" x="20" y="56" width="240" height="200" rx="5"/>
+            <text class="sq3-label" x="140" y="76" text-anchor="middle">Go</text>
+
+            <!-- Simulated latency graph with spikes -->
+            <line x1="40" y1="200" x2="240" y2="200" stroke="var(--border)" stroke-width="0.5"/>
+            <text class="sq3-muted" x="40" y="216" text-anchor="start">0</text>
+            <text class="sq3-muted" x="240" y="216" text-anchor="end">time</text>
+
+            <!-- Baseline -->
+            <line x1="40" y1="190" x2="240" y2="190" stroke="var(--muted)" stroke-width="1" opacity="0.5"/>
+
+            <!-- GC spikes -->
+            <line x1="80" y1="190" x2="80" y2="110" stroke="var(--muted)" stroke-width="2"/>
+            <line x1="120" y1="190" x2="120" y2="120" stroke="var(--muted)" stroke-width="2"/>
+            <line x1="160" y1="190" x2="160" y2="105" stroke="var(--muted)" stroke-width="2"/>
+            <line x1="200" y1="190" x2="200" y2="115" stroke="var(--muted)" stroke-width="2"/>
+
+            <text class="sq3-muted" x="140" y="100" text-anchor="middle">GC spikes: 10-40 ms</text>
+            <text class="sq3-big" x="140" y="244" text-anchor="middle" fill="var(--muted)">every ~2 min</text>
+
+            <!-- Rust side -->
+            <rect class="sq3-box-accent" x="280" y="56" width="240" height="200" rx="5"/>
+            <text class="sq3-accent" x="400" y="76" text-anchor="middle">Rust</text>
+
+            <!-- Flat latency line -->
+            <line x1="300" y1="200" x2="500" y2="200" stroke="var(--border)" stroke-width="0.5"/>
+            <text class="sq3-muted" x="300" y="216" text-anchor="start">0</text>
+            <text class="sq3-muted" x="500" y="216" text-anchor="end">time</text>
+
+            <!-- Consistent flat line -->
+            <line x1="300" y1="190" x2="500" y2="190" stroke="var(--accent)" stroke-width="2"/>
+
+            <text class="sq3-muted" x="400" y="170" text-anchor="middle">No GC. No spikes.</text>
+            <text class="sq3-big" x="400" y="244" text-anchor="middle" fill="var(--accent)">microseconds</text>
+
+            <!-- Bottom -->
+            <line x1="20" y1="274" x2="520" y2="274" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="sq3-accent" x="270" y="298" text-anchor="middle">"Rust beat Go on every single performance metric."</text>
+            <text class="sq3-muted" x="270" y="316" text-anchor="middle">They did not switch back.</text>
+        </svg>
+
+        <p>
+            <a href="https://discord.com/blog/why-discord-is-switching-from-go-to-rust" target="_blank" rel="noopener">Discord ran both in production</a>.
+            Go: latency spikes of 10 to 40 milliseconds every two minutes from
+            garbage collection. Rust: consistent microsecond latency. No spikes.
+            "Rust beat Go on every single performance metric." They did not
+            switch back.
+        </p>
+
+        <h2>The Larger Question</h2>
+
+        <p>
+            256 MB per instance versus 2 MB. This is not a rounding error. It is
+            up to a 128-fold difference in resource consumption for identical
+            functionality.
+        </p>
+
+        <!-- SVG 4: Resource impact -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 260" role="img" aria-label="Resource impact: one Java server at 256 MB versus 128 Rust instances in the same memory. Every server that need not exist is raw material never mined, water never consumed, energy never spent." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .sq4-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; }
+                .sq4-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sq4-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sq4-big { font: 700 28px/1 'Oxanium', system-ui, sans-serif; }
+                .sq4-accent { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sq4-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .sq4-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+
+            <text class="sq4-title" x="270" y="20" text-anchor="middle" fill="var(--text)">Same 256 MB of Memory</text>
+
+            <!-- Java side -->
+            <rect class="sq4-box" x="20" y="44" width="240" height="130" rx="5"/>
+            <text class="sq4-label" x="140" y="68" text-anchor="middle">Java (Spring Boot + JVM)</text>
+            <text class="sq4-big" x="140" y="116" text-anchor="middle" fill="var(--muted)">1</text>
+            <text class="sq4-muted" x="140" y="140" text-anchor="middle">instance</text>
+            <text class="sq4-muted" x="140" y="164" text-anchor="middle">256 MB consumed</text>
+
+            <!-- Rust side -->
+            <rect class="sq4-box-accent" x="280" y="44" width="240" height="130" rx="5"/>
+            <text class="sq4-accent" x="400" y="68" text-anchor="middle">Rust</text>
+            <text class="sq4-big" x="400" y="116" text-anchor="middle" fill="var(--accent)">128</text>
+            <text class="sq4-muted" x="400" y="140" text-anchor="middle">instances</text>
+            <text class="sq4-muted" x="400" y="164" text-anchor="middle">2 MB each</text>
+
+            <!-- Bottom -->
+            <line x1="20" y1="196" x2="520" y2="196" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="sq4-accent" x="270" y="220" text-anchor="middle">Every server that need not exist is raw material never mined,</text>
+            <text class="sq4-accent" x="270" y="238" text-anchor="middle">water never consumed, energy never spent.</text>
+            <text class="sq4-muted" x="270" y="256" text-anchor="middle">Efficient software is not an optimisation. It is resource conservation.</text>
+        </svg>
+
+        <p>
+            Every server that need not exist is raw material never mined, water
+            never consumed, energy never spent. The industry's answer has
+            reliably been to throw hardware at the problem. Marvellously
+            affordable, until the invoice arrives at both ends: hardware that
+            costs money, and data centres consuming water where none remains.
+        </p>
+
+        <p>
+            Efficient software is not an optimisation. It is resource
+            conservation. The difference between one Java instance and 128
+            Rust instances in the same memory allocation is not academic. It is
+            the difference between scaling by spending and scaling by engineering.
+        </p>
+
+        <h2>When PHP Is Right</h2>
+
+        <p>
+            Request-response. Content management. E-commerce. CRUD applications.
+            PHP does these superbly. The 72% chose before the alternatives existed,
+            and for those workloads, they chose correctly. WordPress, Laravel,
+            Symfony: these are not accidents. They are the result of a language
+            that is extremely good at a specific class of problem.
+        </p>
+
+        <p>
+            But when the server holds connections open and pushes live data,
+            it is a different workload. Different workload, different tool.
+            One does not criticise a screwdriver for being a poor hammer. One
+            reaches for the hammer.
+        </p>
+
+        <!-- SVG 5: When to use what -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 250" role="img" aria-label="Decision guide: PHP for request-response, CMS, e-commerce, and CRUD. Go or Rust for persistent connections, live push, minimal memory, and high concurrency." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .sq5-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
+                .sq5-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sq5-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sq5-accent { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sq5-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .sq5-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+
+            <text class="sq5-title" x="270" y="20" text-anchor="middle" fill="var(--text)">The Right Tool for the Right Workload</text>
+
+            <!-- PHP column -->
+            <rect class="sq5-box" x="20" y="42" width="240" height="170" rx="5"/>
+            <text class="sq5-label" x="140" y="64" text-anchor="middle">PHP (72% of the web)</text>
+
+            <text class="sq5-muted" x="40" y="90">&#x2713; Request-response</text>
+            <text class="sq5-muted" x="40" y="110">&#x2713; CMS (WordPress, Drupal)</text>
+            <text class="sq5-muted" x="40" y="130">&#x2713; E-commerce (Magento, Shopware)</text>
+            <text class="sq5-muted" x="40" y="150">&#x2713; CRUD applications</text>
+            <text class="sq5-muted" x="40" y="170">&#x2713; Laravel, Symfony</text>
+
+            <text class="sq5-muted" x="140" y="200" text-anchor="middle">Share-nothing is perfect here.</text>
+
+            <!-- Rust/Go column -->
+            <rect class="sq5-box-accent" x="280" y="42" width="240" height="170" rx="5"/>
+            <text class="sq5-accent" x="400" y="64" text-anchor="middle">Go / Rust</text>
+
+            <text class="sq5-muted" x="300" y="90">&#x2713; Persistent connections</text>
+            <text class="sq5-muted" x="300" y="110">&#x2713; WebSocket / SSE</text>
+            <text class="sq5-muted" x="300" y="130">&#x2713; Live data push</text>
+            <text class="sq5-muted" x="300" y="150">&#x2713; High concurrency</text>
+            <text class="sq5-muted" x="300" y="170">&#x2713; Minimal memory</text>
+
+            <text class="sq5-muted" x="400" y="200" text-anchor="middle">Keeping connections alive is the job.</text>
+
+            <!-- Bottom -->
+            <line x1="20" y1="226" x2="520" y2="226" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="sq5-muted" x="270" y="246" text-anchor="middle">72% of the web is not wrong. It runs a different workload.</text>
+        </svg>
+
+        <h2>The Point</h2>
+
+        <p>
+            72% of the web chose PHP. They were not wrong. They were solving
+            request-response, and PHP does that with the casual competence of
+            a tool that has had thirty years of practice.
+        </p>
+
+        <p>
+            But when the question changes from "generate a page" to "hold a
+            connection," the answer changes with it. 256 MB per instance versus
+            2 MB is not a debate. It is arithmetic. Three languages eliminated
+            by overhead. Two remain. One has a garbage collector that pauses
+            every two minutes. The other does not.
+        </p>
+
+        <p>
+            Efficient software is not a luxury. It is responsibility.
+        </p>
+
+        <aside class="vv-aside">
+            <p>
+                <strong>The numbers:</strong>
+                <a href="https://w3techs.com/technologies/overview/programming_language" target="_blank" rel="noopener">PHP: 72% server-side language share</a> (W3Techs, 2026).
+                <a href="https://kinsta.com/wordpress-market-share/" target="_blank" rel="noopener">WordPress: 43% of all websites</a>.
+                PHP-FPM: 40-128 MB per worker.
+                On a 16 GB server: ~96 concurrent PHP workers.
+                <a href="https://discord.com/blog/why-discord-is-switching-from-go-to-rust" target="_blank" rel="noopener">Discord Go to Rust migration</a>:
+                Go GC latency spikes every ~2 minutes (10-40 ms);
+                Rust latency in microseconds, no spikes.
+                "Rust beat Go on every single performance metric."
+                Binary sizes (release build, same server task):
+                Rust (axum) ~2 MB; Go (gorilla) ~15 MB; Python (runtime) ~50 MB;
+                PHP (runtime + extensions + FPM) ~80 MB; Java (JVM) ~200 MB.
+            </p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

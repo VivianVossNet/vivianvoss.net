@@ -1,0 +1,529 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: jq &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 2012, JSON was the lingua franca of the web and the Unix toolbox had nothing for it. One PhD student at Cambridge wrote a functional language in 510 KB of C. Forty years of flat text tools, plus one for trees.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-jq{( endslot )}
+
+{( slot og-title )}Technical Beauty: jq &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}In 2012, JSON was the lingua franca of the web and the Unix toolbox had nothing for it. One PhD student at Cambridge wrote a functional language in 510 KB of C. Forty years of flat text tools, plus one for trees.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: jq",
+    "datePublished": "2026-03-03",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-jq",
+    "description": "In 2012, JSON was the lingua franca of the web and the Unix toolbox had nothing for it. One PhD student at Cambridge wrote a functional language in 510 KB of C. Forty years of flat text tools, plus one for trees.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-03">03 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: jq</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 25</p>
+
+        <h2>The Missing Tool</h2>
+
+        <p>
+            By 2012, JSON had become the undisputed lingua franca of the web.
+            Every API returned it. Every configuration file spoke it. Every log
+            aggregator produced it. And the Unix toolbox, refined over forty years
+            for line-oriented text, had precisely nothing for it.
+        </p>
+
+        <p>
+            <code>grep</code> sees lines. <code>awk</code> sees fields.
+            <code>sed</code> sees patterns. None of them understand a tree.
+            A JSON document is not flat. It nests. It branches. It contains
+            arrays within objects within arrays, and the moment you need to
+            extract a value three levels deep, every classic Unix tool reaches
+            for its hammer and discovers the nail is a fractal.
+        </p>
+
+        <!-- SVG 1: The gap in the Unix toolbox -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 310" role="img" aria-label="Unix tools handle lines and fields. JSON is a tree. The gap existed for forty years until jq." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .jq1-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; }
+                .jq1-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .jq1-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .jq1-mono { font: 400 10.5px/1 ui-monospace, monospace; fill: var(--text); }
+                .jq1-accent { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .jq1-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .jq1-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+
+            <text class="jq1-title" x="270" y="20" text-anchor="middle" fill="var(--text)">The Unix Toolbox vs Structured Data</text>
+            <text class="jq1-muted" x="270" y="38" text-anchor="middle">40 years of line-oriented tools. Zero for trees.</text>
+
+            <!-- Left: flat text tools -->
+            <rect class="jq1-box" x="20" y="56" width="230" height="200" rx="5"/>
+            <text class="jq1-label" x="135" y="76" text-anchor="middle">Line-Oriented (1970s-2012)</text>
+
+            <rect class="jq1-box" x="40" y="92" width="190" height="28"/>
+            <text class="jq1-mono" x="135" y="111" text-anchor="middle">grep  &#x2192;  lines matching pattern</text>
+
+            <rect class="jq1-box" x="40" y="128" width="190" height="28"/>
+            <text class="jq1-mono" x="135" y="147" text-anchor="middle">awk   &#x2192;  fields in records</text>
+
+            <rect class="jq1-box" x="40" y="164" width="190" height="28"/>
+            <text class="jq1-mono" x="135" y="183" text-anchor="middle">sed   &#x2192;  stream of characters</text>
+
+            <rect class="jq1-box" x="40" y="200" width="190" height="28"/>
+            <text class="jq1-mono" x="135" y="219" text-anchor="middle">sort  &#x2192;  lines, alphabetically</text>
+
+            <text class="jq1-muted" x="135" y="248" text-anchor="middle">Data model: flat text, delimiters</text>
+
+            <!-- Right: structured data -->
+            <rect class="jq1-box-accent" x="290" y="56" width="230" height="200" rx="5"/>
+            <text class="jq1-accent" x="405" y="76" text-anchor="middle">Tree-Structured (2012)</text>
+
+            <rect class="jq1-box-accent" x="310" y="92" width="190" height="28"/>
+            <text class="jq1-mono" x="405" y="111" text-anchor="middle">jq    &#x2192;  nested JSON values</text>
+
+            <!-- Tree illustration -->
+            <text class="jq1-mono" x="405" y="148" text-anchor="middle">{"results": [</text>
+            <text class="jq1-mono" x="405" y="166" text-anchor="middle">  {"name": "value",</text>
+            <text class="jq1-mono" x="405" y="184" text-anchor="middle">   "items": [1,2,3]}</text>
+            <text class="jq1-mono" x="405" y="202" text-anchor="middle">]}</text>
+
+            <text class="jq1-muted" x="405" y="248" text-anchor="middle">Data model: trees, arrays, objects</text>
+
+            <!-- Bottom -->
+            <line x1="20" y1="274" x2="520" y2="274" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="jq1-accent" x="270" y="298" text-anchor="middle">One PhD student added trees. 822 KB.</text>
+        </svg>
+
+        <p>
+            Stephen Dolan, a PhD student at the
+            <a href="https://www.cst.cam.ac.uk/people/sd601" target="_blank" rel="noopener">University of Cambridge</a>,
+            resolved this quietly in 2012. He did not write a viewer. He did not
+            write a validator. He wrote a language.
+        </p>
+
+        <h2>A Language, Not a Utility</h2>
+
+        <p>
+            This is the distinction that earns jq its place among beautiful tools.
+            <code>grep</code> is a filter. <code>sed</code> is a transformer.
+            <code>awk</code> is, admittedly, also a language, but one designed for
+            tabular records. jq is a fully functional programming language with
+            generators, backtracking, and immutable values, compiled to a
+            <a href="https://github.com/jqlang/jq/wiki/jq-Language-Description" target="_blank" rel="noopener">stack-based bytecode VM</a>.
+            It exists for precisely one purpose: transforming JSON on the command
+            line. stdin in, stdout out. The Unix pipeline, applied to structured data.
+        </p>
+
+        <p>
+            The comparison is instructive. To extract a nested value from an API
+            response, Python needs two imports and a runtime:
+        </p>
+
+        <pre><code>python3 -c "import json,sys; print(json.load(sys.stdin)['results'][0]['name'])"</code></pre>
+
+        <p>
+            jq needs one expression:
+        </p>
+
+        <pre><code>jq '.results[0].name'</code></pre>
+
+        <p>
+            Same output. 84 characters versus 22. One requires a 50 MB runtime
+            installed on the target machine. The other is an 822 KB binary that
+            does not link against anything except libc. One is a general-purpose
+            language pressed into service for a specific job. The other was born
+            for it.
+        </p>
+
+        <!-- SVG 2: Python vs jq comparison -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 280" role="img" aria-label="Python needs 84 characters, 2 imports, and a 50 MB runtime. jq needs 22 characters, zero imports, and an 822 KB binary. Same output." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .jq2-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; }
+                .jq2-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .jq2-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .jq2-mono { font: 400 10.5px/1 ui-monospace, monospace; fill: var(--text); }
+                .jq2-big { font: 700 22px/1 'Oxanium', system-ui, sans-serif; }
+                .jq2-accent { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .jq2-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .jq2-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+
+            <text class="jq2-title" x="270" y="20" text-anchor="middle" fill="var(--text)">Same Input. Same Output.</text>
+
+            <!-- Python side -->
+            <rect class="jq2-box" x="20" y="40" width="240" height="190" rx="5"/>
+            <text class="jq2-label" x="140" y="62" text-anchor="middle">Python</text>
+
+            <text class="jq2-big" x="140" y="100" text-anchor="middle" fill="var(--muted)">84</text>
+            <text class="jq2-muted" x="140" y="118" text-anchor="middle">characters</text>
+
+            <text class="jq2-muted" x="50" y="146">Imports: 2 (json, sys)</text>
+            <text class="jq2-muted" x="50" y="164">Runtime: ~50 MB installed</text>
+            <text class="jq2-muted" x="50" y="182">Dependencies: libpython, stdlib</text>
+            <text class="jq2-muted" x="50" y="200">Startup: interpreter init</text>
+            <text class="jq2-muted" x="50" y="218">Model: general-purpose</text>
+
+            <!-- jq side -->
+            <rect class="jq2-box-accent" x="280" y="40" width="240" height="190" rx="5"/>
+            <text class="jq2-accent" x="400" y="62" text-anchor="middle">jq</text>
+
+            <text class="jq2-big" x="400" y="100" text-anchor="middle" fill="var(--accent)">22</text>
+            <text class="jq2-muted" x="400" y="118" text-anchor="middle">characters</text>
+
+            <text class="jq2-muted" x="310" y="146">Imports: 0</text>
+            <text class="jq2-muted" x="310" y="164">Binary: 822 KB (macOS)</text>
+            <text class="jq2-muted" x="310" y="182">Dependencies: libc</text>
+            <text class="jq2-muted" x="310" y="200">Startup: instant</text>
+            <text class="jq2-muted" x="310" y="218">Model: purpose-built</text>
+
+            <!-- Bottom -->
+            <line x1="20" y1="248" x2="520" y2="248" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="jq2-accent" x="270" y="272" text-anchor="middle">One needs a runtime. The other is the runtime.</text>
+        </svg>
+
+        <h2>The Vital Statistics</h2>
+
+        <p>
+            Approximately
+            <a href="https://github.com/jqlang/jq" target="_blank" rel="noopener">510 KB of C source code</a>,
+            spread across 21 files. A single binary: 822 KB on macOS ARM,
+            2.1 MB on Linux when statically linked. 33,700+ GitHub stars
+            and 214 contributors, under the MIT licence since its first
+            release in 2012, unchanged.
+        </p>
+
+        <p>
+            Those are the numbers. Here is what they mean: jq is smaller
+            than most configuration files in a typical Node.js project.
+            It is smaller than the <code>node_modules</code> folder of
+            a "Hello World" Express application by approximately four
+            orders of magnitude. And it has been parsing JSON reliably
+            since the year Docker was invented, without a single breaking
+            change to its core language.
+        </p>
+
+        <h2>The Spec That Arrived Twelve Years Late</h2>
+
+        <p>
+            The language had no formal specification until 2024. For twelve
+            years, jq was defined entirely by its own source code. If you
+            wanted to know what <code>.foo | select(. > 3)</code> did, you
+            read the implementation, or you ran it. The documentation was
+            useful. The source was canonical.
+        </p>
+
+        <p>
+            In March 2024, Michael F&#x00E4;rber published the
+            <a href="https://arxiv.org/abs/2403.20132" target="_blank" rel="noopener">first formal specification</a>
+            on arXiv. Twelve years after Dolan wrote the implementation.
+            The specification agreed with the code. Not the other way round.
+        </p>
+
+        <p>
+            Rather Unix, that.
+        </p>
+
+        <p>
+            The implication is worth pausing on. A language whose behaviour
+            was so consistent, so unsurprising, so obviously <em>correct</em>
+            that it ran for twelve years without a formal spec and nobody
+            noticed the absence. The spec, when it arrived, was descriptive,
+            not prescriptive. It documented what jq already did. Try that
+            with JavaScript.
+        </p>
+
+        <h2>The Streaming Parser</h2>
+
+        <p>
+            This is the section where jq quietly demonstrates that being
+            small does not mean being limited.
+        </p>
+
+        <p>
+            In regular mode, jq loads the entire JSON document into memory,
+            builds the tree, and operates on it. For a typical API response,
+            this is instant. For ten million JSON items, it consumes
+            approximately
+            <a href="https://devblog.songkick.com/parsing-ginormous-json-files-via-streaming-be6561ea8671" target="_blank" rel="noopener">5.5 GB of memory</a>.
+        </p>
+
+        <p>
+            In streaming mode (<code>--stream</code>), jq emits path-value
+            pairs as it reads, without building the tree. The same ten million
+            items: 2 MB. At three in the morning, with a 40 GB log file and
+            a production server that would rather not swap, that difference
+            is not academic.
+        </p>
+
+        <!-- SVG 3: Memory comparison regular vs streaming -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 300" role="img" aria-label="Regular mode consumes 5.5 GB for 10 million items. Streaming mode consumes 2 MB for the same data. A 2,750x reduction." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .jq3-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; }
+                .jq3-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .jq3-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .jq3-big { font: 700 28px/1 'Oxanium', system-ui, sans-serif; }
+                .jq3-accent { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .jq3-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .jq3-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+
+            <text class="jq3-title" x="270" y="20" text-anchor="middle" fill="var(--text)">Memory: 10 Million JSON Items</text>
+
+            <!-- Regular mode bar -->
+            <rect class="jq3-box" x="40" y="50" width="460" height="80" rx="5"/>
+            <text class="jq3-label" x="270" y="72" text-anchor="middle">Regular Mode (full tree in memory)</text>
+            <text class="jq3-big" x="270" y="112" text-anchor="middle" fill="var(--muted)">5,500 MB</text>
+
+            <!-- Streaming mode bar (proportionally tiny) -->
+            <rect class="jq3-box-accent" x="40" y="150" width="460" height="80" rx="5"/>
+            <text class="jq3-label" x="270" y="172" text-anchor="middle">Streaming Mode (path-value pairs)</text>
+            <text class="jq3-big" x="270" y="212" text-anchor="middle" fill="var(--accent)">2 MB</text>
+
+            <!-- Visual bar comparison -->
+            <rect x="40" y="250" width="460" height="8" rx="2" fill="var(--muted)" opacity="0.3"/>
+            <rect x="40" y="250" width="0.17" height="8" rx="0" fill="var(--accent)"/>
+
+            <!-- Bottom -->
+            <line x1="40" y1="272" x2="500" y2="272" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="jq3-accent" x="270" y="294" text-anchor="middle">2,750x reduction. Same data. Same tool. One flag.</text>
+        </svg>
+
+        <h2>The Sincerest Form of Flattery</h2>
+
+        <p>
+            When the community decided that jq could be improved, they did
+            not replace the language. They rewrote the engine.
+        </p>
+
+        <p>
+            <a href="https://github.com/01mf02/jaq" target="_blank" rel="noopener">jaq</a>,
+            written in Rust by Michael F&#x00E4;rber (the same person who later
+            formalised the spec), is 5 to 10 times faster on some benchmarks.
+            <a href="https://github.com/itchyny/gojq" target="_blank" rel="noopener">gojq</a>,
+            written in Go, is a pure reimplementation. Both speak the same
+            syntax. Both accept the same filters. Both produce the same output.
+        </p>
+
+        <p>
+            This is the strongest evidence of design quality a tool can
+            receive. One does not improve <code>sed</code> by inventing a
+            new grammar. One rewrites the engine. The jq language was so
+            precisely right that two independent reimplementations in two
+            different languages adopted it wholesale. The design was correct
+            the first time. The performance was not.
+        </p>
+
+        <!-- SVG 4: The jq ecosystem -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 260" role="img" aria-label="The jq ecosystem: three implementations sharing one language. jq in C (original), jaq in Rust (5-10x faster), gojq in Go (pure reimplementation)." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .jq4-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; }
+                .jq4-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .jq4-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .jq4-mono { font: 400 10.5px/1 ui-monospace, monospace; fill: var(--text); }
+                .jq4-accent { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .jq4-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .jq4-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+            <defs>
+                <marker id="jq4-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <text class="jq4-title" x="270" y="20" text-anchor="middle" fill="var(--text)">One Language, Three Engines</text>
+            <text class="jq4-muted" x="270" y="38" text-anchor="middle">The design was correct. The performance was improved.</text>
+
+            <!-- Central: jq language -->
+            <rect class="jq4-box-accent" x="180" y="56" width="180" height="44"/>
+            <text class="jq4-accent" x="270" y="76" text-anchor="middle">jq language</text>
+            <text class="jq4-muted" x="270" y="92" text-anchor="middle">functional, generators, backtracking</text>
+
+            <!-- Arrows down -->
+            <line x1="150" y1="100" x2="100" y2="126" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#jq4-arr)"/>
+            <line x1="270" y1="100" x2="270" y2="126" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#jq4-arr)"/>
+            <line x1="390" y1="100" x2="440" y2="126" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#jq4-arr)"/>
+
+            <!-- jq (C) -->
+            <rect class="jq4-box-accent" x="20" y="128" width="160" height="90"/>
+            <text class="jq4-label" x="100" y="150" text-anchor="middle">jq</text>
+            <text class="jq4-muted" x="100" y="168" text-anchor="middle">C (original, 2012)</text>
+            <text class="jq4-muted" x="100" y="184" text-anchor="middle">822 KB binary</text>
+            <text class="jq4-muted" x="100" y="200" text-anchor="middle">33,700+ stars</text>
+            <text class="jq4-muted" x="100" y="214" text-anchor="middle">Stephen Dolan</text>
+
+            <!-- jaq (Rust) -->
+            <rect class="jq4-box" x="190" y="128" width="160" height="90"/>
+            <text class="jq4-label" x="270" y="150" text-anchor="middle">jaq</text>
+            <text class="jq4-muted" x="270" y="168" text-anchor="middle">Rust (2021)</text>
+            <text class="jq4-muted" x="270" y="184" text-anchor="middle">5-10x faster</text>
+            <text class="jq4-muted" x="270" y="200" text-anchor="middle">Same syntax</text>
+            <text class="jq4-muted" x="270" y="214" text-anchor="middle">Michael F&#x00E4;rber</text>
+
+            <!-- gojq (Go) -->
+            <rect class="jq4-box" x="360" y="128" width="160" height="90"/>
+            <text class="jq4-label" x="440" y="150" text-anchor="middle">gojq</text>
+            <text class="jq4-muted" x="440" y="168" text-anchor="middle">Go (2019)</text>
+            <text class="jq4-muted" x="440" y="184" text-anchor="middle">Pure reimplementation</text>
+            <text class="jq4-muted" x="440" y="200" text-anchor="middle">Same syntax</text>
+            <text class="jq4-muted" x="440" y="214" text-anchor="middle">itchyny</text>
+
+            <!-- Bottom -->
+            <line x1="20" y1="234" x2="520" y2="234" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="jq4-accent" x="270" y="256" text-anchor="middle">When the design is right, you rewrite the engine. Not the grammar.</text>
+        </svg>
+
+        <h2>The Custodian Changes, the Tool Endures</h2>
+
+        <p>
+            Dolan left the project around 2019 for
+            <a href="https://signalsandthreads.com/memory-management/" target="_blank" rel="noopener">Jane Street</a>,
+            where he now works on the OCaml compiler. A PhD in Algebraic
+            Subtyping, supervised by
+            <a href="https://www.cst.cam.ac.uk/people/sd601" target="_blank" rel="noopener">Alan Mycroft</a>
+            at Cambridge, followed by a career designing type systems for
+            a trading firm. The pedigree explains the language: jq feels
+            like it was written by someone who understands type theory.
+            It was.
+        </p>
+
+        <p>
+            The community formed
+            <a href="https://github.com/jqlang/jq" target="_blank" rel="noopener">jqlang</a>.
+            Version 1.7 arrived in September 2023, after a five-year gap
+            since 1.6. Version 1.8 followed in 2025. The tool did not
+            notice the absence of its creator. It continued parsing. One
+            might observe that this is rather the point of writing a tool
+            that does one thing well.
+        </p>
+
+        <!-- SVG 5: Timeline -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 180" role="img" aria-label="jq timeline: 2012 first release, 2015 version 1.5, 2018 version 1.6, 2023 version 1.7 by community, 2024 first formal specification, 2025 version 1.8." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .jq5-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
+                .jq5-year { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .jq5-label { font: 600 9.5px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .jq5-muted { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <text class="jq5-title" x="270" y="16" text-anchor="middle" fill="var(--text)">Timeline</text>
+
+            <!-- Main line -->
+            <line x1="30" y1="50" x2="510" y2="50" stroke="var(--border)" stroke-width="1.5"/>
+
+            <!-- 2012 -->
+            <circle cx="50" cy="50" r="4" fill="var(--accent)"/>
+            <text class="jq5-year" x="50" y="40" text-anchor="middle">2012</text>
+            <text class="jq5-label" x="50" y="68" text-anchor="middle">First release</text>
+            <text class="jq5-muted" x="50" y="82" text-anchor="middle">MIT licence</text>
+
+            <!-- 2015 -->
+            <circle cx="140" cy="50" r="4" fill="var(--muted)"/>
+            <text class="jq5-year" x="140" y="40" text-anchor="middle">2015</text>
+            <text class="jq5-label" x="140" y="68" text-anchor="middle">v1.5</text>
+            <text class="jq5-muted" x="140" y="82" text-anchor="middle">Major features</text>
+
+            <!-- 2018 -->
+            <circle cx="230" cy="50" r="4" fill="var(--muted)"/>
+            <text class="jq5-year" x="230" y="40" text-anchor="middle">2018</text>
+            <text class="jq5-label" x="230" y="68" text-anchor="middle">v1.6</text>
+            <text class="jq5-muted" x="230" y="82" text-anchor="middle">Last by Dolan</text>
+
+            <!-- 2023 -->
+            <circle cx="330" cy="50" r="4" fill="var(--accent)"/>
+            <text class="jq5-year" x="330" y="40" text-anchor="middle">2023</text>
+            <text class="jq5-label" x="330" y="68" text-anchor="middle">v1.7</text>
+            <text class="jq5-muted" x="330" y="82" text-anchor="middle">jqlang community</text>
+
+            <!-- 2024 -->
+            <circle cx="420" cy="50" r="4" fill="var(--accent)"/>
+            <text class="jq5-year" x="420" y="40" text-anchor="middle">2024</text>
+            <text class="jq5-label" x="420" y="68" text-anchor="middle">Formal spec</text>
+            <text class="jq5-muted" x="420" y="82" text-anchor="middle">F&#x00E4;rber, arXiv</text>
+
+            <!-- 2025 -->
+            <circle cx="500" cy="50" r="4" fill="var(--muted)"/>
+            <text class="jq5-year" x="500" y="40" text-anchor="middle">2025</text>
+            <text class="jq5-label" x="500" y="68" text-anchor="middle">v1.8</text>
+
+            <!-- The gap annotation -->
+            <line x1="230" y1="100" x2="330" y2="100" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3"/>
+            <text class="jq5-muted" x="280" y="116" text-anchor="middle">5-year gap</text>
+            <text class="jq5-muted" x="280" y="130" text-anchor="middle">The tool did not notice.</text>
+
+            <!-- Bottom -->
+            <line x1="30" y1="150" x2="510" y2="150" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="jq5-muted" x="270" y="170" text-anchor="middle">No formal spec for 12 years. The code was the spec. The spec agreed with the code.</text>
+        </svg>
+
+        <h2>The Point</h2>
+
+        <p>
+            Forty years of Unix tools for flat text. Forty years of
+            <code>grep</code> and <code>awk</code> and <code>sed</code>
+            and <code>sort</code> and <code>cut</code> and
+            <code>paste</code>, each doing one thing brilliantly, all of
+            them blind to the data format that had quietly taken over the
+            world.
+        </p>
+
+        <p>
+            One PhD student at Cambridge added trees. He wrote a functional
+            language with generators and backtracking, compiled it to a
+            bytecode VM, shipped it as an 822 KB binary, and walked away
+            to work on type theory. The community rewrote the engine twice,
+            in two different languages, and kept the grammar untouched.
+            Someone formalised the specification twelve years later and
+            found it agreed with the implementation. The tool spent five
+            years without its creator and continued parsing without complaint.
+        </p>
+
+        <p>
+            822 KB. Technical beauty emerges from reduction.
+        </p>
+
+        <aside class="vv-aside">
+            <p>
+                <strong>The numbers:</strong>
+                <a href="https://github.com/jqlang/jq" target="_blank" rel="noopener">~510 KB of C source</a>,
+                21 files.
+                Binary: 822 KB (macOS ARM), 2.1 MB (Linux, statically linked).
+                33,700+ stars, 214 contributors.
+                <a href="https://github.com/jqlang/jq/blob/master/COPYING" target="_blank" rel="noopener">MIT licence</a> since 2012.
+                <a href="https://arxiv.org/abs/2403.20132" target="_blank" rel="noopener">Formal specification</a>
+                published March 2024 by Michael F&#x00E4;rber (arXiv:2403.20132).
+                Streaming parser: 5.5 GB regular vs 2 MB streaming for 10M items.
+                The alternatives all speak jq:
+                <a href="https://github.com/01mf02/jaq" target="_blank" rel="noopener">jaq</a> (Rust, 5-10x faster),
+                <a href="https://github.com/itchyny/gojq" target="_blank" rel="noopener">gojq</a> (Go, pure reimplementation).
+                Stephen Dolan: PhD Cambridge
+                (<a href="https://www.cst.cam.ac.uk/people/sd601" target="_blank" rel="noopener">Algebraic Subtyping</a>,
+                supervised by Alan Mycroft). Now at Jane Street, working on the OCaml compiler.
+            </p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

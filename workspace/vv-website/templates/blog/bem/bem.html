@@ -1,0 +1,441 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}BEM: The Naming Convention That Named Itself Indispensable — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="BEM was invented at Yandex to stop CSS from breaking across 100 services. The industry adopted it to name twelve classes on a landing page. A naming convention copied without the problem it solved.">
+{( endslot )}
+
+{( slot canonical )}/blog/bem{( endslot )}
+
+{( slot og-title )}BEM: The Naming Convention That Named Itself Indispensable — Vivian Voss{( endslot )}
+
+{( slot og-desc )}BEM was invented at Yandex to stop CSS from breaking across 100 services. The industry adopted it to name twelve classes on a landing page.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "BEM: The Naming Convention That Named Itself Indispensable",
+    "datePublished": "2026-03-05",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/bem",
+    "description": "BEM was invented at Yandex to stop CSS from breaking across 100 services. The industry adopted it to name twelve classes on a landing page. A naming convention copied without the problem it solved.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-05">05 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>BEM: The Naming Convention That Named Itself Indispensable</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">css</span>
+            <span class="vv-pill">html</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>BEM was invented to stop CSS from breaking across 100 services. The industry
+            adopted it to name twelve classes on a landing page.</p>
+
+        <p>One does wonder whether anyone read the original brief.</p>
+
+        <h2>The Original</h2>
+
+        <p>Yandex, 2005. One hundred services. One hundred and fifty front-end developers.
+            One global CSS scope. Selectors like <code>.result .albums .info</code> collided
+            across services because nobody had agreed on naming. The cascade was not the
+            defect. The absence of a shared vocabulary was.</p>
+
+        <p>That was an organisation problem. BEM treated it as a
+            <a href="https://en.bem.info/methodology/history/" target="_blank" rel="noopener">language problem</a>.</p>
+
+        <p>No CSS Modules. No Shadow DOM. No <code>@scope</code>. No <code>@layer</code>.
+            The browser was IE6. A clear nomenclature would have sufficed. Instead, an
+            entire methodology was constructed to enforce one:
+            <code>.block__element--modifier</code>. Flatten everything. No cascade,
+            no collision.</p>
+
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Yandex in 2005: 150 developers, 100 services, one global CSS scope, IE6. The problem was organisational, the solution was syntactical." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .bem-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .bem-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .bem-value { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .bem-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .bem-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .bem-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#bem-arr); }
+            </style>
+            <defs>
+                <marker id="bem-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <!-- The Problem -->
+            <text class="bem-label" x="260" y="20" text-anchor="middle">Yandex, 2005</text>
+            <rect class="bem-box-accent" x="30" y="35" width="200" height="90"/>
+            <text class="bem-label" x="130" y="58" text-anchor="middle">150 Developers</text>
+            <text class="bem-sub" x="130" y="75" text-anchor="middle">100 services</text>
+            <text class="bem-sub" x="130" y="92" text-anchor="middle">1 global CSS scope</text>
+            <text class="bem-sub" x="130" y="109" text-anchor="middle">Browser: IE6</text>
+            <path class="bem-arrow" d="M 230 80 L 290 80"/>
+            <rect class="bem-box" x="290" y="55" width="200" height="50"/>
+            <text class="bem-label" x="390" y="78" text-anchor="middle">.result .albums .info</text>
+            <text class="bem-sub" x="390" y="95" text-anchor="middle">Which service owns this?</text>
+            <!-- The Solution -->
+            <text class="bem-value" x="260" y="155" text-anchor="middle">The actual problem: no shared vocabulary</text>
+            <rect class="bem-box" x="60" y="175" width="180" height="40"/>
+            <text class="bem-label" x="150" y="200" text-anchor="middle">Nomenclature</text>
+            <text class="bem-sub" x="150" y="230" text-anchor="middle">Would have sufficed</text>
+            <rect class="bem-box-accent" x="280" y="175" width="180" height="40"/>
+            <text class="bem-label" x="370" y="200" text-anchor="middle">BEM Methodology</text>
+            <text class="bem-sub" x="370" y="230" text-anchor="middle">What was built instead</text>
+            <text class="bem-value" x="260" y="265" text-anchor="middle">Organisation problem. Language solution.</text>
+        </svg>
+
+        <p>Even at Yandex, this was over-engineered. They got their nomenclature. Along
+            with DOM pollution, unreadable markup, and a war against the very language
+            they were writing in.</p>
+
+        <h2>The Copy</h2>
+
+        <p><a href="https://www.smashingmagazine.com/2013/02/the-history-of-the-bem-methodology/" target="_blank" rel="noopener">Smashing Magazine</a>,
+            2013. <a href="https://css-tricks.com/bem-101/" target="_blank" rel="noopener">CSS-Tricks</a>,
+            2015. By 2016, BEM was "best practice." The
+            <a href="https://almanac.httparchive.org/en/2021/css" target="_blank" rel="noopener">HTTP Archive</a>
+            found BEM patterns on 34% of websites by 2021.</p>
+
+        <p>Developers with messy stylesheets saw BEM as discipline. A system that forced
+            structure. What they overlooked: it forced far more complexity than learning
+            to write clean CSS ever would have.</p>
+
+        <h2>The Missing Context</h2>
+
+        <p>The gulf between the original and the copy is not a matter of degree.
+            It is a matter of planet.</p>
+
+        <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Original context: 150 engineers, 100 services, IE6, no scoping. Copy context: 3 developers, 1 project, native scoping in every browser." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .ctx-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .ctx-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .ctx-val { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .ctx-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ctx-box-a { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <!-- Left: Original -->
+            <text class="ctx-val" x="130" y="20" text-anchor="middle">Original (Yandex, 2005)</text>
+            <rect class="ctx-box" x="30" y="35" width="200" height="30"/>
+            <text class="ctx-label" x="130" y="55" text-anchor="middle">150 engineers</text>
+            <rect class="ctx-box" x="30" y="75" width="200" height="30"/>
+            <text class="ctx-label" x="130" y="95" text-anchor="middle">100 services</text>
+            <rect class="ctx-box" x="30" y="115" width="200" height="30"/>
+            <text class="ctx-label" x="130" y="135" text-anchor="middle">Shared global CSS</text>
+            <rect class="ctx-box" x="30" y="155" width="200" height="30"/>
+            <text class="ctx-label" x="130" y="175" text-anchor="middle">IE6. No scoping exists</text>
+            <rect class="ctx-box" x="30" y="195" width="200" height="30"/>
+            <text class="ctx-label" x="130" y="215" text-anchor="middle">Measured perf bottleneck</text>
+            <!-- Right: Copy -->
+            <text class="ctx-val" x="390" y="20" text-anchor="middle">Copy (Everyone, 2016)</text>
+            <rect class="ctx-box-a" x="290" y="35" width="200" height="30"/>
+            <text class="ctx-label" x="390" y="55" text-anchor="middle">3 developers</text>
+            <rect class="ctx-box-a" x="290" y="75" width="200" height="30"/>
+            <text class="ctx-label" x="390" y="95" text-anchor="middle">1 project</text>
+            <rect class="ctx-box-a" x="290" y="115" width="200" height="30"/>
+            <text class="ctx-label" x="390" y="135" text-anchor="middle">Scoped styles built in</text>
+            <rect class="ctx-box-a" x="290" y="155" width="200" height="30"/>
+            <text class="ctx-label" x="390" y="175" text-anchor="middle">CSS Modules, Shadow DOM</text>
+            <rect class="ctx-box-a" x="290" y="195" width="200" height="30"/>
+            <text class="ctx-label" x="390" y="215" text-anchor="middle">Nobody measured</text>
+            <text class="ctx-sub" x="260" y="250" text-anchor="middle">"Best practice" was sufficient.</text>
+        </svg>
+
+        <p>Yandex.Mail's cascade <a href="https://en.bem.info/methodology/history/" target="_blank" rel="noopener">measurably slowed rendering</a>.
+            Flat selectors were a performance decision. Nobody in 2016 ran those benchmarks.
+            "Best practice" was sufficient motivation, which is rather the problem with
+            best practices in general.</p>
+
+        <h2>The Cascade</h2>
+
+        <p>Every methodology has a trajectory. BEM's is particularly instructive because
+            each step defeats the previous one's purpose.</p>
+
+        <svg viewBox="0 0 460 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The BEM cascade: six escalating steps from consistent naming to cascading again via Sass, defeating the entire premise." style="max-width: 460px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cas-label { font: 600 10.5px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cas-note { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cas-line { stroke: var(--accent); stroke-width: 1.5; }
+                .cas-dot { fill: var(--accent); }
+                .cas-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+            </style>
+            <line class="cas-line" x1="30" y1="20" x2="30" y2="360" opacity="0.2"/>
+            <circle class="cas-dot" cx="30" cy="28" r="3"/>
+            <rect class="cas-box" x="44" y="16" width="400" height="26"/>
+            <text class="cas-label" x="52" y="34">"Use BEM for consistent naming"</text>
+            <text class="cas-note" x="452" y="34" text-anchor="end">fair enough</text>
+            <circle class="cas-dot" cx="30" cy="68" r="3"/>
+            <rect class="cas-box" x="44" y="56" width="400" height="26"/>
+            <text class="cas-label" x="52" y="74">credit-card__header__title__shadow--highlighted</text>
+            <text class="cas-note" x="452" y="74" text-anchor="end">longer than the content</text>
+            <circle class="cas-dot" cx="30" cy="108" r="3"/>
+            <rect class="cas-box" x="44" y="96" width="400" height="26"/>
+            <text class="cas-label" x="52" y="114">The DOM fills with underscores and dashes</text>
+            <text class="cas-note" x="452" y="114" text-anchor="end">a wall of punctuation</text>
+            <circle class="cas-dot" cx="30" cy="148" r="3"/>
+            <rect class="cas-box" x="44" y="136" width="400" height="26"/>
+            <text class="cas-label" x="52" y="154">Developers spend more time naming than styling</text>
+            <text class="cas-note" x="452" y="154" text-anchor="end">the methodology tax</text>
+            <circle class="cas-dot" cx="30" cy="188" r="3"/>
+            <rect class="cas-box" x="44" y="176" width="400" height="26"/>
+            <text class="cas-label" x="52" y="194">Teams adopt Sass: &amp;__element, &amp;--modifier</text>
+            <text class="cas-note" x="452" y="194" text-anchor="end">nesting is back</text>
+            <circle class="cas-dot" cx="30" cy="228" r="3"/>
+            <rect class="cas-box" x="44" y="216" width="400" height="26"/>
+            <text class="cas-label" x="52" y="234">They are cascading again. Immediately.</text>
+            <text class="cas-note" x="452" y="234" text-anchor="end">defeating the purpose</text>
+            <!-- Punchline -->
+            <line class="cas-line" x1="30" y1="250" x2="30" y2="290" stroke-dasharray="4 3"/>
+            <text class="cas-label" x="44" y="285">The convention failed its own premise before</text>
+            <text class="cas-label" x="44" y="302">the first Sass file was saved.</text>
+        </svg>
+
+        <p>BEM was adopted to escape the cascade. The industry ground it straight back
+            into one via preprocessors. The moment a team writes <code>&amp;__element</code>
+            in a Sass file, they are nesting selectors. They are cascading. They have rebuilt
+            the thing they were avoiding, only now with
+            <a href="https://www.smashingmagazine.com/2016/06/battling-bem-extended-edition-common-problems-and-how-to-avoid-them/" target="_blank" rel="noopener">eye-gougingly ugly syntax</a>
+            and a preprocessor dependency.</p>
+
+        <h2>The Simpler Answer</h2>
+
+        <p>Nicole Sullivan published
+            <a href="https://github.com/stubbornella/oocss" target="_blank" rel="noopener">OOCSS</a>
+            in 2009. Separate structure from skin. Reuse through composition. No special
+            syntax. No tooling. Just CSS, written with discipline.</p>
+
+        <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BEM versus OOCSS: BEM fights the cascade with elaborate naming. OOCSS works with the cascade through composition." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .vs-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .vs-code { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-family: 'Oxanium', monospace; }
+                .vs-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .vs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .vs-box-a { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <!-- BEM -->
+            <text class="vs-label" x="130" y="20" text-anchor="middle">BEM</text>
+            <rect class="vs-box" x="20" y="30" width="220" height="35"/>
+            <text class="vs-code" x="130" y="52" text-anchor="middle">.card__header--active</text>
+            <rect class="vs-box" x="20" y="75" width="220" height="35"/>
+            <text class="vs-code" x="130" y="97" text-anchor="middle">.card__title--large</text>
+            <rect class="vs-box" x="20" y="120" width="220" height="35"/>
+            <text class="vs-code" x="130" y="142" text-anchor="middle">.card__body--highlighted</text>
+            <text class="vs-sub" x="130" y="175" text-anchor="middle">Fights the cascade</text>
+            <text class="vs-sub" x="130" y="190" text-anchor="middle">One class per state per element</text>
+            <!-- OOCSS -->
+            <text class="vs-label" x="390" y="20" text-anchor="middle">OOCSS</text>
+            <rect class="vs-box-a" x="280" y="30" width="220" height="35"/>
+            <text class="vs-code" x="390" y="52" text-anchor="middle">.card .active</text>
+            <rect class="vs-box-a" x="280" y="75" width="220" height="35"/>
+            <text class="vs-code" x="390" y="97" text-anchor="middle">.card .lg</text>
+            <rect class="vs-box-a" x="280" y="120" width="220" height="35"/>
+            <text class="vs-code" x="390" y="142" text-anchor="middle">.card .highlight</text>
+            <text class="vs-sub" x="390" y="175" text-anchor="middle">Works with the cascade</text>
+            <text class="vs-sub" x="390" y="190" text-anchor="middle">Composable. Reusable. Readable</text>
+        </svg>
+
+        <p>OOCSS works with the cascade. BEM works against it. The difference is not
+            stylistic. It is philosophical: one approach trusts the language, the other
+            assumes it is broken.</p>
+
+        <h2>The Car, Assembled</h2>
+
+        <p>The car dealership analogy deserves more than a passing mention. Let us
+            build one. First in BEM, then in the CSS that exists today.</p>
+
+        <p>The markup, BEM style. Every element encodes its parent in the name.
+            Every variant is a modifier glued to the element it belongs to:</p>
+
+<pre><code>&lt;div class="car car--red-roof--yellow-doors"&gt;
+  &lt;div class="car__engine car__engine--v8"&gt;...&lt;/div&gt;
+  &lt;div class="car__transmission car__transmission--manual"&gt;...&lt;/div&gt;
+  &lt;div class="car__safety car__safety--airbag"&gt;...&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+        <p>The CSS that goes with it:</p>
+
+<pre><code>.car { display: grid; }
+.car--red-roof--yellow-doors { /* this exact combination */ }
+.car--red-roof--blue-doors { /* and this one */ }
+.car--black-roof--yellow-doors { /* and this one */ }
+.car__engine { /* base engine */ }
+.car__engine--v8 { /* v8 variant */ }
+.car__engine--turbo { /* turbo variant */ }
+.car__engine--v8-turbo { /* wait, both? new modifier */ }
+.car__transmission { /* base gearbox */ }
+.car__transmission--manual { /* manual variant */ }
+.car__safety { /* base safety */ }
+.car__safety--airbag { /* airbag variant */ }
+.car__safety--airbag--abs { /* both? another modifier */ }</code></pre>
+
+        <p>Twelve selectors and counting. Flat. No cascade. Every combination of
+            variants requires its own modifier because BEM has no composition model.
+            Red roof with blue doors? New modifier. V8 with turbo? New modifier.
+            The naming committee is in permanent session. This example exaggerates
+            slightly for clarity, but anyone who has inherited a mature BEM codebase
+            knows the truth: production is worse.</p>
+
+        <p>Now the same car in modern CSS. The markup first:</p>
+
+<pre><code>&lt;div class="car"&gt;
+  &lt;div class="engine v8"&gt;...&lt;/div&gt;
+  &lt;div class="transmission manual"&gt;...&lt;/div&gt;
+  &lt;div class="safety airbag"&gt;...&lt;/div&gt;
+  &lt;div class="roof red"&gt;...&lt;/div&gt;
+  &lt;div class="doors yellow metallic"&gt;...&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+        <p>Reads like a sentence. Now the CSS, with <code>@layer</code>,
+            native nesting, and <code>@scope</code>:</p>
+
+<pre><code>@layer components {
+  .car {
+    display: grid;
+
+    .engine       { /* base engine layout */ }
+    .transmission { /* base gearbox */ }
+    .safety       { /* base safety systems */ }
+    .roof         { /* base roof */ }
+    .doors        { /* base doors */ }
+  }
+}
+
+@layer variants {
+  .v8     { /* v8 power delivery */ }
+  .manual { /* manual shift pattern */ }
+  .airbag { /* airbag deployment zones */ }
+}
+
+@layer themes {
+  .red      { /* red paint */ }
+  .yellow   { /* yellow paint */ }
+  .metallic { /* metallic finish */ }
+}
+
+@scope (.car) {
+  :scope { /* scoped to this component */ }
+  .engine { /* cannot leak outside .car */ }
+}</code></pre>
+
+        <p>Three layers. Structure in <code>components</code>, options in
+            <code>variants</code>, paint in <code>themes</code>. The cascade resolves
+            precedence by layer order, not by selector weight or naming gymnastics.
+            <code>@scope</code> guarantees <code>.engine</code> inside <code>.car</code>
+            cannot collide with <code>.engine</code> anywhere else. Native nesting
+            keeps context visible without flattening it into underscores.</p>
+
+        <p>Add a turbo option? One class: <code>.turbo</code>, in the
+            <code>variants</code> layer. No naming committee. No methodology.
+            Just CSS, written as CSS.</p>
+
+        <h2>The Timeline</h2>
+
+        <p>The history is rather telling. BEM arrived when nothing else existed. Then
+            everything else arrived. BEM stayed.</p>
+
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline: BEM development begins 2005, OOCSS published 2009, CSS Modules 2015, Shadow DOM 2016, CSS @layer 2022, native nesting 2023, @scope 2025. BEM adoption peaks while alternatives multiply." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .tl-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tl-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .tl-year { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .tl-line { stroke: var(--border); stroke-width: 1; }
+                .tl-dot { fill: var(--accent); }
+                .tl-dot-alt { fill: var(--muted); }
+            </style>
+            <!-- Spine -->
+            <line class="tl-line" x1="60" y1="20" x2="60" y2="320"/>
+            <!-- 2005 -->
+            <circle class="tl-dot" cx="60" cy="30" r="5"/>
+            <text class="tl-year" x="80" y="34">2005</text>
+            <text class="tl-label" x="130" y="34">BEM development begins at Yandex</text>
+            <!-- 2009 -->
+            <circle class="tl-dot-alt" cx="60" cy="70" r="5"/>
+            <text class="tl-year" x="80" y="74">2009</text>
+            <text class="tl-label" x="130" y="74">Nicole Sullivan publishes OOCSS</text>
+            <text class="tl-sub" x="130" y="90">The simpler answer. Nobody noticed.</text>
+            <!-- 2013 -->
+            <circle class="tl-dot" cx="60" cy="120" r="5"/>
+            <text class="tl-year" x="80" y="124">2013</text>
+            <text class="tl-label" x="130" y="124">Smashing Magazine introduces BEM to the West</text>
+            <!-- 2015 -->
+            <circle class="tl-dot-alt" cx="60" cy="160" r="5"/>
+            <text class="tl-year" x="80" y="164">2015</text>
+            <text class="tl-label" x="130" y="164">CSS Modules ship</text>
+            <text class="tl-sub" x="130" y="180">Scoping solved. Natively.</text>
+            <!-- 2016 -->
+            <circle class="tl-dot-alt" cx="60" cy="200" r="5"/>
+            <text class="tl-year" x="80" y="204">2016</text>
+            <text class="tl-label" x="130" y="204">Shadow DOM v1</text>
+            <!-- 2022 -->
+            <circle class="tl-dot-alt" cx="60" cy="240" r="5"/>
+            <text class="tl-year" x="80" y="244">2022</text>
+            <text class="tl-label" x="130" y="244">@layer reaches Baseline</text>
+            <!-- 2023 -->
+            <circle class="tl-dot-alt" cx="60" cy="270" r="5"/>
+            <text class="tl-year" x="80" y="274">2023</text>
+            <text class="tl-label" x="130" y="274">CSS Nesting ships in all browsers</text>
+            <!-- 2025 -->
+            <circle class="tl-dot-alt" cx="60" cy="300" r="5"/>
+            <text class="tl-year" x="80" y="304">2025</text>
+            <text class="tl-label" x="130" y="304">@scope reaches Baseline</text>
+            <text class="tl-sub" x="130" y="320">The original problem is solved. Five times over.</text>
+        </svg>
+
+        <p>By 2025, CSS has <a href="https://frontendmasters.com/blog/how-to-scope-css-now-that-its-baseline/" target="_blank" rel="noopener"><code>@scope</code></a>,
+            <a href="https://caniuse.com/css-cascade-layers" target="_blank" rel="noopener"><code>@layer</code></a>,
+            <code>:where()</code>,
+            <a href="https://caniuse.com/css-nesting" target="_blank" rel="noopener">native nesting</a>,
+            and <a href="https://glenmaddern.com/articles/css-modules" target="_blank" rel="noopener">Modules</a>.
+            The scoping problem that BEM was built to work around has been solved natively,
+            multiple times, by the platform itself.</p>
+
+        <h2>The Irony</h2>
+
+        <p>The "C" in CSS stands for Cascading. BEM treats that as a defect.
+            That is not simplification. That is thinking in the wrong direction entirely.</p>
+
+        <p>In 2005, it was the only direction available. In 2026, it is a deliberate
+            choice to ignore twenty years of language evolution. The naming convention
+            was copied. The problem it solved was not.</p>
+
+        <p>BEM was over-engineered at its origin and bloat everywhere else. The industry
+            copied the complexity and never looked at what was already there.</p>
+
+        <blockquote>
+            <p>BEM solved a real problem for 150 engineers sharing one CSS scope
+                across 100 services on IE6. The critique is not the original. It is
+                the copy. If your team has three developers and one project, you do not
+                need a naming convention designed for a Russian search engine's
+                global stylesheet. You need to learn CSS.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The car dealership analogy.</strong>
+                BEM: <code>car__v8__manual__airbag--red-roof--yellow-doors</code>.
+                Fifty pre-built models for every combination. OOCSS: <code>.car .v8 .red-roof</code>.
+                Modular options, individually composable. BEM's
+                <a href="https://en.bem.info/methodology/history/" target="_blank" rel="noopener">own documentation</a>
+                concedes the point rather gracefully: "The BEM that we use now isn't the
+                only right solution to everything." Rather telling, that.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

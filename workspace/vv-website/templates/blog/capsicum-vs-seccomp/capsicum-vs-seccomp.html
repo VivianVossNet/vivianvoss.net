@@ -1,26 +1,26 @@
 {! extends "../../_base.html" | slotlist !}
 
-{( slot title )}Capsicum vs seccomp: The Door and the Bouncer &#x2014; Vivian Voss{( endslot )}
+{( slot title )}Capsicum vs seccomp: Process Sandboxing &#x2014; Vivian Voss{( endslot )}
 
 {( slot meta )}
-<meta name="description" content="Capsicum enters capability mode with one syscall and never leaves. seccomp filters syscalls through a BPF programme. Same browser, same problem, two philosophies. One locks the door. The other posts a bouncer.">
+<meta name="description" content="A compromised process inherits the full authority of the user who launched it. Two operating systems fixed this with opposite philosophies. One removed the doors. The other posted a bouncer.">
 {( endslot )}
 
 {( slot canonical )}/blog/capsicum-vs-seccomp{( endslot )}
 
-{( slot og-title )}Capsicum vs seccomp: The Door and the Bouncer &#x2014; Vivian Voss{( endslot )}
+{( slot og-title )}Capsicum vs seccomp: Process Sandboxing &#x2014; Vivian Voss{( endslot )}
 
-{( slot og-desc )}Capsicum enters capability mode with one syscall and never leaves. seccomp filters syscalls through a BPF programme. One locks the door. The other posts a bouncer.{( endslot )}
+{( slot og-desc )}A compromised process inherits the full authority of the user who launched it. Two operating systems fixed this with opposite philosophies. One removed the doors. The other posted a bouncer.{( endslot )}
 
 {( slot jsonld )}<script type="application/ld+json">{
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": "Capsicum vs seccomp: The Door and the Bouncer",
-    "datePublished": "2026-02-17",
+    "headline": "Capsicum vs seccomp: Process Sandboxing",
+    "datePublished": "2026-03-02",
     "author": { "@id": "https://vivianvoss.net/#person" },
     "publisher": { "@id": "https://vivianvoss.net/#person" },
     "url": "https://vivianvoss.net/blog/capsicum-vs-seccomp",
-    "description": "Capsicum enters capability mode with one syscall and never leaves. seccomp filters syscalls through a BPF programme. Same browser, same problem, two philosophies. One locks the door. The other posts a bouncer.",
+    "description": "A compromised process inherits the full authority of the user who launched it. Two operating systems fixed this with opposite philosophies. One removed the doors. The other posted a bouncer.",
     "inLanguage": "en-GB",
     "isPartOf": { "@id": "https://vivianvoss.net/#website" }
 }</script>{( endslot )}
@@ -29,11 +29,11 @@
 <article class="vv-article">
     <header class="vv-article-header">
         <p class="vv-article-meta">
-            <time datetime="2026-02-17">17 February 2026</time>
+            <time datetime="2026-03-02">02 March 2026</time>
             <span aria-hidden="true">&#x25A0;</span>
             <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
         </p>
-        <h1>Capsicum vs seccomp: The Door and the Bouncer</h1>
+        <h1>Capsicum vs seccomp: Process Sandboxing</h1>
         <div class="vv-pills">
             <span class="vv-pill">freebsd</span>
             <span class="vv-pill">linux</span>
@@ -45,42 +45,101 @@
     <div class="vv-article-body">
         <p><em>The Unix Way</em> &#x25A0; Episode 06</p>
 
+        <h2>The Inheritance Problem</h2>
+
         <p>
-            A process is compromised. A buffer overflow, a crafted input, a dependency
-            with ambitions beyond its station. The attacker now controls execution. The
-            question is not whether the process can be exploited. The question is what
-            the process can reach once it has been.
+            A process is compromised. A buffer overflow, a malformed packet, a dependency
+            with quiet ambitions. The attacker now controls execution. What happens next
+            depends entirely on what the process can reach, and on a stock Unix system,
+            the answer has been the same since 1969: everything the user can touch.
+            Every file. Every socket. Every device. The compromised process inherits the
+            full ambient authority of the user who launched it.
         </p>
 
         <p>
-            On a stock Unix system, the answer is: everything the user can touch. Open
-            files, network sockets, the filesystem, other processes. A compromised
-            <code>tcpdump</code> can read your home directory. A compromised
-            <code>dhclient</code> can open new network connections. The sandbox does
-            not exist until someone builds one.
+            This is not a bug. It is the original Unix security model, and it served
+            admirably when "users" meant researchers at Bell Labs who could be trusted
+            not to run hostile code from the internet. The internet, regrettably, had
+            other plans.
         </p>
 
         <p>
-            Two operating systems built two sandboxes. One locked the door. The other
-            posted a bouncer.
+            Two operating systems decided to fix this. They chose opposite philosophies.
+            One removed the doors from the room. The other hired a bouncer and handed
+            him a clipboard.
         </p>
 
-        <h2>The Door: Capsicum</h2>
+        <!-- SVG 1: The Ambient Authority Problem -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 300" role="img" aria-label="The ambient authority problem: a compromised process inherits full user permissions to filesystem, network, processes, and devices." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .aa-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; }
+                .aa-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .aa-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .aa-mono { font: 400 10.5px/1 ui-monospace, monospace; fill: var(--text); }
+                .aa-danger { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .aa-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .aa-box-danger { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+            <defs>
+                <marker id="aa-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <text class="aa-title" x="260" y="20" text-anchor="middle" fill="var(--accent)">The Ambient Authority Problem</text>
+            <text class="aa-muted" x="260" y="38" text-anchor="middle">A compromised process inherits everything the user can touch</text>
+
+            <!-- Compromised process -->
+            <rect class="aa-box-danger" x="180" y="56" width="160" height="40"/>
+            <text class="aa-mono" x="260" y="72" text-anchor="middle">tcpdump (compromised)</text>
+            <text class="aa-muted" x="260" y="88" text-anchor="middle">runs as root</text>
+
+            <!-- Arrows to resources -->
+            <line x1="180" y1="80" x2="80" y2="130" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#aa-arr)"/>
+            <line x1="220" y1="96" x2="170" y2="130" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#aa-arr)"/>
+            <line x1="300" y1="96" x2="350" y2="130" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#aa-arr)"/>
+            <line x1="340" y1="80" x2="440" y2="130" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#aa-arr)"/>
+
+            <!-- Resource boxes -->
+            <rect class="aa-box-danger" x="20" y="132" width="120" height="50"/>
+            <text class="aa-label" x="80" y="153" text-anchor="middle">Filesystem</text>
+            <text class="aa-muted" x="80" y="170" text-anchor="middle">/etc/shadow, ~/.ssh/</text>
+
+            <rect class="aa-box-danger" x="150" y="132" width="100" height="50"/>
+            <text class="aa-label" x="200" y="153" text-anchor="middle">Network</text>
+            <text class="aa-muted" x="200" y="170" text-anchor="middle">New sockets, DNS</text>
+
+            <rect class="aa-box-danger" x="260" y="132" width="120" height="50"/>
+            <text class="aa-label" x="320" y="153" text-anchor="middle">Processes</text>
+            <text class="aa-muted" x="320" y="170" text-anchor="middle">fork(), exec()</text>
+
+            <rect class="aa-box-danger" x="390" y="132" width="110" height="50"/>
+            <text class="aa-label" x="445" y="153" text-anchor="middle">Devices</text>
+            <text class="aa-muted" x="445" y="170" text-anchor="middle">/dev/*, IPC</text>
+
+            <!-- The problem statement -->
+            <line x1="40" y1="206" x2="480" y2="206" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="aa-danger" x="260" y="230" text-anchor="middle">tcpdump needs: 1 capture device + 1 output file</text>
+            <text class="aa-muted" x="260" y="248" text-anchor="middle">tcpdump gets: everything root can touch</text>
+            <text class="aa-muted" x="260" y="270" text-anchor="middle">The gap between "needs" and "gets" is the attack surface.</text>
+            <text class="aa-muted" x="260" y="290" text-anchor="middle">Unix has operated this way since 1969.</text>
+        </svg>
+
+        <h2>FreeBSD: Capsicum</h2>
 
         <p>
             In 2010, Robert Watson and Jonathan Anderson at the
-            <a href="https://www.cl.cam.ac.uk/research/security/capsicum/" target="_blank" rel="noopener">University of Cambridge</a>
-            published a paper on capability-based sandboxing. The core insight was
-            disarmingly simple: rather than enumerating what a process may not do,
-            remove everything and let it keep only what it already has. The result was
-            <a href="https://man.freebsd.org/cgi/man.cgi?query=capsicum&sektion=4" target="_blank" rel="noopener">Capsicum</a>,
-            integrated into FreeBSD 9.0 in January 2012.
+            <a href="https://www.usenix.org/conference/usenixsecurity10/capsicum-practical-capabilities-unix" target="_blank" rel="noopener">University of Cambridge</a>
+            presented a paper that won Best Student Paper at USENIX Security.
+            The core insight was disarmingly simple: rather than listing what a
+            process may not do, remove everything and hand back precisely what it needs.
         </p>
 
         <p>
-            The API is two functions. <code>cap_enter()</code> places the process into
-            capability mode. <code>cap_rights_limit()</code> restricts individual file
-            descriptors to specific operations. That is the entire surface area.
+            The result was
+            <a href="https://www.cl.cam.ac.uk/research/security/capsicum/freebsd.html" target="_blank" rel="noopener">Capsicum</a>,
+            compiled into FreeBSD 10.0 by default in 2014. The API is one function
+            that matters: <code>cap_enter()</code>. One syscall. Irreversible.
         </p>
 
         <pre><code>#include &lt;sys/capsicum.h&gt;
@@ -94,67 +153,54 @@ int main(void)
     cap_rights_init(&amp;rights, CAP_WRITE, CAP_SEEK);
     cap_rights_limit(fd, &amp;rights);
 
-    /* Enter capability mode. No return. */
+    /* Enter capability mode. No return. Ever. */
     cap_enter();
 
     /*
-     * From here:
-     *   - No open(), no openat() to global paths
-     *   - No socket(), no connect()
-     *   - No fork(), no exec()
-     *   - fd can write and seek. Nothing else.
-     *   - This is permanent.
+     * The process loses all access to global namespaces.
+     * No filesystem. No new sockets. No new processes.
+     * What remains: only the file descriptors already held,
+     * with rights explicitly granted above.
      */
 
-    write_packets(fd);  /* The only thing left to do */
+    write_packets(fd);
     return 0;
 }</code></pre>
 
         <p>
-            The word &#x201C;permanent&#x201D; is not rhetorical. <code>cap_enter()</code>
-            is irreversible. There is no <code>cap_exit()</code>. There is no escalation
-            path, no privilege restoration, no &#x201C;undo&#x201D; for processes that ask
-            nicely. The kernel sets a flag. The flag does not unset. If the process is
-            compromised after <code>cap_enter()</code>, the attacker inherits a process
-            that cannot open files, cannot create sockets, cannot fork children, cannot
-            reach the global namespace. They own a room with no doors.
+            There is no <code>cap_exit()</code>. There is no escalation path, no
+            privilege restoration, no polite request form for processes that would
+            like their authority back. The kernel sets a flag. The flag does not unset.
+            The process enters a world that contains precisely its open file descriptors,
+            restricted to the operations explicitly granted. The filesystem, the network,
+            the process table: they do not merely become inaccessible. For the sandboxed
+            process, they cease to exist.
         </p>
 
         <p>
-            The philosophy is deny-by-default, taken to its logical conclusion. You do
-            not enumerate the things a process may not do. You remove the ability to do
-            anything at all, then hand back precisely the capabilities it needs. The
-            process starts with the universe and collapses to a point.
+            The model is subtraction. Start with everything, remove everything, hand
+            back precisely what is needed. The process cannot escape. Not because a
+            filter stops it, but because the door no longer exists. One might observe
+            that this is rather difficult to bypass.
         </p>
 
-        <p>
-            For operations that genuinely require privilege (DNS resolution, for instance),
-            FreeBSD provides
-            <a href="https://man.freebsd.org/cgi/man.cgi?query=libcasper&sektion=3" target="_blank" rel="noopener">Casper</a>
-            (libcasper): a service framework that delegates privileged operations to
-            separate, sandboxed helper processes. The main process enters capability mode.
-            When it needs DNS, it asks a Casper service that has been granted precisely
-            that capability and nothing else. Privilege does not leak. It is delegated
-            to a specialist under the same constraints.
-        </p>
-
-        <h2>The Bouncer: seccomp</h2>
+        <h2>Linux: seccomp-bpf</h2>
 
         <p>
             On Linux, the answer arrived in two stages. In 2005, Andrea Arcangeli added
             <a href="https://man7.org/linux/man-pages/man2/seccomp.2.html" target="_blank" rel="noopener">seccomp</a>
-            strict mode to Linux 2.6.12. A process in strict mode could call precisely
-            four syscalls: <code>read</code>, <code>write</code>, <code>exit</code>, and
-            <code>sigreturn</code>. Anything else killed the process immediately. Elegant,
-            certainly. Also almost completely unusable for real-world applications.
+            strict mode: four syscalls permitted (<code>read</code>, <code>write</code>,
+            <code>exit</code>, <code>sigreturn</code>), everything else killed the process.
+            Elegant, certainly. Also almost completely unusable for anything that needed
+            to do actual work.
         </p>
 
         <p>
-            In 2012, Will Drewry introduced seccomp-bpf in Linux 3.5. Instead of the
-            binary choice between &#x201C;four syscalls&#x201D; and &#x201C;all syscalls&#x201D;,
-            processes could now attach a BPF (Berkeley Packet Filter) programme that
-            inspected each syscall and decided whether to allow, deny, log, or kill.
-            This was genuinely useful. It was also a fundamentally different philosophy.
+            In 2012, Will Drewry introduced
+            <a href="https://lwn.net/Articles/498231/" target="_blank" rel="noopener">seccomp-bpf</a>
+            in Linux 3.5: a BPF programme that inspects every syscall at runtime and
+            decides whether to allow, deny, or kill. This was genuinely useful. It was
+            also a fundamentally different philosophy.
         </p>
 
         <pre><code>#include &lt;seccomp.h&gt;
@@ -169,7 +215,6 @@ int main(void)
     seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
     seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(close), 0);
     seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0);
-    seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(lseek), 0);
 
     /* Load the filter */
     seccomp_load(ctx);
@@ -178,8 +223,7 @@ int main(void)
      * From here:
      *   - Only listed syscalls work
      *   - But: all existing FDs retain full rights
-     *   - An allowed read() can read any open FD
-     *   - An allowed write() can write any open FD
+     *   - An allowed read() can read ANY open FD
      *   - The filter checks the call, not the target
      */
 
@@ -188,376 +232,478 @@ int main(void)
 }</code></pre>
 
         <p>
-            seccomp-bpf filters syscalls. It does not restrict file descriptors. A process
-            under seccomp can still read from any file descriptor it holds, write to any
-            socket it has open, and perform any operation the allowed syscalls permit on
-            any resource it can reach. The bouncer checks your name at the door. He does
-            not check what you do once you are inside.
+            The model is filtration. The process retains full ambient authority.
+            A filter sits between the process and the kernel, checking each call
+            against a list. The bouncer checks your name at the door. He does not
+            check what you do once you are inside.
         </p>
 
         <p>
-            Docker&#x2019;s
-            <a href="https://docs.docker.com/engine/security/seccomp/" target="_blank" rel="noopener">default seccomp profile</a>
-            blocks approximately 44 of the 300+ available syscalls. That is a blocklist.
-            It says: &#x201C;You may do everything except these specific things.&#x201D;
-            The things it blocks are genuinely dangerous (<code>mount</code>,
-            <code>reboot</code>, <code>kexec_load</code>). But the 260 things it permits
-            are not individually evaluated. They are allowed because they were not
-            explicitly forbidden. The difference between an allowlist and a blocklist is
-            the difference between &#x201C;you may enter rooms 3 and 7&#x201D; and
-            &#x201C;you may enter any room except 12 and 15&#x201D;.
+            <a href="https://docs.docker.com/engine/security/seccomp/" target="_blank" rel="noopener">Docker's default seccomp profile</a>
+            blocks approximately 44 of 300+ syscalls. The remaining 256 pass through.
+            The difference between an allowlist and a blocklist is the difference
+            between "you may enter rooms 3 and 7" and "you may enter any room
+            except 12 and 15." One of these gets more dangerous as the building
+            adds floors.
         </p>
 
-        <!-- SVG 1: Capsicum (door closes) vs seccomp (bouncer checks list) -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400" role="img" aria-label="Capsicum: process enters capability mode, all doors close permanently, only existing file descriptors remain. seccomp: bouncer checks syscalls against a list, but everything behind the list is still accessible." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+        <!-- SVG 2: Capsicum vs seccomp architecture -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 440" role="img" aria-label="Capsicum removes access entirely: no filesystem, no sockets, no processes. seccomp filters syscalls through a BPF checklist but leaves all file descriptors fully accessible." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
             <style>
-                .capsicum-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
-                .capsicum-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
-                .capsicum-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
-                .capsicum-mono { font: 400 10.5px/1 ui-monospace, monospace; fill: var(--text); }
-                .capsicum-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
-                .capsicum-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
-                .capsicum-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
-                .capsicum-arrow { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#capsicum-arr-dim); }
-                .capsicum-arrow-accent { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#capsicum-arr); }
-                .capsicum-blocked { stroke: var(--muted); stroke-width: 1.5; opacity: 0.5; }
+                .cs-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; }
+                .cs-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cs-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cs-mono { font: 400 10.5px/1 ui-monospace, monospace; fill: var(--text); }
+                .cs-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .cs-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .cs-blocked { stroke: var(--accent); stroke-width: 1.5; opacity: 0.6; }
             </style>
             <defs>
-                <marker id="capsicum-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                <marker id="cs-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
                     <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
                 </marker>
-                <marker id="capsicum-arr-dim" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                <marker id="cs-arr-dim" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
                     <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
                 </marker>
             </defs>
 
             <!-- Left: Capsicum -->
-            <text class="capsicum-title" x="130" y="18" text-anchor="middle" fill="var(--accent)">Capsicum: the door</text>
-            <text class="capsicum-muted" x="130" y="34" text-anchor="middle">cap_enter() = permanent. No exit.</text>
+            <text class="cs-title" x="135" y="20" text-anchor="middle" fill="var(--accent)">Capsicum</text>
+            <text class="cs-muted" x="135" y="36" text-anchor="middle">Subtraction model</text>
 
-            <!-- Process box -->
-            <rect class="capsicum-box-accent" x="50" y="50" width="160" height="36"/>
-            <text class="capsicum-mono" x="130" y="73" text-anchor="middle">cap_enter()</text>
+            <rect class="cs-box-accent" x="55" y="50" width="160" height="36"/>
+            <text class="cs-mono" x="135" y="73" text-anchor="middle">cap_enter()</text>
 
-            <!-- Doors that close -->
-            <rect class="capsicum-box-accent" x="30" y="100" width="90" height="28"/>
-            <text class="capsicum-muted" x="75" y="119" text-anchor="middle">Filesystem</text>
-            <line class="capsicum-blocked" x1="30" y1="100" x2="120" y2="128"/>
-            <line class="capsicum-blocked" x1="120" y1="100" x2="30" y2="128"/>
+            <!-- Crossed-out resources -->
+            <rect class="cs-box-accent" x="30" y="100" width="100" height="28"/>
+            <text class="cs-muted" x="80" y="119" text-anchor="middle">Filesystem</text>
+            <line class="cs-blocked" x1="30" y1="100" x2="130" y2="128"/>
+            <line class="cs-blocked" x1="130" y1="100" x2="30" y2="128"/>
 
-            <rect class="capsicum-box-accent" x="130" y="100" width="90" height="28"/>
-            <text class="capsicum-muted" x="175" y="119" text-anchor="middle">Sockets</text>
-            <line class="capsicum-blocked" x1="130" y1="100" x2="220" y2="128"/>
-            <line class="capsicum-blocked" x1="220" y1="100" x2="130" y2="128"/>
+            <rect class="cs-box-accent" x="140" y="100" width="100" height="28"/>
+            <text class="cs-muted" x="190" y="119" text-anchor="middle">Network</text>
+            <line class="cs-blocked" x1="140" y1="100" x2="240" y2="128"/>
+            <line class="cs-blocked" x1="240" y1="100" x2="140" y2="128"/>
 
-            <rect class="capsicum-box-accent" x="30" y="138" width="90" height="28"/>
-            <text class="capsicum-muted" x="75" y="157" text-anchor="middle">Processes</text>
-            <line class="capsicum-blocked" x1="30" y1="138" x2="120" y2="166"/>
-            <line class="capsicum-blocked" x1="120" y1="138" x2="30" y2="166"/>
+            <rect class="cs-box-accent" x="30" y="138" width="100" height="28"/>
+            <text class="cs-muted" x="80" y="157" text-anchor="middle">Processes</text>
+            <line class="cs-blocked" x1="30" y1="138" x2="130" y2="166"/>
+            <line class="cs-blocked" x1="130" y1="138" x2="30" y2="166"/>
 
-            <rect class="capsicum-box-accent" x="130" y="138" width="90" height="28"/>
-            <text class="capsicum-muted" x="175" y="157" text-anchor="middle">Global NS</text>
-            <line class="capsicum-blocked" x1="130" y1="138" x2="220" y2="166"/>
-            <line class="capsicum-blocked" x1="220" y1="138" x2="130" y2="166"/>
+            <rect class="cs-box-accent" x="140" y="138" width="100" height="28"/>
+            <text class="cs-muted" x="190" y="157" text-anchor="middle">Global NS</text>
+            <line class="cs-blocked" x1="140" y1="138" x2="240" y2="166"/>
+            <line class="cs-blocked" x1="240" y1="138" x2="140" y2="166"/>
 
-            <!-- What remains -->
-            <text class="capsicum-value" x="130" y="192" text-anchor="middle">What remains:</text>
-            <rect class="capsicum-box-accent" x="40" y="202" width="180" height="28"/>
-            <text class="capsicum-label" x="130" y="221" text-anchor="middle">Existing FDs (restricted)</text>
-            <text class="capsicum-muted" x="130" y="250" text-anchor="middle">Write-only. Seek-only. Read-only.</text>
-            <text class="capsicum-muted" x="130" y="266" text-anchor="middle">Per FD. Per operation. Permanent.</text>
+            <!-- What survives -->
+            <text class="cs-value" x="135" y="196" text-anchor="middle">What survives:</text>
+            <rect class="cs-box-accent" x="35" y="206" width="200" height="32"/>
+            <text class="cs-label" x="135" y="227" text-anchor="middle">Existing FDs (restricted)</text>
+            <text class="cs-muted" x="135" y="256" text-anchor="middle">Per FD. Per operation. Permanent.</text>
+            <text class="cs-muted" x="135" y="272" text-anchor="middle">The door does not exist.</text>
 
             <!-- Right: seccomp -->
-            <text class="capsicum-title" x="390" y="18" text-anchor="middle" fill="var(--muted)">seccomp: the bouncer</text>
-            <text class="capsicum-muted" x="390" y="34" text-anchor="middle">BPF filter checks each syscall</text>
+            <text class="cs-title" x="405" y="20" text-anchor="middle" fill="var(--muted)">seccomp-bpf</text>
+            <text class="cs-muted" x="405" y="36" text-anchor="middle">Filtration model</text>
 
-            <!-- Bouncer -->
-            <rect class="capsicum-box" x="310" y="50" width="160" height="36"/>
-            <text class="capsicum-mono" x="390" y="73" text-anchor="middle">seccomp_load()</text>
+            <rect class="cs-box" x="325" y="50" width="160" height="36"/>
+            <text class="cs-mono" x="405" y="73" text-anchor="middle">seccomp_load()</text>
 
-            <!-- The list -->
-            <rect class="capsicum-box" x="310" y="100" width="160" height="110"/>
-            <text class="capsicum-label" x="390" y="118" text-anchor="middle">Syscall checklist</text>
+            <!-- The checklist -->
+            <rect class="cs-box" x="310" y="100" width="190" height="138"/>
+            <text class="cs-label" x="405" y="120" text-anchor="middle">BPF syscall checklist</text>
 
-            <text class="capsicum-muted" x="330" y="138" text-anchor="start">read()</text>
-            <text class="capsicum-value" x="450" y="138" text-anchor="end">allow</text>
-            <text class="capsicum-muted" x="330" y="154" text-anchor="start">write()</text>
-            <text class="capsicum-value" x="450" y="154" text-anchor="end">allow</text>
-            <text class="capsicum-muted" x="330" y="170" text-anchor="start">mount()</text>
-            <text class="capsicum-muted" x="450" y="170" text-anchor="end">kill</text>
-            <text class="capsicum-muted" x="330" y="186" text-anchor="start">reboot()</text>
-            <text class="capsicum-muted" x="450" y="186" text-anchor="end">kill</text>
-            <text class="capsicum-muted" x="330" y="202" text-anchor="start">...</text>
+            <text class="cs-muted" x="330" y="140" text-anchor="start">read()</text>
+            <text class="cs-value" x="480" y="140" text-anchor="end">allow</text>
+            <text class="cs-muted" x="330" y="158" text-anchor="start">write()</text>
+            <text class="cs-value" x="480" y="158" text-anchor="end">allow</text>
+            <text class="cs-muted" x="330" y="176" text-anchor="start">mount()</text>
+            <text class="cs-muted" x="480" y="176" text-anchor="end">kill</text>
+            <text class="cs-muted" x="330" y="194" text-anchor="start">reboot()</text>
+            <text class="cs-muted" x="480" y="194" text-anchor="end">kill</text>
+            <text class="cs-muted" x="330" y="212" text-anchor="start">new_syscall_v7()</text>
+            <text class="cs-muted" x="480" y="212" text-anchor="end">???</text>
+            <text class="cs-muted" x="330" y="230" text-anchor="start">...</text>
 
             <!-- What remains -->
-            <text class="capsicum-muted" x="390" y="232" text-anchor="middle" style="fill: var(--muted);">What remains:</text>
-            <rect class="capsicum-box" x="310" y="242" width="160" height="28"/>
-            <text class="capsicum-label" x="390" y="261" text-anchor="middle">All FDs, full rights</text>
-            <text class="capsicum-muted" x="390" y="290" text-anchor="middle">read() allowed = read anything.</text>
-            <text class="capsicum-muted" x="390" y="306" text-anchor="middle">write() allowed = write anything.</text>
-            <text class="capsicum-muted" x="390" y="322" text-anchor="middle">The call is checked. Not the target.</text>
+            <text class="cs-muted" x="405" y="258" text-anchor="middle" style="fill: var(--muted);">What survives:</text>
+            <rect class="cs-box" x="310" y="268" width="190" height="32"/>
+            <text class="cs-label" x="405" y="289" text-anchor="middle">All FDs, full rights</text>
+            <text class="cs-muted" x="405" y="318" text-anchor="middle">read() allowed = read anything.</text>
+            <text class="cs-muted" x="405" y="334" text-anchor="middle">The call is checked. Not the target.</text>
 
             <!-- Bottom summary -->
-            <line x1="20" y1="350" x2="500" y2="350" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
-            <text class="capsicum-value" x="130" y="374" text-anchor="middle">Removes access</text>
-            <text class="capsicum-muted" x="390" y="374" text-anchor="middle">Filters calls</text>
-            <text class="capsicum-muted" x="260" y="394" text-anchor="middle">One locks the room. The other checks a list at the entrance.</text>
+            <line x1="20" y1="360" x2="520" y2="360" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="cs-value" x="135" y="386" text-anchor="middle">Removes access</text>
+            <text class="cs-muted" x="405" y="386" text-anchor="middle">Filters calls</text>
+            <text class="cs-muted" x="135" y="406" text-anchor="middle">1 syscall to enter</text>
+            <text class="cs-muted" x="405" y="406" text-anchor="middle">BPF programme per process</text>
+            <text class="cs-muted" x="270" y="432" text-anchor="middle">One locks the room. The other checks a list at the entrance.</text>
         </svg>
 
-        <h2>The Chromium Test</h2>
+        <h2>The Same Browser, Two Philosophies</h2>
 
         <p>
             The most instructive comparison is not theoretical. It is Chromium.
         </p>
 
         <p>
-            Every web browser faces the same problem: rendering untrusted content from the
-            internet inside a process that has access to the local system. The solution,
-            universally, is sandboxing. Chromium sandboxes its renderer processes so that
-            a compromised tab cannot read your files, steal your cookies, or pivot to
-            the network.
+            Every web browser faces the same threat: rendering untrusted content from
+            the internet inside a process that has access to the local system. The
+            solution, universally, is sandboxing. Chromium sandboxes its renderer
+            processes so that a compromised tab cannot read your files, steal your
+            session cookies, or pivot to the network.
         </p>
 
         <p>
             On FreeBSD,
-            <a href="https://wiki.freebsd.org/Chromium" target="_blank" rel="noopener">Chromium</a>
-            uses Capsicum. The renderer process opens the resources it needs (fonts, shared
-            memory segments, IPC channels to the browser process), then calls
-            <code>cap_enter()</code>. From that moment, the renderer exists in a world
-            that contains precisely: its open file descriptors, restricted to the operations
-            it requires. No filesystem. No network. No new processes. The attacker who
-            compromises a renderer tab on FreeBSD inherits a process that can talk to the
-            browser over a pipe and draw pixels. Nothing else exists.
+            <a href="https://www.cl.cam.ac.uk/research/security/capsicum/freebsd.html" target="_blank" rel="noopener">Chromium uses Capsicum</a>.
+            The renderer opens the resources it needs (fonts, shared memory, IPC
+            channels to the browser process), then calls <code>cap_enter()</code>.
+            From that moment, the renderer exists in a world that contains precisely
+            its open file descriptors, restricted to the operations it requires.
+            An attacker who compromises a renderer tab inherits a process that can
+            talk to the browser over a pipe and draw pixels. Nothing else exists.
         </p>
 
         <p>
             On Linux,
-            <a href="https://chromium.googlesource.com/chromium/src/+/master/docs/linux/sandboxing.md" target="_blank" rel="noopener">Chromium</a>
-            uses seccomp-bpf combined with namespaces. The renderer process loads a BPF
-            filter that blocks dangerous syscalls, then enters a restricted namespace.
-            The result is effective. The engineering is sound. But the mechanism is
-            different in kind. The BPF programme must enumerate every syscall that should
-            be blocked (or allowed). New kernel versions add new syscalls. Each new syscall
-            is, by default, either allowed (if using a blocklist) or must be explicitly
-            added (if using an allowlist). The filter is a living document. It must be
-            maintained.
+            <a href="https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/sandboxing.md" target="_blank" rel="noopener">Chromium uses seccomp-bpf</a>
+            combined with namespaces. The renderer loads a BPF filter that blocks
+            dangerous syscalls, then enters a restricted namespace. The engineering
+            is sound. The result is effective. But the BPF programme must enumerate
+            every syscall that should be blocked or allowed. New kernel versions add
+            new syscalls. Each new syscall is, by default, a gap in every seccomp
+            profile that uses a blocklist. The filter is a living document. It must
+            be maintained.
         </p>
 
         <p>
-            Capsicum does not care how many syscalls the kernel adds. After
-            <code>cap_enter()</code>, the process cannot access the global namespace. A
-            new syscall that opens files does not work because the process is in capability
-            mode. A new syscall that creates sockets does not work because capability mode
-            forbids it. The restriction is structural, not enumerative. The kernel can gain
-            a thousand new syscalls and the sandbox holds, because the sandbox is not a list
-            of things you cannot do. It is the absence of the ability to do them.
+            Same browser. Same threat model. Same problem. Capsicum does not care how
+            many syscalls the kernel adds. After <code>cap_enter()</code>, a new syscall
+            that opens files does not work because the process is in capability mode.
+            The restriction is structural, not enumerative. The kernel can gain a
+            thousand new syscalls and the sandbox holds, because the sandbox is not a
+            list of things you cannot do. It is the absence of the ability to do them.
         </p>
 
-        <h2>The Philosophical Divide</h2>
+        <!-- SVG 3: Chromium sandbox comparison -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 320" role="img" aria-label="Chromium on FreeBSD uses Capsicum: renderer calls cap_enter, world shrinks to pipe plus pixels. Chromium on Linux uses seccomp-bpf: renderer loads a BPF filter that must be maintained as the kernel grows." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cr-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
+                .cr-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cr-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cr-mono { font: 400 10.5px/1 ui-monospace, monospace; fill: var(--text); }
+                .cr-accent { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cr-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .cr-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+            <defs>
+                <marker id="cr-arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)"/>
+                </marker>
+                <marker id="cr-arr-dim" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto-start-reverse">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--muted)"/>
+                </marker>
+            </defs>
+
+            <text class="cr-title" x="270" y="18" text-anchor="middle" fill="var(--text)">Chromium Renderer Sandbox</text>
+            <text class="cr-muted" x="270" y="34" text-anchor="middle">Same browser. Same threat model. Two answers.</text>
+
+            <!-- FreeBSD side -->
+            <rect class="cr-box-accent" x="20" y="50" width="240" height="240" rx="5"/>
+            <text class="cr-title" x="140" y="70" text-anchor="middle" fill="var(--accent)">FreeBSD + Capsicum</text>
+
+            <rect class="cr-box-accent" x="40" y="84" width="200" height="28"/>
+            <text class="cr-mono" x="140" y="103" text-anchor="middle">cap_enter()</text>
+
+            <text class="cr-accent" x="140" y="134" text-anchor="middle">Renderer world shrinks to:</text>
+
+            <rect class="cr-box-accent" x="50" y="146" width="180" height="24"/>
+            <text class="cr-label" x="140" y="163" text-anchor="middle">IPC pipe to browser</text>
+
+            <rect class="cr-box-accent" x="50" y="178" width="180" height="24"/>
+            <text class="cr-label" x="140" y="195" text-anchor="middle">Shared memory (pixels)</text>
+
+            <rect class="cr-box-accent" x="50" y="210" width="180" height="24"/>
+            <text class="cr-label" x="140" y="227" text-anchor="middle">Font file descriptors</text>
+
+            <text class="cr-muted" x="140" y="258" text-anchor="middle">New kernel syscalls?</text>
+            <text class="cr-accent" x="140" y="276" text-anchor="middle">Irrelevant. Door gone.</text>
+
+            <!-- Linux side -->
+            <rect class="cr-box" x="280" y="50" width="240" height="240" rx="5"/>
+            <text class="cr-title" x="400" y="70" text-anchor="middle" fill="var(--muted)">Linux + seccomp-bpf</text>
+
+            <rect class="cr-box" x="300" y="84" width="200" height="28"/>
+            <text class="cr-mono" x="400" y="103" text-anchor="middle">seccomp_load(bpf)</text>
+
+            <text class="cr-muted" x="400" y="134" text-anchor="middle">Renderer filtered through:</text>
+
+            <rect class="cr-box" x="310" y="146" width="180" height="24"/>
+            <text class="cr-label" x="400" y="163" text-anchor="middle">BPF syscall allowlist</text>
+
+            <rect class="cr-box" x="310" y="178" width="180" height="24"/>
+            <text class="cr-label" x="400" y="195" text-anchor="middle">User namespace isolation</text>
+
+            <rect class="cr-box" x="310" y="210" width="180" height="24"/>
+            <text class="cr-label" x="400" y="227" text-anchor="middle">Seccomp policy file</text>
+
+            <text class="cr-muted" x="400" y="258" text-anchor="middle">New kernel syscalls?</text>
+            <text class="cr-muted" x="400" y="276" text-anchor="middle">Update the filter. Review. Redeploy.</text>
+        </svg>
+
+        <h2>The CVE That Proved the Point</h2>
+
+        <p>
+            In 2022,
+            <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-30594" target="_blank" rel="noopener">CVE-2022-30594</a>
+            demonstrated precisely why the architectural difference matters.
+            On Linux kernels before 5.17.2, <code>PTRACE_SEIZE</code> allowed local
+            attackers to set <code>PT_SUSPEND_SECCOMP</code>, bypassing seccomp
+            filters entirely. The filter was correct. Every rule was properly written.
+            The mechanism to enforce it was not.
+        </p>
+
+        <p>
+            Capsicum's model is structurally immune to this class of attack. There is
+            no filter to suspend. There is no enforcement layer that can be
+            circumvented. The process is in capability mode. The global namespace
+            does not exist. You cannot bypass a door that is not there, regardless
+            of how creative your lock-picking skills might be.
+        </p>
+
+        <blockquote>
+            <p>
+                The filter was correct. The mechanism to enforce it was not.
+                This is the fundamental difference between subtraction and filtration.
+            </p>
+        </blockquote>
+
+        <h2>The Epistemological Divide</h2>
 
         <p>
             The difference between Capsicum and seccomp is not a difference of
-            implementation. It is a difference of epistemology.
+            implementation. It is a difference of epistemology, and it is worth
+            spending a moment on why this matters beyond the technical detail.
         </p>
 
         <p>
-            seccomp asks: &#x201C;What should this process not be allowed to call?&#x201D;
-            This is a reasonable question. It is also the wrong question, because it
-            requires you to know, in advance, every dangerous thing a process might do.
-            Every new kernel version, every new syscall, every new attack vector must be
-            anticipated and added to the filter. The Linux kernel had 335 syscalls in 2012.
-            It has over 450 today. Each addition is a potential gap in every seccomp profile
-            that uses a blocklist.
+            seccomp asks: "What should this process not be allowed to call?"
+            This requires you to know, in advance, every dangerous thing a process
+            might do. Every new kernel version, every new syscall, every new attack
+            vector must be anticipated and added to the filter. The Linux kernel had
+            335 syscalls in 2012. It has over 450 today. Each addition is a potential
+            gap in every seccomp profile that uses a blocklist.
         </p>
 
         <p>
-            Capsicum asks: &#x201C;What does this process actually need?&#x201D; Then it
-            removes everything else. The question is inverted. You do not enumerate the
-            threats. You enumerate the requirements. The set of things a process
-            <em>needs</em> is small, knowable, and stable. The set of things a process
-            <em>might abuse</em> grows with every kernel release. One of these sets is
-            easier to manage than the other.
+            Capsicum asks: "What does this process actually need?" Then it removes
+            everything else. You do not enumerate the threats. You enumerate the
+            requirements. The set of things a process <em>needs</em> is small,
+            knowable, and stable. The set of things a process <em>might abuse</em>
+            grows with every kernel release. One of these sets is rather easier to
+            manage than the other.
         </p>
 
-        <!-- SVG 2: Feature comparison table -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 340" role="img" aria-label="Feature comparison: Capsicum is capability-based, restricts at FD level, is irreversible, has negligible overhead, and is used by tcpdump, dhclient, Chromium. seccomp is filter-based, restricts at syscall level, is irreversible per filter, has negligible overhead, and is used by Docker, Chromium, systemd." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+        <!-- SVG 4: Feature comparison table -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 380" role="img" aria-label="Feature comparison table: Capsicum versus seccomp across philosophy, default posture, granularity, reversibility, new syscall handling, FD restriction, API complexity, overhead, and real-world adoption." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
             <style>
-                .capsicum-cmp-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
-                .capsicum-cmp-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
-                .capsicum-cmp-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
-                .capsicum-cmp-yes { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
-                .capsicum-cmp-no { font: 400 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
-                .capsicum-cmp-row { fill: none; stroke: var(--border); stroke-width: 0.5; }
+                .cmp-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cmp-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
+                .cmp-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cmp-yes { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cmp-no { font: 400 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cmp-row { fill: none; stroke: var(--border); stroke-width: 0.5; }
             </style>
 
-            <text class="capsicum-cmp-title" x="260" y="18" text-anchor="middle" fill="var(--text)">Capsicum vs seccomp</text>
+            <text class="cmp-title" x="270" y="18" text-anchor="middle" fill="var(--text)">Head to Head</text>
 
             <!-- Header -->
-            <line class="capsicum-cmp-row" x1="20" y1="34" x2="500" y2="34"/>
-            <text class="capsicum-cmp-label" x="140" y="50" text-anchor="middle">Dimension</text>
-            <text class="capsicum-cmp-title" x="320" y="50" text-anchor="middle" fill="var(--accent)">Capsicum</text>
-            <text class="capsicum-cmp-title" x="440" y="50" text-anchor="middle" fill="var(--muted)">seccomp</text>
-            <line class="capsicum-cmp-row" x1="20" y1="58" x2="500" y2="58"/>
+            <line class="cmp-row" x1="20" y1="34" x2="520" y2="34"/>
+            <text class="cmp-label" x="140" y="50" text-anchor="middle">Dimension</text>
+            <text class="cmp-title" x="330" y="50" text-anchor="middle" fill="var(--accent)">Capsicum</text>
+            <text class="cmp-title" x="460" y="50" text-anchor="middle" fill="var(--muted)">seccomp</text>
+            <line class="cmp-row" x1="20" y1="58" x2="520" y2="58"/>
 
-            <!-- Row 1: Philosophy -->
-            <text class="capsicum-cmp-label" x="30" y="78">Philosophy</text>
-            <text class="capsicum-cmp-yes" x="320" y="78" text-anchor="middle">Capability</text>
-            <text class="capsicum-cmp-no" x="440" y="78" text-anchor="middle">Filter</text>
-            <line class="capsicum-cmp-row" x1="20" y1="88" x2="500" y2="88"/>
+            <!-- Row 1 -->
+            <text class="cmp-label" x="30" y="78">Philosophy</text>
+            <text class="cmp-yes" x="330" y="78" text-anchor="middle">Capability (subtract)</text>
+            <text class="cmp-no" x="460" y="78" text-anchor="middle">Filter (enumerate)</text>
+            <line class="cmp-row" x1="20" y1="88" x2="520" y2="88"/>
 
-            <!-- Row 2: Default posture -->
-            <text class="capsicum-cmp-label" x="30" y="108">Default posture</text>
-            <text class="capsicum-cmp-yes" x="320" y="108" text-anchor="middle">Deny all</text>
-            <text class="capsicum-cmp-no" x="440" y="108" text-anchor="middle">Allow all</text>
-            <line class="capsicum-cmp-row" x1="20" y1="118" x2="500" y2="118"/>
+            <!-- Row 2 -->
+            <text class="cmp-label" x="30" y="108">Default posture</text>
+            <text class="cmp-yes" x="330" y="108" text-anchor="middle">Deny all</text>
+            <text class="cmp-no" x="460" y="108" text-anchor="middle">Allow all</text>
+            <line class="cmp-row" x1="20" y1="118" x2="520" y2="118"/>
 
-            <!-- Row 3: Granularity -->
-            <text class="capsicum-cmp-label" x="30" y="138">Granularity</text>
-            <text class="capsicum-cmp-yes" x="320" y="138" text-anchor="middle">Per FD + operation</text>
-            <text class="capsicum-cmp-no" x="440" y="138" text-anchor="middle">Per syscall</text>
-            <line class="capsicum-cmp-row" x1="20" y1="148" x2="500" y2="148"/>
+            <!-- Row 3 -->
+            <text class="cmp-label" x="30" y="138">Granularity</text>
+            <text class="cmp-yes" x="330" y="138" text-anchor="middle">Per FD + operation</text>
+            <text class="cmp-no" x="460" y="138" text-anchor="middle">Per syscall</text>
+            <line class="cmp-row" x1="20" y1="148" x2="520" y2="148"/>
 
-            <!-- Row 4: Reversibility -->
-            <text class="capsicum-cmp-label" x="30" y="168">Reversible</text>
-            <text class="capsicum-cmp-yes" x="320" y="168" text-anchor="middle">Never</text>
-            <text class="capsicum-cmp-no" x="440" y="168" text-anchor="middle">Per filter, no</text>
-            <line class="capsicum-cmp-row" x1="20" y1="178" x2="500" y2="178"/>
+            <!-- Row 4 -->
+            <text class="cmp-label" x="30" y="168">Reversible</text>
+            <text class="cmp-yes" x="330" y="168" text-anchor="middle">Never</text>
+            <text class="cmp-no" x="460" y="168" text-anchor="middle">Per filter, no</text>
+            <line class="cmp-row" x1="20" y1="178" x2="520" y2="178"/>
 
-            <!-- Row 5: New syscalls -->
-            <text class="capsicum-cmp-label" x="30" y="198">New kernel syscalls</text>
-            <text class="capsicum-cmp-yes" x="320" y="198" text-anchor="middle">Blocked by design</text>
-            <text class="capsicum-cmp-no" x="440" y="198" text-anchor="middle">May slip through</text>
-            <line class="capsicum-cmp-row" x1="20" y1="208" x2="500" y2="208"/>
+            <!-- Row 5 -->
+            <text class="cmp-label" x="30" y="198">New kernel syscalls</text>
+            <text class="cmp-yes" x="330" y="198" text-anchor="middle">Blocked by design</text>
+            <text class="cmp-no" x="460" y="198" text-anchor="middle">May slip through</text>
+            <line class="cmp-row" x1="20" y1="208" x2="520" y2="208"/>
 
-            <!-- Row 6: FD restriction -->
-            <text class="capsicum-cmp-label" x="30" y="228">FD-level restriction</text>
-            <text class="capsicum-cmp-yes" x="320" y="228" text-anchor="middle">cap_rights_limit</text>
-            <text class="capsicum-cmp-no" x="440" y="228" text-anchor="middle">Not available</text>
-            <line class="capsicum-cmp-row" x1="20" y1="238" x2="500" y2="238"/>
+            <!-- Row 6 -->
+            <text class="cmp-label" x="30" y="228">FD-level restriction</text>
+            <text class="cmp-yes" x="330" y="228" text-anchor="middle">cap_rights_limit()</text>
+            <text class="cmp-no" x="460" y="228" text-anchor="middle">Not available</text>
+            <line class="cmp-row" x1="20" y1="238" x2="520" y2="238"/>
 
-            <!-- Row 7: API complexity -->
-            <text class="capsicum-cmp-label" x="30" y="258">Sandbox entry</text>
-            <text class="capsicum-cmp-yes" x="320" y="258" text-anchor="middle">1 syscall</text>
-            <text class="capsicum-cmp-no" x="440" y="258" text-anchor="middle">BPF programme</text>
-            <line class="capsicum-cmp-row" x1="20" y1="268" x2="500" y2="268"/>
+            <!-- Row 7 -->
+            <text class="cmp-label" x="30" y="258">Sandbox entry</text>
+            <text class="cmp-yes" x="330" y="258" text-anchor="middle">1 syscall</text>
+            <text class="cmp-no" x="460" y="258" text-anchor="middle">BPF programme</text>
+            <line class="cmp-row" x1="20" y1="268" x2="520" y2="268"/>
 
-            <!-- Row 8: Runtime overhead -->
-            <text class="capsicum-cmp-label" x="30" y="288">Runtime overhead</text>
-            <text class="capsicum-cmp-yes" x="320" y="288" text-anchor="middle">Negligible</text>
-            <text class="capsicum-cmp-no" x="440" y="288" text-anchor="middle">Negligible</text>
-            <line class="capsicum-cmp-row" x1="20" y1="298" x2="500" y2="298"/>
+            <!-- Row 8 -->
+            <text class="cmp-label" x="30" y="288">Runtime overhead</text>
+            <text class="cmp-yes" x="330" y="288" text-anchor="middle">Negligible (1 flag)</text>
+            <text class="cmp-no" x="460" y="288" text-anchor="middle">Per-call evaluation</text>
+            <line class="cmp-row" x1="20" y1="298" x2="520" y2="298"/>
 
-            <!-- Summary -->
-            <text class="capsicum-cmp-muted" x="260" y="326" text-anchor="middle">Same Chromium. Same renderer. Same threat model. Two answers.</text>
+            <!-- Row 9 -->
+            <text class="cmp-label" x="30" y="318">Real-world adoption</text>
+            <text class="cmp-yes" x="330" y="318" text-anchor="middle">tcpdump, dhclient,</text>
+            <text class="cmp-no" x="460" y="318" text-anchor="middle">Docker, Chromium,</text>
+            <text class="cmp-yes" x="330" y="334" text-anchor="middle">Chromium, hastd, gzip</text>
+            <text class="cmp-no" x="460" y="334" text-anchor="middle">Firefox, systemd, Android</text>
+            <line class="cmp-row" x1="20" y1="344" x2="520" y2="344"/>
+
+            <text class="cmp-muted" x="270" y="370" text-anchor="middle">Both improve security. Meaningfully. The question is architectural.</text>
         </svg>
 
-        <h2>The Practical Difference</h2>
+        <h2>The Practical Evidence</h2>
 
         <p>
-            Consider <code>tcpdump</code>. It captures network packets and writes them
-            to a file. On FreeBSD,
-            <a href="https://man.freebsd.org/cgi/man.cgi?query=tcpdump&sektion=1" target="_blank" rel="noopener">tcpdump</a>
-            opens the capture device, opens the output file, restricts the file descriptor
-            rights, and enters capability mode. From that point, the process can read
-            packets from the device and write them to the file. It cannot open
-            <code>/etc/passwd</code>. It cannot connect to the internet. It cannot spawn a
-            reverse shell. The attack surface is: a read-only BPF device and a write-only
-            output file. That is what tcpdump needs. That is what tcpdump gets.
+            FreeBSD's base system quietly demonstrates what Capsicum makes possible.
+            <code>tcpdump</code> opens the capture device and output file, restricts
+            their rights, enters capability mode. A compromised tcpdump cannot read
+            <code>/etc/shadow</code>. Cannot open a reverse shell. Cannot reach the
+            network. The attack surface is: a read-only BPF device and a write-only
+            output file.
         </p>
 
         <p>
             <code>dhclient</code> follows the same pattern. Open the socket, open the
             lease file, enter capability mode. The DHCP client, which runs as root and
             handles network input from untrusted sources, is sandboxed to precisely the
-            resources it requires. A compromised dhclient on FreeBSD cannot read the
-            filesystem. On most Linux distributions, a compromised dhclient can read
-            anything the dhclient user can read, which, given that it typically runs
-            as root, is everything.
+            resources it requires. On most Linux distributions, a compromised dhclient
+            can read anything the dhclient user can read, which, given that it typically
+            runs as root, is everything.
         </p>
 
         <p>
-            The list of Capsicum-enabled tools in FreeBSD base is quietly instructive:
-            <code>tcpdump</code>, <code>dhclient</code>,
-            <code>ping</code>, <code>traceroute</code>,
-            <code>hastd</code>, <code>auditdistd</code>,
-            and, of course, Chromium. These are network-facing tools that parse untrusted
-            input. They are precisely the tools an attacker targets first. On FreeBSD, they
-            are precisely the tools that have the least to offer once compromised.
+            The full list of Capsicum-enabled tools in FreeBSD base is quietly
+            instructive: <code>tcpdump</code>, <code>dhclient</code>,
+            <code>hastd</code>, <code>auditdistd</code>, <code>gzip</code>,
+            and OpenSSH. These are precisely the tools an attacker targets first:
+            network-facing, parsing untrusted input, often running as root. On FreeBSD,
+            they are precisely the tools that have the least to offer once compromised.
         </p>
 
-        <h2>Double Isolation</h2>
+        <!-- SVG 5: Timeline -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 200" role="img" aria-label="Timeline: 2005 seccomp strict mode, 2010 Capsicum paper wins USENIX Best Student Paper, 2012 seccomp-bpf in Linux 3.5, 2014 Capsicum in FreeBSD 10.0 by default." style="max-width: 540px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .tl-title { font: 700 12px/1 'Oxanium', system-ui, sans-serif; }
+                .tl-year { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .tl-label { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tl-muted { font: 400 9.5px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <text class="tl-title" x="270" y="18" text-anchor="middle" fill="var(--text)">Timeline</text>
+
+            <!-- Horizontal line -->
+            <line x1="40" y1="60" x2="500" y2="60" stroke="var(--border)" stroke-width="1.5"/>
+
+            <!-- 2005 -->
+            <circle cx="80" cy="60" r="5" fill="var(--muted)"/>
+            <text class="tl-year" x="80" y="48" text-anchor="middle">2005</text>
+            <text class="tl-label" x="80" y="80" text-anchor="middle">seccomp strict</text>
+            <text class="tl-muted" x="80" y="94" text-anchor="middle">Arcangeli</text>
+            <text class="tl-muted" x="80" y="108" text-anchor="middle">4 syscalls only</text>
+
+            <!-- 2010 -->
+            <circle cx="220" cy="60" r="5" fill="var(--accent)"/>
+            <text class="tl-year" x="220" y="48" text-anchor="middle">2010</text>
+            <text class="tl-label" x="220" y="80" text-anchor="middle">Capsicum paper</text>
+            <text class="tl-muted" x="220" y="94" text-anchor="middle">Watson, Anderson</text>
+            <text class="tl-muted" x="220" y="108" text-anchor="middle">Best Student Paper</text>
+            <text class="tl-muted" x="220" y="122" text-anchor="middle">USENIX Security</text>
+
+            <!-- 2012 -->
+            <circle cx="340" cy="60" r="5" fill="var(--muted)"/>
+            <text class="tl-year" x="340" y="48" text-anchor="middle">2012</text>
+            <text class="tl-label" x="340" y="80" text-anchor="middle">seccomp-bpf</text>
+            <text class="tl-muted" x="340" y="94" text-anchor="middle">Drewry</text>
+            <text class="tl-muted" x="340" y="108" text-anchor="middle">Linux 3.5</text>
+
+            <!-- 2014 -->
+            <circle cx="460" cy="60" r="5" fill="var(--accent)"/>
+            <text class="tl-year" x="460" y="48" text-anchor="middle">2014</text>
+            <text class="tl-label" x="460" y="80" text-anchor="middle">Capsicum default</text>
+            <text class="tl-muted" x="460" y="94" text-anchor="middle">FreeBSD 10.0</text>
+            <text class="tl-muted" x="460" y="108" text-anchor="middle">Compiled into kernel</text>
+
+            <!-- Bottom numbers -->
+            <line x1="40" y1="148" x2="500" y2="148" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="tl-label" x="140" y="170" text-anchor="middle">Capsicum: ~190 syscalls</text>
+            <text class="tl-muted" x="140" y="186" text-anchor="middle">permitted in capability mode</text>
+            <text class="tl-label" x="400" y="170" text-anchor="middle">Docker default: ~44 blocked</text>
+            <text class="tl-muted" x="400" y="186" text-anchor="middle">of 300+ syscalls</text>
+        </svg>
+
+        <h2>The Point</h2>
 
         <p>
-            FreeBSD runs Capsicum inside
-            <a href="https://man.freebsd.org/cgi/man.cgi?query=jail&sektion=8" target="_blank" rel="noopener">jails</a>.
-            A jail provides namespace isolation: separate filesystem root, separate network
-            stack, separate process space. Capsicum provides capability isolation: per-process,
-            per-file-descriptor restriction of operations. The two compose naturally. A
-            process in a jail cannot see the host. A process in capability mode within a
-            jail cannot see the jail. The result is concentric sandboxes, each with a
-            different enforcement mechanism, each covering the blind spots of the other.
+            Both approaches improve security. Meaningfully. seccomp-bpf protects
+            millions of containers, phones, and browsers every day. Dismissing it
+            would be ignorant. But the question, as ever, is architectural: would
+            you rather patch the filter, or remove what needs filtering?
         </p>
 
         <p>
-            Linux achieves something similar with namespaces plus seccomp, which is how
-            Docker operates. The architecture is sound. But the granularity differs.
-            seccomp restricts which syscalls you may invoke. It does not restrict which
-            file descriptors those syscalls may target. Capsicum restricts both: which
-            operations, and on which specific file descriptors.
-        </p>
-
-        <blockquote>
-            <p>After <code>cap_enter()</code>, the process cannot escape. After seccomp, the
-                process cannot call blocked syscalls. Everything else is still available.
-                The distinction is between a locked room and a room with a very attentive
-                doorman.</p>
-        </blockquote>
-
-        <h2>Why This Matters</h2>
-
-        <p>
-            The security model of most production software rests on a single assumption:
-            the process will not be compromised. Sandboxing exists for the moment that
-            assumption fails. The quality of a sandbox is measured not by what it permits
-            when things go well, but by what it prevents when things go wrong.
+            Capsicum eliminates ambient authority. seccomp restricts it. One locks
+            the door and removes it from the hinges. The other hires a bouncer and
+            hopes the guest list is complete.
         </p>
 
         <p>
-            Capsicum prevents everything. Then you add back what you need.
-            seccomp permits everything. Then you remove what you fear.
-        </p>
-
-        <p>
-            One of these approaches scales with the threat landscape. The other scales
-            with the kernel&#x2019;s syscall table. When the next kernel release adds
-            <code>io_uring_enter2()</code> or <code>landlock_restrict_self()</code>,
-            Capsicum does not notice. seccomp profiles must be updated, reviewed, and
-            redeployed. The door does not care about new lock-picking techniques. The
-            bouncer needs a longer list.
-        </p>
-
-        <p>
-            Sometimes the better sandbox is not the one with the longer filter. It is the
-            one with the shorter API.
+            The door that does not exist cannot be opened. Rather reassuring, that.
         </p>
 
         <aside class="vv-aside">
             <p>
-                <strong>Further reading on process sandboxing:</strong> The original
-                <a href="https://www.cl.cam.ac.uk/research/security/capsicum/papers/2010usenix-security-capsicum-website.pdf" target="_blank" rel="noopener">Capsicum paper</a>
-                (Watson, Anderson et al., USENIX Security 2010) remains the definitive
-                explanation of the capability model. The
-                <a href="https://man.freebsd.org/cgi/man.cgi?query=capsicum&sektion=4" target="_blank" rel="noopener">capsicum(4)</a>
-                manual page is precise and readable. For seccomp, the
-                <a href="https://man7.org/linux/man-pages/man2/seccomp.2.html" target="_blank" rel="noopener">seccomp(2)</a>
-                manual and the
-                <a href="https://www.kernel.org/doc/html/latest/userspace-api/seccomp_filter.html" target="_blank" rel="noopener">kernel documentation</a>
-                cover the BPF filter mechanism thoroughly.
-                Linux is not standing still:
+                <strong>The numbers:</strong>
+                Capsicum permits approximately
+                <a href="https://github.com/freebsd/freebsd-src/blob/main/sys/kern/syscalls.master" target="_blank" rel="noopener">190 of ~567 syscalls</a>
+                in capability mode. seccomp via Docker's default profile blocks
+                <a href="https://docs.docker.com/engine/security/seccomp/" target="_blank" rel="noopener">~44 of 300+</a>.
+                Capsicum overhead: one kernel flag per process, negligible.
+                seccomp-bpf: per-syscall filter evaluation at runtime.
+                <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-30594" target="_blank" rel="noopener">CVE-2022-30594</a>
+                bypassed seccomp entirely on Linux pre-5.17.2. Capsicum's model is
+                not susceptible to this class of attack because there is no filter
+                to suspend. Linux is not standing still:
                 <a href="https://landlock.io/" target="_blank" rel="noopener">Landlock</a>
-                (merged in Linux 5.13, 2021) adds filesystem sandboxing that moves closer
-                to Capsicum&#x2019;s capability model, though it does not yet match the
-                elegance of a single <code>cap_enter()</code>.
+                (merged in 5.13, 2021) adds filesystem sandboxing that moves closer
+                to Capsicum's capability model. The original
+                <a href="https://www.usenix.org/conference/usenixsecurity10/capsicum-practical-capabilities-unix" target="_blank" rel="noopener">Capsicum paper</a>
+                (Watson, Anderson et al., USENIX Security 2010) remains the definitive
+                explanation of the capability model.
             </p>
         </aside>
     </div>

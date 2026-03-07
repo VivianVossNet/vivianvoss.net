@@ -33,8 +33,8 @@
                 if (tag === "A" || tag === "CODE" || tag === "PRE" || tag === "SCRIPT" ||
                     tag === "STYLE" || tag === "H1" || tag === "H2" || tag === "H3" ||
                     parent.classList.contains("vv-term")) continue;
-                if (parent.namespaceURI === "http://www.w3.org/2000/svg" ||
-                    (parent.closest && parent.closest("svg"))) continue;
+                if (parent.closest && parent.closest("pre, code, svg")) continue;
+                if (parent.namespaceURI === "http://www.w3.org/2000/svg") continue;
 
                 var text = node.nodeValue;
                 var m = pattern.exec(text);

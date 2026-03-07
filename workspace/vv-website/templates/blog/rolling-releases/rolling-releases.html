@@ -1,0 +1,381 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Rolling Releases: The Perpetual Beta — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Software used to ship when it was ready. Now it ships when the sprint ends. Chrome halved its release cycle twice. CrowdStrike pushed one update and crashed 8.5 million machines. The invoice for velocity is permanent instability.">
+{( endslot )}
+
+{( slot canonical )}/blog/rolling-releases{( endslot )}
+
+{( slot og-title )}Rolling Releases: The Perpetual Beta — Vivian Voss{( endslot )}
+
+{( slot og-desc )}Software used to ship when it was ready. Now it ships when the sprint ends. Chrome halved its release cycle twice. The invoice for velocity is permanent instability.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Rolling Releases: The Perpetual Beta",
+    "datePublished": "2026-03-06",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/rolling-releases",
+    "description": "Software used to ship when it was ready. Now it ships when the sprint ends. Chrome halved its release cycle twice. CrowdStrike pushed one update and crashed 8.5 million machines. The invoice for velocity is permanent instability.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-06">06 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Rolling Releases: The Perpetual Beta</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">devops</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">security</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Software used to ship when it was ready. Now it ships when the sprint
+            ends, when the pipeline triggers, or when another team in the same
+            repository needs to deploy.</p>
+
+        <p>The difference is your problem.</p>
+
+        <h2>The Velocity Invoice</h2>
+
+        <p>Chrome released every
+            <a href="https://developer.chrome.com/blog/faster-release-cycle/" target="_blank" rel="noopener">six weeks</a>.
+            Then every four. From September 2026:
+            <a href="https://www.androidauthority.com/chrome-two-weeks-3645868/" target="_blank" rel="noopener">every two</a>.
+            The browser updates faster than most teams test against it.</p>
+
+        <p>Node.js ships a
+            <a href="https://nodejs.org/en/about/previous-releases" target="_blank" rel="noopener">new major every six months</a>.
+            React 18 to 19: breaking changes. Your framework moves on. Your
+            codebase does not.</p>
+
+        <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Chrome release cycle acceleration: 6 weeks in 2020, 4 weeks in 2021, 2 weeks from September 2026. The cycle halved twice in five years." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .rr-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .rr-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .rr-val { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .rr-bar { fill: var(--accent); opacity: 0.15; rx: 3; }
+                .rr-bar-fill { fill: var(--accent); rx: 3; }
+                .rr-line { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text class="rr-label" x="260" y="18" text-anchor="middle">Chrome Release Cycle</text>
+            <!-- Axis -->
+            <line class="rr-line" x1="120" y1="40" x2="120" y2="200"/>
+            <!-- 2020: 6 weeks -->
+            <rect class="rr-bar" x="120" y="48" width="360" height="36"/>
+            <rect class="rr-bar-fill" x="120" y="48" width="360" height="36"/>
+            <text class="rr-val" x="110" y="72" text-anchor="end">2020</text>
+            <text class="rr-label" x="300" y="72" text-anchor="middle" fill="var(--bg, #fff)">6 weeks</text>
+            <!-- 2021: 4 weeks -->
+            <rect class="rr-bar" x="120" y="96" width="240" height="36"/>
+            <rect class="rr-bar-fill" x="120" y="96" width="240" height="36"/>
+            <text class="rr-val" x="110" y="120" text-anchor="end">2021</text>
+            <text class="rr-label" x="240" y="120" text-anchor="middle" fill="var(--bg, #fff)">4 weeks</text>
+            <!-- 2026: 2 weeks -->
+            <rect class="rr-bar" x="120" y="144" width="120" height="36"/>
+            <rect class="rr-bar-fill" x="120" y="144" width="120" height="36"/>
+            <text class="rr-val" x="110" y="168" text-anchor="end">2026</text>
+            <text class="rr-label" x="180" y="168" text-anchor="middle" fill="var(--bg, #fff)">2 weeks</text>
+            <text class="rr-sub" x="260" y="210" text-anchor="middle">Halved twice in five years. Your test suite kept up, presumably.</text>
+        </svg>
+
+        <p>The pitch was "ship early, ship often." The outcome is software that
+            is never finished, merely current.</p>
+
+        <h2>The Dependency Invoice</h2>
+
+        <p>You update your application. Your dependencies update theirs. Their
+            dependencies update theirs.</p>
+
+        <p>One <code>npm install</code> pulls
+            <a href="/blog/the-npm-tax">1,400 packages</a>. Each maintained by
+            strangers who release on their own schedule. The npm registry hosts
+            <a href="https://www.npmjs.com/" target="_blank" rel="noopener">over 2.5 million packages</a>
+            and is the most actively exploited package registry in production use:
+            supply-chain attacks, typosquatting, abandoned packages with known
+            vulnerabilities that millions still download weekly.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dependency cascade: your application depends on 12 direct packages, which depend on 140 transitive packages, which depend on 1,400 total. Each layer maintained by strangers on their own release schedule." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .dep-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .dep-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .dep-val { font: 600 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .dep-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .dep-box-a { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .dep-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#dep-arr); }
+            </style>
+            <defs>
+                <marker id="dep-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <!-- Your app -->
+            <rect class="dep-box-a" x="200" y="10" width="120" height="40"/>
+            <text class="dep-label" x="260" y="35" text-anchor="middle">Your App</text>
+            <!-- Direct deps -->
+            <path class="dep-arrow" d="M 260 50 L 260 75"/>
+            <rect class="dep-box" x="170" y="75" width="180" height="40"/>
+            <text class="dep-val" x="260" y="95" text-anchor="middle">12 direct packages</text>
+            <text class="dep-sub" x="260" y="110" text-anchor="middle">You chose these</text>
+            <!-- Transitive -->
+            <path class="dep-arrow" d="M 260 115 L 260 140"/>
+            <rect class="dep-box" x="130" y="140" width="260" height="40"/>
+            <text class="dep-val" x="260" y="160" text-anchor="middle">140 transitive packages</text>
+            <text class="dep-sub" x="260" y="178" text-anchor="middle">You did not choose these</text>
+            <!-- Total -->
+            <path class="dep-arrow" d="M 260 180 L 260 205"/>
+            <rect class="dep-box-a" x="80" y="205" width="360" height="40"/>
+            <text class="dep-val" x="260" y="225" text-anchor="middle">1,400 total packages in node_modules</text>
+            <text class="dep-sub" x="260" y="243" text-anchor="middle">Each on its own release schedule</text>
+            <!-- Punchline -->
+            <text class="dep-sub" x="260" y="280" text-anchor="middle">You are not choosing dependencies.</text>
+            <text class="dep-sub" x="260" y="294" text-anchor="middle">You are inheriting risk from people you have never met.</text>
+        </svg>
+
+        <p>Dependabot opens
+            <a href="https://dev.to/alex_aslam/renovate-vs-dependabot-which-bot-will-rule-your-monorepo-4431" target="_blank" rel="noopener">200 pull requests per week</a>
+            on a monorepo. Each must be reviewed, tested, merged. Or ignored,
+            until the security audit asks why you are 47 versions behind.</p>
+
+        <p>SemVer promises a patch is safe. In practice, breaking changes ship
+            in minor and patch releases
+            <a href="https://gist.github.com/jashkenas/cbd2b088e20279ae2c8e" target="_blank" rel="noopener">routinely</a>.
+            The contract is voluntary. Nobody
+            <a href="https://fossa.com/blog/breaking-changes-rewriting-semantic-version/" target="_blank" rel="noopener">enforces it</a>.
+            Your update policy trusts a promise that nobody is obliged to keep.</p>
+
+        <h2>The Maintenance Invoice</h2>
+
+        <p>Sixty to eighty per cent of development effort goes to
+            <a href="https://www.quora.com/When-developing-a-software-product-how-much-time-should-be-proportionally-spent-on-a-new-development-and-how-much-time-on-maintenance-to-be-sustainable" target="_blank" rel="noopener">maintenance</a>.
+            Not features. Not innovation. Keeping the treadmill running.</p>
+
+        <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Development effort split: 60-80% maintenance versus 20-40% features. The majority of engineering time is spent keeping existing software working, not building new things." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .mnt-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .mnt-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .mnt-val { font: 600 22px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .mnt-bar { rx: 4; }
+            </style>
+            <text class="mnt-label" x="260" y="20" text-anchor="middle">Where Development Effort Actually Goes</text>
+            <!-- Maintenance bar -->
+            <rect class="mnt-bar" x="40" y="45" width="360" height="50" fill="var(--accent)" opacity="0.2"/>
+            <rect class="mnt-bar" x="40" y="45" width="360" height="50" fill="var(--accent)" opacity="0.3"/>
+            <text class="mnt-val" x="220" y="80" text-anchor="middle">60 - 80%</text>
+            <text class="mnt-label" x="220" y="80" text-anchor="middle" dy="18">Maintenance</text>
+            <!-- Features bar -->
+            <rect class="mnt-bar" x="400" y="45" width="80" height="50" fill="var(--border)"/>
+            <text class="mnt-label" x="440" y="78" text-anchor="middle">20-40%</text>
+            <!-- Labels -->
+            <text class="mnt-sub" x="220" y="120" text-anchor="middle">Updates, patches, dependency management, regression testing</text>
+            <text class="mnt-sub" x="440" y="120" text-anchor="middle">Features</text>
+            <text class="mnt-sub" x="260" y="155" text-anchor="middle">Every rolling update is a test you did not plan for.</text>
+            <text class="mnt-sub" x="260" y="172" text-anchor="middle">The vendor tests their code. You test the integration. Your users test the result.</text>
+            <text class="mnt-sub" x="260" y="189" text-anchor="middle">Production is the final test environment.</text>
+        </svg>
+
+        <p>Every update is a test you did not plan for. The vendor tests their
+            code. You test the integration. Your users test the result.
+            Production is the final test environment.</p>
+
+        <h2>The Kill Shot</h2>
+
+        <p>CrowdStrike. 19 July 2024. A
+            <a href="https://www.techtarget.com/whatis/feature/Explaining-the-largest-IT-outage-in-history-and-whats-next" target="_blank" rel="noopener">rapid content update</a>
+            to the Falcon Sensor bypassed the content validator.
+            <a href="https://fortune.com/2024/08/03/crowdstrike-outage-fortune-500-companies-5-4-billion-damages-uninsured-losses/" target="_blank" rel="noopener">8.5 million Windows machines</a>
+            crashed. Airlines. Hospitals. Banks. Emergency services.</p>
+
+        <p>One update. No rollback.</p>
+
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CrowdStrike incident, 19 July 2024: one rapid content update bypassed quality control. 8.5 million machines crashed. Airlines, hospitals, banks, emergency services affected. 5.4 billion dollars in Fortune 500 damages. 10-20% covered by insurance." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .cs-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .cs-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .cs-val { font: 600 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cs-big { font: 600 28px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .cs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cs-box-a { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .cs-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#cs-arr); }
+            </style>
+            <defs>
+                <marker id="cs-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text class="cs-val" x="260" y="20" text-anchor="middle">CrowdStrike, 19 July 2024</text>
+            <!-- Cause -->
+            <rect class="cs-box" x="140" y="32" width="240" height="35"/>
+            <text class="cs-label" x="260" y="55" text-anchor="middle">1 rapid content update, validator bypassed</text>
+            <path class="cs-arrow" d="M 260 67 L 260 82"/>
+            <!-- Impact -->
+            <rect class="cs-box-a" x="100" y="82" width="320" height="35"/>
+            <text class="cs-big" x="260" y="108" text-anchor="middle">8.5 million machines</text>
+            <path class="cs-arrow" d="M 260 117 L 260 132"/>
+            <!-- Sectors -->
+            <rect class="cs-box" x="30" y="132" width="105" height="30"/>
+            <text class="cs-label" x="82" y="152" text-anchor="middle">Airlines</text>
+            <rect class="cs-box" x="145" y="132" width="105" height="30"/>
+            <text class="cs-label" x="197" y="152" text-anchor="middle">Hospitals</text>
+            <rect class="cs-box" x="260" y="132" width="105" height="30"/>
+            <text class="cs-label" x="312" y="152" text-anchor="middle">Banks</text>
+            <rect class="cs-box" x="375" y="132" width="115" height="30"/>
+            <text class="cs-label" x="432" y="152" text-anchor="middle">Emergency</text>
+            <path class="cs-arrow" d="M 260 162 L 260 185"/>
+            <!-- Cost -->
+            <rect class="cs-box-a" x="120" y="185" width="280" height="40"/>
+            <text class="cs-big" x="260" y="213" text-anchor="middle">$5.4 billion</text>
+            <text class="cs-sub" x="260" y="240" text-anchor="middle">Fortune 500 damages alone</text>
+            <!-- Insurance -->
+            <text class="cs-val" x="260" y="265" text-anchor="middle">10 - 20% covered by insurance</text>
+        </svg>
+
+        <p><a href="https://fortune.com/2024/08/03/crowdstrike-outage-fortune-500-companies-5-4-billion-damages-uninsured-losses/" target="_blank" rel="noopener">$5.4 billion</a>
+            in Fortune 500 damages.
+            <a href="https://www.cybersecuritydive.com/news/crowdstrike-cost-fortune-500-losses-cyber-insurance/722396/" target="_blank" rel="noopener">10 to 20 per cent</a>
+            covered by insurance.</p>
+
+        <p>Marvellous velocity, that.</p>
+
+        <h2>The Alternative</h2>
+
+        <p>Not everything accelerated. Some projects declined the invitation
+            entirely.</p>
+
+        <p>PostgreSQL:
+            <a href="https://www.postgresql.org/support/versioning/" target="_blank" rel="noopener">one major version per year</a>.
+            Five years of support. Minor releases contain bug fixes, security
+            patches, and data corruption fixes. Nothing else.</p>
+
+        <p>Debian Stable:
+            <a href="https://www.debian.org/releases/" target="_blank" rel="noopener">releases when ready</a>.
+            Packages frozen, tested, proven. No surprises.</p>
+
+        <p>SQLite: backward-compatible
+            <a href="https://www.sqlite.org/lts.html" target="_blank" rel="noopener">since 2004</a>.
+            Twenty-two years. The file format has not changed. Every database
+            written two decades ago opens today without migration, conversion,
+            or apology.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Release cadence comparison. Accelerators: Chrome 26 releases per year, Node.js 2 majors per year, npm thousands of package updates daily. Stabilisers: PostgreSQL 1 major per year with 5 years support, Debian Stable releases when ready, SQLite backward-compatible since 2004." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .alt-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .alt-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .alt-val { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .alt-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .alt-box-a { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <!-- Left: Accelerators -->
+            <text class="alt-val" x="130" y="20" text-anchor="middle">Accelerators</text>
+            <rect class="alt-box" x="30" y="35" width="200" height="35"/>
+            <text class="alt-label" x="130" y="50" text-anchor="middle">Chrome</text>
+            <text class="alt-sub" x="130" y="63" text-anchor="middle">26 releases/year (2026)</text>
+            <rect class="alt-box" x="30" y="80" width="200" height="35"/>
+            <text class="alt-label" x="130" y="95" text-anchor="middle">Node.js</text>
+            <text class="alt-sub" x="130" y="108" text-anchor="middle">2 majors/year, LTS 30 months</text>
+            <rect class="alt-box" x="30" y="125" width="200" height="35"/>
+            <text class="alt-label" x="130" y="140" text-anchor="middle">npm ecosystem</text>
+            <text class="alt-sub" x="130" y="153" text-anchor="middle">2.5M packages, daily churn</text>
+            <!-- Right: Stabilisers -->
+            <text class="alt-val" x="390" y="20" text-anchor="middle">Stabilisers</text>
+            <rect class="alt-box-a" x="290" y="35" width="200" height="35"/>
+            <text class="alt-label" x="390" y="50" text-anchor="middle">PostgreSQL</text>
+            <text class="alt-sub" x="390" y="63" text-anchor="middle">1 major/year, 5 years support</text>
+            <rect class="alt-box-a" x="290" y="80" width="200" height="35"/>
+            <text class="alt-label" x="390" y="95" text-anchor="middle">Debian Stable</text>
+            <text class="alt-sub" x="390" y="108" text-anchor="middle">Frozen. Tested. Releases when ready</text>
+            <rect class="alt-box-a" x="290" y="125" width="200" height="35"/>
+            <text class="alt-label" x="390" y="140" text-anchor="middle">SQLite</text>
+            <text class="alt-sub" x="390" y="153" text-anchor="middle">Compatible since 2004. 22 years</text>
+            <!-- Separator -->
+            <line x1="260" y1="35" x2="260" y2="160" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+            <!-- Verdict -->
+            <text class="alt-label" x="130" y="190" text-anchor="middle">Ship often. Break often.</text>
+            <text class="alt-label" x="390" y="190" text-anchor="middle">Ship less. Break less.</text>
+            <text class="alt-sub" x="260" y="220" text-anchor="middle">Not a coincidence.</text>
+        </svg>
+
+        <p>They ship less often. They break less often. This is not a stylistic
+            preference. It is an engineering observation with two decades of
+            evidence behind it.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>The industry accelerated releases to deliver value faster. It
+            delivered instability instead, eroding the very trust it promised
+            to increase.</p>
+
+        <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The rolling release feedback loop: faster releases lead to more updates, which lead to more breakage, which leads to more maintenance, which leaves less time for quality, which leads to faster releases to compensate." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .loop-label { font: 600 10.5px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .loop-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .loop-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .loop-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#loop-arr); }
+            </style>
+            <defs>
+                <marker id="loop-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <!-- Boxes -->
+            <rect class="loop-box" x="185" y="10" width="150" height="32"/>
+            <text class="loop-label" x="260" y="31" text-anchor="middle">Faster Releases</text>
+            <rect class="loop-box" x="370" y="75" width="130" height="32"/>
+            <text class="loop-label" x="435" y="96" text-anchor="middle">More Updates</text>
+            <rect class="loop-box" x="370" y="140" width="130" height="32"/>
+            <text class="loop-label" x="435" y="161" text-anchor="middle">More Breakage</text>
+            <rect class="loop-box" x="185" y="175" width="150" height="32"/>
+            <text class="loop-label" x="260" y="196" text-anchor="middle">More Maintenance</text>
+            <rect class="loop-box" x="20" y="140" width="130" height="32"/>
+            <text class="loop-label" x="85" y="161" text-anchor="middle">Less Quality Time</text>
+            <rect class="loop-box" x="20" y="75" width="130" height="32"/>
+            <text class="loop-label" x="85" y="96" text-anchor="middle">Ship Faster to</text>
+            <!-- Arrows -->
+            <path class="loop-arrow" d="M 335 35 L 380 75"/>
+            <path class="loop-arrow" d="M 435 107 L 435 140"/>
+            <path class="loop-arrow" d="M 370 165 L 335 180"/>
+            <path class="loop-arrow" d="M 185 190 L 150 165"/>
+            <path class="loop-arrow" d="M 85 140 L 85 107"/>
+            <path class="loop-arrow" d="M 150 82 L 185 42"/>
+            <!-- Compensate label -->
+            <text class="loop-sub" x="85" y="96" text-anchor="middle" dy="14">Compensate</text>
+        </svg>
+
+        <p>Software used to be finished. Now it is merely the latest version.
+            The invoice is not the update. It is the permanent state of almost
+            working.</p>
+
+        <blockquote>
+            <p>Rather an expensive beta.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The velocity, itemised.</strong>
+                Chrome: 6-week cycle, then 4, then 2. Node.js: a new major every
+                6 months. npm: 2.5 million packages, thousands updated daily.
+                Dependabot on a monorepo: 200 PRs per week. 60 to 80 per cent of
+                development effort spent on maintenance, not features. And then
+                CrowdStrike shipped one update that bypassed its own validator and
+                crashed 8.5 million machines. PostgreSQL ships one major a year.
+                Debian releases when ready. SQLite has been backward-compatible since
+                2004. The evidence is not subtle.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
