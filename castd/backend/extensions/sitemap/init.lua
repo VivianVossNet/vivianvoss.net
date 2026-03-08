@@ -89,6 +89,7 @@ local pages = {
     { loc = "/blog/bem",                 priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/rolling-releases",    priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-enshittification-cycle", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-distributed-tax",       priority = "0.7", changefreq = "yearly" },
 }
 
 function route()

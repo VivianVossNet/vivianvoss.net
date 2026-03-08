@@ -1,0 +1,245 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Distributed Tax — Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A function call costs 0.001 ms. A network call between two microservices costs 1 to 5 ms. That is factor 5,000 before any business logic executes. One rather wonders what one gets for that markup.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-distributed-tax{( endslot )}
+
+{( slot og-title )}The Distributed Tax — Vivian Voss{( endslot )}
+
+{( slot og-desc )}A function call costs 0.001 ms. A network call between two microservices costs 1 to 5 ms. Factor 5,000 before any business logic executes.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Distributed Tax",
+    "datePublished": "2026-03-08",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-distributed-tax",
+    "description": "A function call costs 0.001 ms. A network call between two microservices costs 1 to 5 ms. That is factor 5,000 before any business logic executes. One rather wonders what one gets for that markup.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-08">08 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Distributed Tax</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">kubernetes</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>A function call costs 0.001 milliseconds. A network call between two
+            microservices in the same datacentre costs 1 to 5 ms. That is a factor
+            of 1,000 to 5,000 before any business logic executes.</p>
+
+        <p>One rather wonders what one gets for that markup.</p>
+
+        <h2>The Tax</h2>
+
+        <p>Each hop pays its toll: DNS resolution, TCP handshake, TLS negotiation,
+            JSON serialisation, transmission. Chain ten services together and you
+            have added 30 ms of pure infrastructure latency to every request.
+            At 10,000 requests per second,
+            <a href="https://dev.to/polliog/microservices-are-killing-your-performance-and-heres-the-math-21op" target="_blank" rel="noopener">benchmarks show</a>
+            +140% p99 latency, +300% memory consumption, and +260% network I/O
+            compared to the equivalent monolith.</p>
+
+        <p>Then the marshalling. Microservices spend 30 to 50% of CPU time
+            converting objects to JSON, sending them across the wire, and parsing
+            them back into objects at the other end. A monolith passes a pointer.
+            Cost: precisely nothing.</p>
+
+        <svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The cost of a single hop between two microservices: DNS resolution, TCP handshake, TLS negotiation, JSON serialisation, transmission, JSON deserialisation. A function call skips all six steps." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .hp-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .hp-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .hp-val { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .hp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .hp-box-a { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .hp-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#hp-arr); }
+            </style>
+            <defs>
+                <marker id="hp-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text class="hp-label" x="260" y="18" text-anchor="middle">Cost of a Single Network Hop</text>
+            <!-- Steps -->
+            <rect class="hp-box" x="20" y="36" width="145" height="30"/>
+            <text class="hp-label" x="92" y="55" text-anchor="middle">DNS Resolution</text>
+            <path class="hp-arrow" d="M 165 51 L 195 51"/>
+            <rect class="hp-box" x="195" y="36" width="145" height="30"/>
+            <text class="hp-label" x="267" y="55" text-anchor="middle">TCP Handshake</text>
+            <path class="hp-arrow" d="M 340 51 L 370 51"/>
+            <rect class="hp-box" x="370" y="36" width="130" height="30"/>
+            <text class="hp-label" x="435" y="55" text-anchor="middle">TLS Negotiate</text>
+            <!-- Row 2 -->
+            <path class="hp-arrow" d="M 435 66 L 435 86"/>
+            <rect class="hp-box-a" x="285" y="86" width="215" height="30"/>
+            <text class="hp-label" x="392" y="105" text-anchor="middle">JSON Serialise</text>
+            <path class="hp-arrow" d="M 285 101 L 255 101"/>
+            <rect class="hp-box-a" x="105" y="86" width="150" height="30"/>
+            <text class="hp-label" x="180" y="105" text-anchor="middle">Transmit</text>
+            <path class="hp-arrow" d="M 180 116 L 180 136"/>
+            <rect class="hp-box-a" x="80" y="136" width="200" height="30"/>
+            <text class="hp-label" x="180" y="155" text-anchor="middle">JSON Deserialise</text>
+            <!-- Totals -->
+            <rect class="hp-box-a" x="60" y="190" width="400" height="35"/>
+            <text class="hp-val" x="260" y="212" text-anchor="middle">Network call: 1 to 5 ms per hop</text>
+            <rect class="hp-box" x="120" y="240" width="280" height="35"/>
+            <text class="hp-label" x="260" y="262" text-anchor="middle">Function call: 0.001 ms</text>
+            <text class="hp-sub" x="260" y="295" text-anchor="middle">Factor 1,000 to 5,000. Before any business logic.</text>
+        </svg>
+
+        <h2>The Fix for the Fix</h2>
+
+        <p>The latency problem required a solution. The solution was a service
+            mesh. <a href="https://istio.io/latest/docs/ops/deployment/performance-and-scalability/" target="_blank" rel="noopener">Istio</a>
+            adds 2.5 ms at p90 per hop. Each sidecar proxy consumes 0.20 vCPU and
+            60 MB of RAM. Ten services, two proxies per hop: 4 vCPU and 1.2 GB
+            of RAM for routing alone. Before your application does anything
+            whatsoever.</p>
+
+        <p>One built a solution. The solution needed a solution. The solution's
+            solution needed its own control plane. Marvellous engineering, that.</p>
+
+        <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Service mesh overhead for 10 microservices: 4 vCPU and 1.2 GB RAM consumed by sidecar proxies for routing alone, plus 2.5 ms p90 latency per hop added by Istio." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .sm-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .sm-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .sm-val { font: 600 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .sm-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .sm-box-a { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text class="sm-label" x="260" y="18" text-anchor="middle">Service Mesh Overhead (10 Services)</text>
+            <!-- Per sidecar -->
+            <rect class="sm-box" x="20" y="36" width="230" height="55"/>
+            <text class="sm-label" x="135" y="56" text-anchor="middle">Per Sidecar Proxy</text>
+            <text class="sm-val" x="135" y="80" text-anchor="middle">0.20 vCPU + 60 MB</text>
+            <rect class="sm-box" x="270" y="36" width="230" height="55"/>
+            <text class="sm-label" x="385" y="56" text-anchor="middle">Per Hop Latency</text>
+            <text class="sm-val" x="385" y="80" text-anchor="middle">+2.5 ms (p90)</text>
+            <!-- Totals -->
+            <rect class="sm-box-a" x="60" y="115" width="400" height="55"/>
+            <text class="sm-label" x="260" y="135" text-anchor="middle">Total: Routing Infrastructure Only</text>
+            <text class="sm-val" x="260" y="158" text-anchor="middle">4 vCPU + 1.2 GB RAM</text>
+            <!-- Comparison -->
+            <rect class="sm-box" x="100" y="195" width="320" height="35"/>
+            <text class="sm-label" x="260" y="217" text-anchor="middle">Monolith routing overhead: 0</text>
+            <text class="sm-sub" x="260" y="252" text-anchor="middle">The solution needed a solution. The solution's solution needed a control plane.</text>
+        </svg>
+
+        <h2>The Retreat</h2>
+
+        <p>Amazon Prime Video moved their video monitoring from microservices to
+            a monolith.
+            <a href="https://www.thestack.technology/amazon-prime-video-microservices-monolith/" target="_blank" rel="noopener">Cost reduction: 90%</a>.
+            Segment ran
+            <a href="https://www.twilio.com/en-us/blog/developers/best-practices/goodbye-microservices/" target="_blank" rel="noopener">140 microservices</a>.
+            Three engineers spent most of their time keeping the system alive. They
+            moved back. Testing went from one hour to milliseconds.</p>
+
+        <p><a href="https://istio.io/latest/docs/ops/deployment/architecture/" target="_blank" rel="noopener">Istio itself</a>
+            quietly consolidated its own control plane from microservices back to a
+            single binary. One does appreciate the irony.</p>
+
+        <p>Kelsey Hightower, quite possibly the most prominent Kubernetes advocate
+            alive, in 2020:
+            <a href="https://changelog.com/posts/monoliths-are-the-future" target="_blank" rel="noopener">"Monoliths are the future because the problem people are trying to solve
+            with microservices doesn't really line up with reality."</a></p>
+
+        <svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The retreat from microservices: Amazon Prime Video 90% cost reduction, Segment 140 services back to one, Istio control plane back to monolith, 37signals left AWS saving 7 million dollars." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .rt-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .rt-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .rt-val { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .rt-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .rt-box-a { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text class="rt-label" x="260" y="18" text-anchor="middle">The Retreat</text>
+            <!-- Amazon -->
+            <rect class="rt-box-a" x="20" y="36" width="230" height="55"/>
+            <text class="rt-label" x="135" y="56" text-anchor="middle">Amazon Prime Video (2023)</text>
+            <text class="rt-val" x="135" y="80" text-anchor="middle">90% cost reduction</text>
+            <!-- Segment -->
+            <rect class="rt-box-a" x="270" y="36" width="230" height="55"/>
+            <text class="rt-label" x="385" y="56" text-anchor="middle">Segment (2017)</text>
+            <text class="rt-val" x="385" y="80" text-anchor="middle">140 services &#x2192; 1</text>
+            <!-- Istio -->
+            <rect class="rt-box" x="20" y="108" width="230" height="55"/>
+            <text class="rt-label" x="135" y="128" text-anchor="middle">Istio Control Plane</text>
+            <text class="rt-sub" x="135" y="150" text-anchor="middle">Microservices &#x2192; single binary</text>
+            <!-- 37signals -->
+            <rect class="rt-box" x="270" y="108" width="230" height="55"/>
+            <text class="rt-label" x="385" y="128" text-anchor="middle">37signals (Cloud Exit)</text>
+            <text class="rt-val" x="385" y="150" text-anchor="middle">$7M saved over 5 years</text>
+            <!-- Quote -->
+            <text class="rt-sub" x="260" y="195" text-anchor="middle">"Monoliths are the future because the problem people are trying to solve</text>
+            <text class="rt-sub" x="260" y="210" text-anchor="middle">with microservices doesn't really line up with reality."</text>
+            <text class="rt-sub" x="260" y="232" text-anchor="middle">Kelsey Hightower, 2020</text>
+        </svg>
+
+        <h2>The Alternative</h2>
+
+        <p>A compiled binary. Rust: 2 to 5 MB, statically linked, no runtime.
+            Go: 10 to 15 MB, single binary. Even a lean PHP monolith behind nginx.
+            One process, one deploy, no orchestrator. No dependency tree with 1,400
+            transitive packages, each one an attack vector.</p>
+
+        <p>Discord replaced Go microservices with Rust: tail latencies from 300 ms
+            to single digits. Figma rewrote their multiplayer server: 10x capacity,
+            same hardware.
+            <a href="https://basecamp.com/cloud-exit" target="_blank" rel="noopener">37signals</a>
+            left AWS entirely: $7 million saved over five years.</p>
+
+        <p>Martin Fowler wrote
+            <a href="https://martinfowler.com/bliki/MonolithFirst.html" target="_blank" rel="noopener">"Monolith First"</a>
+            in 2015. A decade later, the industry is still learning the lesson the
+            hard way. Some lessons require an invoice before they register.</p>
+
+        <h2>The Point</h2>
+
+        <p>Microservices solve a genuine problem: organisational scaling at
+            thousands of engineers. Netflix, Amazon proper, the complexity is
+            justified. The architecture exists because the team structure demands
+            it, not because the software does.</p>
+
+        <p>For the other 95%, the question is not which orchestrator. It is
+            whether you need one at all. The reduction is so drastic it sounds
+            utopian to those who have only ever seen the distributed stack.</p>
+
+        <p>Fewer moving parts. Not more.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The numbers.</strong>
+                Function call: 0.001 ms. Network call: 1 to 5 ms. Microservices
+                at 10k req/s: +140% p99 latency, +300% memory, +260% network I/O
+                versus monolith. Istio sidecar: 2.5 ms p90, 0.20 vCPU, 60 MB per
+                proxy. Ten services: 4 vCPU and 1.2 GB RAM for routing alone.
+                30 to 50% of CPU time on serialisation. Amazon Prime Video: 90%
+                cost reduction after moving back. Segment: 140 services to one.
+                Fowler: "Monolith First" (2015). Hightower: "Monoliths are the
+                future" (2020). The architecture that impresses in system design
+                interviews is not the one that ships reliable software.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
