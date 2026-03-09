@@ -1,0 +1,335 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Replacement: REST with JSON-RPC &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="REST gave us 5 verbs, 50 status codes, URL hierarchies, and OpenAPI specs longer than the code they describe. JSON-RPC gave us 30 lines and a question: what if we just called a method and got a result?">
+{( endslot )}
+
+{( slot canonical )}/blog/the-json-rpc-replacement{( endslot )}
+
+{( slot og-title )}The Replacement: REST with JSON-RPC &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}REST gave us 5 verbs, 50 status codes, URL hierarchies, and OpenAPI specs longer than the code they describe. JSON-RPC gave us 30 lines and a question: what if we just called a method and got a result?{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Replacement: REST with JSON-RPC",
+    "datePublished": "2026-01-31",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-json-rpc-replacement",
+    "description": "REST gave us 5 verbs, 50 status codes, URL hierarchies, and OpenAPI specs longer than the code they describe. JSON-RPC gave us 30 lines and a question: what if we just called a method and got a result?",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-31">31 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Replacement: REST with JSON-RPC</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Replacement</em> &#x25A0; Episode 06</p>
+
+        <p>In the year 2000, Roy Fielding submitted his
+            <a href="https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm" target="_blank" rel="noopener">doctoral dissertation</a>
+            at the University of California, Irvine. It described an
+            architectural style called Representational State Transfer.
+            It was thoughtful, well-reasoned, and rooted in the design
+            principles of the early web. We read it, nodded sagely,
+            and then spent the next quarter-century turning it into a
+            religion.</p>
+
+        <p>Five verbs. Fifty-odd status codes. URL hierarchies deep
+            enough to require a map. HATEOAS, which nobody implements
+            but everyone pretends to understand. OpenAPI specifications
+            longer than the application code they describe. All of this
+            ceremony in service of a single, rather modest question:
+            the client wants something from the server.</p>
+
+        <h2>The Thirty-Line Specification</h2>
+
+        <p>In 2005, the
+            <a href="https://www.jsonrpc.org/specification" target="_blank" rel="noopener">JSON-RPC specification</a>
+            appeared. It is thirty lines long. The entire protocol fits
+            on a napkin, and not a large one. The idea is disarmingly
+            simple: call a method, get a result.</p>
+
+        <p>One endpoint. One HTTP verb. One format.</p>
+
+        <pre><code>POST /api
+{
+    "method": "getUser",
+    "params": { "id": 42 },
+    "id": 1
+}</code></pre>
+
+        <p>The response:</p>
+
+        <pre><code>{
+    "result": { "id": 42, "name": "Alice" },
+    "id": 1
+}</code></pre>
+
+        <p>No verb selection. No status code philosophy. No URL
+            hierarchy to maintain, document, and argue about in code
+            reviews. You send what you want. You receive what you
+            asked for. The protocol is so thin you can forget it is
+            there, which is precisely what a good protocol should
+            aspire to.</p>
+
+        <h2>A Study in Legibility</h2>
+
+        <p>Consider a real-world request: you want the items from
+            order number seven, but only the name and price fields,
+            and you want the product details included.</p>
+
+        <p>REST:</p>
+
+        <pre><code>GET /users/42/orders/7/items?include=product&amp;fields=name,price</code></pre>
+
+        <p>JSON-RPC:</p>
+
+        <pre><code>{
+    "method": "getOrderItems",
+    "params": {
+        "orderId": 7,
+        "fields": ["name", "price"]
+    }
+}</code></pre>
+
+        <p>The first is a puzzle. You read it left to right, parsing
+            path segments like a compiler, mentally separating resource
+            identifiers from query parameters, wondering whether
+            <code>include</code> is a standard feature or a custom
+            invention. The second is a sentence. A method name that
+            says what it does, parameters that say what they contain.
+            A junior developer can read it on their first day. A
+            senior developer can debug it without consulting the API
+            documentation.</p>
+
+        <!-- REST ceremony vs JSON-RPC simplicity -->
+        <svg id="rpc-ceremony" viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison of REST ceremony versus JSON-RPC simplicity. REST requires 5 HTTP verbs, 50 plus status codes, URL hierarchies, HATEOAS, and OpenAPI specs. JSON-RPC requires 1 verb POST, 1 status code 200, method names, and a 30-line spec." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #rpc-ceremony .rc-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #rpc-ceremony .rc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #rpc-ceremony .rc-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #rpc-ceremony .rc-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #rpc-ceremony .rc-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                #rpc-ceremony .rc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #rpc-ceremony .rc-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                #rpc-ceremony .rc-fill-warn { fill: var(--muted); opacity: 0.06; rx: 3; }
+                #rpc-ceremony .rc-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <text class="rc-title" x="260" y="20" text-anchor="middle">The Ceremony Gap</text>
+
+            <!-- REST side -->
+            <text class="rc-label" x="130" y="50" text-anchor="middle">REST</text>
+
+            <rect class="rc-fill-warn" x="30" y="62" width="200" height="26"/>
+            <rect class="rc-box" x="30" y="62" width="200" height="26"/>
+            <text class="rc-mono" x="130" y="79" text-anchor="middle">5 HTTP verbs</text>
+
+            <rect class="rc-fill-warn" x="30" y="94" width="200" height="26"/>
+            <rect class="rc-box" x="30" y="94" width="200" height="26"/>
+            <text class="rc-mono" x="130" y="111" text-anchor="middle">50+ status codes</text>
+
+            <rect class="rc-fill-warn" x="30" y="126" width="200" height="26"/>
+            <rect class="rc-box" x="30" y="126" width="200" height="26"/>
+            <text class="rc-mono" x="130" y="143" text-anchor="middle">URL hierarchies</text>
+
+            <rect class="rc-fill-warn" x="30" y="158" width="200" height="26"/>
+            <rect class="rc-box" x="30" y="158" width="200" height="26"/>
+            <text class="rc-mono" x="130" y="175" text-anchor="middle">HATEOAS (in theory)</text>
+
+            <rect class="rc-fill-warn" x="30" y="190" width="200" height="26"/>
+            <rect class="rc-box" x="30" y="190" width="200" height="26"/>
+            <text class="rc-mono" x="130" y="207" text-anchor="middle">3,000-line OpenAPI spec</text>
+
+            <!-- JSON-RPC side -->
+            <text class="rc-accent" x="390" y="50" text-anchor="middle">JSON-RPC</text>
+
+            <rect class="rc-fill" x="290" y="62" width="200" height="26"/>
+            <rect class="rc-box" x="290" y="62" width="200" height="26" stroke="var(--accent)"/>
+            <text class="rc-mono" x="390" y="79" text-anchor="middle">1 verb: POST</text>
+
+            <rect class="rc-fill" x="290" y="94" width="200" height="26"/>
+            <rect class="rc-box" x="290" y="94" width="200" height="26" stroke="var(--accent)"/>
+            <text class="rc-mono" x="390" y="111" text-anchor="middle">1 status code: 200</text>
+
+            <rect class="rc-fill" x="290" y="126" width="200" height="26"/>
+            <rect class="rc-box" x="290" y="126" width="200" height="26" stroke="var(--accent)"/>
+            <text class="rc-mono" x="390" y="143" text-anchor="middle">Method names</text>
+
+            <rect class="rc-fill" x="290" y="158" width="200" height="26"/>
+            <rect class="rc-box" x="290" y="158" width="200" height="26" stroke="var(--accent)"/>
+            <text class="rc-mono" x="390" y="175" text-anchor="middle">30-line spec</text>
+
+            <!-- Bottom summary -->
+            <line x1="30" y1="240" x2="490" y2="240" stroke="var(--border)" stroke-width="0.5"/>
+            <text class="rc-note" x="130" y="265" text-anchor="middle">Spec for a medium API: 3,000 lines</text>
+            <text class="rc-accent" x="390" y="265" text-anchor="middle">Entire protocol: 30 lines</text>
+            <text class="rc-sub" x="260" y="295" text-anchor="middle">Same question: "Client wants something from server."</text>
+        </svg>
+
+        <h2>Where REST Earns Its Keep</h2>
+
+        <p>REST is not without merit, and intellectual honesty demands
+            we say so. Public APIs benefit from REST conventions because
+            every developer already knows them. Browser caching works
+            beautifully with GET requests and proper cache headers. File
+            downloads map naturally to resource URLs. Legacy systems
+            that already speak REST do not need rewriting for the sake
+            of architectural purity. If your API is consumed by unknown
+            third parties who expect standard HTTP semantics, REST is
+            the path of least friction.</p>
+
+        <p>These are genuine strengths, not consolation prizes.</p>
+
+        <h2>Where JSON-RPC Wins</h2>
+
+        <p>Internal service communication. Complex operations that do
+            not map cleanly to CRUD verbs. Mobile and SPA backends
+            where you control both ends of the wire. Batch requests,
+            which JSON-RPC handles natively by sending an array of
+            calls. Any situation where the question is not "which
+            resource?" but "what operation?"</p>
+
+        <p>The moment your API verbs start looking tortured, you know
+            the model is wrong. <code>POST /users/42/password-resets</code>
+            is not a resource. It is a verb pretending to be a noun
+            because the framework demands it. <code>{"method":
+            "resetPassword", "params": {"userId": 42}}</code> says
+            what it means without the costume.</p>
+
+        <!-- Request flow comparison -->
+        <svg id="rpc-flow" viewBox="0 0 520 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Request flow comparison. REST requires choosing a verb, constructing a URL hierarchy, mapping a status code, and parsing the response. JSON-RPC sends a method name and parameters, receives a result or error." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #rpc-flow .rf-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #rpc-flow .rf-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #rpc-flow .rf-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #rpc-flow .rf-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #rpc-flow .rf-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                #rpc-flow .rf-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #rpc-flow .rf-fill { fill: var(--accent); opacity: 0.06; rx: 3; }
+                #rpc-flow .rf-fill-warn { fill: var(--muted); opacity: 0.06; rx: 3; }
+                #rpc-flow .rf-arrow { stroke: var(--border); stroke-width: 1; fill: none; marker-end: url(#rf-arrowhead); }
+                #rpc-flow .rf-arrow-accent { stroke: var(--accent); stroke-width: 1; fill: none; marker-end: url(#rf-arrowhead-accent); }
+            </style>
+
+            <defs>
+                <marker id="rf-arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--border)" stroke-width="1"/>
+                </marker>
+                <marker id="rf-arrowhead-accent" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--accent)" stroke-width="1"/>
+                </marker>
+            </defs>
+
+            <text class="rf-title" x="260" y="20" text-anchor="middle">Request Flow</text>
+
+            <!-- REST flow -->
+            <text class="rf-label" x="130" y="48" text-anchor="middle">REST</text>
+            <rect class="rf-fill-warn" x="20" y="58" width="68" height="24"/>
+            <rect class="rf-box" x="20" y="58" width="68" height="24"/>
+            <text class="rf-mono" x="54" y="74" text-anchor="middle">Verb?</text>
+            <line class="rf-arrow" x1="92" y1="70" x2="100" y2="70"/>
+
+            <rect class="rf-fill-warn" x="104" y="58" width="68" height="24"/>
+            <rect class="rf-box" x="104" y="58" width="68" height="24"/>
+            <text class="rf-mono" x="138" y="74" text-anchor="middle">URL?</text>
+            <line class="rf-arrow" x1="176" y1="70" x2="184" y2="70"/>
+
+            <rect class="rf-fill-warn" x="188" y="58" width="68" height="24"/>
+            <rect class="rf-box" x="188" y="58" width="68" height="24"/>
+            <text class="rf-mono" x="222" y="74" text-anchor="middle">Status?</text>
+
+            <text class="rf-sub" x="130" y="102" text-anchor="middle">3 decisions before you start</text>
+
+            <!-- JSON-RPC flow -->
+            <text class="rf-accent" x="400" y="48" text-anchor="middle">JSON-RPC</text>
+            <rect class="rf-fill" x="320" y="58" width="160" height="24"/>
+            <rect class="rf-box" x="320" y="58" width="160" height="24" stroke="var(--accent)"/>
+            <text class="rf-mono" x="400" y="74" text-anchor="middle">method + params</text>
+
+            <text class="rf-sub" x="400" y="102" text-anchor="middle">1 decision. Done.</text>
+
+            <!-- Response -->
+            <line x1="30" y1="125" x2="490" y2="125" stroke="var(--border)" stroke-width="0.5"/>
+            <text class="rf-label" x="260" y="148" text-anchor="middle">Response</text>
+
+            <rect class="rf-fill-warn" x="20" y="160" width="230" height="24"/>
+            <rect class="rf-box" x="20" y="160" width="230" height="24"/>
+            <text class="rf-mono" x="135" y="176" text-anchor="middle">200? 201? 204? 404? 409? 422?</text>
+
+            <rect class="rf-fill" x="290" y="160" width="200" height="24"/>
+            <rect class="rf-box" x="290" y="160" width="200" height="24" stroke="var(--accent)"/>
+            <text class="rf-mono" x="390" y="176" text-anchor="middle">result or error. Always 200.</text>
+
+            <text class="rf-sub" x="260" y="215" text-anchor="middle">Complexity should live in the application, not the transport.</text>
+        </svg>
+
+        <h2>The Specification Gap</h2>
+
+        <p>The JSON-RPC specification is thirty lines. The OpenAPI
+            specification for a medium-sized REST API is three
+            thousand. That ratio is not an exaggeration. It is
+            arithmetic.</p>
+
+        <p>Three thousand lines of YAML describing URL patterns, query
+            parameter types, response schemas for every status code,
+            authentication flows, pagination conventions, and error
+            formats. All of it machine-readable, none of it
+            machine-necessary. The server already knows what it
+            accepts. The client already knows what it sends. The
+            specification exists to bridge the gap between the two,
+            but the gap only exists because REST created it.</p>
+
+        <p>JSON-RPC closes the gap by not opening it. The method name
+            is the documentation. The parameters are the schema. The
+            response is either a result or an error. You do not need
+            three thousand lines of YAML to explain what
+            <code>getUser</code> does.</p>
+
+        <blockquote>
+            <p>REST started as a dissertation. We turned it into a
+                religion. JSON-RPC is thirty lines, one verb, and a
+                method name. Sometimes the simplest protocol is the
+                one that gets out of the way.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>On HATEOAS</strong></p>
+            <p>HATEOAS, Hypermedia as the Engine of Application State,
+                is REST's most ambitious idea and its most universally
+                ignored one. The concept is sound: responses should
+                contain links to related actions, so the client
+                discovers the API dynamically rather than hardcoding
+                URLs. In practice, virtually no production API
+                implements it. The industry collectively decided that
+                the theoretical elegance was not worth the practical
+                complexity. JSON-RPC sidesteps the question entirely:
+                if the client already knows the method name, it does
+                not need the server to tell it where to go next.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

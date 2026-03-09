@@ -1,0 +1,341 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Native Form &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="HTML has validated emails since 2014. Formik plus Yup cost 44 KB to replicate what the browser does for free. Form libraries do not solve form problems. They solve framework problems.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-native-form{( endslot )}
+
+{( slot og-title )}The Native Form &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}HTML has validated emails since 2014. Formik plus Yup cost 44 KB to replicate what the browser does for free. Form libraries solve framework problems, not form problems.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Native Form",
+    "datePublished": "2026-01-14",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-native-form",
+    "description": "HTML has validated emails since 2014. Formik plus Yup cost 44 KB to replicate what the browser does for free. Form libraries do not solve form problems. They solve framework problems.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-14">14 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Native Form</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">html</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Lean Web</em> &#x25A0; Episode 7</p>
+
+        <p>&#x201C;We need a validation library for forms.&#x201D;</p>
+
+        <p>One encounters this sentence in sprint plannings, architecture
+            reviews, and that peculiarly confident moment when a developer
+            opens a pull request adding 44 kilobytes of JavaScript to a
+            project that collects an email address and a password. The
+            follow-up question is always the same, and it is never asked:
+            for what, precisely?</p>
+
+        <p>The browser has validated email addresses since 2014. Not
+            approximately. Not with a polyfill. Natively, in every browser
+            that matters, with a single HTML attribute. The specification
+            is
+            <a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation" target="_blank" rel="noopener">HTML5 Constraint Validation</a>,
+            and it has been stable for over a decade. It was stable before
+            React existed. It was stable before most npm packages had their
+            first birthday, and it will be stable long after they have
+            been abandoned.</p>
+
+        <h2>The Cascade</h2>
+
+        <p>Consider a React application. A form wants to submit. The
+            browser raises a submit event, the way browsers have done
+            since the late 1990s. React&#x2019;s response?
+            <code>e.preventDefault()</code>. Stop that nonsense. We will
+            handle this ourselves.</p>
+
+        <p>And so the cascade begins. The form no longer submits natively,
+            which means the browser&#x2019;s built-in validation no longer
+            fires, which means you need a validation library, which means
+            you need a schema definition language, which means you need
+            <a href="https://bundlephobia.com/package/formik" target="_blank" rel="noopener">Formik</a>.
+            Formik needs a schema validator, so you add
+            <a href="https://bundlephobia.com/package/yup" target="_blank" rel="noopener">Yup</a>.
+            Yup needs schema definitions, so you write type-adjacent
+            objects that describe the shape of data your HTML already
+            described perfectly well with <code>type="email"</code> and
+            <code>required</code>.</p>
+
+        <p>The modern alternative is React Hook Form with Zod. It is
+            lighter (38 KB instead of 44 KB), better designed, and still
+            entirely unnecessary for the problem it claims to solve. You
+            are paying 38 kilobytes to re-implement what the browser does
+            for zero kilobytes. The reduction from 44 to 38 is presented
+            as progress. It is optimising the cost of a thing you did not
+            need to buy.</p>
+
+        <h2>What the Browser Already Does</h2>
+
+        <p>The Constraint Validation API has been shipping in every major
+            browser since 2014. It is not experimental. It is not behind
+            a flag. It is not a proposal. It is the platform.</p>
+
+        <p><strong>Validation.</strong> <code>&lt;input type="email"
+            required&gt;</code>. One line. The browser checks the format,
+            prevents submission if the field is empty, and displays a
+            localised error message in the user&#x2019;s language. No
+            JavaScript. No schema. No library.</p>
+
+        <p><strong>Custom error messages.</strong>
+            <code>input.setCustomValidity('Please use your work email')</code>.
+            One line. Native since 2014. The message appears in the
+            browser&#x2019;s built-in validation tooltip. No state management.
+            No <code>touched</code> tracking. No <code>onChange</code>
+            handler that sets an error string in a React state object
+            that triggers a re-render that updates a
+            <code>&lt;span&gt;</code> that was invisible until a boolean
+            flipped.</p>
+
+        <p><strong>Custom styling.</strong>
+            <code>input:invalid { border-color: crimson; }</code>. A CSS
+            pseudo-selector. The browser applies it when validation fails.
+            No JavaScript state. No conditional class names. No
+            <code>className={errors.email ? 'error' : ''}</code>. The
+            newer
+            <a href="https://caniuse.com/mdn-css_selectors_user-invalid" target="_blank" rel="noopener"><code>:user-invalid</code></a>
+            pseudo-class is even better: it only activates after the user
+            has actually interacted with the field, solving the
+            &#x201C;everything is red on page load&#x201D; problem that
+            form libraries spend considerable effort addressing.</p>
+
+        <p><strong>Collecting form data.</strong>
+            <code>Object.fromEntries(new FormData(form))</code>. One line.
+            Returns a plain object with every named field&#x2019;s value.
+            No controlled components. No <code>useState</code> for every
+            input. No synthetic event handlers. The form already knows
+            its own data. It has always known its own data. You simply
+            had to ask.</p>
+
+        <!-- Bundle size comparison: Formik+Yup vs RHF+Zod vs Native HTML5 -->
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bundle size comparison. Formik plus Yup: 44 kilobytes. React Hook Form plus Zod: 38 kilobytes. Native HTML5 validation: 0 kilobytes." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .form-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .form-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .form-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .form-val { font: 700 12px/1 ui-monospace, monospace; fill: var(--text); }
+                .form-accent { font: 700 12px/1 ui-monospace, monospace; fill: var(--accent); }
+                .form-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .form-bar-bg { fill: var(--border); opacity: 0.3; }
+                .form-bar-fill { fill: var(--accent); opacity: 0.7; }
+                .form-bar-zero { fill: var(--accent); opacity: 0.15; }
+            </style>
+
+            <text class="form-title" x="260" y="24" text-anchor="middle">Form Validation: Bundle Cost</text>
+            <text class="form-sub" x="260" y="42" text-anchor="middle">Minified + gzipped transfer size</text>
+
+            <!-- Bar 1: Formik + Yup -->
+            <text class="form-label" x="40" y="80">Formik + Yup</text>
+            <rect class="form-bar-bg" x="40" y="90" width="440" height="28" rx="3"/>
+            <rect class="form-bar-fill" x="40" y="90" width="440" height="28" rx="3"/>
+            <text class="form-val" x="470" y="108" text-anchor="end">44 KB</text>
+
+            <!-- Bar 2: React Hook Form + Zod -->
+            <text class="form-label" x="40" y="148">React Hook Form + Zod</text>
+            <rect class="form-bar-bg" x="40" y="158" width="440" height="28" rx="3"/>
+            <rect class="form-bar-fill" x="40" y="158" width="380" height="28" rx="3"/>
+            <text class="form-val" x="410" y="176" text-anchor="end">38 KB</text>
+
+            <!-- Bar 3: Native HTML5 -->
+            <text class="form-label" x="40" y="216">Native HTML5</text>
+            <rect class="form-bar-bg" x="40" y="226" width="440" height="28" rx="3"/>
+            <rect class="form-bar-zero" x="40" y="226" width="4" height="28" rx="2"/>
+            <text class="form-accent" x="56" y="244">0 KB</text>
+
+            <!-- Bottom annotation -->
+            <line x1="40" y1="268" x2="480" y2="268" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="form-note" x="260" y="278" text-anchor="middle">The cheapest code is the code you do not ship.</text>
+        </svg>
+
+        <h2>The Real Problem</h2>
+
+        <p>Form libraries do not solve form problems. They solve
+            <em>framework</em> problems. React, Vue, and Angular declared
+            war on browser primitives. They intercepted form submission.
+            They replaced native state with synthetic state. They built
+            virtual DOMs that do not know what an <code>&lt;input&gt;</code>
+            contains unless you tell them on every keystroke. And then,
+            having removed every native capability, they sold the
+            replacements as features.</p>
+
+        <p>Formik exists because React broke forms. Yup exists because
+            Formik needs validation that HTML already provided. Zod exists
+            because TypeScript developers wanted type-safe schemas, which
+            is reasonable, but TypeScript developers also wanted to
+            validate HTML forms with those schemas, which is using a
+            sledgehammer to install a picture hook.</p>
+
+        <p>The framework created the problem. The ecosystem sold the
+            solution. The developer paid the bill. Twice: once in bundle
+            size, once in complexity.</p>
+
+        <!-- Architecture flow: Native vs Framework approach -->
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two architecture flows compared. Native: form submits, browser validates, collect data. Three steps. Framework: intercept submit, manage state, validate with library, handle errors, re-render, collect data. Six steps." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .arch-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .arch-heading { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .arch-step { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .arch-count { font: 700 11px/1 ui-monospace, monospace; fill: var(--accent); }
+                .arch-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .arch-box-accent { fill: var(--accent); opacity: 0.08; stroke: var(--accent); stroke-width: 1; rx: 4; }
+                .arch-arrow { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#arch-arrow-head); }
+                .arch-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .arch-dim { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <defs>
+                <marker id="arch-arrow-head" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+                    <path d="M0,0 L6,2 L0,4" fill="var(--muted)"/>
+                </marker>
+            </defs>
+
+            <text class="arch-title" x="260" y="20" text-anchor="middle">Two Paths to a Validated Form</text>
+
+            <!-- Native path (left) -->
+            <text class="arch-heading" x="130" y="50" text-anchor="middle">NATIVE HTML5</text>
+
+            <rect class="arch-box-accent" x="40" y="62" width="180" height="32"/>
+            <text class="arch-step" x="130" y="82" text-anchor="middle">User submits form</text>
+
+            <line class="arch-arrow" x1="130" y1="94" x2="130" y2="110"/>
+
+            <rect class="arch-box-accent" x="40" y="112" width="180" height="32"/>
+            <text class="arch-step" x="130" y="132" text-anchor="middle">Browser validates natively</text>
+
+            <line class="arch-arrow" x1="130" y1="144" x2="130" y2="160"/>
+
+            <rect class="arch-box-accent" x="40" y="162" width="180" height="32"/>
+            <text class="arch-step" x="130" y="182" text-anchor="middle">new FormData(form)</text>
+
+            <text class="arch-count" x="130" y="214" text-anchor="middle">3 steps. 0 KB.</text>
+
+            <!-- Framework path (right) -->
+            <text class="arch-heading" x="390" y="50" text-anchor="middle">FRAMEWORK + LIBRARY</text>
+
+            <rect class="arch-box" x="300" y="62" width="180" height="26"/>
+            <text class="arch-step" x="390" y="80" text-anchor="middle">e.preventDefault()</text>
+
+            <line class="arch-arrow" x1="390" y1="88" x2="390" y2="98"/>
+
+            <rect class="arch-box" x="300" y="100" width="180" height="26"/>
+            <text class="arch-step" x="390" y="118" text-anchor="middle">useState per field</text>
+
+            <line class="arch-arrow" x1="390" y1="126" x2="390" y2="136"/>
+
+            <rect class="arch-box" x="300" y="138" width="180" height="26"/>
+            <text class="arch-step" x="390" y="156" text-anchor="middle">Schema validation (Yup/Zod)</text>
+
+            <line class="arch-arrow" x1="390" y1="164" x2="390" y2="174"/>
+
+            <rect class="arch-box" x="300" y="176" width="180" height="26"/>
+            <text class="arch-step" x="390" y="194" text-anchor="middle">Error state management</text>
+
+            <line class="arch-arrow" x1="390" y1="202" x2="390" y2="212"/>
+
+            <rect class="arch-box" x="300" y="214" width="180" height="26"/>
+            <text class="arch-step" x="390" y="232" text-anchor="middle">Re-render with errors</text>
+
+            <line class="arch-arrow" x1="390" y1="240" x2="390" y2="250"/>
+
+            <rect class="arch-box" x="300" y="252" width="180" height="26"/>
+            <text class="arch-step" x="390" y="270" text-anchor="middle">Collect values from state</text>
+
+            <text class="arch-count" x="390" y="300" text-anchor="middle">6 steps. 38-44 KB.</text>
+
+            <!-- Bottom annotation -->
+            <line x1="40" y1="318" x2="480" y2="318" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="arch-note" x="260" y="336" text-anchor="middle">The browser is not your enemy. The browser is your runtime.</text>
+        </svg>
+
+        <h2>The Honest Exceptions</h2>
+
+        <p>There are legitimate cases for form libraries. A multi-step
+            wizard with conditional fields, server-side validation that
+            must merge with client-side errors, forms with dozens of
+            interdependent fields where custom validation logic genuinely
+            exceeds what the Constraint Validation API offers
+            comfortably. These cases exist. They are also not the reason
+            most teams install Formik.</p>
+
+        <p>Most teams install Formik because the tutorial used Formik.
+            Because the boilerplate project included it. Because someone
+            on the team had used it at their previous company. Because
+            the question &#x201C;does the browser already do this?&#x201D;
+            was never asked. The answer, in the overwhelming majority of
+            cases, is yes. The browser does this. The browser has done
+            this for over a decade. The browser does it for free, in zero
+            kilobytes, with localised error messages, with CSS
+            pseudo-selectors for styling, and with an API that requires
+            precisely one line of JavaScript to collect every field
+            value.</p>
+
+        <h2>The Runtime You Already Have</h2>
+
+        <p>The browser is not a rendering target. It is not a viewport
+            for your JavaScript application. It is a runtime with form
+            handling, validation, state management (the DOM), styling
+            hooks, accessibility features, and internationalisation. It
+            has had these things for years. It will have them for years
+            to come. They do not change between major versions. They do
+            not require migration guides. They do not have supply chain
+            vulnerabilities.</p>
+
+        <p>Every kilobyte of form validation JavaScript you ship is a
+            kilobyte that says: &#x201C;I did not know the browser could
+            do this.&#x201D; And in 2026, twelve years after the
+            Constraint Validation API shipped in every major browser,
+            that is no longer an explanation. It is an expense report
+            that nobody approved.</p>
+
+        <blockquote>
+            <p><code>&lt;input type="email" required&gt;</code>. One
+                attribute. Zero kilobytes. Native since 2014. The form
+                was always there. You just had to stop preventing it.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>On the economics of prevention</strong></p>
+            <p>A colleague pointed out that the real cost is not the 44 KB
+                download. It is the cognitive overhead: schema definitions
+                that duplicate HTML attributes, touched-state tracking
+                that duplicates browser behaviour, error components that
+                duplicate native validation tooltips. You end up
+                maintaining two parallel systems for the same job. The
+                library handles what the browser already handles, and the
+                browser handles it anyway, silently, underneath, waiting
+                for someone to remove the <code>preventDefault</code> and
+                let it do its work. The cheapest dependency is the one
+                you delete.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

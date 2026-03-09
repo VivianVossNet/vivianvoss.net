@@ -1,0 +1,348 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}SSH Config: The File Nobody Reads &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="You type ssh -i ~/.ssh/prod_key -p 2222 deploy@192.168.50.12 fourteen times a day. A plain text file reduces this to ssh prod. It has existed since 1999. ~/.ssh/config: multiplexing, jump hosts, keep-alives, and the end of muscle memory.">
+{( endslot )}
+
+{( slot canonical )}/blog/ssh-config{( endslot )}
+
+{( slot og-title )}SSH Config: The File Nobody Reads &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}You type the same 80-character SSH command fourteen times a day. A plain text file reduces it to two words. Multiplexing, jump hosts, keep-alives. Since 1999.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "SSH Config: The File Nobody Reads",
+    "datePublished": "2026-03-09",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/ssh-config",
+    "description": "You type ssh -i ~/.ssh/prod_key -p 2222 deploy@192.168.50.12 fourteen times a day. A plain text file reduces this to ssh prod. It has existed since 1999.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-09">9 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>SSH Config: The File Nobody Reads</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">ssh</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">devops</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 07</p>
+
+        <p>You type <code>ssh -i ~/.ssh/prod_key -p 2222 deploy@192.168.50.12</code>
+            fourteen times a day. You have done this for years. You have
+            committed the flags to muscle memory the way pianists commit
+            scales. It works. It is also entirely unnecessary.</p>
+
+        <p>There is a plain text file that reduces this to
+            <code>ssh prod</code>. It has existed since
+            <a href="https://www.openssh.com/history.html" target="_blank" rel="noopener">1999</a>.
+            <code>~/.ssh/config</code>. SSH reads it automatically on
+            every connection. No flag, no import, no reload. One file.
+            No GUI. No tool. No subscription.</p>
+
+        <h2>The Basics</h2>
+
+        <pre><code>Host prod
+  HostName 192.168.50.12
+  User deploy
+  Port 2222
+  IdentityFile ~/.ssh/prod_key</code></pre>
+
+        <p>Now: <code>ssh prod</code>. That is it.
+            <code>scp prod:logs.tar.gz .</code> works too.
+            <code>rsync</code>, <code>git pull</code>, VS Code Remote:
+            they all read this file. You configure once, everything
+            else follows.</p>
+
+        <p>Wildcards make it better:</p>
+
+        <pre><code>Host dev-*
+  User developer
+  IdentityFile ~/.ssh/dev_key</code></pre>
+
+        <p>Every host matching <code>dev-*</code> inherits the same
+            user and key. <code>dev-api</code>, <code>dev-frontend</code>,
+            <code>dev-db</code>: all covered. One pattern, not twelve
+            entries.</p>
+
+        <h2>The Multiplexer</h2>
+
+        <pre><code>Host *
+  ControlMaster auto
+  ControlPath ~/.ssh/sockets/%r@%h-%p
+  ControlPersist 600</code></pre>
+
+        <p>Your first connection opens TCP, negotiates TLS,
+            authenticates. Every subsequent connection to the same host
+            reuses that socket. No handshake. No key exchange. Instant.</p>
+
+        <p>Ten terminals to the same server: one connection. The other
+            nine are free. Rather changes the economics of SSH, that.</p>
+
+        <svg id="ssh-mux" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SSH multiplexing: ten terminal sessions sharing one TCP connection through a Unix socket, versus ten separate connections without ControlMaster." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ssh-mux .sm-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-mux .sm-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ssh-mux .sm-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ssh-mux .sm-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-mux .sm-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #ssh-mux .sm-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #ssh-mux .sm-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #ssh-mux .sm-line { stroke: var(--muted); stroke-width: 1; }
+                #ssh-mux .sm-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+                #ssh-mux .sm-arrow { fill: var(--accent); }
+            </style>
+            <text class="sm-title" x="260" y="18" text-anchor="middle">ControlMaster Multiplexing</text>
+            <!-- Terminals -->
+            <rect class="sm-box" x="20" y="40" width="100" height="30"/>
+            <text class="sm-sub" x="70" y="60" text-anchor="middle">terminal 1</text>
+            <rect class="sm-box" x="20" y="76" width="100" height="30"/>
+            <text class="sm-sub" x="70" y="96" text-anchor="middle">terminal 2</text>
+            <rect class="sm-box" x="20" y="112" width="100" height="30"/>
+            <text class="sm-sub" x="70" y="132" text-anchor="middle">terminal 3</text>
+            <text class="sm-sub" x="70" y="162" text-anchor="middle">...</text>
+            <rect class="sm-box" x="20" y="170" width="100" height="30"/>
+            <text class="sm-sub" x="70" y="190" text-anchor="middle">terminal 10</text>
+            <!-- Lines to socket -->
+            <line class="sm-line" x1="120" y1="55" x2="200" y2="110"/>
+            <line class="sm-line" x1="120" y1="91" x2="200" y2="110"/>
+            <line class="sm-line" x1="120" y1="127" x2="200" y2="110"/>
+            <line class="sm-line" x1="120" y1="185" x2="200" y2="110"/>
+            <!-- Socket -->
+            <rect class="sm-fill" x="200" y="88" width="120" height="44"/>
+            <rect class="sm-box-accent" x="200" y="88" width="120" height="44"/>
+            <text class="sm-accent" x="260" y="108" text-anchor="middle">Unix socket</text>
+            <text class="sm-sub" x="260" y="122" text-anchor="middle">ControlPath</text>
+            <!-- Single connection arrow -->
+            <line class="sm-line-accent" x1="320" y1="110" x2="390" y2="110"/>
+            <polygon class="sm-arrow" points="390,106 398,110 390,114"/>
+            <text class="sm-sub" x="355" y="100" text-anchor="middle">1 TCP</text>
+            <!-- Server -->
+            <rect class="sm-fill" x="400" y="88" width="100" height="44"/>
+            <rect class="sm-box-accent" x="400" y="88" width="100" height="44"/>
+            <text class="sm-accent" x="450" y="108" text-anchor="middle">server</text>
+            <text class="sm-sub" x="450" y="122" text-anchor="middle">sshd</text>
+        </svg>
+
+        <h2>The Jump</h2>
+
+        <pre><code>Host internal
+  HostName 10.0.0.50
+  ProxyJump bastion
+  User admin</code></pre>
+
+        <p>One line: <code>ProxyJump bastion</code>. SSH connects to
+            the bastion first, then tunnels through to the internal host.
+            No
+            <a href="https://www.ssh.com/academy/ssh/agent-forwarding" target="_blank" rel="noopener">agent forwarding</a>,
+            which exposes your private keys on the bastion. No two-step
+            manual process. One command: <code>ssh internal</code>.</p>
+
+        <p>Before
+            <a href="https://www.openssh.com/txt/release-7.3" target="_blank" rel="noopener">OpenSSH 7.3</a>
+            (2016), this required <code>ProxyCommand</code> with
+            <code>netcat</code>. Now it is one word.</p>
+
+        <svg id="ssh-jump" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ProxyJump: client connects through bastion to internal host. No agent forwarding, no key exposure on the bastion." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ssh-jump .sj-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-jump .sj-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ssh-jump .sj-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ssh-jump .sj-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-jump .sj-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #ssh-jump .sj-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #ssh-jump .sj-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #ssh-jump .sj-line { stroke: var(--accent); stroke-width: 1.5; }
+                #ssh-jump .sj-line-dash { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 6 3; }
+                #ssh-jump .sj-arrow { fill: var(--accent); }
+                #ssh-jump .sj-zone { fill: var(--muted); opacity: 0.06; rx: 6; }
+            </style>
+            <text class="sj-title" x="260" y="18" text-anchor="middle">ProxyJump: One Command, Two Hops</text>
+            <!-- Public zone -->
+            <rect class="sj-zone" x="10" y="34" width="200" height="110"/>
+            <text class="sj-sub" x="110" y="52" text-anchor="middle">public network</text>
+            <!-- Private zone -->
+            <rect class="sj-zone" x="310" y="34" width="200" height="110"/>
+            <text class="sj-sub" x="410" y="52" text-anchor="middle">private network</text>
+            <!-- Client -->
+            <rect class="sj-fill" x="30" y="70" width="90" height="50"/>
+            <rect class="sj-box-accent" x="30" y="70" width="90" height="50"/>
+            <text class="sj-accent" x="75" y="92" text-anchor="middle">client</text>
+            <text class="sj-sub" x="75" y="108" text-anchor="middle">ssh internal</text>
+            <!-- Bastion -->
+            <rect x="210" y="70" width="100" height="50" class="sj-box"/>
+            <text class="sj-label" x="260" y="92" text-anchor="middle">bastion</text>
+            <text class="sj-sub" x="260" y="108" text-anchor="middle">no keys here</text>
+            <!-- Internal -->
+            <rect class="sj-fill" x="380" y="70" width="110" height="50"/>
+            <rect class="sj-box-accent" x="380" y="70" width="110" height="50"/>
+            <text class="sj-accent" x="435" y="92" text-anchor="middle">10.0.0.50</text>
+            <text class="sj-sub" x="435" y="108" text-anchor="middle">internal</text>
+            <!-- Arrows -->
+            <line class="sj-line" x1="120" y1="95" x2="206" y2="95"/>
+            <polygon class="sj-arrow" points="206,91 214,95 206,99"/>
+            <line class="sj-line-dash" x1="310" y1="95" x2="376" y2="95"/>
+            <polygon class="sj-arrow" points="376,91 384,95 376,99"/>
+        </svg>
+
+        <h2>The Keep-Alive</h2>
+
+        <pre><code>Host *
+  ServerAliveInterval 60
+  ServerAliveCountMax 3</code></pre>
+
+        <p>Your connection drops after five idle minutes. Not because
+            the server closed it: because a NAT gateway, a firewall, or
+            a load balancer decided the session was stale. This sends a
+            heartbeat every 60 seconds. Three missed heartbeats:
+            disconnect. No more frozen terminals where you stare at
+            a cursor that will never move again.</p>
+
+        <h2>The Security Defaults</h2>
+
+        <p>The first comment material from the LinkedIn post is worth
+            including here, because it turns a convenience file into a
+            security posture.</p>
+
+        <pre><code>Host *
+  IdentitiesOnly yes
+  AddKeysToAgent yes
+  HashKnownHosts yes
+  StrictHostKeyChecking ask
+  VisualHostKey yes</code></pre>
+
+        <p><code>IdentitiesOnly</code> tells SSH to try only the key
+            you specified, not every key loaded in the agent. When you
+            have five keys and the server allows three attempts before
+            locking you out, this matters.
+            <code>AddKeysToAgent</code> loads the key into
+            <a href="https://man.openbsd.org/ssh-agent" target="_blank" rel="noopener">ssh-agent</a>
+            after first use, so you do not run <code>ssh-add</code>
+            after every reboot. <code>VisualHostKey</code> prints a
+            randomart fingerprint on every connection. You will notice
+            when a host key changes. Rather more reliable than reading
+            hex strings at eight in the morning.</p>
+
+        <h2>The Complete Config</h2>
+
+        <p>For the impatient, the entire recommended baseline in one
+            block:</p>
+
+        <pre><code># Global defaults
+Host *
+  ControlMaster auto
+  ControlPath ~/.ssh/sockets/%r@%h-%p
+  ControlPersist 600
+  ServerAliveInterval 60
+  ServerAliveCountMax 3
+  IdentitiesOnly yes
+  AddKeysToAgent yes
+  HashKnownHosts yes
+  StrictHostKeyChecking ask
+  VisualHostKey yes
+
+# Production
+Host prod
+  HostName 192.168.50.12
+  User deploy
+  Port 2222
+  IdentityFile ~/.ssh/prod_key
+
+# Development wildcard
+Host dev-*
+  User developer
+  IdentityFile ~/.ssh/dev_key
+
+# Internal via bastion
+Host internal
+  HostName 10.0.0.50
+  ProxyJump bastion
+  User admin</code></pre>
+
+        <p>Before first use:</p>
+
+        <pre><code>mkdir -p ~/.ssh/sockets &amp;&amp; chmod 700 ~/.ssh</code></pre>
+
+        <p>That is the entire setup. No package manager involved.</p>
+
+        <svg id="ssh-overview" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SSH config replaces: connection managers, credential GUIs, bastion scripts, SSH wrapper tools, and muscle memory. One file, zero dependencies." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ssh-overview .so-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-overview .so-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ssh-overview .so-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ssh-overview .so-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-overview .so-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #ssh-overview .so-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #ssh-overview .so-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #ssh-overview .so-fill-muted { fill: var(--muted); opacity: 0.08; rx: 4; }
+                #ssh-overview .so-strike { stroke: var(--accent); stroke-width: 1.5; }
+            </style>
+            <text class="so-title" x="260" y="18" text-anchor="middle">What ~/.ssh/config Replaces</text>
+            <!-- Replaced items -->
+            <rect class="so-fill-muted" x="20" y="36" width="150" height="30"/>
+            <rect class="so-box" x="20" y="36" width="150" height="30"/>
+            <text class="so-sub" x="95" y="56" text-anchor="middle">connection managers</text>
+            <line class="so-strike" x1="25" y1="51" x2="165" y2="51"/>
+            <rect class="so-fill-muted" x="185" y="36" width="150" height="30"/>
+            <rect class="so-box" x="185" y="36" width="150" height="30"/>
+            <text class="so-sub" x="260" y="56" text-anchor="middle">credential GUIs</text>
+            <line class="so-strike" x1="190" y1="51" x2="330" y2="51"/>
+            <rect class="so-fill-muted" x="350" y="36" width="150" height="30"/>
+            <rect class="so-box" x="350" y="36" width="150" height="30"/>
+            <text class="so-sub" x="425" y="56" text-anchor="middle">bastion scripts</text>
+            <line class="so-strike" x1="355" y1="51" x2="495" y2="51"/>
+            <rect class="so-fill-muted" x="100" y="76" width="150" height="30"/>
+            <rect class="so-box" x="100" y="76" width="150" height="30"/>
+            <text class="so-sub" x="175" y="96" text-anchor="middle">SSH wrapper tools</text>
+            <line class="so-strike" x1="105" y1="91" x2="245" y2="91"/>
+            <rect class="so-fill-muted" x="265" y="76" width="160" height="30"/>
+            <rect class="so-box" x="265" y="76" width="160" height="30"/>
+            <text class="so-sub" x="345" y="96" text-anchor="middle">80-char muscle memory</text>
+            <line class="so-strike" x1="270" y1="91" x2="420" y2="91"/>
+            <!-- The replacement -->
+            <rect class="so-fill" x="160" y="130" width="200" height="50"/>
+            <rect class="so-box-accent" x="160" y="130" width="200" height="50"/>
+            <text class="so-accent" x="260" y="152" text-anchor="middle">~/.ssh/config</text>
+            <text class="so-sub" x="260" y="168" text-anchor="middle">plain text, since 1999, 0 dependencies</text>
+        </svg>
+
+        <h2>The Point</h2>
+
+        <p><code>~/.ssh/config</code> is a plain text file. It works
+            on FreeBSD, Linux, macOS, and anything running
+            <a href="https://www.openssh.com/" target="_blank" rel="noopener">OpenSSH</a>.
+            It has not changed its syntax in 25 years. It requires no
+            package, no daemon, no update cycle.</p>
+
+        <p>One file replaces connection managers, credential GUIs,
+            bastion scripts, SSH wrapper tools, and the muscle memory
+            of typing the same 80-character command fourteen times a
+            day.</p>
+
+        <p>The full reference is one command away:
+            <code>man ssh_config</code>. Then open the file. You will
+            wonder why you waited.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

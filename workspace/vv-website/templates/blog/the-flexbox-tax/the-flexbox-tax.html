@@ -1,0 +1,310 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Flexbox Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Flexbox is not the problem. Using Flexbox for everything is. Nested Flexbox thrashing costs 3-15ms per frame. Grid costs less than one. The layout model you reach for matters.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-flexbox-tax{( endslot )}
+
+{( slot og-title )}The Flexbox Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Flexbox is not the problem. Using Flexbox for everything is. Nested Flexbox thrashing costs 3-15ms per frame. Grid costs less than one. The layout model you reach for matters.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Flexbox Tax",
+    "datePublished": "2025-12-22",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-flexbox-tax",
+    "description": "Flexbox is not the problem. Using Flexbox for everything is. Nested Flexbox thrashing costs 3-15ms per frame. Grid costs less than one. The layout model you reach for matters.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2025-12-22">22 December 2025</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Flexbox Tax</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">css</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Performance-Fresser</em> &#x25A0; Episode 04</p>
+
+        <p>Flexbox is a genuinely excellent layout model. It handles single-axis
+            distribution with a clarity that CSS had lacked for decades. It is also,
+            by a comfortable margin, the most overused property in modern front-end
+            development. Not because developers are lazy, but because it works. It
+            works for navigation bars. It works for card layouts. It works for centering.
+            It works for page scaffolding. It works for everything, in the same way that
+            a Swiss army knife works for surgery. Technically functional. Architecturally
+            questionable.</p>
+
+        <p>The problem is not Flexbox. The problem is <code>display: flex</code> as a
+            default. The moment every container in a component tree becomes a flex
+            container, the browser stops doing simple layout and starts doing algebra.</p>
+
+        <h2>The Calculation Problem</h2>
+
+        <p>Flexbox computes <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout"
+            target="_blank" rel="noopener">intrinsic sizes</a> for every child on every
+            layout pass. It measures content, applies flex-grow and flex-shrink ratios,
+            resolves flex-basis against available space, and distributes remaining pixels.
+            This is not a simple lookup. It is a constraint-solving algorithm, and it runs
+            every time the layout is invalidated.</p>
+
+        <p>For a single container with a handful of children, the cost is negligible.
+            The browser is very good at this. The trouble begins when flex containers
+            nest inside flex containers inside flex containers. Three levels deep means
+            three calculation passes per frame during scroll or resize. Five levels deep,
+            and the browser is solving a system of equations that would make a university
+            mathematics department reach for the coffee.</p>
+
+        <p>LinkedIn, for example, nests Flexbox
+            <a href="https://developer.chrome.com/docs/devtools/rendering/performance"
+            target="_blank" rel="noopener">five to eight levels deep</a> in its feed
+            elements. Every post card is a flex container containing flex containers
+            containing flex containers. Each scroll frame requires the browser to
+            recalculate the intrinsic sizes of every element in the nesting chain.
+            This is why scrolling LinkedIn on a mid-range phone feels like wading
+            through treacle. It is not the network. It is not the images. It is
+            the layout engine doing redundant arithmetic on every frame.</p>
+
+        <h2>The Numbers</h2>
+
+        <p>Layout cost is not theoretical. Chrome DevTools will show it to you, frame
+            by frame, in the Performance panel. The numbers tell a story that no amount
+            of architectural hand-waving can refute.</p>
+
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart comparing layout cost per frame. Nested Flexbox: 3 to 15 milliseconds. CSS Grid: less than 1 millisecond. Inline-block: less than 0.5 milliseconds. The 16.6 millisecond frame budget line is shown for reference." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .lc-label { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .lc-value { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .lc-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .lc-bar { fill: var(--accent); opacity: 0.6; }
+                .lc-bar-low { fill: var(--accent); opacity: 0.3; }
+                .lc-axis { stroke: var(--border); stroke-width: 1; }
+                .lc-budget { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 6 3; }
+                .lc-budget-label { font: 700 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+            </style>
+            <!-- Title -->
+            <text class="lc-muted" x="290" y="16" text-anchor="middle">Layout cost per frame (typical component tree)</text>
+            <!-- Axes -->
+            <line class="lc-axis" x1="150" y1="35" x2="150" y2="220"/>
+            <line class="lc-axis" x1="150" y1="220" x2="500" y2="220"/>
+            <!-- X-axis labels (0ms to 16ms) -->
+            <text class="lc-muted" x="150" y="238" text-anchor="middle">0</text>
+            <text class="lc-muted" x="215" y="238" text-anchor="middle">3</text>
+            <text class="lc-muted" x="258" y="238" text-anchor="middle">5</text>
+            <text class="lc-muted" x="368" y="238" text-anchor="middle">10</text>
+            <text class="lc-muted" x="478" y="238" text-anchor="middle">15</text>
+            <text class="lc-muted" x="290" y="255" text-anchor="middle">milliseconds per frame</text>
+            <!-- Grid lines -->
+            <line class="lc-axis" x1="258" y1="35" x2="258" y2="220" opacity="0.15"/>
+            <line class="lc-axis" x1="368" y1="35" x2="368" y2="220" opacity="0.15"/>
+            <line class="lc-axis" x1="478" y1="35" x2="478" y2="220" opacity="0.15"/>
+            <!-- 16.6ms frame budget line -->
+            <line class="lc-budget" x1="500" y1="35" x2="500" y2="220"/>
+            <text class="lc-budget-label" x="498" y="275" text-anchor="end">16.6ms frame budget (60fps)</text>
+            <!-- Nested Flexbox: 3-15ms -->
+            <text class="lc-label" x="145" y="65" text-anchor="end">Nested Flexbox</text>
+            <rect class="lc-bar" x="150" y="50" width="328" height="22" rx="2"/>
+            <text class="lc-value" x="486" y="66">3-15ms</text>
+            <text class="lc-muted" x="145" y="85" text-anchor="end">(3-5 levels deep)</text>
+            <!-- CSS Grid: <1ms -->
+            <text class="lc-label" x="145" y="130" text-anchor="end">CSS Grid</text>
+            <rect class="lc-bar-low" x="150" y="116" width="22" height="22" rx="2"/>
+            <text class="lc-value" x="180" y="132">&lt;1ms</text>
+            <!-- Inline-block: <0.5ms -->
+            <text class="lc-label" x="145" y="185" text-anchor="end">inline-block</text>
+            <rect class="lc-bar-low" x="150" y="171" width="11" height="22" rx="2"/>
+            <text class="lc-value" x="169" y="187">&lt;0.5ms</text>
+        </svg>
+
+        <p>Nested Flexbox thrashing consumes 3 to 15 milliseconds per frame. At 60
+            frames per second, each frame has a budget of 16.6 milliseconds for
+            everything: JavaScript, layout, paint, composite. Spending up to 15 of
+            those milliseconds purely on layout arithmetic leaves almost nothing for
+            the rest of the rendering pipeline.</p>
+
+        <p><a href="https://web.dev/css-grid/" target="_blank" rel="noopener">CSS Grid</a>,
+            by contrast, resolves layout in under one millisecond. It calculates the
+            grid template once, places items according to explicit coordinates, and
+            is finished. There is no intrinsic-size negotiation between parent and
+            children, no recursive constraint solving, no repeated passes through
+            the nesting hierarchy. One calculation. Done.</p>
+
+        <p>Inline-block is faster still, at under half a millisecond. It does not
+            negotiate sizes at all. Elements take their intrinsic width, line up
+            horizontally, and wrap when space runs out. No flex algorithm. No grid
+            algorithm. Just the oldest, simplest layout mode doing what it has done
+            since the late 1990s.</p>
+
+        <h2>The Mobile Bill</h2>
+
+        <p>On a desktop workstation, 15 milliseconds of layout thrashing is an
+            annoyance. On a mobile device, it is a visible problem. Low-end phones
+            have slower CPUs, less memory bandwidth, and thermal constraints that
+            throttle performance under sustained load. A layout that consumes 90%
+            of the frame budget on a Snapdragon 8 Gen 3 will simply drop frames on
+            a Snapdragon 680.</p>
+
+        <p>But the cost is not only visual. Every millisecond the CPU spends on
+            layout is a millisecond it draws power. Nested Flexbox thrashing during
+            scroll is a battery drain. The user does not see it in the frame rate
+            alone. They see it in the battery percentage at the end of the day.
+            The electricity bill for a layout choice they never made.</p>
+
+        <h2>When Flexbox Is Right</h2>
+
+        <p>Flexbox is the correct tool for single-axis layouts with dynamic sizes.
+            A navigation bar where items need to distribute evenly. A toolbar with
+            items that grow and shrink based on available space. A row of tags
+            where the content determines the width. These are one-dimensional
+            problems, and Flexbox solves them with elegance and precision.</p>
+
+        <p>It is also the correct tool for space distribution patterns that
+            the simpler models cannot handle. <code>justify-content: space-between</code>,
+            <code>flex-wrap</code> with variable-width items, and alignment of items
+            with unknown sizes are genuine Flexbox territory. These problems exist.
+            Flexbox was designed for them. It handles them beautifully.</p>
+
+        <h2>When Grid Is Right</h2>
+
+        <p>The moment your layout has two dimensions, Grid is not merely better.
+            It is categorically different. A page layout with header, sidebar,
+            content, and footer. A card grid. A dashboard with panels. These are
+            two-dimensional structures, and expressing them in Flexbox requires
+            nesting: a flex row containing flex columns containing flex rows.
+            Each level adds a calculation pass. Grid expresses the same structure
+            in a single declaration and resolves it in a single pass.</p>
+
+        <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram comparing Flexbox nesting versus CSS Grid for a two-dimensional page layout. Flexbox requires three nested containers with three layout passes. Grid requires one container with one layout pass." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .lg-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .lg-accent { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .lg-muted { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .lg-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .lg-box-hl { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .lg-pass { font: 700 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+            </style>
+            <!-- FLEXBOX side -->
+            <text class="lg-muted" x="125" y="16" text-anchor="middle">NESTED FLEXBOX</text>
+            <!-- Outer flex container -->
+            <rect class="lg-box" x="15" y="28" width="220" height="170"/>
+            <text class="lg-muted" x="25" y="42">flex (column)</text>
+            <text class="lg-pass" x="225" y="42" text-anchor="end">Pass 1</text>
+            <!-- Header -->
+            <rect class="lg-box" x="25" y="48" width="200" height="24"/>
+            <text class="lg-label" x="125" y="64" text-anchor="middle">Header</text>
+            <!-- Middle flex row -->
+            <rect class="lg-box" x="25" y="78" width="200" height="78"/>
+            <text class="lg-muted" x="35" y="92">flex (row)</text>
+            <text class="lg-pass" x="215" y="92" text-anchor="end">Pass 2</text>
+            <!-- Sidebar -->
+            <rect class="lg-box" x="35" y="98" width="60" height="50"/>
+            <text class="lg-label" x="65" y="127" text-anchor="middle">Sidebar</text>
+            <!-- Content -->
+            <rect class="lg-box" x="105" y="98" width="110" height="50"/>
+            <text class="lg-label" x="160" y="127" text-anchor="middle">Content</text>
+            <text class="lg-pass" x="205" y="142" text-anchor="end">Pass 3</text>
+            <!-- Footer -->
+            <rect class="lg-box" x="25" y="164" width="200" height="24"/>
+            <text class="lg-label" x="125" y="180" text-anchor="middle">Footer</text>
+            <!-- Cost annotation -->
+            <text class="lg-muted" x="125" y="215" text-anchor="middle">3 containers, 3 layout passes</text>
+            <text class="lg-accent" x="125" y="232" text-anchor="middle">3-15ms per frame</text>
+            <!-- Divider -->
+            <line x1="260" y1="28" x2="260" y2="210" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+            <!-- GRID side -->
+            <text class="lg-accent" x="390" y="16" text-anchor="middle">CSS GRID</text>
+            <!-- Single grid container -->
+            <rect class="lg-box-hl" x="280" y="28" width="220" height="170"/>
+            <text class="lg-accent" x="290" y="42">grid</text>
+            <text class="lg-pass" x="490" y="42" text-anchor="end">Pass 1</text>
+            <!-- Header -->
+            <rect class="lg-box-hl" x="290" y="48" width="200" height="24"/>
+            <text class="lg-label" x="390" y="64" text-anchor="middle">Header</text>
+            <!-- Sidebar -->
+            <rect class="lg-box-hl" x="290" y="78" width="60" height="78"/>
+            <text class="lg-label" x="320" y="121" text-anchor="middle">Sidebar</text>
+            <!-- Content -->
+            <rect class="lg-box-hl" x="358" y="78" width="132" height="78"/>
+            <text class="lg-label" x="424" y="121" text-anchor="middle">Content</text>
+            <!-- Footer -->
+            <rect class="lg-box-hl" x="290" y="164" width="200" height="24"/>
+            <text class="lg-label" x="390" y="180" text-anchor="middle">Footer</text>
+            <!-- Cost annotation -->
+            <text class="lg-muted" x="390" y="215" text-anchor="middle">1 container, 1 layout pass</text>
+            <text class="lg-accent" x="390" y="232" text-anchor="middle">&lt;1ms per frame</text>
+            <!-- Bottom summary -->
+            <text class="lg-muted" x="260" y="255" text-anchor="middle">Same visual result. Different computational cost.</text>
+        </svg>
+
+        <h2>When Simpler Is Right</h2>
+
+        <p>Not every layout problem requires a layout algorithm at all. Centering
+            a block of text does not need Flexbox. Since 2024, <code>align-content: center</code>
+            works on block-level elements in all major browsers. No flex container.
+            No grid container. Just a single property on a plain <code>div</code>.</p>
+
+        <p>A horizontal list of inline elements does not need Flexbox either.
+            <code>display: inline-block</code> has been placing elements in a row
+            since before some front-end developers were born. It involves no intrinsic
+            size calculation, no constraint solving, and no recursive layout passes.
+            It is the layout equivalent of a bicycle: it gets you there with zero
+            fuel consumption, provided you are not trying to cross an ocean.</p>
+
+        <h2>The Decision Framework</h2>
+
+        <p>The question is not whether to use Flexbox. Flexbox is a fine tool. The
+            question is a single diagnostic: is this layout one-dimensional or
+            two-dimensional?</p>
+
+        <p>One axis, dynamic sizes, space distribution: Flexbox. Or, if the pattern
+            is simple enough, something even lighter. Two axes, explicit placement,
+            structured areas: Grid. No exceptions. No "but I know Flexbox better."
+            Familiarity is not an engineering argument. The browser does not care
+            which API you prefer. It cares how many constraint passes it must
+            execute per frame.</p>
+
+        <blockquote>
+            <p>The right layout model is the one that solves the problem with the fewest
+                calculations. Not the one you happen to type from muscle memory.</p>
+        </blockquote>
+
+        <p>Flexbox is a scalpel. It was designed for precise, single-axis work,
+            and it does that work superbly. But when the scalpel becomes the default
+            tool for every task, including the ones that need a set square, the cost
+            compounds silently. Frame by frame. Scroll by scroll. Battery percent
+            by battery percent. The tax is invisible until someone opens the
+            Performance panel and watches the browser do arithmetic it was never
+            asked to avoid.</p>
+
+        <aside class="vv-aside">
+            <p>To be clear: Flexbox is an excellent layout model for the problems it
+                was designed to solve. This article is not a case against Flexbox. It is
+                a case against reaching for <code>display: flex</code> as a reflex rather
+                than a decision. The cost of overuse is real, measurable, and entirely
+                avoidable.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

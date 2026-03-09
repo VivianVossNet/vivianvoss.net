@@ -1,0 +1,314 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Replacement: Shell Monitoring vs Prometheus &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Prometheus, Grafana, AlertManager, Loki. Four services to tell you a disk is full. Or: df, a shell script, cron, and mail. Three Unix tools that have done the job since the 1970s. For five to ten servers, the monitoring stack is the thing that needs monitoring.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-monitoring-replacement{( endslot )}
+
+{( slot og-title )}The Replacement: Shell Monitoring vs Prometheus &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Prometheus, Grafana, AlertManager, Loki. Four services to tell you a disk is full. Or: df, a shell script, cron, and mail. Three Unix tools. For 5-10 servers, the stack is the thing that needs monitoring.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Replacement: Shell Monitoring vs Prometheus",
+    "datePublished": "2026-01-18",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-monitoring-replacement",
+    "description": "Prometheus, Grafana, AlertManager, Loki. Four services to tell you a disk is full. Or: df, a shell script, cron, and mail. Three Unix tools that have done the job since the 1970s. For five to ten servers, the monitoring stack is the thing that needs monitoring.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-18">18 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Replacement: Shell Monitoring vs Prometheus</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">devops</span>
+            <span class="vv-pill">freebsd</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Replacement</em> &#x25A0; Episode 06</p>
+
+        <p>Late 1990s. Sysadmin training in Germany. The instructors were
+            former mainframe operators who had reluctantly accepted that
+            Unix existed and was not going away. They taught us two things
+            above all else: the shell is your interface, and GUIs are for
+            people who do not understand what they are clicking.</p>
+
+        <p>We had a word for graphical administration tools:
+            <em>Klickibunti</em>. Roughly translated: "clicky-colourful."
+            It was not a compliment.</p>
+
+        <h2>The Modern Monitoring Stack</h2>
+
+        <p>Fast forward to 2026. You have a handful of servers. Perhaps
+            five, perhaps ten. You would like to know when something goes
+            wrong. The industry offers you a solution.</p>
+
+        <p><strong>Prometheus</strong> scrapes metrics from exporters on
+            every node. <strong>Grafana</strong> visualises them in
+            dashboards that nobody looks at until the phone rings.
+            <strong>AlertManager</strong> routes alerts through a YAML
+            configuration file that takes longer to write than the check
+            itself. <strong>Loki</strong> aggregates your logs, because
+            apparently reading them on the machine where they were written
+            is insufficiently sophisticated.</p>
+
+        <p>Four services. Each with its own configuration, its own
+            storage, its own failure modes, its own update cycle.
+            A monitoring stack that, rather ironically, needs its own
+            monitoring.</p>
+
+        <p>When did you last look at those dashboards, incidentally?
+            Before or after the alert email arrived?</p>
+
+        <h2>The Shell Alternative</h2>
+
+        <p>Here is what I run instead. A
+            <a href="https://pubs.opengroup.org/onlinepubs/9699919799/" target="_blank" rel="noopener">POSIX shell</a>
+            script. It checks <code>df</code> for disk usage,
+            <code>zpool status</code> for ZFS health,
+            <code>swapinfo</code> for memory pressure. It verifies that
+            each jail is running. It checks that critical network services
+            respond. If anything exceeds a threshold or fails to answer,
+            it sends an email. If nothing is wrong, it sends nothing.</p>
+
+        <pre><code>#!/bin/sh
+# health-check.sh - runs every 5 minutes via cron
+
+THRESHOLD=85
+MAILTO="admin@example.com"
+HOST=$(hostname)
+
+# Disk usage
+df -h | awk 'NR>1 &amp;&amp; int($5)>'$THRESHOLD' {print $6": "$5}' | while read line; do
+    echo "Disk warning on $HOST: $line" | mail -s "DISK: $HOST" "$MAILTO"
+done
+
+# ZFS pool health
+zpool status -x | grep -v "all pools are healthy" &amp;&amp; \
+    zpool status | mail -s "ZFS: $HOST" "$MAILTO"
+
+# Jail check
+for jail in web mail dns; do
+    jls -j "$jail" > /dev/null 2>&amp;1 || \
+        echo "Jail $jail is DOWN" | mail -s "JAIL: $HOST" "$MAILTO"
+done</code></pre>
+
+        <p>Scheduled by
+            <a href="https://en.wikipedia.org/wiki/Cron" target="_blank" rel="noopener">cron</a>.
+            Five minutes. Every day. No daemon to babysit, no time-series
+            database to rotate, no dashboard to refresh. No mail means no
+            problem.</p>
+
+        <pre><code>*/5 * * * * /usr/local/bin/health-check.sh</code></pre>
+
+        <p>One line in the crontab. That is the entire monitoring
+            infrastructure.</p>
+
+        <svg id="monitoring-stack" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Monitoring stack comparison: Prometheus plus Grafana plus AlertManager plus Loki equals four services to monitor. Versus cron plus sh plus mail equals three Unix tools, zero services." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #monitoring-stack .ms-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #monitoring-stack .ms-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #monitoring-stack .ms-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #monitoring-stack .ms-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #monitoring-stack .ms-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #monitoring-stack .ms-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #monitoring-stack .ms-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #monitoring-stack .ms-fill-muted { fill: var(--muted); opacity: 0.08; rx: 4; }
+                #monitoring-stack .ms-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+                #monitoring-stack .ms-plus { font: 600 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #monitoring-stack .ms-eq { font: 600 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+            </style>
+            <text class="ms-title" x="260" y="18" text-anchor="middle">The Same Job. Two Approaches.</text>
+            <!-- Modern stack row -->
+            <text class="ms-sub" x="260" y="44" text-anchor="middle">Modern Monitoring Stack</text>
+            <rect class="ms-fill-muted" x="16" y="54" width="100" height="44"/>
+            <rect class="ms-box" x="16" y="54" width="100" height="44"/>
+            <text class="ms-label" x="66" y="73" text-anchor="middle">Prometheus</text>
+            <text class="ms-sub" x="66" y="88" text-anchor="middle">scraping</text>
+            <text class="ms-plus" x="128" y="80" text-anchor="middle">+</text>
+            <rect class="ms-fill-muted" x="140" y="54" width="80" height="44"/>
+            <rect class="ms-box" x="140" y="54" width="80" height="44"/>
+            <text class="ms-label" x="180" y="73" text-anchor="middle">Grafana</text>
+            <text class="ms-sub" x="180" y="88" text-anchor="middle">dashboards</text>
+            <text class="ms-plus" x="232" y="80" text-anchor="middle">+</text>
+            <rect class="ms-fill-muted" x="244" y="54" width="110" height="44"/>
+            <rect class="ms-box" x="244" y="54" width="110" height="44"/>
+            <text class="ms-label" x="299" y="73" text-anchor="middle">AlertManager</text>
+            <text class="ms-sub" x="299" y="88" text-anchor="middle">routing</text>
+            <text class="ms-plus" x="366" y="80" text-anchor="middle">+</text>
+            <rect class="ms-fill-muted" x="378" y="54" width="68" height="44"/>
+            <rect class="ms-box" x="378" y="54" width="68" height="44"/>
+            <text class="ms-label" x="412" y="73" text-anchor="middle">Loki</text>
+            <text class="ms-sub" x="412" y="88" text-anchor="middle">logs</text>
+            <text class="ms-eq" x="462" y="80" text-anchor="middle">=</text>
+            <text class="ms-label" x="498" y="75" text-anchor="middle">4</text>
+            <text class="ms-sub" x="498" y="90" text-anchor="middle">services</text>
+            <!-- Divider -->
+            <text class="ms-sub" x="260" y="124" text-anchor="middle">vs.</text>
+            <!-- Unix row -->
+            <text class="ms-sub" x="260" y="150" text-anchor="middle">Unix Shell Monitoring</text>
+            <rect class="ms-fill" x="80" y="160" width="80" height="44"/>
+            <rect class="ms-box-accent" x="80" y="160" width="80" height="44"/>
+            <text class="ms-accent" x="120" y="179" text-anchor="middle">cron</text>
+            <text class="ms-sub" x="120" y="194" text-anchor="middle">scheduling</text>
+            <text class="ms-plus" x="172" y="186" text-anchor="middle">+</text>
+            <rect class="ms-fill" x="184" y="160" width="80" height="44"/>
+            <rect class="ms-box-accent" x="184" y="160" width="80" height="44"/>
+            <text class="ms-accent" x="224" y="179" text-anchor="middle">sh</text>
+            <text class="ms-sub" x="224" y="194" text-anchor="middle">checks</text>
+            <text class="ms-plus" x="276" y="186" text-anchor="middle">+</text>
+            <rect class="ms-fill" x="288" y="160" width="80" height="44"/>
+            <rect class="ms-box-accent" x="288" y="160" width="80" height="44"/>
+            <text class="ms-accent" x="328" y="179" text-anchor="middle">mail</text>
+            <text class="ms-sub" x="328" y="194" text-anchor="middle">alerting</text>
+            <text class="ms-eq" x="390" y="186" text-anchor="middle">=</text>
+            <text class="ms-accent" x="430" y="181" text-anchor="middle">3</text>
+            <text class="ms-sub" x="430" y="196" text-anchor="middle">tools</text>
+            <!-- Summary -->
+            <text class="ms-sub" x="260" y="234" text-anchor="middle">4 services, each needing config, storage, and updates</text>
+            <text class="ms-sub" x="260" y="250" text-anchor="middle">3 tools, pre-installed on every Unix system since the 1970s</text>
+            <text class="ms-sub" x="260" y="270" text-anchor="middle">0 additional services to maintain</text>
+        </svg>
+
+        <h2>ZFS: The Quotas That Save You at 3 AM</h2>
+
+        <p>The beauty of this approach is that it pairs well with
+            infrastructure that was designed to be administered, not
+            merely observed. On FreeBSD, ZFS datasets with quotas mean
+            that one misbehaving jail cannot consume all the disk space
+            on the host. Each dataset has a ceiling. When it hits that
+            ceiling, only that jail suffers. The host remains healthy.
+            The other jails remain healthy.</p>
+
+        <pre><code># Set a 20G quota on the web jail dataset
+zfs set quota=20G zroot/jails/web
+
+# Check usage per dataset
+zfs list -o name,used,quota,avail</code></pre>
+
+        <p>This is not monitoring in the Grafana sense. This is
+            architecture. You design the system so that failures are
+            contained, and then you write a script to tell you when
+            containment is under pressure. Prevention first,
+            notification second.</p>
+
+        <svg id="monitoring-zfs" viewBox="0 0 520 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ZFS quota architecture: host pool with individual dataset quotas per jail, showing how one full jail cannot affect the others." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #monitoring-zfs .mz-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #monitoring-zfs .mz-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #monitoring-zfs .mz-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #monitoring-zfs .mz-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #monitoring-zfs .mz-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #monitoring-zfs .mz-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #monitoring-zfs .mz-box-warn { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; stroke-dasharray: 4 4; }
+                #monitoring-zfs .mz-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #monitoring-zfs .mz-fill-warn { fill: var(--accent); opacity: 0.18; rx: 4; }
+                #monitoring-zfs .mz-bar { fill: var(--muted); opacity: 0.25; rx: 2; }
+                #monitoring-zfs .mz-bar-fill { fill: var(--accent); opacity: 0.6; rx: 2; }
+                #monitoring-zfs .mz-bar-warn { fill: var(--accent); opacity: 0.9; rx: 2; }
+            </style>
+            <text class="mz-title" x="260" y="18" text-anchor="middle">ZFS Quota Isolation</text>
+            <text class="mz-sub" x="260" y="34" text-anchor="middle">One full jail cannot starve the others</text>
+            <!-- Host pool -->
+            <rect class="mz-box" x="20" y="48" width="480" height="140"/>
+            <text class="mz-label" x="40" y="66">zroot (host pool)</text>
+            <!-- Jail: web (full) -->
+            <rect class="mz-fill-warn" x="40" y="78" width="130" height="96"/>
+            <rect class="mz-box-warn" x="40" y="78" width="130" height="96"/>
+            <text class="mz-accent" x="105" y="98" text-anchor="middle">jails/web</text>
+            <text class="mz-sub" x="105" y="114" text-anchor="middle">quota: 20G</text>
+            <rect class="mz-bar" x="56" y="124" width="98" height="8"/>
+            <rect class="mz-bar-warn" x="56" y="124" width="92" height="8"/>
+            <text class="mz-sub" x="105" y="152" text-anchor="middle">19.2G / 20G</text>
+            <text class="mz-accent" x="105" y="166" text-anchor="middle">&#x25A0; alert sent</text>
+            <!-- Jail: mail (normal) -->
+            <rect class="mz-fill" x="190" y="78" width="130" height="96"/>
+            <rect class="mz-box-accent" x="190" y="78" width="130" height="96"/>
+            <text class="mz-accent" x="255" y="98" text-anchor="middle">jails/mail</text>
+            <text class="mz-sub" x="255" y="114" text-anchor="middle">quota: 50G</text>
+            <rect class="mz-bar" x="206" y="124" width="98" height="8"/>
+            <rect class="mz-bar-fill" x="206" y="124" width="35" height="8"/>
+            <text class="mz-sub" x="255" y="152" text-anchor="middle">18G / 50G</text>
+            <text class="mz-sub" x="255" y="166" text-anchor="middle">healthy</text>
+            <!-- Jail: dns (normal) -->
+            <rect class="mz-fill" x="340" y="78" width="130" height="96"/>
+            <rect class="mz-box-accent" x="340" y="78" width="130" height="96"/>
+            <text class="mz-accent" x="405" y="98" text-anchor="middle">jails/dns</text>
+            <text class="mz-sub" x="405" y="114" text-anchor="middle">quota: 5G</text>
+            <rect class="mz-bar" x="356" y="124" width="98" height="8"/>
+            <rect class="mz-bar-fill" x="356" y="124" width="20" height="8"/>
+            <text class="mz-sub" x="405" y="152" text-anchor="middle">1G / 5G</text>
+            <text class="mz-sub" x="405" y="166" text-anchor="middle">healthy</text>
+        </svg>
+
+        <h2>The Scale Argument</h2>
+
+        <p>I can hear the objection forming. "But this does not scale."
+            Correct. If you manage 500 servers across multiple data
+            centres, you need Prometheus. You need Grafana. You probably
+            need an entire SRE team. This article is not for you. You
+            already know what you need, and you have the budget to pay
+            for it.</p>
+
+        <p>This article is for the rest of us. The ones running five
+            servers, or ten. The freelancer with a VPS and a FreeBSD
+            jail. The small team with a handful of machines that do
+            real work. For us, the monitoring stack is not a solution.
+            It is overhead. It is another thing that can break, another
+            thing that needs updating, another thing that consumes
+            resources that should be spent on the actual workload.</p>
+
+        <p>For five to ten servers, a shell script and a mail client
+            is not a compromise. It is the correct tool for the job.</p>
+
+        <blockquote>
+            <p>The best monitoring system is the one you actually
+                read. If that is your inbox, use your inbox.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Practical notes.</strong> A daily health-check
+                script typically covers: disk usage
+                (<code>df -h</code>), ZFS pool status
+                (<code>zpool status -x</code>), swap pressure
+                (<code>swapinfo</code>), jail availability
+                (<code>jls</code>), and network service response
+                (a simple <code>fetch</code> or <code>nc</code> probe).
+                Run it via
+                <a href="https://en.wikipedia.org/wiki/Cron" target="_blank" rel="noopener">cron</a>
+                every five minutes for alerts, once daily for a
+                summary report. When does a proper stack make sense?
+                When you have dozens of servers, compliance requirements
+                that demand audit trails and retention policies,
+                cross-team correlation needs, or managers who want
+                dashboards. Entirely valid reasons, all of them. But
+                if your server count fits on one hand, a
+                <a href="https://pubs.opengroup.org/onlinepubs/9699919799/" target="_blank" rel="noopener">POSIX shell</a>
+                script and an honest relationship with your inbox will
+                serve you rather well.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

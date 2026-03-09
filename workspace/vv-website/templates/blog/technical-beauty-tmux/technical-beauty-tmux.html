@@ -1,0 +1,365 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}tmux: The Terminal That Outlives You &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Nicholas Marriott wrote tmux from scratch for OpenBSD in 2007. Theo de Raadt found one or two nits in two hours. Client-server architecture. Single config file. BSD licensed. In OpenBSD base since 4.6. GNU Screen still works, but 37 years of decisions from 1987 carry weight.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-tmux{( endslot )}
+
+{( slot og-title )}tmux: The Terminal That Outlives You &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Nicholas Marriott wrote tmux from scratch for OpenBSD in 2007. Theo de Raadt found one or two nits in two hours. Client-server architecture. BSD licensed. In OpenBSD base since 4.6.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "tmux: The Terminal That Outlives You",
+    "datePublished": "2026-01-28",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-tmux",
+    "description": "Nicholas Marriott wrote tmux from scratch for OpenBSD in 2007. Theo de Raadt found one or two nits in two hours. Client-server architecture. Single config file. BSD licensed. In OpenBSD base since 4.6. GNU Screen still works, but 37 years of decisions from 1987 carry weight.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-28">28 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>tmux: The Terminal That Outlives You</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode</p>
+
+        <blockquote>
+            <p>&#x201C;In 2 hours, I found only one or two nits that had very minor
+                security consequences. It is high quality code.&#x201D;</p>
+            <p>Theo de Raadt, on reviewing tmux for OpenBSD inclusion</p>
+        </blockquote>
+
+        <p>Theo de Raadt does not compliment code. He dissects it, finds every
+            flaw, and tells you about them with the warmth of a coroner reading
+            an autopsy report. When de Raadt reviews a codebase for two hours
+            and the worst he can say is &#x201C;one or two nits,&#x201D; that
+            codebase has achieved something remarkable. It has survived the most
+            exacting code review in the open source world and emerged with its
+            dignity intact.</p>
+
+        <h2>The Man</h2>
+
+        <p><a href="https://github.com/nicm" target="_blank" rel="noopener">Nicholas Marriott</a>
+            was a long-time
+            <a href="https://en.wikipedia.org/wiki/GNU_Screen" target="_blank" rel="noopener">GNU Screen</a>
+            user. He was not a casual user, either. He was the kind of person
+            who had memorised Screen's keybindings, built his workflow around
+            its quirks, and spent years accommodating its eccentricities the
+            way one accommodates a flatmate who insists on playing the trombone
+            at 6 AM. Eventually, in 2007, he stopped accommodating.</p>
+
+        <p>The problem with GNU Screen was not that it did not work. It worked.
+            It had worked since 1987, which is to say it carried
+            <a href="https://en.wikipedia.org/wiki/GNU_Screen" target="_blank" rel="noopener">37 years of accumulated decisions</a>,
+            some brilliant, some questionable, all load-bearing. The
+            documentation was poor. The configuration was strange. The interface
+            was unintuitive in ways that required genuine archaeology to
+            understand. Marriott did what any self-respecting OpenBSD developer
+            would do: he wrote a replacement from scratch.</p>
+
+        <h2>The Architecture</h2>
+
+        <p>The design decision that separates
+            <a href="https://github.com/tmux/tmux" target="_blank" rel="noopener">tmux</a>
+            from its predecessor is architectural, not cosmetic. tmux uses a
+            proper client-server model. A single server process manages all
+            sessions, windows, and panes. Clients connect to the server via a
+            Unix domain socket. When you detach, the client exits but the server
+            continues. When you reattach, a new client connects to the same
+            server. Your processes never notice you left.</p>
+
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="tmux client-server architecture. A tmux server manages sessions, each containing windows, each containing panes. Multiple clients connect to the server via Unix domain socket. Detaching kills the client, not the server." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .tx-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tx-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tx-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .tx-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tx-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tx-box-fill { fill: var(--accent); opacity: 0.12; stroke: var(--accent); stroke-width: 1; rx: 4; }
+                .tx-line { stroke: var(--muted); stroke-width: 1; }
+                .tx-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+                .tx-arrow { fill: var(--muted); }
+                .tx-arrow-accent { fill: var(--accent); }
+                .tx-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .tx-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+            <text class="tx-title" x="260" y="20" text-anchor="middle">tmux: Client-Server Architecture</text>
+
+            <!-- Clients -->
+            <rect class="tx-box" x="20" y="50" width="90" height="36"/>
+            <text class="tx-label" x="65" y="73" text-anchor="middle">Client A</text>
+            <rect class="tx-box" x="20" y="100" width="90" height="36"/>
+            <text class="tx-label" x="65" y="123" text-anchor="middle">Client B</text>
+            <rect class="tx-box" x="20" y="150" width="90" height="36"/>
+            <text class="tx-label" x="65" y="173" text-anchor="middle">Client C</text>
+            <text class="tx-sub" x="65" y="204" text-anchor="middle">Terminal instances</text>
+            <text class="tx-sub" x="65" y="218" text-anchor="middle">(disposable)</text>
+
+            <!-- Socket -->
+            <line class="tx-line" x1="110" y1="68" x2="180" y2="118"/>
+            <line class="tx-line" x1="110" y1="118" x2="180" y2="118"/>
+            <line class="tx-line" x1="110" y1="168" x2="180" y2="118"/>
+            <text class="tx-sub" x="148" y="95" text-anchor="middle" transform="rotate(-18, 148, 95)">socket</text>
+
+            <!-- Server -->
+            <rect class="tx-box-accent" x="180" y="80" width="120" height="76"/>
+            <text class="tx-label" x="240" y="103" text-anchor="middle">tmux server</text>
+            <text class="tx-sub" x="240" y="120" text-anchor="middle">PID persists</text>
+            <text class="tx-sub" x="240" y="134" text-anchor="middle">across detach/attach</text>
+
+            <!-- Arrow to sessions -->
+            <line class="tx-line-accent" x1="300" y1="100" x2="350" y2="68"/>
+            <line class="tx-line-accent" x1="300" y1="118" x2="350" y2="178"/>
+
+            <!-- Session 0 -->
+            <rect class="tx-box-fill" x="350" y="44" width="150" height="80"/>
+            <text class="tx-label" x="425" y="62" text-anchor="middle">Session 0</text>
+            <!-- Windows inside session -->
+            <rect class="tx-box" x="362" y="72" width="56" height="38"/>
+            <text class="tx-sub" x="390" y="87" text-anchor="middle">win 0</text>
+            <text class="tx-sub" x="390" y="100" text-anchor="middle">2 panes</text>
+            <rect class="tx-box" x="430" y="72" width="56" height="38"/>
+            <text class="tx-sub" x="458" y="87" text-anchor="middle">win 1</text>
+            <text class="tx-sub" x="458" y="100" text-anchor="middle">1 pane</text>
+
+            <!-- Session 1 -->
+            <rect class="tx-box-fill" x="350" y="154" width="150" height="80"/>
+            <text class="tx-label" x="425" y="172" text-anchor="middle">Session 1</text>
+            <rect class="tx-box" x="362" y="182" width="56" height="38"/>
+            <text class="tx-sub" x="390" y="197" text-anchor="middle">win 0</text>
+            <text class="tx-sub" x="390" y="210" text-anchor="middle">4 panes</text>
+            <rect class="tx-box" x="430" y="182" width="56" height="38"/>
+            <text class="tx-sub" x="458" y="197" text-anchor="middle">win 1</text>
+            <text class="tx-sub" x="458" y="210" text-anchor="middle">1 pane</text>
+
+            <!-- Divider -->
+            <line class="tx-divider" x1="20" y1="260" x2="500" y2="260"/>
+
+            <!-- Hierarchy note -->
+            <text class="tx-note" x="260" y="284" text-anchor="middle">Server &#x2192; Sessions &#x2192; Windows &#x2192; Panes</text>
+            <text class="tx-note" x="260" y="302" text-anchor="middle">Detaching kills the client. The server, and everything inside it, survives.</text>
+            <text class="tx-note" x="260" y="320" text-anchor="middle">Multiple clients can attach to the same session simultaneously.</text>
+        </svg>
+
+        <p>This is not merely a nicer implementation of the same idea. GNU Screen
+            uses a monolithic process model. The terminal and the session manager
+            are the same process, communicating through a FIFO and a thoroughly
+            entertaining collection of signal handlers. When it works, it works
+            well enough. When it breaks, debugging requires the kind of patience
+            normally reserved for restoring medieval manuscripts.</p>
+
+        <p>tmux's client-server split means that multiple clients can attach to
+            the same session simultaneously. Pair programming becomes trivial:
+            two developers, two terminals, one session. No screen-sharing
+            software. No latency from video encoding. No &#x201C;can you see my
+            screen?&#x201D; Just two cursors in the same panes, editing the same
+            files, watching the same test output. The protocol handles the
+            rest.</p>
+
+        <h2>The Configuration</h2>
+
+        <p>GNU Screen's configuration file, <code>.screenrc</code>, is a dialect
+            of English that Screen alone speaks. The syntax evolved over decades
+            without any apparent design authority, accumulating commands the way
+            a shed accumulates tools: everything is in there somewhere, but good
+            luck finding the adjustable spanner.</p>
+
+        <p>tmux uses a single configuration file, <code>.tmux.conf</code>, with
+            a consistent command syntax. Every command you can type in tmux's
+            command prompt is the same command you can place in the configuration
+            file. There is no separate configuration language. There is no
+            distinction between interactive commands and config-file directives.
+            The interface is the configuration, and the configuration is the
+            interface. This sounds obvious. It was, apparently, a revelation.</p>
+
+        <pre><code># Split panes
+bind | split-window -h
+bind - split-window -v
+
+# Navigate panes with vim keys
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+# Status bar
+set -g status-style 'bg=default,fg=white'</code></pre>
+
+        <p>The keybindings are consistent and rebindable. The prefix key defaults
+            to <code>Ctrl-b</code>, but every binding can be changed in a single
+            line. Screen's keybinding system, by comparison, requires the user
+            to understand the difference between <code>bindkey</code>,
+            <code>bind</code>, and <code>escape</code>, three commands that do
+            overlapping things in subtly different contexts. It is the kind of
+            design that makes perfect sense if you were there when each command
+            was introduced, and no sense at all if you were not.</p>
+
+        <h2>The Quality</h2>
+
+        <p>tmux was written for
+            <a href="https://en.wikipedia.org/wiki/OpenBSD" target="_blank" rel="noopener">OpenBSD</a>,
+            and this matters. OpenBSD is a project where code quality is not a
+            goal but a prerequisite. The codebase undergoes constant auditing.
+            Functions are scrutinised for buffer overflows, integer overflows,
+            format string vulnerabilities, and the general category of
+            &#x201C;things that would be fine on any other operating system but
+            are unacceptable here.&#x201D;</p>
+
+        <p>When Marriott submitted tmux for inclusion in OpenBSD,
+            <a href="http://undeadly.org/cgi?action=article;sid=20090707041154" target="_blank" rel="noopener">Theo de Raadt reviewed it personally</a>.
+            Two hours. One or two minor nits. For context, de Raadt is the man
+            who once removed an entire subsystem from the OpenBSD kernel because
+            he found a theoretical vulnerability that had never been exploited in
+            practice. His threshold for &#x201C;acceptable&#x201D; is somewhere
+            north of what most projects consider &#x201C;paranoid.&#x201D; tmux
+            cleared it. It was
+            <a href="https://undeadly.org/cgi?action=article;sid=20090712190402" target="_blank" rel="noopener">included in OpenBSD 4.6</a>,
+            released in October 2009, and has been in the base system ever since.</p>
+
+        <svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline comparison. GNU Screen: 1987, 37 years of accumulated decisions. tmux: 2007, 18 years of clean design. OpenBSD 4.6 inclusion: 2009. Screen still works. tmux still makes sense." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .tx2-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tx2-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tx2-value { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .tx2-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .tx2-line { stroke: var(--border); stroke-width: 1; }
+                .tx2-line-accent { stroke: var(--accent); stroke-width: 2; }
+                .tx2-dot { fill: var(--accent); }
+                .tx2-dot-muted { fill: var(--muted); }
+                .tx2-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .tx2-divider { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 4 4; }
+            </style>
+            <text class="tx2-title" x="260" y="20" text-anchor="middle">Two Multiplexers, Two Eras</text>
+
+            <!-- Timeline axis -->
+            <line class="tx2-line" x1="60" y1="70" x2="480" y2="70"/>
+
+            <!-- 1987 -->
+            <circle class="tx2-dot-muted" cx="80" cy="70" r="5"/>
+            <text class="tx2-value" x="80" y="58" text-anchor="middle">1987</text>
+            <text class="tx2-label" x="80" y="94" text-anchor="middle">GNU Screen</text>
+            <text class="tx2-sub" x="80" y="108" text-anchor="middle">First release</text>
+
+            <!-- 2007 -->
+            <circle class="tx2-dot" cx="310" cy="70" r="5"/>
+            <text class="tx2-value" x="310" y="58" text-anchor="middle">2007</text>
+            <text class="tx2-label" x="310" y="94" text-anchor="middle">tmux</text>
+            <text class="tx2-sub" x="310" y="108" text-anchor="middle">Written for OpenBSD</text>
+
+            <!-- 2009 -->
+            <circle class="tx2-dot" cx="340" cy="70" r="4"/>
+            <text class="tx2-sub" x="356" y="60">OpenBSD 4.6</text>
+
+            <!-- Spans -->
+            <line class="tx2-line" x1="80" y1="130" x2="480" y2="130" style="stroke-dasharray: 2 3;"/>
+            <text class="tx2-sub" x="280" y="146" text-anchor="middle">Screen: 37 years of accumulated decisions</text>
+
+            <line class="tx2-line-accent" x1="310" y1="162" x2="480" y2="162"/>
+            <text class="tx2-sub" x="395" y="178" text-anchor="middle">tmux: 18 years of clean decisions</text>
+
+            <!-- Divider -->
+            <line class="tx2-divider" x1="40" y1="200" x2="480" y2="200"/>
+
+            <text class="tx2-note" x="260" y="222" text-anchor="middle">GNU Screen still works. tmux still makes sense. There is a difference.</text>
+        </svg>
+
+        <h2>The Practical Beauty</h2>
+
+        <p>What tmux actually solves is the problem of context. A developer
+            working on a server does not have one task. They have six. A
+            compilation running in one pane, logs tailing in another, an
+            editor in a third, a database console in a fourth. Without a
+            terminal multiplexer, losing your SSH connection means losing all
+            of that state. Rebuilding it costs minutes. Multiplied by a dozen
+            disconnections per day, that is hours per week spent reconstructing
+            context that a proper architecture would have preserved.</p>
+
+        <p>tmux preserves it. Detach, close your laptop, fly to another
+            continent, open a different laptop, reattach. Every pane is where
+            you left it. Every process is still running. The compilation
+            finished while you were on the plane. The logs kept tailing. Your
+            <code>vim</code> session still has the cursor on line 247, column
+            12, in exactly the file you were editing. The server does not care
+            that the client went away. It has no opinion on your travel
+            arrangements.</p>
+
+        <h2>The Licence</h2>
+
+        <p>tmux is
+            <a href="https://en.wikipedia.org/wiki/ISC_license" target="_blank" rel="noopener">ISC licensed</a>,
+            the most permissive of the BSD licences. GNU Screen is, naturally,
+            GPL. The licensing choice is not incidental. ISC is two paragraphs.
+            GPL version 3 is 5,644 words. The licence mirrors the software: one
+            is concise, clear, and easy to comply with. The other requires a
+            lawyer.</p>
+
+        <h2>The Lesson</h2>
+
+        <p>GNU Screen was written in 1987, and it shows. Not because it is bad
+            software. It is not. It solved a genuine problem, and it solved it
+            well enough to survive for nearly four decades. But 37 years of
+            decisions accumulate. Features are added but never removed.
+            Interfaces are extended but never simplified. Configuration syntax
+            grows new dialects. The codebase becomes its own archaeology.</p>
+
+        <p>tmux was written in 2007 with 20 years of hindsight about what a
+            terminal multiplexer actually needs. Marriott did not attempt to
+            improve Screen. He did not fork it. He sat down with a blank file
+            and asked a better question: what would this look like if we
+            designed it today, knowing everything we know?</p>
+
+        <p>The answer was a clean client-server architecture, a single
+            consistent configuration language, proper keybinding management,
+            and code clean enough to pass Theo de Raadt's two-hour inspection
+            with one or two nits. It was included in
+            <a href="https://en.wikipedia.org/wiki/Tmux" target="_blank" rel="noopener">OpenBSD's base system</a>
+            and has since become the default terminal multiplexer on virtually
+            every Unix-like operating system.</p>
+
+        <blockquote>
+            <p>Sometimes the most beautiful code is not an improvement of what
+                exists. It is permission to start again.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Getting started, for the uninitiated</strong></p>
+            <p>Marriott himself was a long-time Screen user before writing tmux.
+                The transition is deliberately painless. <code>tmux new -s work</code>
+                creates a named session. <code>Ctrl-b d</code> detaches.
+                <code>tmux attach -t work</code> reattaches. <code>Ctrl-b %</code>
+                splits vertically, <code>Ctrl-b "</code> splits horizontally.
+                <code>Ctrl-b c</code> creates a new window. <code>Ctrl-b n</code>
+                and <code>Ctrl-b p</code> navigate between them. That is enough
+                to be productive. The rest arrives when you need it. Sources:
+                <a href="https://en.wikipedia.org/wiki/Tmux" target="_blank" rel="noopener">Wikipedia</a>,
+                <a href="https://github.com/tmux/tmux" target="_blank" rel="noopener">GitHub</a>,
+                <a href="http://undeadly.org/cgi?action=article;sid=20090707041154" target="_blank" rel="noopener">OpenBSD Journal (review)</a>,
+                <a href="https://undeadly.org/cgi?action=article;sid=20090712190402" target="_blank" rel="noopener">OpenBSD Journal (4.6 release)</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

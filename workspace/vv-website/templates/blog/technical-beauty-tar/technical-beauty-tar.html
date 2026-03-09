@@ -1,0 +1,414 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: tar &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Bell Labs, 1979. Tape Archive. Flattens a directory tree into a sequential stream. Preserves permissions, owner, group, timestamps. Does not compress, encrypt, or verify. 47 years later, every Docker layer is a tarball.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-tar{( endslot )}
+
+{( slot og-title )}Technical Beauty: tar &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Bell Labs, 1979. Tape Archive. Flattens a directory tree into a sequential stream. Does not compress, encrypt, or verify. 47 years later, every Docker layer is a tarball.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: tar",
+    "datePublished": "2026-01-29",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-tar",
+    "description": "Bell Labs, 1979. Tape Archive. Flattens a directory tree into a sequential stream. Preserves permissions, owner, group, timestamps. Does not compress, encrypt, or verify. 47 years later, every Docker layer is a tarball.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-29">29 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: tar</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 20</p>
+
+        <p>In 1979, at
+            <a href="https://en.wikipedia.org/wiki/Bell_Labs" target="_blank" rel="noopener">Bell Labs</a>,
+            someone wrote a utility to flatten a directory tree into a sequential
+            stream of bytes. It was designed for magnetic tape, where rewinding
+            was expensive and random access was a fantasy. The tool needed to do
+            exactly one thing: take a tree of files, preserve their permissions,
+            ownership, group, and timestamps, and write the lot out as a single
+            linear stream. It did not compress. It did not encrypt. It did not
+            verify checksums. It just streamed.</p>
+
+        <p>They called it
+            <a href="https://en.wikipedia.org/wiki/Tar_(computing)" target="_blank" rel="noopener">tar</a>.
+            Tape Archive. Forty-seven years later, it remains the standard
+            mechanism for packaging files on every Unix system on earth, and
+            quite a few that would rather not admit it.</p>
+
+        <h2>The Principle</h2>
+
+        <p>tar does one thing. It serialises a directory tree into a flat
+            byte stream and deserialises it back. That is the entire scope.
+            Compression is someone else's problem. Encryption is someone
+            else's problem. Integrity verification is someone else's problem.
+            This is not a limitation. This is the
+            <a href="https://man.freebsd.org/cgi/man.cgi?query=tar" target="_blank" rel="noopener">design</a>.</p>
+
+        <p>The Unix philosophy, distilled to its purest form, says: write
+            programs that do one thing well, and write programs that work
+            together. tar is the canonical example. It creates the archive
+            stream. <code>gzip</code> compresses it. <code>xz</code>
+            compresses it better. <code>zstd</code> compresses it faster.
+            <code>age</code> encrypts it. Each tool does precisely one job.
+            They compose through pipes.</p>
+
+        <pre><code>tar cf - ./project | xz | age -r key > project.tar.xz.age</code></pre>
+
+        <p>That single line archives a directory, compresses it with LZMA2,
+            and encrypts it with a public key. Three tools. Three
+            responsibilities. One pipeline. The dash after <code>cf</code>
+            means stdout. It is the hinge on which the entire composition
+            turns: tar writes to the pipe, the next tool reads from it,
+            and so on until the stream lands in a file. No temporary files.
+            No intermediate state. No coordination protocol between the tools.
+            Just bytes flowing downhill.</p>
+
+        <!-- Unix pipeline diagram: tar | xz | age -->
+        <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Unix pipeline diagram showing data flowing through tar, xz, and age. A directory tree enters tar and becomes a flat byte stream, then xz compresses the stream, then age encrypts it into a final encrypted archive file." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .tar-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tar-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tar-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .tar-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .tar-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                .tar-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .tar-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .tar-fill { fill: var(--accent); opacity: 0.08; rx: 3; }
+                .tar-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#tar-arrowhead); }
+                .tar-pipe { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 3; }
+            </style>
+            <defs>
+                <marker id="tar-arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <text class="tar-title" x="260" y="20" text-anchor="middle">The Pipeline</text>
+            <text class="tar-sub" x="260" y="36" text-anchor="middle">tar cf - ./project | xz | age -r key > project.tar.xz.age</text>
+
+            <!-- Source: directory tree -->
+            <rect class="tar-fill" x="16" y="62" width="88" height="68"/>
+            <rect class="tar-box" x="16" y="62" width="88" height="68"/>
+            <text class="tar-mono" x="60" y="80" text-anchor="middle">./project/</text>
+            <text class="tar-sub" x="60" y="96" text-anchor="middle">tree of files</text>
+            <text class="tar-sub" x="60" y="110" text-anchor="middle">perms, owner</text>
+            <text class="tar-sub" x="60" y="122" text-anchor="middle">group, mtime</text>
+
+            <!-- Arrow 1 -->
+            <line class="tar-arrow" x1="108" y1="96" x2="138" y2="96"/>
+
+            <!-- tar box -->
+            <rect class="tar-fill" x="142" y="70" width="80" height="52"/>
+            <rect class="tar-box" x="142" y="70" width="80" height="52"/>
+            <text class="tar-accent" x="182" y="92" text-anchor="middle">tar</text>
+            <text class="tar-sub" x="182" y="108" text-anchor="middle">archive</text>
+
+            <!-- Arrow 2 (pipe) -->
+            <line class="tar-arrow" x1="226" y1="96" x2="256" y2="96"/>
+            <text class="tar-mono" x="241" y="88" text-anchor="middle">|</text>
+
+            <!-- xz box -->
+            <rect class="tar-fill" x="260" y="70" width="80" height="52"/>
+            <rect class="tar-box" x="260" y="70" width="80" height="52"/>
+            <text class="tar-accent" x="300" y="92" text-anchor="middle">xz</text>
+            <text class="tar-sub" x="300" y="108" text-anchor="middle">compress</text>
+
+            <!-- Arrow 3 (pipe) -->
+            <line class="tar-arrow" x1="344" y1="96" x2="374" y2="96"/>
+            <text class="tar-mono" x="359" y="88" text-anchor="middle">|</text>
+
+            <!-- age box -->
+            <rect class="tar-fill" x="378" y="70" width="80" height="52"/>
+            <rect class="tar-box" x="378" y="70" width="80" height="52"/>
+            <text class="tar-accent" x="418" y="92" text-anchor="middle">age</text>
+            <text class="tar-sub" x="418" y="108" text-anchor="middle">encrypt</text>
+
+            <!-- Arrow 4 (to file) -->
+            <line class="tar-arrow" x1="462" y1="96" x2="492" y2="96"/>
+            <text class="tar-mono" x="477" y="88" text-anchor="middle">></text>
+
+            <!-- Output file -->
+            <text class="tar-mono" x="504" y="100" text-anchor="start" style="font-size: 9px">.tar</text>
+            <text class="tar-mono" x="504" y="112" text-anchor="start" style="font-size: 9px">.xz</text>
+            <text class="tar-mono" x="504" y="124" text-anchor="start" style="font-size: 9px">.age</text>
+
+            <!-- Data stream annotation -->
+            <line class="tar-pipe" x1="60" y1="150" x2="500" y2="150"/>
+
+            <text class="tar-sub" x="60" y="170" text-anchor="middle">1.2 MB</text>
+            <text class="tar-sub" x="60" y="184" text-anchor="middle">tree</text>
+
+            <text class="tar-sub" x="182" y="170" text-anchor="middle">1.2 MB</text>
+            <text class="tar-sub" x="182" y="184" text-anchor="middle">flat stream</text>
+
+            <text class="tar-sub" x="300" y="170" text-anchor="middle">240 KB</text>
+            <text class="tar-sub" x="300" y="184" text-anchor="middle">compressed</text>
+
+            <text class="tar-sub" x="418" y="170" text-anchor="middle">240 KB</text>
+            <text class="tar-sub" x="418" y="184" text-anchor="middle">encrypted</text>
+
+            <!-- Bottom annotation -->
+            <line x1="16" y1="210" x2="520" y2="210" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="tar-note" x="260" y="230" text-anchor="middle">Each tool does one thing. The pipe does the rest.</text>
+            <text class="tar-note" x="260" y="248" text-anchor="middle">No temporary files. No intermediate state. Just bytes flowing downhill.</text>
+        </svg>
+
+        <h2>The Tape</h2>
+
+        <p>The format was designed for tape drives. Magnetic tape is a
+            sequential medium. You read forward. You write forward. Rewinding
+            is slow and wears the mechanism. Random access does not exist in
+            any meaningful sense. tar's format reflects this constraint:
+            headers and data blocks alternate in a flat sequence, each file
+            preceded by a 512-byte header containing its metadata. The entire
+            archive can be written and read in a single pass.</p>
+
+        <p>This constraint, imposed by hardware that most developers alive
+            today have never touched, produced a format with remarkable
+            properties. You can append to a tar archive without reading the
+            existing contents. You can extract a single file by scanning
+            forward and stopping. You can update files in place. These are
+            not features that were added later. They are consequences of
+            designing for a medium where going backwards was expensive.</p>
+
+        <p>The tape drives are gone. The design remains. It turns out that
+            designing for constraints produces software that outlives the
+            constraints. A format optimised for sequential access works
+            beautifully on spinning disks, on solid-state storage, on network
+            streams, on anything that reads bytes in order. The constraint was
+            local. The benefit was universal.</p>
+
+        <h2>The Silence</h2>
+
+        <p>tar does not compress. This is the fact that causes the most
+            confusion and the most arguments on the internet, which is saying
+            something. People write <code>tar czf</code> and believe that tar
+            is compressing their files. It is not. The <code>z</code> flag tells
+            tar to invoke <code>gzip</code> as a filter on its output stream.
+            tar still does exactly one thing. It has simply learned, over the
+            decades, a polite convention for calling its neighbours.</p>
+
+        <p>tar does not encrypt. tar does not compute checksums. tar does
+            not deduplicate. tar does not do delta encoding. tar does not
+            sign. tar does not do any of the things that a modern archive
+            tool is expected to do, because tar is not a modern archive tool.
+            tar is a stream serialiser. Everything else is composition.</p>
+
+        <p>This silence, this refusal to absorb adjacent responsibilities,
+            is the source of tar's longevity. Every feature you add is a
+            feature you must maintain. Every capability you absorb is a
+            dependency you cannot remove. tar chose to do nothing beyond
+            its core purpose, and in doing so, ensured that its core purpose
+            would never be compromised by the failure of an unrelated feature.
+            gzip had a security vulnerability in 2010. tar was unaffected.
+            tar does not know what gzip is. That is the point.</p>
+
+        <!-- Composition matrix: what tar does vs what tar delegates -->
+        <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Responsibility matrix showing what tar does versus what it delegates. tar handles archiving, metadata preservation, and streaming. Compression, encryption, verification, and signing are each handled by separate specialised tools." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .tar-m-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tar-m-head { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .tar-m-label { font: 400 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .tar-m-tool { font: 400 10px/1 ui-monospace, monospace; fill: var(--muted); }
+                .tar-m-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .tar-m-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .tar-m-row { fill: var(--accent); opacity: 0.06; }
+                .tar-m-line { stroke: var(--border); stroke-width: 0.5; }
+                .tar-m-check { font: 600 14px/1 system-ui, sans-serif; fill: var(--accent); }
+                .tar-m-dash { font: 400 14px/1 system-ui, sans-serif; fill: var(--muted); opacity: 0.4; }
+            </style>
+
+            <text class="tar-m-title" x="260" y="20" text-anchor="middle">Responsibility Matrix</text>
+            <text class="tar-m-sub" x="260" y="36" text-anchor="middle">One tool per job. No exceptions.</text>
+
+            <!-- Column headers -->
+            <text class="tar-m-head" x="40" y="64">CONCERN</text>
+            <text class="tar-m-head" x="250" y="64">TAR?</text>
+            <text class="tar-m-head" x="320" y="64">TOOL</text>
+            <line class="tar-m-line" x1="30" y1="72" x2="490" y2="72"/>
+
+            <!-- Row 1: Archiving (tar does this) -->
+            <rect class="tar-m-row" x="30" y="78" width="460" height="28" rx="2"/>
+            <text class="tar-m-label" x="40" y="97">Flatten directory tree</text>
+            <text class="tar-m-check" x="262" y="97">&#x2713;</text>
+            <text class="tar-m-tool" x="320" y="97">tar</text>
+
+            <!-- Row 2: Metadata -->
+            <text class="tar-m-label" x="40" y="125">Preserve permissions, owner, timestamps</text>
+            <text class="tar-m-check" x="262" y="125">&#x2713;</text>
+            <text class="tar-m-tool" x="320" y="125">tar</text>
+
+            <!-- Row 3: Streaming -->
+            <rect class="tar-m-row" x="30" y="134" width="460" height="28" rx="2"/>
+            <text class="tar-m-label" x="40" y="153">Sequential byte stream</text>
+            <text class="tar-m-check" x="262" y="153">&#x2713;</text>
+            <text class="tar-m-tool" x="320" y="153">tar</text>
+
+            <line class="tar-m-line" x1="30" y1="168" x2="490" y2="168" stroke-dasharray="4 3"/>
+
+            <!-- Row 4: Compression -->
+            <text class="tar-m-label" x="40" y="189">Compression</text>
+            <text class="tar-m-dash" x="262" y="189">&#x2014;</text>
+            <text class="tar-m-tool" x="320" y="189">gzip, xz, zstd, bzip2</text>
+
+            <!-- Row 5: Encryption -->
+            <rect class="tar-m-row" x="30" y="198" width="460" height="28" rx="2"/>
+            <text class="tar-m-label" x="40" y="217">Encryption</text>
+            <text class="tar-m-dash" x="262" y="217">&#x2014;</text>
+            <text class="tar-m-tool" x="320" y="217">age, gpg, openssl</text>
+
+            <!-- Row 6: Checksums -->
+            <text class="tar-m-label" x="40" y="245">Integrity verification</text>
+            <text class="tar-m-dash" x="262" y="245">&#x2014;</text>
+            <text class="tar-m-tool" x="320" y="245">sha256, md5</text>
+
+            <!-- Row 7: Signing -->
+            <rect class="tar-m-row" x="30" y="254" width="460" height="28" rx="2"/>
+            <text class="tar-m-label" x="40" y="273">Signing</text>
+            <text class="tar-m-dash" x="262" y="273">&#x2014;</text>
+            <text class="tar-m-tool" x="320" y="273">signify, gpg, minisign</text>
+
+            <!-- Bottom annotation -->
+            <line x1="30" y1="296" x2="490" y2="296" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="tar-m-note" x="260" y="314" text-anchor="middle">The rows tar does not own are the rows that cannot break it.</text>
+        </svg>
+
+        <h2>The Survivors</h2>
+
+        <p>Forty-seven years after its creation, tar is everywhere. Every
+            <a href="https://docs.docker.com/engine/storage/drivers/" target="_blank" rel="noopener">Docker image layer</a>
+            is a tarball. Every source release on every open-source project
+            is a <code>.tar.gz</code> or <code>.tar.xz</code>. Every backup
+            system that runs on Unix speaks tar. Every package manager that
+            predates the app-store era uses tar as its container format.
+            FreeBSD's <code>pkg</code> is tar. Debian's <code>.deb</code> is
+            an <code>ar</code> archive containing tarballs. Red Hat's
+            <code>.rpm</code> contains a <code>cpio</code> archive, but the
+            source RPMs are tarballs. The OCI container image specification
+            layers files as tarballs. The entire containerisation revolution,
+            the one that was supposed to change everything, ships its
+            filesystem layers in a format from 1979.</p>
+
+        <p>This is not nostalgia. This is not inertia. This is the natural
+            consequence of getting the abstraction right the first time. tar
+            solved "flatten a file tree into a stream" so completely that
+            nobody has needed to solve it again. The attempts exist. They are
+            called zip, rar, 7z, and a dozen others. They all bundle archiving
+            with compression, which means they cannot participate in a Unix
+            pipeline. They are closed systems. tar is an open stream.</p>
+
+        <h2>The Dash</h2>
+
+        <p>The character <code>-</code> in <code>tar cf -</code> means
+            standard output. It is perhaps the most powerful single character
+            in all of Unix. It transforms tar from a file-writing tool into
+            a stream-emitting component. Without it, tar would write to a file
+            and the pipeline would not exist. With it, tar's output becomes
+            the input of whatever tool comes next. The entire composition
+            model, the entire reason tar has survived for nearly half a
+            century, rests on one convention: the dash means stdout.</p>
+
+        <p>This convention was not tar's invention. It is a Unix tradition
+            that predates tar itself. But tar is the tool that demonstrates
+            its power most clearly, because the alternative is so obviously
+            worse. Without the dash, you would need: create the archive to a
+            temporary file, compress the temporary file to another temporary
+            file, encrypt that file to a third temporary file, then clean up.
+            Four steps, three temporary files, and the hope that you have
+            enough disk space for all of them simultaneously. With the dash,
+            you have one line, zero temporary files, and constant memory
+            usage regardless of archive size.</p>
+
+        <h2>The Format</h2>
+
+        <p>The original tar format used 512-byte header blocks. Each file
+            in the archive is preceded by a header containing the filename
+            (limited to 100 characters), permissions, owner, group, size,
+            and modification time, all stored as octal ASCII strings. The
+            file data follows, padded to the next 512-byte boundary. The
+            archive ends with two blocks of zero bytes.</p>
+
+        <p>This format has been extended several times. POSIX.1-1988
+            introduced the <code>ustar</code> format with longer filenames
+            (up to 256 characters via prefix splitting) and device number
+            support. GNU tar added its own extensions for arbitrary-length
+            filenames, sparse files, and incremental backups. The
+            <code>pax</code> format (POSIX.1-2001) introduced extensible
+            headers as key-value pairs, allowing essentially unlimited
+            metadata without breaking backwards compatibility.</p>
+
+        <p>Every extension preserved the 512-byte block structure. Every
+            extension remained readable by older implementations that simply
+            ignored the fields they did not understand. This is how you
+            evolve a format over forty-seven years without breaking anything:
+            you make the extensions additive and the core immutable.</p>
+
+        <h2>The Verdict</h2>
+
+        <p>tar is not clever. It does not compress. It does not encrypt. It
+            does not verify. It does not sign. It does not deduplicate. It
+            flattens a tree into a stream, preserves the metadata, and gets
+            out of the way. It has been doing this since 1979, when the
+            magnetic tapes it was designed for were state of the art, and it
+            will continue doing this long after the last person who remembers
+            what a magnetic tape looked like has retired.</p>
+
+        <p>The tools that tried to do everything are the tools that had to
+            be replaced. The tool that did one thing is the tool that
+            survived. tar is not a relic of the Unix era. tar is the proof
+            that the Unix era was right.</p>
+
+        <blockquote>
+            <p>One job. One stream. One dash. Forty-seven years.
+                The format designed for tape drives now ships every container
+                layer on the internet. That is not survival. That is
+                vindication.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The quick reference</strong></p>
+            <p>Create: <code>tar cf archive.tar ./dir</code>.
+                Create compressed: <code>tar czf archive.tar.gz ./dir</code> (gzip),
+                <code>tar cJf archive.tar.xz ./dir</code> (xz).
+                Extract: <code>tar xf archive.tar.gz</code> (auto-detects compression).
+                List contents: <code>tar tf archive.tar</code>.
+                Pipe and encrypt:
+                <code>tar cf - ./dir | xz | age -r key > dir.tar.xz.age</code>.
+                The flags are terse because they were designed for people who
+                type them several hundred times a week. Verbosity is a tax
+                on frequency.
+                Sources:
+                <a href="https://en.wikipedia.org/wiki/Tar_(computing)" target="_blank" rel="noopener">Wikipedia</a>,
+                <a href="https://man.freebsd.org/cgi/man.cgi?query=tar" target="_blank" rel="noopener">FreeBSD man page</a>.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

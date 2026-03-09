@@ -1,0 +1,334 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: awk &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Alfred Aho, Peter Weinberger, and Brian Kernighan wrote awk in 1977 at Bell Labs. 49 years later, the codebase has doubled from 3,000 to 6,200 lines. Pattern, action, done. No migration guides. No breaking changes.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-awk{( endslot )}
+
+{( slot og-title )}Technical Beauty: awk &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Alfred Aho, Peter Weinberger, and Brian Kernighan wrote awk in 1977 at Bell Labs. 49 years later, the codebase has doubled from 3,000 to 6,200 lines. Pattern, action, done. No migration guides.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: awk",
+    "datePublished": "2026-01-20",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-awk",
+    "description": "Alfred Aho, Peter Weinberger, and Brian Kernighan wrote awk in 1977 at Bell Labs. 49 years later, the codebase has doubled from 3,000 to 6,200 lines. Pattern, action, done. No migration guides. No breaking changes.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-20">20 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: awk</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 17</p>
+
+        <p>In 1977,
+            <a href="https://en.wikipedia.org/wiki/AWK" target="_blank" rel="noopener">three researchers at Bell Labs</a>
+            wrote a text-processing language. Alfred Aho provided the
+            pattern-matching theory. Peter Weinberger contributed the
+            database perspective. Brian Kernighan supplied the language
+            design and, one suspects, the name: AWK, from their initials,
+            because naming things after yourself was still considered
+            acceptable when your initials happened to sound like a
+            surprised parrot.</p>
+
+        <p>The original implementation was roughly 3,000 lines of C,
+            Yacc, and Lex. Today,
+            <a href="https://github.com/onetrueawk/awk" target="_blank" rel="noopener">Kernighan's nawk</a>
+            (the "One True AWK") stands at approximately 6,200 lines.
+            In 49 years, the codebase doubled. Most software doubles
+            its complexity between Tuesday and Thursday.</p>
+
+        <h2>The Grammar</h2>
+
+        <p>The entire language fits into one sentence:
+            <code>pattern { action }</code>. If the pattern matches,
+            the action executes. If no pattern is given, every line
+            matches. If no action is given, the line is printed. That
+            is the whole language. Everything else is detail.</p>
+
+        <p>The syntax you learn today is the syntax that worked on a
+            1985 VAX. The same commands, the same field separators,
+            the same associative arrays. No migration guides. No
+            deprecation notices. No blog post from the core team
+            explaining why they had to break your scripts for your
+            own good. You write <code>awk</code> once. It runs
+            forever.</p>
+
+        <p>Kernighan himself
+            <a href="https://www.cs.princeton.edu/~bwk/testing.html" target="_blank" rel="noopener">said of testing</a>:
+            "I don't want test cases to succeed; I want them to
+            fail." This is the philosophy of someone who understands
+            that correctness is not a feature you add. It is a
+            property you defend.</p>
+
+        <h2>The Implementations</h2>
+
+        <p>Three implementations cover effectively the entire Unix
+            world, and they are all compatible:</p>
+
+        <p><strong>nawk</strong> is Kernighan's own. The
+            <a href="https://github.com/onetrueawk/awk" target="_blank" rel="noopener">"One True AWK"</a>,
+            maintained by the man who co-designed the language. It
+            ships as the default <code>awk</code> on macOS, FreeBSD,
+            OpenBSD, and Android. When your phone processes text, there
+            is a non-trivial chance that Kernighan's code is doing it.</p>
+
+        <p><strong>gawk</strong> is the
+            <a href="https://www.gnu.org/software/gawk/manual/html_node/History.html" target="_blank" rel="noopener">GNU implementation</a>,
+            the default on most Linux distributions. It adds extensions
+            (networking, loadable modules, internationalisation) while
+            remaining POSIX-compatible at the core. The extensions are
+            there if you want them. The language does not require them.</p>
+
+        <p><strong>mawk</strong> is the speed demon. Default on
+            Ubuntu and Debian. Written by Mike Brennan with raw
+            performance as the primary design goal. It is, by most
+            benchmarks, the fastest awk implementation in existence.
+            It achieves this by compiling patterns to an internal
+            bytecode rather than interpreting them directly. The
+            user notices nothing. The clock notices everything.</p>
+
+        <p>All three are POSIX-compliant. All three are actively
+            maintained. All three have been maintained for decades.
+            One might call this arrangement boring. One might also
+            call it finished.</p>
+
+        <!-- Timeline: awk's stability vs technology churn -->
+        <svg viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline from 1977 to 2026 showing awk's codebase growing steadily from 3,000 to 6,200 lines while technologies like CGI, Perl CGI, PHP, Ruby on Rails, jQuery, Angular, and countless frameworks rose and fell around it." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .awk-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .awk-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .awk-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .awk-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .awk-mono { font: 400 10px/1 ui-monospace, monospace; fill: var(--text); }
+                .awk-loc { font: 700 10px/1 ui-monospace, monospace; fill: var(--accent); }
+                .awk-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .awk-ghost { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); opacity: 0.6; }
+            </style>
+
+            <text class="awk-title" x="260" y="20" text-anchor="middle">49 Years of awk</text>
+            <text class="awk-sub" x="260" y="36" text-anchor="middle">Lines of code vs. technologies that came and went</text>
+
+            <!-- Axis -->
+            <line x1="60" y1="60" x2="60" y2="310" stroke="var(--border)" stroke-width="1"/>
+            <line x1="60" y1="310" x2="500" y2="310" stroke="var(--border)" stroke-width="1"/>
+
+            <!-- Y-axis labels -->
+            <text class="awk-mono" x="55" y="305" text-anchor="end">0</text>
+            <text class="awk-mono" x="55" y="243" text-anchor="end">2K</text>
+            <text class="awk-mono" x="55" y="181" text-anchor="end">4K</text>
+            <text class="awk-mono" x="55" y="119" text-anchor="end">6K</text>
+            <text class="awk-mono" x="55" y="68" text-anchor="end">8K</text>
+            <text class="awk-sub" x="14" y="185" text-anchor="middle" transform="rotate(-90, 14, 185)">Lines of Code</text>
+
+            <!-- Y-axis gridlines -->
+            <line x1="60" y1="243" x2="500" y2="243" stroke="var(--border)" stroke-width="0.3" stroke-dasharray="3 3"/>
+            <line x1="60" y1="181" x2="500" y2="181" stroke="var(--border)" stroke-width="0.3" stroke-dasharray="3 3"/>
+            <line x1="60" y1="119" x2="500" y2="119" stroke="var(--border)" stroke-width="0.3" stroke-dasharray="3 3"/>
+
+            <!-- X-axis labels -->
+            <text class="awk-mono" x="60" y="326">1977</text>
+            <text class="awk-mono" x="150" y="326">1990</text>
+            <text class="awk-mono" x="280" y="326">2005</text>
+            <text class="awk-mono" x="410" y="326">2020</text>
+            <text class="awk-mono" x="490" y="326">26</text>
+
+            <!-- awk line: steady, gentle rise from ~3000 (1977) to ~6200 (2026) -->
+            <polyline fill="none" stroke="var(--accent)" stroke-width="2.5"
+                points="60,212 110,208 150,200 200,192 250,182 300,172 350,160 400,148 450,137 490,113"/>
+
+            <!-- Start and end markers -->
+            <circle cx="60" cy="212" r="4" fill="var(--accent)"/>
+            <circle cx="490" cy="113" r="4" fill="var(--accent)"/>
+            <text class="awk-loc" x="74" y="207">~3,000</text>
+            <text class="awk-loc" x="448" y="106">~6,200</text>
+
+            <!-- Ghost technologies that rose and fell -->
+            <text class="awk-ghost" x="100" y="290">CGI</text>
+            <text class="awk-ghost" x="140" y="276">Perl CGI</text>
+            <text class="awk-ghost" x="190" y="264">PHP 3/4</text>
+            <text class="awk-ghost" x="250" y="252">Ruby on Rails</text>
+            <text class="awk-ghost" x="310" y="240">jQuery</text>
+            <text class="awk-ghost" x="350" y="264">Backbone</text>
+            <text class="awk-ghost" x="390" y="252">AngularJS</text>
+            <text class="awk-ghost" x="430" y="240">Webpack 1-4</text>
+
+            <!-- awk label on line -->
+            <text class="awk-accent" x="280" y="164">awk</text>
+
+            <!-- Bottom annotation -->
+            <line x1="60" y1="345" x2="500" y2="345" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="awk-note" x="260" y="365" text-anchor="middle">The line rises gently. The graveyard below it does not.</text>
+        </svg>
+
+        <h2>The Alternative</h2>
+
+        <p>The modern answer to "how do I process some text" is
+            typically Python. Import pandas. Import numpy. Write a
+            script. Create a virtual environment. Install dependencies.
+            Activate the environment. Run the script. Wait for the
+            import statements to finish loading. Go and make tea.
+            Return. Read the output.</p>
+
+        <p>Or:</p>
+
+        <pre><code>awk '/ERROR/ { print $1, $4 }' server.log</code></pre>
+
+        <p>One line. No imports. No dependencies. No virtual
+            environment. No package manager. No build step. The
+            output appears before you have finished lifting your
+            finger from the return key. This is not an argument
+            against Python, which is a fine language for a great many
+            things. It is an observation that reaching for a general-purpose
+            programming language to extract two fields from a log file
+            is rather like hiring an orchestra to hum a tune.</p>
+
+        <h2>The Syntax That Does Not Move</h2>
+
+        <p>There is a particular kind of software that earns trust
+            not by adding features but by refusing to add them.
+            <code>awk</code> has not gained a package manager. It has
+            not gained a plugin system. It has not gained an LSP
+            server, a formatter, a linter, a conference, or a
+            foundation. It has not gained a mascot. It has gained
+            approximately 3,200 lines of code in 49 years, which
+            works out to roughly 65 lines per year, or one line
+            every five and a half days.</p>
+
+        <p>Sixty-five lines per year is not a development pace.
+            It is a statement of position. It says: this tool does
+            what it does. It has done what it does since 1977. It
+            will continue to do what it does after every framework
+            in your <code>package.json</code> has been deprecated,
+            forked, renamed, and deprecated again.</p>
+
+        <!-- Pattern { Action } diagram -->
+        <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing awk's core model: input lines flow through pattern matching, then matching lines execute an action block, producing output. The entire language in one diagram." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .awk-d-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .awk-d-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .awk-d-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .awk-d-code { font: 600 12px/1 ui-monospace, monospace; fill: var(--accent); }
+                .awk-d-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .awk-d-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                .awk-d-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .awk-d-accent-fill { fill: var(--accent); opacity: 0.12; rx: 4; }
+                .awk-d-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <text class="awk-d-title" x="260" y="20" text-anchor="middle">The Entire Language</text>
+
+            <!-- Input -->
+            <rect class="awk-d-fill" x="20" y="50" width="100" height="60"/>
+            <rect class="awk-d-box" x="20" y="50" width="100" height="60"/>
+            <text class="awk-d-label" x="70" y="76" text-anchor="middle">Input</text>
+            <text class="awk-d-sub" x="70" y="92" text-anchor="middle">line by line</text>
+
+            <!-- Arrow -->
+            <line x1="120" y1="80" x2="155" y2="80" stroke="var(--border)" stroke-width="1"/>
+            <polygon points="155,75 165,80 155,85" fill="var(--border)"/>
+
+            <!-- Pattern -->
+            <rect class="awk-d-accent-fill" x="165" y="50" width="120" height="60"/>
+            <rect class="awk-d-accent-box" x="165" y="50" width="120" height="60"/>
+            <text class="awk-d-code" x="225" y="76" text-anchor="middle">pattern</text>
+            <text class="awk-d-sub" x="225" y="92" text-anchor="middle">match?</text>
+
+            <!-- Arrow -->
+            <line x1="285" y1="80" x2="320" y2="80" stroke="var(--border)" stroke-width="1"/>
+            <polygon points="320,75 330,80 320,85" fill="var(--border)"/>
+
+            <!-- Action -->
+            <rect class="awk-d-accent-fill" x="330" y="50" width="120" height="60"/>
+            <rect class="awk-d-accent-box" x="330" y="50" width="120" height="60"/>
+            <text class="awk-d-code" x="390" y="76" text-anchor="middle">{ action }</text>
+            <text class="awk-d-sub" x="390" y="92" text-anchor="middle">execute</text>
+
+            <!-- Arrow -->
+            <line x1="450" y1="80" x2="480" y2="80" stroke="var(--border)" stroke-width="1"/>
+            <polygon points="480,75 490,80 480,85" fill="var(--border)"/>
+
+            <!-- Output -->
+            <rect class="awk-d-fill" x="490" y="60" width="16" height="40"/>
+            <rect class="awk-d-box" x="490" y="60" width="16" height="40"/>
+
+            <!-- Skip arrow (no match) -->
+            <line x1="225" y1="110" x2="225" y2="140" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 3"/>
+            <text class="awk-d-sub" x="225" y="156" text-anchor="middle">no match: skip</text>
+
+            <!-- Bottom annotation -->
+            <line x1="20" y1="175" x2="500" y2="175" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="awk-d-note" x="260" y="193" text-anchor="middle">Learn once. Use for 49 years. No migration guide required.</text>
+        </svg>
+
+        <h2>The Verdict</h2>
+
+        <p>Three men at Bell Labs wrote a text-processing language
+            in 1977. They named it after their initials. They gave
+            it one concept (<code>pattern { action }</code>), one
+            purpose (transforming text), and one promise (it will
+            not change under your feet). Forty-nine years later,
+            the promise holds. The codebase doubled. The syntax did
+            not.</p>
+
+        <p>Today there are three maintained implementations, all
+            POSIX-compliant, all interchangeable, all present on
+            every Unix system you will ever touch. They do not
+            compete. They coexist. They process the same patterns
+            with the same actions on the same data and produce the
+            same output, as they have done since before most of
+            their users were born.</p>
+
+        <blockquote>
+            <p>3,000 lines became 6,200 in 49 years. Pattern, action,
+                done. The syntax you learn today is the syntax that
+                ran on a 1985 VAX. One might call that boring. I call
+                it finished.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>On awk in the field</strong></p>
+            <p>A FreeBSD administrator's daily toolkit demonstrates
+                what "pattern { action }" looks like when applied to
+                real systems. Listing processes by memory:
+                <code>ps aux | awk 'NR>1 { print $4, $11 }' | sort -rn | head</code>.
+                Finding listening ports:
+                <code>sockstat -4l | awk '/tcp/ { print $3, $6 }'</code>.
+                Splitting fields, matching patterns, building
+                associative arrays. No imports, no dependencies,
+                no virtual environments. Just the tool, the pipe,
+                and the data. The <a href="https://awk.dev" target="_blank" rel="noopener">awk.dev</a>
+                resource page collects these patterns. Kernighan's
+                <a href="https://github.com/onetrueawk/awk" target="_blank" rel="noopener">One True AWK repository</a>
+                remains the canonical source, maintained with the same
+                restraint that defined the language from the start.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

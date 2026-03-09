@@ -90,6 +90,16 @@ local pages = {
     { loc = "/blog/rolling-releases",    priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-enshittification-cycle", priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-distributed-tax",       priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/bytes-of-art-neuron-activated", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-json-rpc-replacement",  priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-tar",      priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-tmux",     priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-awk",      priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-monitoring-replacement", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-native-form",           priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-age",      priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-flexbox-tax",           priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/ssh-config",               priority = "0.7", changefreq = "yearly" },
 }
 
 function route()

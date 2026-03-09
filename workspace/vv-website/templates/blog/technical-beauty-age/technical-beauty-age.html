@@ -1,0 +1,349 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Technical Beauty: age &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Filippo Valsorda built age in 2019 because GPG had become unusable for simple tasks. 3,000 lines of Go. Zero config files. One purpose: encrypting files for known recipients without the ceremony.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-age{( endslot )}
+
+{( slot og-title )}Technical Beauty: age &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Filippo Valsorda built age in 2019 because GPG had become unusable for simple tasks. 3,000 lines of Go. Zero config files. One purpose: encrypting files for known recipients without the ceremony.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Technical Beauty: age",
+    "datePublished": "2026-01-07",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-age",
+    "description": "Filippo Valsorda built age in 2019 because GPG had become unusable for simple tasks. 3,000 lines of Go. Zero config files. One purpose: encrypting files for known recipients without the ceremony.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-07">7 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Technical Beauty: age</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 10</p>
+
+        <p>You want to encrypt a file for a colleague. A five-second task.
+            You reach for GPG. GPG asks you to understand keyrings. Then trust
+            models. Then configuration files. Then keyservers. Then fifty
+            command-line flags, each with its own man page subsection and its
+            own capacity to silently produce the wrong result. Forty minutes
+            later, you are reading a Stack Overflow thread titled
+            &#x201C;gpg: No public key&#x201D; and questioning whether the
+            file was worth encrypting in the first place.</p>
+
+        <p>In 2019,
+            <a href="https://words.filippo.io/" target="_blank" rel="noopener">Filippo Valsorda</a>
+            decided this was no longer acceptable. He wrote
+            <a href="https://age-encryption.org/" target="_blank" rel="noopener">age</a>,
+            which stands for Actually Good Encryption. The name is either
+            perfectly descriptive or magnificently cheeky, depending on how
+            many hours you have personally lost to GPG. Either way, it is
+            accurate.</p>
+
+        <h2>The Command</h2>
+
+        <p>Here is age encrypting a file:</p>
+
+        <pre><code>age -r age1ql3z7hjy... secret.txt > secret.txt.age</code></pre>
+
+        <p>That is the entire ceremony. No keyring. No configuration file.
+            No trust model. No keyserver query. No interactive prompt asking
+            which subkey to use. No ambiguity about what happened. The
+            recipient&#x2019;s public key is a string. You paste it. The file
+            is encrypted. You are done, and you still have forty minutes of
+            your life left.</p>
+
+        <p>Here is age decrypting it:</p>
+
+        <pre><code>age -d -i key.txt secret.txt.age > secret.txt</code></pre>
+
+        <p>Two commands. No state between them. No database of keys that can
+            corrupt. No configuration directory that can drift between machines.
+            Keys are strings, not entries in a local database that you must
+            remember to export before reformatting your laptop at midnight.</p>
+
+        <h2>The Numbers</h2>
+
+        <p>age is
+            <a href="https://github.com/FiloSottile/age" target="_blank" rel="noopener">3,000 lines of Go</a>.
+            An experienced developer can audit the entire codebase in an
+            afternoon. Not skim it. Not grep for obvious mistakes. Actually
+            read it, understand every function, trace every code path, and
+            leave with a justified opinion about whether it does what it
+            claims.</p>
+
+        <p>GPG is 500,000 lines. Auditing GPG is not an afternoon. Auditing
+            GPG is a funded research project with a timeline measured in
+            months, an outcome measured in papers, and a conclusion that
+            invariably includes the phrase &#x201C;further work is needed.&#x201D;</p>
+
+        <!-- age vs GPG comparison diagram -->
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison of age versus GPG across five dimensions: lines of code (3,000 vs 500,000+), configuration files (zero vs multiple), key storage (strings vs database), state (stateless vs stateful), and audit time (one afternoon vs months)." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .age-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .age-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .age-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .age-val { font: 600 11px/1 ui-monospace, monospace; fill: var(--text); }
+                .age-accent { font: 600 11px/1 ui-monospace, monospace; fill: var(--accent); }
+                .age-bar-bg { fill: var(--muted); opacity: 0.08; rx: 3; }
+                .age-bar-age { fill: var(--accent); opacity: 0.25; rx: 3; }
+                .age-bar-gpg { fill: var(--muted); opacity: 0.15; rx: 3; }
+                .age-head { font: 600 10px/1 'Oxanium', system-ui, sans-serif; }
+                .age-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <text class="age-title" x="260" y="20" text-anchor="middle">age vs GPG</text>
+            <text class="age-sub" x="260" y="36" text-anchor="middle">Reduction as a design decision</text>
+
+            <!-- Column headers -->
+            <text class="age-head" x="290" y="60" fill="var(--accent)">age</text>
+            <text class="age-head" x="420" y="60" fill="var(--muted)">GPG</text>
+
+            <!-- Row 1: Lines of Code -->
+            <text class="age-label" x="30" y="90">Lines of Code</text>
+            <rect class="age-bar-age" x="280" y="76" width="24" height="18"/>
+            <text class="age-accent" x="310" y="90">3,000</text>
+            <rect class="age-bar-gpg" x="400" y="76" width="100" height="18"/>
+            <text class="age-val" x="408" y="90">500,000+</text>
+
+            <!-- Row 2: Config Files -->
+            <text class="age-label" x="30" y="130">Config Files</text>
+            <rect class="age-bar-age" x="280" y="116" width="8" height="18"/>
+            <text class="age-accent" x="296" y="130">0</text>
+            <rect class="age-bar-gpg" x="400" y="116" width="60" height="18"/>
+            <text class="age-val" x="408" y="130">gpg.conf +</text>
+
+            <!-- Row 3: Key Storage -->
+            <text class="age-label" x="30" y="170">Key Storage</text>
+            <rect class="age-bar-age" x="280" y="156" width="50" height="18"/>
+            <text class="age-accent" x="290" y="170">string</text>
+            <rect class="age-bar-gpg" x="400" y="156" width="76" height="18"/>
+            <text class="age-val" x="408" y="170">database</text>
+
+            <!-- Row 4: State -->
+            <text class="age-label" x="30" y="210">State</text>
+            <rect class="age-bar-age" x="280" y="196" width="60" height="18"/>
+            <text class="age-accent" x="290" y="210">none</text>
+            <rect class="age-bar-gpg" x="400" y="196" width="90" height="18"/>
+            <text class="age-val" x="408" y="210">keyring +</text>
+
+            <!-- Row 5: Audit Time -->
+            <text class="age-label" x="30" y="250">Audit Time</text>
+            <rect class="age-bar-age" x="280" y="236" width="70" height="18"/>
+            <text class="age-accent" x="290" y="250">1 afternoon</text>
+            <rect class="age-bar-gpg" x="400" y="236" width="90" height="18"/>
+            <text class="age-val" x="408" y="250">months</text>
+
+            <!-- Bottom annotation -->
+            <line x1="30" y1="278" x2="500" y2="278" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="age-note" x="260" y="298" text-anchor="middle">GPG tried to solve every encryption problem.</text>
+            <text class="age-note" x="260" y="314" text-anchor="middle">age solves one. That is why it solves it flawlessly.</text>
+        </svg>
+
+        <p>The ratio is 167:1. For every line of age, GPG has 167 lines doing
+            something. Some of those lines implement features. Many of them
+            implement the interactions between features. The majority implement
+            the consequences of decisions made in the 1990s that cannot be
+            reversed without breaking the web of trust, which itself is a
+            feature that almost nobody uses and almost everybody misunderstands.</p>
+
+        <h2>The Man</h2>
+
+        <p>Valsorda was not an outsider complaining about GPG from the
+            sidelines. He was the
+            <a href="https://words.filippo.io/" target="_blank" rel="noopener">Go Security Lead at Google</a>.
+            He knew, in precise and quantifiable terms, what cryptographic
+            complexity costs. He had reviewed the CVEs. He had traced the
+            bugs. He understood that the attack surface of an encryption tool
+            is not proportional to its line count but to the square of its
+            feature count, because every feature interacts with every other
+            feature in ways that the original designers did not anticipate and
+            the current maintainers cannot fully enumerate.</p>
+
+        <p>His response was not to fix GPG. His response was to observe that
+            GPG&#x2019;s problems are architectural, not incidental. You cannot
+            fix a tool that tries to do everything by doing everything better.
+            You fix it by building a new tool that does one thing.</p>
+
+        <h2>The Cryptography</h2>
+
+        <p>age uses
+            <a href="https://age-encryption.org/v1" target="_blank" rel="noopener">X25519</a>
+            for key agreement and ChaCha20-Poly1305 for authenticated
+            encryption. These are not the newest primitives. They are the
+            <em>correct</em> primitives. X25519 was designed by Daniel
+            J. Bernstein, who has a rather strong track record of designing
+            things that do not break. ChaCha20-Poly1305 is the IETF standard
+            for authenticated encryption when you want performance without
+            hardware AES support, which is to say, on every device that is
+            not a server.</p>
+
+        <p>GPG, by contrast, supports a museum of ciphers. IDEA. CAST5.
+            Blowfish. Triple DES. Each one a historical artefact, each one
+            a potential downgrade path, each one a configuration option that
+            an uninformed user might select because it appeared first in a
+            dropdown. age offers no dropdown. age offers one set of primitives,
+            chosen correctly, and the user is not invited to second-guess
+            the selection. This is not paternalism. This is the recognition
+            that cryptographic agility, the ability to choose your cipher,
+            is itself a vulnerability. The user who can choose wrong
+            <em>will</em> choose wrong, given sufficient time and insufficient
+            documentation.</p>
+
+        <!-- Crypto primitives diagram -->
+        <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="age crypto pipeline: recipient public key feeds into X25519 key agreement, which produces a file key, which feeds into ChaCha20-Poly1305 authenticated encryption, producing the encrypted file. Two steps. No choices." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .age-c-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .age-c-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .age-c-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .age-c-fill { fill: var(--accent); opacity: 0.10; rx: 4; }
+                .age-c-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .age-c-detail { font: 400 9px/1 ui-monospace, monospace; fill: var(--muted); }
+                .age-c-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#age-arrow); }
+                .age-c-note { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+
+            <defs>
+                <marker id="age-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <text class="age-c-title" x="260" y="20" text-anchor="middle">The Pipeline</text>
+            <text class="age-c-sub" x="260" y="36" text-anchor="middle">Two primitives. No configuration. No choices to get wrong.</text>
+
+            <!-- Step 1: Recipient key -->
+            <rect class="age-c-fill" x="20" y="60" width="100" height="52"/>
+            <rect class="age-c-box" x="20" y="60" width="100" height="52"/>
+            <text class="age-c-label" x="70" y="82" text-anchor="middle">Recipient</text>
+            <text class="age-c-detail" x="70" y="98" text-anchor="middle">age1... public key</text>
+
+            <!-- Arrow 1 -->
+            <path class="age-c-arrow" d="M 124 86 L 154 86"/>
+
+            <!-- Step 2: X25519 -->
+            <rect class="age-c-fill" x="158" y="60" width="108" height="52"/>
+            <rect class="age-c-box" x="158" y="60" width="108" height="52"/>
+            <text class="age-c-label" x="212" y="82" text-anchor="middle">X25519</text>
+            <text class="age-c-detail" x="212" y="98" text-anchor="middle">Key agreement</text>
+
+            <!-- Arrow 2 -->
+            <path class="age-c-arrow" d="M 270 86 L 300 86"/>
+
+            <!-- Step 3: ChaCha20-Poly1305 -->
+            <rect class="age-c-fill" x="304" y="60" width="136" height="52"/>
+            <rect class="age-c-box" x="304" y="60" width="136" height="52"/>
+            <text class="age-c-label" x="372" y="82" text-anchor="middle">ChaCha20-Poly1305</text>
+            <text class="age-c-detail" x="372" y="98" text-anchor="middle">Authenticated encryption</text>
+
+            <!-- Arrow 3 -->
+            <path class="age-c-arrow" d="M 444 86 L 468 86"/>
+
+            <!-- Step 4: Output -->
+            <rect class="age-c-fill" x="472" y="68" width="36" height="36"/>
+            <rect class="age-c-box" x="472" y="68" width="36" height="36"/>
+            <text class="age-c-label" x="490" y="90" text-anchor="middle">.age</text>
+
+            <!-- Bottom labels -->
+            <line x1="20" y1="140" x2="500" y2="140" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="4 3"/>
+            <text class="age-c-note" x="260" y="160" text-anchor="middle">No cipher negotiation. No algorithm dropdown. No downgrade path.</text>
+            <text class="age-c-note" x="260" y="176" text-anchor="middle">The only choice is who receives the file.</text>
+        </svg>
+
+        <h2>The Ecosystem</h2>
+
+        <p>age was not designed to replace GPG entirely. It was designed to
+            replace the one thing people actually use GPG for: encrypting
+            files for known recipients. By refusing to do more, it attracted
+            an ecosystem of tools that do the rest.</p>
+
+        <p><a href="https://github.com/getsops/sops" target="_blank" rel="noopener">SOPS</a>,
+            Mozilla&#x2019;s secrets management tool, uses age as an encryption
+            backend. <a href="https://www.chezmoi.io/" target="_blank" rel="noopener">chezmoi</a>,
+            the dotfiles manager, uses age to encrypt sensitive configuration.
+            Over 350 Go projects import age as a library. Each of these tools
+            chose age for the same reason Valsorda built it: they needed
+            encryption that works without ceremony, without state, and without
+            a forty-minute detour through keyserver configuration.</p>
+
+        <p>This is the Unix philosophy operating exactly as intended. age
+            does one thing. Other tools compose with it. The result is an
+            ecosystem where encryption is a pipe fitting, not a cathedral.
+            You bolt it in where you need it. It does not demand that you
+            restructure your architecture around its requirements.</p>
+
+        <h2>The Refusal</h2>
+
+        <p>The most interesting thing about age is what it does not do. It
+            does not sign files. It does not manage a web of trust. It does
+            not integrate with email clients. It does not support keyservers.
+            It does not offer cipher negotiation. It does not maintain state
+            between invocations.</p>
+
+        <p>Every one of these absent features is a conscious design decision.
+            Signing is a different problem. The web of trust never worked at
+            scale. Email encryption requires UI integration that belongs in
+            the email client, not the encryption tool. Keyservers are a
+            centralised dependency for a tool that claims to be decentralised.
+            Cipher negotiation is the mechanism by which downgrade attacks
+            become possible. State is the mechanism by which corruption
+            becomes possible.</p>
+
+        <p>GPG has all of these features. GPG has had all of these features
+            for decades. The result is that GPG is powerful, comprehensive,
+            and almost impossible to use correctly. age is none of those
+            first two things, and that is precisely why it achieves the
+            third.</p>
+
+        <blockquote>
+            <p>3,000 lines of Go. Zero configuration files. One purpose.
+                Keys are strings, not databases. The tool that refuses to do
+                everything is the tool that does one thing flawlessly. That
+                is not limitation. That is beauty.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>On what age deliberately omits</strong></p>
+            <p>The comparison with GPG is instructive precisely because of
+                the gaps. age does not sign. It does not verify identities
+                via a web of trust. It does not integrate with email. It does
+                not offer keyservers or cipher selection. Every omission is
+                architectural: signing is a separate problem (use
+                <a href="https://github.com/sigstore/cosign" target="_blank" rel="noopener">cosign</a>
+                or <a href="https://man.openbsd.org/signify" target="_blank" rel="noopener">signify</a>),
+                email encryption belongs in the mail client, and cipher
+                negotiation is the mechanism that enables downgrade attacks.
+                The modern primitives (X25519, ChaCha20-Poly1305) mean there
+                is nothing to negotiate. One correct choice, made once, by
+                someone who spent a career understanding the consequences of
+                incorrect ones.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
