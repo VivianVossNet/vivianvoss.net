@@ -100,6 +100,7 @@ local pages = {
     { loc = "/blog/technical-beauty-age",      priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-flexbox-tax",           priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/ssh-config",               priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-diff",    priority = "0.7", changefreq = "yearly" },
 }
 
 function route()

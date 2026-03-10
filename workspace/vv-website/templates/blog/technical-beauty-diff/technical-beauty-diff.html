@@ -1,0 +1,248 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}diff: The Tool That Enabled Collaboration &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 1974, James Hunt and Douglas McIlroy built diff at Bell Labs. Two files in, one output: what changed. Every code review, every pull request, every version control system since RCS stores history as a sequence of diffs. 52 years in production. No subscription.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-diff{( endslot )}
+
+{( slot og-title )}diff: The Tool That Enabled Collaboration &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Two files in, one output: what changed. Every code review, pull request, and CI pipeline starts with diff. 52 years in production. No subscription.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "diff: The Tool That Enabled Collaboration",
+    "datePublished": "2026-03-10",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-diff",
+    "description": "In 1974, James Hunt and Douglas McIlroy built diff at Bell Labs. Two files in, one output: what changed. Every code review, pull request, and CI pipeline starts with diff.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-10">10 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>diff: The Tool That Enabled Collaboration</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">devops</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 26</p>
+
+        <p>In 1974, two programmers at Bell Labs had a problem. They needed
+            to know what changed between two versions of a file. Not the files
+            themselves. The difference.</p>
+
+        <p><a href="https://www.cs.dartmouth.edu/~doug/diff.pdf" target="_blank" rel="noopener">James Hunt</a>
+            implemented the algorithm. Douglas McIlroy designed the framework
+            around it. The result was <code>diff</code>: a tool that compares
+            two files and outputs exactly what changed. Nothing more.</p>
+
+        <p>McIlroy had already
+            <a href="https://thenewstack.io/pipe-how-the-system-call-that-ties-unix-together-came-about/" target="_blank" rel="noopener">invented Unix pipes</a>
+            in 1973. The idea that programmes should pass text to each other
+            through simple connectors. <code>diff</code> was the natural
+            consequence: if everything flows as text, you need a tool that
+            can describe how one text became another.</p>
+
+        <h2>The Basics</h2>
+
+        <pre><code>diff old.conf new.conf</code></pre>
+
+        <p>Two files in. One output: every line that differs. That is the
+            entire interface.</p>
+
+        <pre><code>diff -u old.conf new.conf</code></pre>
+
+        <p>Unified format. Minus means removed, plus means added. This is
+            what <code>git diff</code> shows you. This is what every pull
+            request renders. The format dates from
+            <a href="https://en.wikipedia.org/wiki/Diff#Unified_format" target="_blank" rel="noopener">1990</a>.
+            It has not changed since.</p>
+
+        <h2>The Workflow That Built Open Source</h2>
+
+        <pre><code>diff -u old.conf new.conf > change.patch
+patch < change.patch</code></pre>
+
+        <p>Larry Wall wrote <code>patch</code> in
+            <a href="https://en.wikipedia.org/wiki/Patch_(Unix)" target="_blank" rel="noopener">1985</a>.
+            Two commands: <code>diff</code> creates the patch,
+            <code>patch</code> applies it. Before the web, before GitHub,
+            before pull requests: developers exchanged patches via email and
+            Usenet. Tiny text files describing changes. <code>diff</code>
+            made them. <code>patch</code> applied them.</p>
+
+        <p>Eric Raymond called <code>patch</code>
+            <a href="http://www.catb.org/esr/writings/taoup/html/ch02s01.html" target="_blank" rel="noopener">"the single tool that did more than any other to enable collaborative development over the Internet."</a></p>
+
+        <svg id="diff-flow" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The diff workflow: two files enter diff, producing a patch file. The patch file is applied by the patch command, or stored as a delta in version control (RCS, Git)." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #diff-flow .df-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #diff-flow .df-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #diff-flow .df-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #diff-flow .df-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #diff-flow .df-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #diff-flow .df-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #diff-flow .df-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #diff-flow .df-line { stroke: var(--muted); stroke-width: 1; }
+                #diff-flow .df-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+                #diff-flow .df-arrow { fill: var(--accent); }
+            </style>
+            <text class="df-title" x="260" y="18" text-anchor="middle">The diff Workflow</text>
+            <!-- File A -->
+            <rect class="df-box" x="20" y="50" width="100" height="40"/>
+            <text class="df-label" x="70" y="68" text-anchor="middle">File A</text>
+            <text class="df-sub" x="70" y="82" text-anchor="middle">old version</text>
+            <!-- File B -->
+            <rect class="df-box" x="20" y="110" width="100" height="40"/>
+            <text class="df-label" x="70" y="128" text-anchor="middle">File B</text>
+            <text class="df-sub" x="70" y="142" text-anchor="middle">new version</text>
+            <!-- Arrows to diff -->
+            <line class="df-line" x1="120" y1="70" x2="190" y2="100"/>
+            <line class="df-line" x1="120" y1="130" x2="190" y2="100"/>
+            <!-- diff box -->
+            <rect class="df-fill" x="190" y="78" width="80" height="44"/>
+            <rect class="df-box-accent" x="190" y="78" width="80" height="44"/>
+            <text class="df-accent" x="230" y="100" text-anchor="middle">diff</text>
+            <text class="df-sub" x="230" y="114" text-anchor="middle">1974</text>
+            <!-- Arrow to patch output -->
+            <line class="df-line-accent" x1="270" y1="100" x2="330" y2="100"/>
+            <polygon class="df-arrow" points="330,96 338,100 330,104"/>
+            <!-- Patch file -->
+            <rect class="df-fill" x="340" y="78" width="80" height="44"/>
+            <rect class="df-box-accent" x="340" y="78" width="80" height="44"/>
+            <text class="df-accent" x="380" y="100" text-anchor="middle">.patch</text>
+            <text class="df-sub" x="380" y="114" text-anchor="middle">the delta</text>
+            <!-- Downstream: patch command -->
+            <line class="df-line-accent" x1="420" y1="88" x2="460" y2="60"/>
+            <polygon class="df-arrow" points="457,54 465,57 458,64"/>
+            <rect class="df-box" x="440" y="36" width="70" height="32"/>
+            <text class="df-label" x="475" y="56" text-anchor="middle">patch</text>
+            <!-- Downstream: VCS -->
+            <line class="df-line-accent" x1="420" y1="110" x2="460" y2="140"/>
+            <polygon class="df-arrow" points="458,136 465,143 457,146"/>
+            <rect class="df-box" x="440" y="132" width="70" height="32"/>
+            <text class="df-label" x="475" y="148" text-anchor="middle">RCS / Git</text>
+            <text class="df-sub" x="475" y="160" text-anchor="middle">delta storage</text>
+        </svg>
+
+        <h2>The Algorithm</h2>
+
+        <p>In 1986, Eugene Myers published
+            <a href="https://link.springer.com/article/10.1007/BF01840446" target="_blank" rel="noopener">"An O(ND) Difference Algorithm"</a>
+            in Algorithmica. The key insight: finding the shortest edit script
+            is equivalent to finding the shortest path in a graph. When files
+            are similar (and they usually are), this is dramatically faster
+            than brute force.</p>
+
+        <p><a href="https://git-scm.com/docs/diff-options" target="_blank" rel="noopener">Git uses Myers by default</a>.
+            Every <code>git diff</code> you have ever read was computed by a
+            paper from 1986.</p>
+
+        <h2>The Chain</h2>
+
+        <svg id="diff-chain" viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline: 1974 diff at Bell Labs, 1982 RCS stores deltas as diffs, 1985 Larry Wall writes patch, 1986 Myers algorithm, 1990 unified format, 2005 Git adopts Myers as default." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #diff-chain .dc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #diff-chain .dc-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #diff-chain .dc-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #diff-chain .dc-year { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #diff-chain .dc-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #diff-chain .dc-line { stroke: var(--border); stroke-width: 1; }
+                #diff-chain .dc-line-accent { stroke: var(--accent); stroke-width: 2; }
+                #diff-chain .dc-dot { fill: var(--accent); }
+                #diff-chain .dc-dot-ring { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+            </style>
+            <text class="dc-title" x="260" y="18" text-anchor="middle">The Chain diff Built</text>
+            <!-- Timeline spine -->
+            <line class="dc-line-accent" x1="60" y1="50" x2="60" y2="240"/>
+            <!-- 1974 -->
+            <circle class="dc-dot" cx="60" cy="56" r="5"/>
+            <text class="dc-year" x="80" y="60">1974</text>
+            <text class="dc-label" x="130" y="60">diff</text>
+            <text class="dc-sub" x="160" y="60">Hunt, McIlroy, Bell Labs</text>
+            <!-- 1982 -->
+            <circle class="dc-dot" cx="60" cy="94" r="5"/>
+            <text class="dc-year" x="80" y="98">1982</text>
+            <text class="dc-label" x="130" y="98">RCS</text>
+            <text class="dc-sub" x="160" y="98">version history stored as diffs</text>
+            <!-- 1985 -->
+            <circle class="dc-dot" cx="60" cy="132" r="5"/>
+            <text class="dc-year" x="80" y="136">1985</text>
+            <text class="dc-label" x="130" y="136">patch</text>
+            <text class="dc-sub" x="178" y="136">Larry Wall (later created Perl)</text>
+            <!-- 1986 -->
+            <circle class="dc-dot" cx="60" cy="170" r="5"/>
+            <text class="dc-year" x="80" y="174">1986</text>
+            <text class="dc-label" x="130" y="174">Myers algorithm</text>
+            <text class="dc-sub" x="240" y="174">Algorithmica</text>
+            <!-- 1990 -->
+            <circle class="dc-dot" cx="60" cy="208" r="5"/>
+            <text class="dc-year" x="80" y="212">1990</text>
+            <text class="dc-label" x="130" y="212">unified format</text>
+            <text class="dc-sub" x="236" y="212">Wayne Davison</text>
+            <!-- 2005 -->
+            <circle class="dc-dot" cx="60" cy="240" r="4"/>
+            <circle class="dc-dot-ring" cx="60" cy="240" r="8"/>
+            <text class="dc-year" x="80" y="244">2005</text>
+            <text class="dc-label" x="130" y="244">Git</text>
+            <text class="dc-sub" x="155" y="244">adopts Myers as default</text>
+        </svg>
+
+        <h2>The Point</h2>
+
+        <p>The same man who invented the pipe invented the tool that
+            describes change. Every code review is a diff. Every pull request
+            is a diff. Every CI pipeline that decides what to test starts
+            with a diff. Every version control system since
+            <a href="https://en.wikipedia.org/wiki/Revision_Control_System" target="_blank" rel="noopener">RCS</a>
+            stores history as a sequence of diffs.</p>
+
+        <p><a href="https://openhub.net/p/diffutils" target="_blank" rel="noopener">GNU diffutils</a>:
+            11,474 lines of code. Fifty-two years in production. No
+            subscription. No breaking changes. No rewrite.</p>
+
+        <p>The tool that enabled collaborative software development is older
+            than most of the people using it. Rather reassuring, that.</p>
+
+        <aside class="vv-aside">
+            <p><strong>Douglas McIlroy.</strong> Bell Labs. Invented Unix pipes (1973),
+                <code>diff</code> (1974), <code>spell</code>, <code>join</code>,
+                <code>tr</code>, <code>echo</code>. Head of the Computing
+                Techniques Research Department that created Unix. Still
+                <a href="https://news.cornell.edu/stories/2024/03/doug-mcilroy-53-applied-physicist-programming-pioneer" target="_blank" rel="noopener">associated with Dartmouth College</a>
+                at 93.</p>
+            <p>His 1964 memo, nine years before pipes existed:
+                <em>"We should have some ways of coupling programs like garden
+                hose: screw in another segment when it becomes necessary to
+                massage data in another way."</em>
+                Thompson implemented it overnight. McIlroy built
+                <code>diff</code> the following year.</p>
+            <p>McIlroy on software:
+                <em>"Everything was small... and my heart sinks for Linux when
+                I see the size of it."</em></p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}
