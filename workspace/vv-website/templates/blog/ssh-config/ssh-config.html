@@ -239,6 +239,63 @@
             when a host key changes. Rather more reliable than reading
             hex strings at eight in the morning.</p>
 
+        <h2>The Match Order</h2>
+
+        <p>SSH config uses
+            <a href="https://unix.stackexchange.com/a/116025" target="_blank" rel="noopener">first match wins</a>.
+            When SSH encounters a directive for a matching host, it takes
+            the first value it finds and ignores later ones for the same
+            directive. The consequence: specific host blocks belong at the
+            top of the file, <code>Host *</code> defaults at the bottom.</p>
+
+        <p>This is not a convenience suggestion. It is a security
+            consideration. If your <code>Host *</code> block sets
+            <code>StrictHostKeyChecking ask</code> and a specific host
+            needs <code>StrictHostKeyChecking no</code> for automated
+            deployment, the specific block must appear first. Reverse the
+            order and the global default wins silently. SSH will not warn
+            you.</p>
+
+        <h2>Multiple Identities, Same Host</h2>
+
+        <p>You have a personal GitHub account and a work account. Both
+            connect to <code>github.com</code>. Both use
+            <code>git@github.com</code>. SSH has no way to distinguish
+            them by hostname alone.</p>
+
+        <p>The solution is <code>HostKeyAlias</code> combined with a
+            non-DNS hostname in the <code>Host</code> stanza:</p>
+
+        <pre><code>Host github.private
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/private_key
+  HostKeyAlias github.com
+
+Host github.work
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/work_key
+  HostKeyAlias github.com</code></pre>
+
+        <p>Git remotes then use <code>github.private</code> or
+            <code>github.work</code> as the hostname. SSH resolves the
+            right identity transparently. <code>HostKeyAlias</code>
+            ensures both stanzas share the same known_hosts entry for
+            <code>github.com</code>, so you are not asked to verify the
+            host key twice.</p>
+
+        <p>For existing repositories, <code>url.*.insteadOf</code> in
+            <code>~/.gitconfig</code> rewrites remotes without touching
+            each clone:</p>
+
+        <pre><code>[url "git@github.work:company/"]
+  insteadOf = git@github.com:company/</code></pre>
+
+        <p>Every <code>git clone git@github.com:company/repo.git</code>
+            now silently routes through the work identity. No manual
+            remote editing. No wrapper scripts.</p>
+
         <h2>The Complete Config</h2>
 
         <p>For the impatient, the entire recommended baseline in one
@@ -338,6 +395,11 @@ Host internal
         <p>The full reference is one command away:
             <code>man ssh_config</code>. Then open the file. You will
             wonder why you waited.</p>
+
+        <aside class="vv-aside">
+            <p>Thanks to Oliver Schneider for pointing out the match order
+                rule and the multiple identity pattern.</p>
+        </aside>
     </div>
 
     <footer class="vv-article-footer">
