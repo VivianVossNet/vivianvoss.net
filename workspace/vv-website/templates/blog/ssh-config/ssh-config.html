@@ -88,7 +88,7 @@
   ControlPath ~/.ssh/sockets/%r@%h-%p
   ControlPersist 600</code></pre>
 
-        <p>Your first connection opens TCP, negotiates TLS,
+        <p>Your first connection opens TCP, negotiates keys,
             authenticates. Every subsequent connection to the same host
             reuses that socket. No handshake. No key exchange. Instant.</p>
 
@@ -301,20 +301,7 @@ Host github.work
         <p>For the impatient, the entire recommended baseline in one
             block:</p>
 
-        <pre><code># Global defaults
-Host *
-  ControlMaster auto
-  ControlPath ~/.ssh/sockets/%r@%h-%p
-  ControlPersist 600
-  ServerAliveInterval 60
-  ServerAliveCountMax 3
-  IdentitiesOnly yes
-  AddKeysToAgent yes
-  HashKnownHosts yes
-  StrictHostKeyChecking ask
-  VisualHostKey yes
-
-# Production
+        <pre><code># Production
 Host prod
   HostName 192.168.50.12
   User deploy
@@ -330,7 +317,20 @@ Host dev-*
 Host internal
   HostName 10.0.0.50
   ProxyJump bastion
-  User admin</code></pre>
+  User admin
+
+# Global defaults (last: first match wins)
+Host *
+  ControlMaster auto
+  ControlPath ~/.ssh/sockets/%r@%h-%p
+  ControlPersist 600
+  ServerAliveInterval 60
+  ServerAliveCountMax 3
+  IdentitiesOnly yes
+  AddKeysToAgent yes
+  HashKnownHosts yes
+  StrictHostKeyChecking ask
+  VisualHostKey yes</code></pre>
 
         <p>Before first use:</p>
 

@@ -1,0 +1,271 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Bytes of Art: 0mix &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="0b5vr's 0mix fits a seven-minute techno live set into 64 kilobytes. GLSL shaders generating visuals and music in real time. Won Best Soundtrack at The Meteoriks 2024. Runs in your browser.">
+{( endslot )}
+
+{( slot canonical )}/blog/bytes-of-art-0mix{( endslot )}
+
+{( slot og-title )}Bytes of Art: 0mix &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}0b5vr's 0mix fits a seven-minute techno live set into 64 kilobytes. GLSL shaders generating visuals and music in real time. Won Best Soundtrack at The Meteoriks 2024. Runs in your browser.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Bytes of Art: 0mix",
+    "datePublished": "2026-03-11",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/bytes-of-art-0mix",
+    "description": "0b5vr's 0mix fits a seven-minute techno live set into 64 kilobytes. GLSL shaders generating visuals and music in real time. Won Best Soundtrack at The Meteoriks 2024. Runs in your browser.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-11">11 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Bytes of Art: 0mix</h1>
+        <p><em>Bytes of Art</em> &#x25A0; Episode 06</p>
+        <div class="vv-pills">
+            <span class="vv-pill">demoscene</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>64 kilobytes. That is less than the thumbnail your browser loaded
+            to display this page. Less than a single React component after
+            tree-shaking has done its best. Less than the average favicon
+            collection on a modern marketing site.</p>
+
+        <p>It is enough for a seven-minute techno live set with procedural
+            visuals, synthesised audio, volumetric fog, and particle systems.
+            Running in your browser. In real time. At 140 BPM.</p>
+
+        <p><a href="https://www.youtube.com/watch?v=3lOptjAeA2w&t=35" target="_blank" rel="noopener">0mix</a>
+            by <a href="https://github.com/0b5vr" target="_blank" rel="noopener">0b5vr</a>
+            (2023) is a 64K intro submitted to
+            <a href="https://revision-party.net" target="_blank" rel="noopener">Revision 2023</a>
+            in Saarbruecken, the world's largest demoparty. One person wrote
+            all of it: the visuals, the music, the framework, even the event
+            flyer. At Revision, there were not enough 64K entries for a
+            separate competition. So they placed it in the PC Demo compo.
+            Against productions with no size limit whatsoever. It came fifth.</p>
+
+        <p>Then it won Best Soundtrack at
+            <a href="https://meteoriks.org" target="_blank" rel="noopener">The Meteoriks</a>
+            2024, the demoscene's equivalent of the Academy Awards. Against
+            every production of the year, regardless of size category. In
+            64 kilobytes.</p>
+
+        <p>One does rather enjoy when constraints win.</p>
+
+        <h2>What You See</h2>
+
+        <p>Procedural geometry morphing to the beat. Raymarched structures
+            rotating through volumetric fog. Particle systems that dissolve
+            and reform in sync with the kick drum. Every visual element is
+            driven by the audio signal. There are no pre-rendered frames, no
+            video files, no textures. This is mathematics responding to
+            mathematics.</p>
+
+        <svg id="omix-stack" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="0mix technical stack: GLSL shaders drive both visual rendering via raymarching and audio synthesis via oscillators, all running in WebGL inside the browser." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #omix-stack .os-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #omix-stack .os-box { fill: none; stroke: var(--border); stroke-width: 1.5; rx: 4; }
+                #omix-stack .os-box-accent { fill: none; stroke: var(--accent); stroke-width: 2; rx: 4; }
+                #omix-stack .os-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #omix-stack .os-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #omix-stack .os-arrow { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#omix-arrow); }
+                #omix-stack .os-note { font: italic 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <defs>
+                <marker id="omix-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="var(--muted)"/>
+                </marker>
+            </defs>
+            <text class="os-title" x="0" y="16">0mix: one language, two outputs</text>
+            <!-- GLSL Source -->
+            <rect class="os-box-accent" x="160" y="36" width="200" height="48"/>
+            <text class="os-label" x="260" y="56" text-anchor="middle">GLSL Shader Code</text>
+            <text class="os-sub" x="260" y="72" text-anchor="middle">64 KB total (everything)</text>
+            <!-- Visual Pipeline -->
+            <rect class="os-box" x="0" y="120" width="150" height="48"/>
+            <text class="os-label" x="75" y="140" text-anchor="middle">Raymarched Visuals</text>
+            <text class="os-sub" x="75" y="156" text-anchor="middle">SDF, fog, particles</text>
+            <!-- Audio Pipeline -->
+            <rect class="os-box" x="370" y="120" width="150" height="48"/>
+            <text class="os-label" x="445" y="140" text-anchor="middle">Audio Synthesis</text>
+            <text class="os-sub" x="445" y="156" text-anchor="middle">Oscillators, FM, filters</text>
+            <!-- Arrows from GLSL to both -->
+            <line class="os-arrow" x1="210" y1="84" x2="100" y2="118"/>
+            <line class="os-arrow" x1="310" y1="84" x2="420" y2="118"/>
+            <!-- Audio drives visuals -->
+            <path class="os-arrow" d="M370,148 L200,148" style="stroke-dasharray: 4 3;"/>
+            <text class="os-note" x="230" y="142">audio signal drives visuals</text>
+            <!-- Browser -->
+            <rect class="os-box" x="120" y="210" width="280" height="48"/>
+            <text class="os-label" x="260" y="230" text-anchor="middle">Browser (WebGL)</text>
+            <text class="os-sub" x="260" y="246" text-anchor="middle">No plugins. No install. One tab.</text>
+            <!-- Arrows down to browser -->
+            <line class="os-arrow" x1="75" y1="168" x2="200" y2="208"/>
+            <line class="os-arrow" x1="445" y1="168" x2="320" y2="208"/>
+        </svg>
+
+        <p>The visual technique is raymarching with signed distance fields,
+            the same approach that powers most size-constrained demoscene
+            productions. No triangle meshes, no geometry buffers, no vertex
+            data. Every shape is a mathematical function. The GPU evaluates
+            these functions per pixel, per frame, and the result is a
+            fully lit 3D scene that exists only as instructions.</p>
+
+        <h2>What You Hear</h2>
+
+        <p>A complete techno set, synthesised entirely from code. No samples.
+            No WAV files. No pre-recorded audio of any kind. The oscillators,
+            filters, reverbs, and compression are all shader operations. The
+            kick drum is a sine wave shaped by an envelope function. The hi-hat
+            is filtered noise. The bassline is FM synthesis. Every sound in the
+            mix is a mathematical function evaluated in GLSL.</p>
+
+        <p>This is what won the Meteoriks. Not the visuals, striking as they
+            are, but the soundtrack. A panel of judges listened to every
+            demoscene production released in 2023 and concluded that the best
+            music came from 64 kilobytes of shader code running in a browser
+            tab.</p>
+
+        <svg id="omix-size" viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Size comparison: 0mix at 64 KB versus common web assets. Socket.IO client at 46 KB, 0mix at 64 KB, React at 136 KB, median JavaScript per page at 558 KB." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #omix-size .sz-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #omix-size .sz-label { font: 400 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #omix-size .sz-value { font: 400 11px/1 ui-monospace, monospace; fill: var(--muted); }
+                #omix-size .sz-bar-accent { fill: var(--accent); opacity: 0.75; }
+                #omix-size .sz-bar-muted { fill: var(--muted); opacity: 0.25; }
+                #omix-size .sz-line { stroke: var(--border); stroke-width: 1; stroke-dasharray: 4 3; }
+                #omix-size .sz-note { font: italic 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <text class="sz-title" x="0" y="16">What 64 KB buys elsewhere</text>
+            <!-- Socket.IO -->
+            <text class="sz-label" x="0" y="48">Socket.IO client (minified)</text>
+            <rect class="sz-bar-muted" x="0" y="54" width="42" height="18" rx="2"/>
+            <text class="sz-value" x="48" y="67">46 KB</text>
+            <!-- 0mix -->
+            <text class="sz-label" x="0" y="98">0mix (7-min techno set + visuals)</text>
+            <rect class="sz-bar-accent" x="0" y="104" width="59" height="18" rx="2"/>
+            <text class="sz-value" x="65" y="117">64 KB</text>
+            <!-- React -->
+            <text class="sz-label" x="0" y="148">React (uncompressed)</text>
+            <rect class="sz-bar-muted" x="0" y="154" width="124" height="18" rx="2"/>
+            <text class="sz-value" x="130" y="167">136 KB</text>
+            <!-- Median JS -->
+            <text class="sz-label" x="0" y="198">Median JS per page (HTTP Archive)</text>
+            <rect class="sz-bar-muted" x="0" y="204" width="510" height="18" rx="2"/>
+            <text class="sz-value" x="0" y="237">558 KB</text>
+            <!-- Divider line at 64 KB -->
+            <line class="sz-line" x1="59" y1="40" x2="59" y2="230"/>
+            <text class="sz-note" x="63" y="250">64 KB limit</text>
+        </svg>
+
+        <h2>The Crossover</h2>
+
+        <p>Two cultures converge in 0mix. The
+            <a href="https://toplap.org/" target="_blank" rel="noopener">algorave</a>
+            scene live-codes music on stage: writing synthesis code in real
+            time, projected for the audience, generating beats from
+            functions. The demoscene compresses art into kilobytes: every
+            instruction must justify its existence, every byte must earn its
+            place. These are different communities with different traditions,
+            different events, different aesthetics. But the underlying
+            principle is identical: code is the medium, constraints are the
+            method.</p>
+
+        <p>0b5vr did both at once. A size-constrained, audiovisual,
+            live-coded performance. In a browser. With WebGL. The description
+            on the production page reads: "Intended to make crowds in E-Werk
+            do the hazy dancing." It does. One rather suspects the code
+            itself would dance if you stared at it long enough.</p>
+
+        <h2>The Uncomfortable Arithmetic</h2>
+
+        <p>The Socket.IO client library, the npm package the React ecosystem
+            reaches for when it needs real-time communication, weighs 46 KB
+            minified. It provides WebSocket abstraction, fallback transports,
+            and reconnection logic. Useful features, reasonably implemented.
+            But 46 KB buys you a wrapper around a protocol the browser already
+            speaks natively.</p>
+
+        <p>64 KB buys you a seven-minute techno set with procedural visuals,
+            volumetric rendering, particle physics, FM synthesis, a compressor,
+            a limiter, and enough musical content to win Best Soundtrack against
+            the entire demoscene output of 2023.</p>
+
+        <p>The comparison is unfair. It is meant to be. Not because Socket.IO
+            is bad software, but because somewhere between "the browser already
+            has a WebSocket API" and "46 KB of abstraction layer", the industry
+            stopped asking whether each dependency deserved its place. The
+            demoscene never stopped asking. The answer, occasionally, is a
+            techno club running in a browser tab.</p>
+
+        <h2>Open Source, Open Art</h2>
+
+        <p>The source code is
+            <a href="https://github.com/0b5vr" target="_blank" rel="noopener">on GitHub</a>.
+            The entire production is open. You can read the GLSL that generates
+            the kick drum. You can trace the signed distance function that
+            builds the geometry. You can study how a single person constructed
+            a complete audiovisual experience from first principles, in a
+            language that runs on every GPU manufactured in the last decade.</p>
+
+        <p>This is the demoscene at its most generous: the art is free, the
+            technique is documented, and the only barrier to entry is the
+            willingness to learn. No subscription. No paywall. No npm install.</p>
+
+        <blockquote>
+            <p>One executable. One browser tab. Seven minutes of techno.
+                64 kilobytes. The demoscene does not need your gigabytes.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Technical details behind 0mix</strong></p>
+            <p>Platform: WebGL running in the browser. No plugins, no
+                installation. 0b5vr built a custom WebGL framework from
+                scratch. The visuals are entirely raymarched: signed distance
+                fields define every shape, and the fragment shader calculates
+                lighting, fog, and reflections per pixel, per frame. No
+                geometry buffers, no meshes, no textures.</p>
+            <p>Audio: synthesis happens in the audio shader. Oscillators,
+                envelopes, filters, effects. Each sound is a mathematical
+                function. The final mix runs through a compressor and limiter,
+                all in code. 140 BPM, seven minutes twenty seconds.</p>
+            <p>Awards: Best Soundtrack at
+                <a href="https://meteoriks.org" target="_blank" rel="noopener">The Meteoriks</a>
+                2024. Nominated for Best High-End Intro and Outstanding
+                Concept. Fifth place in the PC Demo compo at Revision 2023
+                (competing without size limit).</p>
+            <p>The demoscene has been
+                <a href="https://demoscene-the-art-of-coding.net" target="_blank" rel="noopener">UNESCO Intangible Cultural Heritage</a>
+                since 2020 in Germany, Finland, and Poland.</p>
+            <p>Production pages:
+                <a href="https://www.pouet.net/prod.php?which=94135" target="_blank" rel="noopener">Pouet</a>,
+                <a href="https://demozoo.org/productions/322650/" target="_blank" rel="noopener">Demozoo</a>.
+                Video:
+                <a href="https://www.youtube.com/watch?v=3lOptjAeA2w&t=35" target="_blank" rel="noopener">YouTube</a>
+                (skip to 0:35).</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,343 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Native WebSocket: Server Pushes, Client Listens &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Your frontend needs live data. React taught a generation to poll. The browser solved this in 2011 with two lines of JavaScript and zero npm packages. WebSocket: persistent, full-duplex TCP. Two bytes per frame. No library required.">
+{( endslot )}
+
+{( slot canonical )}/blog/websocket{( endslot )}
+
+{( slot og-title )}Native WebSocket: Server Pushes, Client Listens &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}React taught a generation to poll. The browser solved this in 2011 with two lines of JavaScript. WebSocket: persistent, full-duplex, two bytes per frame. No library required.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Native WebSocket: Server Pushes, Client Listens",
+    "datePublished": "2026-03-11",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/websocket",
+    "description": "Your frontend needs live data. React taught a generation to poll. The browser solved this in 2011 with two lines of JavaScript and zero npm packages.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-11">11 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Native WebSocket: Server Pushes, Client Listens</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 07</p>
+
+        <p>Your frontend needs live data. A counter. A feed. A notification
+            badge. The server knows when something changes. The client does
+            not.</p>
+
+        <p>React taught an entire generation of developers, misleadingly,
+            to poll.</p>
+
+        <pre><code>useEffect(() =&gt; {
+  const id = setInterval(() =&gt; fetch('/api/count')
+    .then(r =&gt; r.json()).then(setCount), 3000);
+  return () =&gt; clearInterval(id);
+}, []);</code></pre>
+
+        <p>A hook. A cleanup. A state setter. An interval. Every three
+            seconds: <em>"Anything new?"</em> No. <em>"Anything new?"</em>
+            No. <em>"Anything new?"</em> <em>"Yes, forty seconds ago."</em></p>
+
+        <p>Splendid timing.</p>
+
+        <p>The React ecosystem's answer:
+            <code>npm install socket.io-client</code>.
+            <a href="https://bundlephobia.com/package/socket.io-client" target="_blank" rel="noopener">46 KB</a>.
+            One install averaging 1,400 transitive dependencies from a
+            registry whose greatest contributions to the industry include
+            <code>left-pad</code> and <code>event-stream</code>. One does
+            hope yours are safe. The browser solved this in
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket" target="_blank" rel="noopener">2011</a>
+            with precisely zero.</p>
+
+        <p>One would think someone might have mentioned that.</p>
+
+        <svg id="ws-poll" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Polling versus WebSocket: polling sends repeated requests, most returning nothing. WebSocket opens one connection and the server pushes when data changes." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ws-poll .wp-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ws-poll .wp-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ws-poll .wp-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ws-poll .wp-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ws-poll .wp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #ws-poll .wp-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #ws-poll .wp-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #ws-poll .wp-line { stroke: var(--muted); stroke-width: 1; }
+                #ws-poll .wp-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+                #ws-poll .wp-line-dash { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 3; }
+                #ws-poll .wp-arrow { fill: var(--accent); }
+                #ws-poll .wp-arrow-muted { fill: var(--muted); }
+                #ws-poll .wp-red { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <text class="wp-title" x="260" y="18" text-anchor="middle">Polling vs WebSocket</text>
+            <!-- POLLING SECTION -->
+            <text class="wp-label" x="260" y="46" text-anchor="middle">setInterval + fetch (every 3s)</text>
+            <!-- Client -->
+            <rect class="wp-box" x="20" y="58" width="80" height="36"/>
+            <text class="wp-sub" x="60" y="80" text-anchor="middle">client</text>
+            <!-- Server -->
+            <rect class="wp-box" x="420" y="58" width="80" height="36"/>
+            <text class="wp-sub" x="460" y="80" text-anchor="middle">server</text>
+            <!-- Polling arrows -->
+            <line class="wp-line-dash" x1="100" y1="68" x2="420" y2="68"/>
+            <polygon class="wp-arrow-muted" points="416,65 420,68 416,71"/>
+            <text class="wp-red" x="260" y="64" text-anchor="middle">new? &#x2192; no</text>
+            <line class="wp-line-dash" x1="100" y1="82" x2="420" y2="82"/>
+            <polygon class="wp-arrow-muted" points="416,79 420,82 416,85"/>
+            <text class="wp-red" x="260" y="78" text-anchor="middle">new? &#x2192; no</text>
+            <line class="wp-line-dash" x1="100" y1="96" x2="420" y2="96"/>
+            <polygon class="wp-arrow-muted" points="416,93 420,96 416,99"/>
+            <text class="wp-red" x="260" y="92" text-anchor="middle">new? &#x2192; no</text>
+            <line class="wp-line" x1="100" y1="110" x2="420" y2="110"/>
+            <polygon class="wp-arrow-muted" points="416,107 420,110 416,113"/>
+            <text class="wp-sub" x="260" y="106" text-anchor="middle">new? &#x2192; yes (40s late)</text>
+            <!-- Separator -->
+            <line stroke="var(--border)" stroke-width="1" stroke-dasharray="2 2" x1="20" y1="135" x2="500" y2="135"/>
+            <!-- WEBSOCKET SECTION -->
+            <text class="wp-accent" x="260" y="158" text-anchor="middle">WebSocket (persistent connection)</text>
+            <!-- Client -->
+            <rect class="wp-fill" x="20" y="170" width="80" height="36"/>
+            <rect class="wp-box-accent" x="20" y="170" width="80" height="36"/>
+            <text class="wp-accent" x="60" y="192" text-anchor="middle">client</text>
+            <!-- Server -->
+            <rect class="wp-fill" x="420" y="170" width="80" height="36"/>
+            <rect class="wp-box-accent" x="420" y="170" width="80" height="36"/>
+            <text class="wp-accent" x="460" y="192" text-anchor="middle">server</text>
+            <!-- Upgrade -->
+            <line class="wp-line-accent" x1="100" y1="178" x2="420" y2="178"/>
+            <polygon class="wp-arrow" points="416,175 420,178 416,181"/>
+            <text class="wp-sub" x="260" y="174" text-anchor="middle">HTTP upgrade (once)</text>
+            <!-- Push -->
+            <line class="wp-line-accent" x1="420" y1="192" x2="100" y2="192"/>
+            <polygon class="wp-arrow" points="104,189 100,192 104,195"/>
+            <text class="wp-accent" x="260" y="210" text-anchor="middle">push when data changes</text>
+            <!-- Stats -->
+            <text class="wp-sub" x="130" y="240" text-anchor="middle">Polling: N requests/min</text>
+            <text class="wp-sub" x="130" y="254" text-anchor="middle">N&#x2212;1 return nothing</text>
+            <text class="wp-accent" x="390" y="240" text-anchor="middle">WebSocket: 1 connection</text>
+            <text class="wp-accent" x="390" y="254" text-anchor="middle">2 bytes per frame</text>
+        </svg>
+
+        <h2>The Client</h2>
+
+        <pre><code>const ws = new WebSocket('ws://localhost:3000/ws');
+ws.onmessage = e =&gt;
+  document.querySelector('#count').textContent = e.data;</code></pre>
+
+        <p>Two lines. No npm. No <code>useEffect</code>. No cleanup.
+            Native to every browser since
+            <a href="https://caniuse.com/websockets" target="_blank" rel="noopener">2011</a>.
+            React arrived two years later and never mentioned it. Rather
+            an oversight for a 136 KB framework, that.</p>
+
+        <h2>The Server</h2>
+
+        <p>One function. One purpose. Push when state changes.</p>
+
+        <p>Rust (<a href="https://docs.rs/axum/latest/axum/extract/ws/" target="_blank" rel="noopener">axum</a>,
+            two crate dependencies):</p>
+
+        <pre><code>async fn push(mut ws: WebSocket) {
+    let mut n = 0u64;
+    loop {
+        n += 1;
+        if ws.send(Message::Text(n.to_string()))
+            .await.is_err() { break }
+        sleep(Duration::from_secs(1)).await;
+    }
+}</code></pre>
+
+        <p>Go (<a href="https://github.com/gorilla/websocket" target="_blank" rel="noopener">gorilla/websocket</a>):</p>
+
+        <pre><code>func push(conn *websocket.Conn) {
+    n := 0
+    for {
+        n++
+        conn.WriteMessage(websocket.TextMessage,
+            []byte(strconv.Itoa(n)))
+        time.Sleep(time.Second)
+    }
+}</code></pre>
+
+        <p>Same client. Same protocol. One function does one thing. No
+            npm on the server either.</p>
+
+        <p>PHP requires
+            <a href="https://openswoole.com/" target="_blank" rel="noopener">Swoole</a>
+            or ReactPHP. Persistent connections against a share-nothing
+            architecture. Rather like fitting a sail to a submarine.</p>
+
+        <h2>Why It Works</h2>
+
+        <p>WebSocket is a persistent, full-duplex TCP channel.
+            <a href="https://tools.ietf.org/html/rfc6455" target="_blank" rel="noopener">RFC 6455</a>
+            defines the protocol: HTTP upgrades the connection once, then
+            both sides send at will. Overhead per frame:
+            <a href="https://tools.ietf.org/html/rfc6455#section-5.2" target="_blank" rel="noopener">two bytes</a>.
+            No library required on either side.</p>
+
+        <svg id="ws-upgrade" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="HTTP upgrade handshake: client sends Upgrade: websocket header, server responds 101 Switching Protocols, then both sides communicate over a persistent TCP channel with 2-byte frame headers." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ws-upgrade .wu-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ws-upgrade .wu-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ws-upgrade .wu-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ws-upgrade .wu-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ws-upgrade .wu-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #ws-upgrade .wu-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #ws-upgrade .wu-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #ws-upgrade .wu-line { stroke: var(--muted); stroke-width: 1; }
+                #ws-upgrade .wu-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+                #ws-upgrade .wu-arrow { fill: var(--accent); }
+                #ws-upgrade .wu-arrow-muted { fill: var(--muted); }
+            </style>
+            <text class="wu-title" x="260" y="18" text-anchor="middle">The WebSocket Handshake</text>
+            <!-- Client -->
+            <rect class="wu-box" x="20" y="36" width="100" height="150"/>
+            <text class="wu-label" x="70" y="56" text-anchor="middle">Browser</text>
+            <!-- Server -->
+            <rect class="wu-box" x="400" y="36" width="100" height="150"/>
+            <text class="wu-label" x="450" y="56" text-anchor="middle">Server</text>
+            <!-- Step 1: HTTP upgrade request -->
+            <line class="wu-line" x1="120" y1="80" x2="400" y2="80"/>
+            <polygon class="wu-arrow-muted" points="396,77 400,80 396,83"/>
+            <text class="wu-sub" x="260" y="74" text-anchor="middle">GET /ws HTTP/1.1</text>
+            <text class="wu-sub" x="260" y="86" text-anchor="middle">Upgrade: websocket</text>
+            <!-- Step 2: 101 response -->
+            <line class="wu-line" x1="400" y1="110" x2="120" y2="110"/>
+            <polygon class="wu-arrow-muted" points="124,107 120,110 124,113"/>
+            <text class="wu-sub" x="260" y="106" text-anchor="middle">101 Switching Protocols</text>
+            <!-- Step 3: persistent channel -->
+            <rect class="wu-fill" x="120" y="130" width="280" height="36"/>
+            <rect class="wu-box-accent" x="120" y="130" width="280" height="36"/>
+            <text class="wu-accent" x="260" y="148" text-anchor="middle">persistent TCP (full-duplex)</text>
+            <text class="wu-sub" x="260" y="160" text-anchor="middle">2 bytes per frame</text>
+            <!-- Bidirectional arrows -->
+            <line class="wu-line-accent" x1="140" y1="174" x2="380" y2="174"/>
+            <polygon class="wu-arrow" points="376,171 384,174 376,177"/>
+            <polygon class="wu-arrow" points="144,171 136,174 144,177"/>
+        </svg>
+
+        <h2>What This Replaces</h2>
+
+        <p><code>useEffect</code> + <code>setInterval</code> +
+            <code>fetch</code>: React's answer to real-time. N requests
+            per minute, N minus 1 return nothing.</p>
+
+        <p><a href="https://bundlephobia.com/package/socket.io-client" target="_blank" rel="noopener">Socket.IO</a>:
+            46 KB client plus npm dependency chain. Marvellous for 10,000
+            concurrent chat users. Rather generous for a live counter.</p>
+
+        <p>Long polling: a 2006 workaround that somehow still has a job.</p>
+
+        <svg id="ws-replace" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="What native WebSocket replaces: useEffect polling, Socket.IO, long polling. Two lines of JavaScript, one server function, zero npm packages." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ws-replace .wr-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ws-replace .wr-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ws-replace .wr-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ws-replace .wr-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ws-replace .wr-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #ws-replace .wr-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #ws-replace .wr-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #ws-replace .wr-fill-muted { fill: var(--muted); opacity: 0.08; rx: 4; }
+                #ws-replace .wr-strike { stroke: var(--accent); stroke-width: 1.5; }
+            </style>
+            <text class="wr-title" x="260" y="18" text-anchor="middle">What Native WebSocket Replaces</text>
+            <!-- Replaced items -->
+            <rect class="wr-fill-muted" x="20" y="36" width="220" height="30"/>
+            <rect class="wr-box" x="20" y="36" width="220" height="30"/>
+            <text class="wr-sub" x="130" y="56" text-anchor="middle">useEffect + setInterval + fetch</text>
+            <line class="wr-strike" x1="25" y1="51" x2="235" y2="51"/>
+            <rect class="wr-fill-muted" x="260" y="36" width="240" height="30"/>
+            <rect class="wr-box" x="260" y="36" width="240" height="30"/>
+            <text class="wr-sub" x="380" y="56" text-anchor="middle">Socket.IO (46 KB + npm chain)</text>
+            <line class="wr-strike" x1="265" y1="51" x2="495" y2="51"/>
+            <rect class="wr-fill-muted" x="140" y="76" width="240" height="30"/>
+            <rect class="wr-box" x="140" y="76" width="240" height="30"/>
+            <text class="wr-sub" x="260" y="96" text-anchor="middle">long polling (2006 workaround)</text>
+            <line class="wr-strike" x1="145" y1="91" x2="375" y2="91"/>
+            <!-- The replacement -->
+            <rect class="wr-fill" x="110" y="130" width="300" height="50"/>
+            <rect class="wr-box-accent" x="110" y="130" width="300" height="50"/>
+            <text class="wr-accent" x="260" y="152" text-anchor="middle">new WebSocket(url)</text>
+            <text class="wr-sub" x="260" y="168" text-anchor="middle">native since 2011, 0 dependencies, 2 bytes/frame</text>
+        </svg>
+
+        <h2>When to Use</h2>
+
+        <p>Dashboards, notifications, tickers, build logs: anything where
+            the server knows before the client does. When not: multiplayer
+            games, collaborative editors. There, the frameworks earn their
+            kilobytes.</p>
+
+        <h2>The Point</h2>
+
+        <p>Two lines of JavaScript. One function on the server. Zero npm
+            packages. The browser has been ready since 2011.</p>
+
+        <p>Whenever you are.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The complete Rust server</strong> (20 lines, imports
+                included):</p>
+            <pre><code>[dependencies]
+axum = { version = "0.8", features = ["ws"] }
+tokio = { version = "1", features = ["full"] }</code></pre>
+            <pre><code>use axum::{extract::ws::{Message, WebSocket,
+    WebSocketUpgrade}, response::Response,
+    routing::get, Router};
+use std::time::Duration;
+use tokio::time::sleep;
+
+#[tokio::main]
+async fn main() {
+    let app = Router::new()
+        .route("/ws", get(handler));
+    let l = tokio::net::TcpListener
+        ::bind("0.0.0.0:3000").await.unwrap();
+    axum::serve(l, app).await.unwrap();
+}
+
+async fn handler(ws: WebSocketUpgrade)
+    -&gt; Response { ws.on_upgrade(push) }
+
+async fn push(mut ws: WebSocket) {
+    let mut n = 0u64;
+    loop {
+        n += 1;
+        if ws.send(Message::Text(n.to_string()))
+            .await.is_err() { break }
+        sleep(Duration::from_secs(1)).await;
+    }
+}</code></pre>
+            <p>The complete client: five lines of HTML. No build step.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

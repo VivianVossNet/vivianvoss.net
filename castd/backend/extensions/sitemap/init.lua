@@ -101,6 +101,8 @@ local pages = {
     { loc = "/blog/the-flexbox-tax",           priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/ssh-config",               priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/technical-beauty-diff",    priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/websocket",               priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/bytes-of-art-0mix",      priority = "0.7", changefreq = "yearly" },
 }
 
 function route()
