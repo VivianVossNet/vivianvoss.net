@@ -103,6 +103,7 @@ local pages = {
     { loc = "/blog/technical-beauty-diff",    priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/websocket",               priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/bytes-of-art-0mix",      priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/clean-code",             priority = "0.7", changefreq = "yearly" },
 }
 
 function route()

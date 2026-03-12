@@ -4,6 +4,7 @@
 local SITE = "https://vivianvoss.net"
 
 local articles = {
+    { date = "Thu, 12 Mar 2026 00:00:00 GMT", title = "Clean Code: The Prescription That Outlived the Diagnosis", loc = "/blog/clean-code", desc = "Robert C. Martin published Clean Code in 2008 to fix Java enterprise monoliths with no structure. The industry copied the rules and forgot the context. A prescription without a diagnosis." },
     { date = "Wed, 11 Mar 2026 00:00:00 GMT", title = "Bytes of Art: 0mix", loc = "/blog/bytes-of-art-0mix", desc = "64 kilobytes. A seven-minute techno live set with procedural visuals and synthesised audio, running in your browser. Won Best Soundtrack at The Meteoriks 2024 against every production of the year." },
     { date = "Wed, 11 Mar 2026 00:00:00 GMT", title = "Native WebSocket: Server Pushes, Client Listens", loc = "/blog/websocket", desc = "Your frontend needs live data. React taught an entire generation of developers to poll. The browser solved this in 2011 with two lines of JavaScript and zero npm packages." },
     { date = "Mon, 10 Mar 2026 00:00:00 GMT", title = "diff: The Tool That Enabled Collaboration", loc = "/blog/technical-beauty-diff", desc = "In 1974, James Hunt and Douglas McIlroy built diff at Bell Labs. Two files in, one output: what changed. Every code review, every pull request, every version control system since RCS stores history as diffs. 52 years in production. No subscription." },
