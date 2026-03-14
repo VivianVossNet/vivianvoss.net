@@ -1242,6 +1242,12 @@
 
     if (isGamePage) {
         document.body.classList.add("game-mode");
+        /* Disable reading mode on game page — light mode breaks the game */
+        if (readingMode) applyReadingMode(false);
+        if (readingBtn) {
+            readingBtn.disabled = true;
+            readingBtn.setAttribute("aria-label", "Reading mode unavailable in game");
+        }
         /* Ensure canvas is visible and interactive on game page */
         c.style.zIndex = "0";
         c.style.pointerEvents = "auto";
