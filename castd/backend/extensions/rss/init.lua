@@ -4,6 +4,7 @@
 local SITE = "https://vivianvoss.net"
 
 local articles = {
+    { date = "Sat, 14 Mar 2026 00:00:00 GMT", title = "The Early Access Alibi", loc = "/blog/the-early-access-alibi", desc = "Early access was invented so a solo developer in Stockholm could finish a game about mining blocks. Then publishers noticed. They copied the label. Not the honesty. 25,000 jobs lost at record revenue." },
     { date = "Fri, 13 Mar 2026 00:00:00 GMT", title = "Jira: The Workflow Tax", loc = "/blog/jira", desc = "You wanted to track bugs. You got a bureaucracy engine with custom fields nobody remembers creating and workflows nobody dares to simplify. 68% of new users overwhelmed. 1-4 seconds per issue. 883 sites deleted. The Jira invoice, itemised." },
     { date = "Thu, 12 Mar 2026 00:00:00 GMT", title = "Clean Code: The Prescription That Outlived the Diagnosis", loc = "/blog/clean-code", desc = "Robert C. Martin published Clean Code in 2008 to fix Java enterprise monoliths with no structure. The industry copied the rules and forgot the context. A prescription without a diagnosis." },
     { date = "Wed, 11 Mar 2026 00:00:00 GMT", title = "Bytes of Art: 0mix", loc = "/blog/bytes-of-art-0mix", desc = "64 kilobytes. A seven-minute techno live set with procedural visuals and synthesised audio, running in your browser. Won Best Soundtrack at The Meteoriks 2024 against every production of the year." },
