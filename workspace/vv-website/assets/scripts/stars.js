@@ -974,6 +974,7 @@
 
     /* --- Reset ------------------------------------------------------------ */
     var score = 0;
+    var kills = { normal: 0, gunner: 0, elite: 0 };
     var lives = 5;
     var MAX_LIVES = 5;
     var scoreEl = document.getElementById("game-score");
@@ -1013,6 +1014,7 @@
         trail = [];
         initTimers();
         score = 0;
+        kills = { normal: 0, gunner: 0, elite: 0 };
         lives = MAX_LIVES;
         dualShot = false;
         powerShot = false;
@@ -1050,6 +1052,9 @@
             if (aliens[i].healer) { aliens[i].alive = false; continue; }
             addExplosion(aliens[i].x, aliens[i].y);
             var pts = aliens[i].elite ? 10 : aliens[i].gunner ? 5 : 1;
+            if (aliens[i].elite) kills.elite++;
+            else if (aliens[i].gunner) kills.gunner++;
+            else kills.normal++;
             nukePoints += pts;
             aliens[i].alive = false;
         }
@@ -1082,8 +1087,9 @@
                         updateLivesDisplay();
                     } else {
                         var points = aliens[j].elite ? 10 : aliens[j].gunner ? 5 : 1;
-                        if (aliens[j].elite) dualShot = true;
-                        if (aliens[j].gunner) powerShot = true;
+                        if (aliens[j].elite) { kills.elite++; dualShot = true; }
+                        else if (aliens[j].gunner) { kills.gunner++; powerShot = true; }
+                        else kills.normal++;
                         score += points;
                         if (scoreEl) scoreEl.textContent = score;
                         updateLevel();
@@ -1147,6 +1153,9 @@
                 if (dx * dx + dy * dy < shieldR * shieldR) {
                     addExplosion(a.x, a.y);
                     var pts = a.elite ? 10 : a.gunner ? 5 : 1;
+                    if (a.elite) kills.elite++;
+                    else if (a.gunner) kills.gunner++;
+                    else kills.normal++;
                     score += pts;
                     a.alive = false;
                     sfxHit();
@@ -1237,8 +1246,9 @@
     var gameOver = false;
     var gameOverTime = 0;
     var restartEl = document.querySelector(".game-restart");
-    var isGamePage = !document.querySelector("main#content") ||
-                     !document.querySelector("main#content").children.length;
+    var mainEl = document.querySelector("main#content");
+    var visibleChildren = mainEl ? mainEl.querySelectorAll(":scope > :not([hidden])").length : 0;
+    var isGamePage = !mainEl || !visibleChildren;
 
     if (isGamePage) {
         document.body.classList.add("game-mode");
@@ -1316,6 +1326,9 @@
             ";path=/;expires=" + d.toUTCString() + ";SameSite=Lax";
     }
 
+    var gameTokenEl = document.getElementById("game-token");
+    var gameToken = gameTokenEl ? gameTokenEl.getAttribute("data-token") : "";
+
     function submitScore(name, sc, cb) {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/api/highscores");
@@ -1329,7 +1342,7 @@
             if (cb) cb();
         };
         xhr.onerror = function () { if (cb) cb(); };
-        xhr.send(JSON.stringify({ name: name, score: sc, token: getToken() }));
+        xhr.send(JSON.stringify({ name: name, score: sc, token: getToken(), gtoken: gameToken, kn: kills.normal, kg: kills.gunner, ke: kills.elite }));
     }
 
     /* --- Font-based rendering (Press Start 2P) ------------------------------ */

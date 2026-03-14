@@ -30,12 +30,42 @@ local function sanitise(s)
     return s:gsub("[\r\n]", " ")
 end
 
+local TOKEN_TTL = 7200
+
+local function validate_csrf(token)
+    if not token or token == "" then return false end
+
+    local ok, tokens = pcall(cn.db.get, "csrf_tokens")
+    if not ok or not tokens then return false end
+
+    for _, t in ipairs(tokens) do
+        if t.token == token then
+            local age = os.time() - (tonumber(t.created) or 0)
+            if age > TOKEN_TTL then
+                cn.db.delete("csrf_tokens", { id = t.id })
+                return false
+            end
+            cn.db.delete("csrf_tokens", { id = t.id })
+            return true
+        end
+    end
+
+    return false
+end
+
 function route()
     if cn.req.method ~= "POST" then
         return cn.res.redirect("/contact")
     end
 
     local fields  = parse_form(cn.req.body or "")
+
+    -- CSRF: token must come from a server-rendered /contact page
+    if not validate_csrf(trim(fields["csrf_token"] or "")) then
+        cn.log.warn("Contact form rejected: invalid CSRF token")
+        return cn.res.redirect("/contact?error=2")
+    end
+
     local name    = trim(fields["name"] or "")
     local email   = trim(fields["email"] or "")
     local subject = trim(fields["subject"] or "")
