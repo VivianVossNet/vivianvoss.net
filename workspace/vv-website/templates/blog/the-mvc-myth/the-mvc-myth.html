@@ -1,0 +1,243 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The MVC Myth &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="MVC was invented in 1979 for Smalltalk desktop GUIs. The web request/response cycle has nothing in common with that. 30% performance overhead from abstraction layers that serve no purpose in HTTP.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-mvc-myth{( endslot )}
+
+{( slot og-title )}The MVC Myth &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}MVC was invented in 1979 for Smalltalk desktop GUIs. The web has no persistent controller, no event loop, no state between requests. You are paying the complexity tax for a different runtime model.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The MVC Myth",
+    "datePublished": "2024-12-18",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-mvc-myth",
+    "description": "MVC was invented in 1979 for Smalltalk desktop GUIs. The web request/response cycle has nothing in common with that.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2024-12-18">18 December 2024</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The MVC Myth</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Lean Web</em> &#x25A0; Part 3</p>
+
+        <p>The myth goes like this: every web application needs
+            Model-View-Controller architecture. It is the industry standard.</p>
+
+        <p>Let us examine what that standard actually standardises.</p>
+
+        <h2>The Origin</h2>
+
+        <p><a href="https://folk.universitetetioslo.no/trygver/themes/mvc/mvc-index.html" target="_blank" rel="noopener">Trygve Reenskaug</a>
+            invented MVC in 1979 at Xerox PARC. For Smalltalk. For desktop
+            GUIs with persistent state, continuous user interaction, and
+            event-driven workflows. The Model held application data in memory.
+            The View rendered it continuously. The Controller handled user
+            input events in real time.</p>
+
+        <p>The web request/response cycle has precisely none of these
+            characteristics.</p>
+
+        <h2>The Mismatch</h2>
+
+        <p>HTTP is stateless. A request arrives, processing occurs, a response
+            leaves. There is no persistent controller. No event loop between
+            requests. No state that survives the connection closing.</p>
+
+        <svg id="mvc-comparison" viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison of the Smalltalk MVC flow (persistent state, event loop, continuous rendering) versus the web HTTP flow (request in, response out, stateless)." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #mvc-comparison .mc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #mvc-comparison .mc-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #mvc-comparison .mc-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #mvc-comparison .mc-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #mvc-comparison .mc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #mvc-comparison .mc-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #mvc-comparison .mc-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #mvc-comparison .mc-line { stroke: var(--muted); stroke-width: 1; }
+                #mvc-comparison .mc-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+                #mvc-comparison .mc-arrow { fill: var(--accent); }
+                #mvc-comparison .mc-divider { stroke: var(--border); stroke-width: 1; stroke-dasharray: 4,4; }
+            </style>
+            <text class="mc-title" x="260" y="18" text-anchor="middle">MVC: Desktop vs Web</text>
+            <!-- Top half: Smalltalk -->
+            <text class="mc-accent" x="20" y="50">Smalltalk 1979</text>
+            <text class="mc-sub" x="20" y="64">persistent state, event loop</text>
+            <!-- MVC boxes with circular arrows -->
+            <rect class="mc-fill" x="30" y="78" width="80" height="34"/>
+            <rect class="mc-box-accent" x="30" y="78" width="80" height="34"/>
+            <text class="mc-label" x="70" y="98" text-anchor="middle">Model</text>
+            <rect class="mc-fill" x="160" y="78" width="80" height="34"/>
+            <rect class="mc-box-accent" x="160" y="78" width="80" height="34"/>
+            <text class="mc-label" x="200" y="98" text-anchor="middle">View</text>
+            <rect class="mc-fill" x="290" y="78" width="80" height="34"/>
+            <rect class="mc-box-accent" x="290" y="78" width="80" height="34"/>
+            <text class="mc-label" x="330" y="98" text-anchor="middle">Controller</text>
+            <!-- Circular arrows -->
+            <line class="mc-line-accent" x1="110" y1="90" x2="160" y2="90"/>
+            <polygon class="mc-arrow" points="156,86 164,90 156,94"/>
+            <line class="mc-line-accent" x1="240" y1="90" x2="290" y2="90"/>
+            <polygon class="mc-arrow" points="286,86 294,90 286,94"/>
+            <line class="mc-line-accent" x1="330" y1="112" x2="330" y2="122"/>
+            <line class="mc-line-accent" x1="330" y1="122" x2="70" y2="122"/>
+            <line class="mc-line-accent" x1="70" y1="122" x2="70" y2="112"/>
+            <polygon class="mc-arrow" points="66,116 70,112 74,116"/>
+            <text class="mc-sub" x="200" y="118" text-anchor="middle">continuous loop</text>
+            <!-- Divider -->
+            <line class="mc-divider" x1="20" y1="140" x2="500" y2="140"/>
+            <!-- Bottom half: HTTP -->
+            <text class="mc-accent" x="20" y="168">HTTP 1991</text>
+            <text class="mc-sub" x="20" y="182">stateless, request/response</text>
+            <!-- Simple flow -->
+            <rect class="mc-box" x="30" y="196" width="90" height="34"/>
+            <text class="mc-label" x="75" y="216" text-anchor="middle">Request</text>
+            <line class="mc-line-accent" x1="120" y1="213" x2="200" y2="213"/>
+            <polygon class="mc-arrow" points="196,209 204,213 196,217"/>
+            <rect class="mc-fill" x="205" y="196" width="90" height="34"/>
+            <rect class="mc-box-accent" x="205" y="196" width="90" height="34"/>
+            <text class="mc-label" x="250" y="216" text-anchor="middle">Process</text>
+            <line class="mc-line-accent" x1="295" y1="213" x2="375" y2="213"/>
+            <polygon class="mc-arrow" points="371,209 379,213 371,217"/>
+            <rect class="mc-box" x="380" y="196" width="90" height="34"/>
+            <text class="mc-label" x="425" y="216" text-anchor="middle">Response</text>
+            <text class="mc-sub" x="250" y="248" text-anchor="middle">connection closes. state gone.</text>
+        </svg>
+
+        <p>The web flow is simple: Request, Process, Response. Done.
+            Connection closes. What MVC adds to this is a tour through
+            Router, Controller, Service, Repository, Model, View, and back
+            to Response. Every layer is a function call. Every function call
+            is latency. Every abstraction is a place where bugs hide.</p>
+
+        <h2>What MVC Actually Costs</h2>
+
+        <p>Thirty per cent or more in performance overhead from abstraction
+            layers that serve no purpose in HTTP. Stack traces that meander
+            through controllers, services, repositories, and factories before
+            arriving at the line that matters. "Separation of concerns" that
+            separates nothing: your controller is a router, your model is a
+            query wrapper, your view is a template engine. Three names for
+            three things that were already separate.</p>
+
+        <svg id="mvc-layers" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Layer comparison: direct web flow (request to process to response, 3 layers) versus MVC web flow (request through router, controller, service, repository, model, view to response, 8 layers)." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #mvc-layers .ml-label { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #mvc-layers .ml-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #mvc-layers .ml-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #mvc-layers .ml-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #mvc-layers .ml-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                #mvc-layers .ml-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                #mvc-layers .ml-fill { fill: var(--accent); opacity: 0.08; rx: 3; }
+                #mvc-layers .ml-line { stroke: var(--muted); stroke-width: 1; }
+                #mvc-layers .ml-arrow { fill: var(--muted); }
+            </style>
+            <text class="ml-title" x="260" y="18" text-anchor="middle">Layer Count: Direct vs MVC</text>
+            <!-- Direct: 3 boxes -->
+            <text class="ml-accent" x="20" y="58">Direct</text>
+            <text class="ml-sub" x="20" y="72">3 layers</text>
+            <rect class="ml-box" x="90" y="48" width="70" height="28"/>
+            <text class="ml-label" x="125" y="66" text-anchor="middle">Request</text>
+            <line class="ml-line" x1="160" y1="62" x2="180" y2="62"/>
+            <polygon class="ml-arrow" points="176,58 184,62 176,66"/>
+            <rect class="ml-fill" x="185" y="48" width="70" height="28"/>
+            <rect class="ml-box-accent" x="185" y="48" width="70" height="28"/>
+            <text class="ml-label" x="220" y="66" text-anchor="middle">Process</text>
+            <line class="ml-line" x1="255" y1="62" x2="275" y2="62"/>
+            <polygon class="ml-arrow" points="271,58 279,62 271,66"/>
+            <rect class="ml-box" x="280" y="48" width="70" height="28"/>
+            <text class="ml-label" x="315" y="66" text-anchor="middle">Response</text>
+            <!-- MVC: 8 boxes -->
+            <text class="ml-accent" x="20" y="124">MVC</text>
+            <text class="ml-sub" x="20" y="138">8 layers</text>
+            <rect class="ml-box" x="20" y="150" width="55" height="28"/>
+            <text class="ml-label" x="47" y="168" text-anchor="middle">Req</text>
+            <line class="ml-line" x1="75" y1="164" x2="82" y2="164"/>
+            <rect class="ml-box" x="83" y="150" width="55" height="28"/>
+            <text class="ml-label" x="110" y="168" text-anchor="middle">Router</text>
+            <line class="ml-line" x1="138" y1="164" x2="145" y2="164"/>
+            <rect class="ml-box" x="146" y="150" width="55" height="28"/>
+            <text class="ml-label" x="173" y="168" text-anchor="middle">Ctrl</text>
+            <line class="ml-line" x1="201" y1="164" x2="208" y2="164"/>
+            <rect class="ml-box" x="209" y="150" width="55" height="28"/>
+            <text class="ml-label" x="236" y="168" text-anchor="middle">Service</text>
+            <line class="ml-line" x1="264" y1="164" x2="271" y2="164"/>
+            <rect class="ml-box" x="272" y="150" width="55" height="28"/>
+            <text class="ml-label" x="299" y="168" text-anchor="middle">Repo</text>
+            <line class="ml-line" x1="327" y1="164" x2="334" y2="164"/>
+            <rect class="ml-box" x="335" y="150" width="55" height="28"/>
+            <text class="ml-label" x="362" y="168" text-anchor="middle">Model</text>
+            <line class="ml-line" x1="390" y1="164" x2="397" y2="164"/>
+            <rect class="ml-box" x="398" y="150" width="55" height="28"/>
+            <text class="ml-label" x="425" y="168" text-anchor="middle">View</text>
+            <line class="ml-line" x1="453" y1="164" x2="460" y2="164"/>
+            <rect class="ml-box" x="461" y="150" width="55" height="28"/>
+            <text class="ml-label" x="488" y="168" text-anchor="middle">Res</text>
+        </svg>
+
+        <h2>Why It Stuck</h2>
+
+        <p>Follow the incentives. Certifications. Training programmes.
+            Consulting hours. Complex software locks customers in more
+            effectively than simple solutions ever could.
+            <a href="https://rubyonrails.org/" target="_blank" rel="noopener">Ruby on Rails</a>
+            popularised MVC for the web in 2004. Django followed in 2005.
+            Laravel in 2011. Each framework adopted the terminology,
+            and the industry adopted the frameworks. The pattern became
+            a prerequisite rather than a choice.</p>
+
+        <p>But should that be your premise as a customer? Clearly: no.</p>
+
+        <h2>The Question Nobody Asks</h2>
+
+        <p>Not every website is an application. The majority of "web apps"
+            are content pages with a few interactive elements. For those,
+            three abstraction layers are three too many.</p>
+
+        <p>The question should not be "which MVC framework?" but "do I need
+            an architecture at all?"</p>
+
+        <p>The leanest architecture is the one with the fewest layers between
+            request and response. The best and fastest architecture is the one
+            you do not need to explain.</p>
+
+        <aside class="vv-aside">
+            <p>MVC has its place. In desktop applications and complex systems
+                with persistent state management, the separation is genuine and
+                useful. But the majority of web projects are not that. The question
+                should not be "which MVC framework?" but "do I actually need an
+                architecture?"</p>
+            <p>Historical context: MVC was conceived by
+                <a href="https://folk.universitetetioslo.no/trygver/themes/mvc/mvc-index.html" target="_blank" rel="noopener">Trygve Reenskaug</a>
+                at Xerox PARC in 1979 for Smalltalk GUI development. Web adaptation
+                began with Rails in 2004, twenty-five years and one entirely
+                different runtime model later.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

@@ -1,0 +1,219 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}mc: The Workstation in 12 MB &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 1994, a computer science student in Mexico City wrote a file manager. 31 years later, it runs on anything with a C compiler: dual panels, built-in editor, FTP, SFTP, archive browsing. 12 MB of RAM.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-mc{( endslot )}
+
+{( slot og-title )}mc: The Workstation in 12 MB &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Midnight Commander: dual-panel file management, built-in editor, FTP, SFTP, archive browsing. 220,000 lines of C. 12 MB of RAM. 31 years in production.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "mc: The Workstation in 12 MB",
+    "datePublished": "2026-02-10",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-mc",
+    "description": "In 1994, a computer science student in Mexico City wrote a file manager. 31 years later, it runs on anything with a C compiler. 12 MB of RAM.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-10">10 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>mc: The Workstation in 12 MB</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 22</p>
+
+        <p>1994. A computer science student in Mexico City writes a file
+            manager. Thirty-one years later, it is still running. One
+            <code>pkg install</code> on FreeBSD. One <code>apt install</code>
+            on Debian. Available on anything with a C compiler and a
+            pulse.</p>
+
+        <p><a href="https://en.wikipedia.org/wiki/Miguel_de_Icaza" target="_blank" rel="noopener">Miguel de Icaza</a>
+            built <code>mc</code> as a Norton Commander clone for Unix.
+            Then he co-founded GNOME. Then Mono. Then Xamarin. Then
+            Microsoft acquired it. The man kept rather busy. The file
+            manager quietly kept working.</p>
+
+        <h2>What 12 MB Buys You</h2>
+
+        <p><a href="https://openhub.net/p/mc" target="_blank" rel="noopener">220,000 lines of C</a>.
+            One binary. 12 MB of RAM. Here is what you get for that:</p>
+
+        <ul>
+            <li>Dual-panel file management</li>
+            <li>Built-in editor (<code>mcedit</code>) with syntax highlighting</li>
+            <li>Built-in viewer (<code>mcview</code>) and diff (<code>mcdiff</code>)</li>
+            <li>FTP, SFTP, SMB: browse remote servers as local directories</li>
+            <li>FISH: file transfer over SSH without SCP on the remote</li>
+            <li>Archive browsing: <code>.tar.gz</code>, <code>.zip</code>, <code>.rpm</code>, <code>.deb</code> as directories</li>
+        </ul>
+
+        <p>No GUI toolkit. No browser engine. No runtime.
+            <a href="https://en.wikipedia.org/wiki/Ncurses" target="_blank" rel="noopener">ncurses</a>
+            and a C compiler. That is the lot.</p>
+
+        <h2>Complexity Without Bloat</h2>
+
+        <p>This is precisely why <code>mc</code> belongs in this series.
+            It is not a minimal tool that does one thing. It is a genuinely
+            complex piece of software: editor, viewer, diff, network
+            protocols, virtual filesystem layer, archive handling. Yet it
+            fits in 12 MB of RAM and a 1.5 MB binary.</p>
+
+        <p>Technical beauty does not demand simplicity. It demands the
+            rather unfashionable discipline of not wasting what one has
+            been given.</p>
+
+        <svg id="mc-memory" viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Memory comparison: mc uses 12 MB, Nautilus 50-150 MB, macOS Finder 80 MB to 1.5 GB, Windows Explorer 200-700 MB, VS Code Explorer 300 MB to 3 GB." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #mc-memory .mm-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #mc-memory .mm-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #mc-memory .mm-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #mc-memory .mm-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #mc-memory .mm-bar { fill: var(--border); rx: 3; }
+                #mc-memory .mm-bar-accent { fill: var(--accent); rx: 3; }
+                #mc-memory .mm-val { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+            </style>
+            <text class="mm-title" x="260" y="18" text-anchor="middle">RAM Usage: File Browsing</text>
+            <!-- mc -->
+            <text class="mm-label" x="140" y="52" text-anchor="end">mc</text>
+            <rect class="mm-bar-accent" x="150" y="40" width="4" height="18"/>
+            <text class="mm-accent" x="162" y="53">12 MB</text>
+            <!-- Nautilus -->
+            <text class="mm-label" x="140" y="86" text-anchor="end">Nautilus (GNOME)</text>
+            <rect class="mm-bar" x="150" y="74" width="48" height="18"/>
+            <text class="mm-val" x="204" y="87">50-150 MB</text>
+            <!-- Finder -->
+            <text class="mm-label" x="140" y="120" text-anchor="end">macOS Finder</text>
+            <rect class="mm-bar" x="150" y="108" width="140" height="18"/>
+            <text class="mm-val" x="296" y="121">80 MB - 1.5 GB</text>
+            <!-- Explorer -->
+            <text class="mm-label" x="140" y="154" text-anchor="end">Windows Explorer</text>
+            <rect class="mm-bar" x="150" y="142" width="180" height="18"/>
+            <text class="mm-val" x="336" y="155">200-700 MB</text>
+            <!-- VS Code -->
+            <text class="mm-label" x="140" y="188" text-anchor="end">VS Code Explorer</text>
+            <rect class="mm-bar" x="150" y="176" width="320" height="18"/>
+            <text class="mm-val" x="320" y="207">300 MB - 3 GB</text>
+            <text class="mm-sub" x="320" y="221">in a browser engine</text>
+        </svg>
+
+        <h2>The Lineage</h2>
+
+        <p><a href="https://en.wikipedia.org/wiki/John_Socha" target="_blank" rel="noopener">John Socha</a>
+            wrote Norton Commander in 1984 as a PhD student at Cornell.
+            Not Peter Norton himself. Socha. The blue dual-panel screen
+            became so ubiquitous in the Soviet Union that "Norton"
+            became the
+            <a href="https://softpanorama.org/OFM/Paradigm/Ch03/norton_commander.shtml" target="_blank" rel="noopener">Russian word for file manager</a>.
+            One might call that a design endorsement.</p>
+
+        <p>The paradigm spawned hundreds of clones:</p>
+
+        <ul>
+            <li><strong><a href="https://en.wikipedia.org/wiki/Total_Commander" target="_blank" rel="noopener">Total Commander</a></strong> (1993):
+                Christian Ghisler. One man. Thirty-three years of shareware.
+                Quietly making a living while the industry reinvents file
+                browsing every eighteen months.</li>
+            <li><strong>Midnight Commander</strong> (1994): the Unix branch
+                of the family tree.</li>
+            <li><strong><a href="https://en.wikipedia.org/wiki/Far_Manager" target="_blank" rel="noopener">FAR Manager</a></strong> (1996):
+                Eugene Roshal. Yes, that Roshal. The RAR creator.
+                Frightfully productive chap.</li>
+        </ul>
+
+        <svg id="mc-lineage" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lineage: Norton Commander 1984 by John Socha spawns Total Commander 1993, Midnight Commander 1994, and FAR Manager 1996." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #mc-lineage .ml-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #mc-lineage .ml-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #mc-lineage .ml-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #mc-lineage .ml-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #mc-lineage .ml-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #mc-lineage .ml-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #mc-lineage .ml-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #mc-lineage .ml-line { stroke: var(--border); stroke-width: 1; }
+                #mc-lineage .ml-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+                #mc-lineage .ml-arrow { fill: var(--accent); }
+            </style>
+            <text class="ml-title" x="260" y="18" text-anchor="middle">The Norton Commander Family</text>
+            <!-- Norton Commander root -->
+            <rect class="ml-fill" x="170" y="36" width="180" height="40"/>
+            <rect class="ml-box-accent" x="170" y="36" width="180" height="40"/>
+            <text class="ml-accent" x="260" y="54" text-anchor="middle">Norton Commander</text>
+            <text class="ml-sub" x="260" y="68" text-anchor="middle">1984, John Socha</text>
+            <!-- Lines down -->
+            <line class="ml-line-accent" x1="260" y1="76" x2="260" y2="100"/>
+            <line class="ml-line" x1="100" y1="100" x2="420" y2="100"/>
+            <line class="ml-line" x1="100" y1="100" x2="100" y2="120"/>
+            <line class="ml-line-accent" x1="260" y1="100" x2="260" y2="120"/>
+            <line class="ml-line" x1="420" y1="100" x2="420" y2="120"/>
+            <!-- Total Commander -->
+            <rect class="ml-box" x="30" y="120" width="140" height="50"/>
+            <text class="ml-label" x="100" y="140" text-anchor="middle">Total Commander</text>
+            <text class="ml-sub" x="100" y="154" text-anchor="middle">1993, Ghisler</text>
+            <text class="ml-sub" x="100" y="166" text-anchor="middle">Windows shareware</text>
+            <!-- Midnight Commander -->
+            <rect class="ml-fill" x="190" y="120" width="140" height="50"/>
+            <rect class="ml-box-accent" x="190" y="120" width="140" height="50"/>
+            <text class="ml-accent" x="260" y="140" text-anchor="middle">mc</text>
+            <text class="ml-sub" x="260" y="154" text-anchor="middle">1994, de Icaza</text>
+            <text class="ml-sub" x="260" y="166" text-anchor="middle">Unix, GPL</text>
+            <!-- FAR Manager -->
+            <rect class="ml-box" x="350" y="120" width="140" height="50"/>
+            <text class="ml-label" x="420" y="140" text-anchor="middle">FAR Manager</text>
+            <text class="ml-sub" x="420" y="154" text-anchor="middle">1996, Roshal</text>
+            <text class="ml-sub" x="420" y="166" text-anchor="middle">Windows, BSD</text>
+        </svg>
+
+        <h2>The Record</h2>
+
+        <p>31 years.
+            <a href="https://github.com/MidnightCommander/mc" target="_blank" rel="noopener">478 contributors</a>.
+            Still actively maintained
+            (<a href="https://midnight-commander.org/wiki/NEWS-4.8.33" target="_blank" rel="noopener">4.8.33</a>,
+            January 2025). No venture capital. No rewrite in Rust. No
+            "mc Cloud." No annual conference with branded socks.</p>
+
+        <p>One might call that technical beauty. One would be quite right.</p>
+
+        <aside class="vv-aside">
+            <p><strong>FISH.</strong> Most remote tools need SCP or SFTP on
+                the target. <code>mc</code> uses nothing but a basic shell.
+                Connect to a bare machine, browse its filesystem from your
+                local panel. Terribly considerate.</p>
+            <p>The TUI alternatives: <code>nnn</code> (3.5 MB, C, minimal,
+                delegates to external tools), <code>ranger</code> (32 MB,
+                Python, preview-focused), <code>lf</code> (Go, ranger-inspired),
+                <code>yazi</code> (Rust, async I/O, the modern contender).
+                All capable. None self-contained. <code>mc</code> is the
+                workstation. The others are launchers.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

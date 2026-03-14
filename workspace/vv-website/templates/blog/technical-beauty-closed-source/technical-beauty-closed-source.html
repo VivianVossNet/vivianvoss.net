@@ -1,0 +1,160 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Ones I Can't Show You &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Some of the most elegant systems ever built are behind closed doors. QNX fit a complete POSIX OS on a 1.44 MB floppy. BeOS had pervasive multithreading before anyone understood why it mattered. NeXTSTEP gave us the web browser and macOS. Elegance has no licence requirement.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-closed-source{( endslot )}
+
+{( slot og-title )}The Ones I Can't Show You &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}QNX on a floppy. BeOS in a million downloads. NeXTSTEP in a web browser. Some of the most beautiful engineering happened behind NDAs.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Ones I Can't Show You",
+    "datePublished": "2026-01-14",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-closed-source",
+    "description": "Some of the most elegant systems ever built are behind closed doors. QNX, BeOS, NeXTSTEP. Elegance has no licence requirement.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-14">14 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Ones I Can't Show You</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 15</p>
+
+        <p>This series celebrates reduction. Code you can read. Architecture you
+            can inspect. But some of the most elegant systems ever built are behind
+            closed doors. Systems I touched. Systems that shaped how I think.
+            Systems I cannot show you.</p>
+
+        <p>Frightfully sorry about that.</p>
+
+        <h2>QNX 4 RTOS</h2>
+
+        <p>In 1999,
+            <a href="https://www.qnx.com/developers/qnx4/" target="_blank" rel="noopener">QNX</a>
+            released a demo disk. One 1.44 MB floppy. On it: a complete
+            POSIX-compliant operating system. GUI. Web browser. Web server.
+            TCP/IP stack. Text editor.</p>
+
+        <p>1.44 megabytes. Rather puts your 50 GB game downloads in perspective.</p>
+
+        <p>I ran QNX 4 from CD when it was freely available. A
+            <a href="https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/kernel.html" target="_blank" rel="noopener">microkernel</a>
+            so small it made Linux look positively bloated. The kernel handles
+            only scheduling, IPC, interrupts, and timers. Everything else runs
+            in userspace. Driver crashes? Restart it. The kernel never noticed.</p>
+
+        <p>QNX maintained that demo disk for over a decade. Last update: July
+            2011. Still 1.44 MB. And QNX 4 remains available today, free for
+            non-commercial use. Rather decent of them, actually.</p>
+
+        <p>Today QNX runs in
+            <a href="https://en.wikipedia.org/wiki/QNX" target="_blank" rel="noopener">215 million vehicles</a>.
+            Nuclear plants. Medical devices. Mars rovers. Closed source, but
+            accessible.</p>
+
+        <svg id="qnx-floppy" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="QNX demo disk: 1.44 MB containing a complete POSIX OS with GUI, browser, web server, TCP/IP, and text editor. Windows 95 needed 13 floppy disks." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #qnx-floppy .qf-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #qnx-floppy .qf-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #qnx-floppy .qf-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #qnx-floppy .qf-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #qnx-floppy .qf-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #qnx-floppy .qf-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #qnx-floppy .qf-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text class="qf-title" x="260" y="18" text-anchor="middle">What Fits on 1.44 MB</text>
+            <!-- QNX disk -->
+            <rect class="qf-fill" x="30" y="36" width="200" height="110"/>
+            <rect class="qf-box-accent" x="30" y="36" width="200" height="110"/>
+            <text class="qf-accent" x="130" y="58" text-anchor="middle">QNX 4 Demo Disk</text>
+            <text class="qf-sub" x="130" y="74" text-anchor="middle">POSIX OS + GUI</text>
+            <text class="qf-sub" x="130" y="88" text-anchor="middle">Web browser + server</text>
+            <text class="qf-sub" x="130" y="102" text-anchor="middle">TCP/IP + text editor</text>
+            <text class="qf-label" x="130" y="122" text-anchor="middle">1.44 MB</text>
+            <text class="qf-sub" x="130" y="138" text-anchor="middle">1 floppy disk</text>
+            <!-- Windows 95 -->
+            <rect class="qf-box" x="290" y="36" width="200" height="110"/>
+            <text class="qf-label" x="390" y="58" text-anchor="middle">Windows 95</text>
+            <text class="qf-sub" x="390" y="88" text-anchor="middle">Just the installer</text>
+            <text class="qf-label" x="390" y="122" text-anchor="middle">~21 MB</text>
+            <text class="qf-sub" x="390" y="138" text-anchor="middle">13 floppy disks</text>
+        </svg>
+
+        <h2>BeOS</h2>
+
+        <p>2000: Be Inc. released BeOS 5.0 Personal Edition. Free.
+            <a href="https://archive.org/details/be-os-personal-edition" target="_blank" rel="noopener">One million downloads</a>.</p>
+
+        <p>A media OS from the future, trapped in 1999. Pervasive
+            multithreading before anyone understood why it mattered. Boot
+            times in seconds, not minutes.</p>
+
+        <p>Jean-Louis Gassee built it. Steve Jobs wanted Apple to buy it.
+            They bought NeXT instead.
+            <a href="https://en.wikipedia.org/wiki/BeOS" target="_blank" rel="noopener">Palm acquired the corpse</a>
+            for $11 million. Marvellous investment, that. Source vanished.</p>
+
+        <h2>NeXTSTEP</h2>
+
+        <p>Half of what became macOS (the other half: BSD). Where Tim Berners-Lee
+            <a href="https://github.com/cynthia/WorldWideWeb" target="_blank" rel="noopener">wrote the first web browser</a>.
+            Where id Software built Doom.</p>
+
+        <p>Object-oriented from the ground up. Interface Builder in 1988.
+            Apple is still riding its momentum thirty years later. Quite
+            impressive, really.</p>
+
+        <p>Source code
+            <a href="https://news.ycombinator.com/item?id=35864380" target="_blank" rel="noopener">leaked in 2021</a>.
+            Not officially available.</p>
+
+        <h2>The Point</h2>
+
+        <p>Elegance is not exclusive to open source. Some of the most beautiful
+            engineering happened behind NDAs. I cannot link you to QNX's kernel
+            or BeOS's threading model. But they existed. Small where others were
+            bloated. Fast where others were sluggish.</p>
+
+        <p>They shaped the engineers who built the open tools I celebrate here.</p>
+
+        <p>This episode is for the ones we lost. Terribly sorry I cannot do more.</p>
+
+        <aside class="vv-aside">
+            <p><strong>A note on criteria.</strong> This series has a rule: the
+                code must be inspectable. Not from ideology, from practicality. I
+                want to show what I celebrate. That means brilliant closed-source
+                systems fall through the cracks. Not because they are bad. Because
+                I cannot open them up. Technical elegance has no monopoly on
+                licence models.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

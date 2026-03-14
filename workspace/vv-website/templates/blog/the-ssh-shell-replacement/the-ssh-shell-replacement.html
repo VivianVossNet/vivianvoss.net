@@ -1,0 +1,241 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}SSH + Shell: The Configuration Management You Already Have &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Ansible. Puppet. Chef. Salt. All solving the same problem: how do I run commands on multiple machines? SSH already does that. A for loop, scp, and configs in git. Since 1995.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-ssh-shell-replacement{( endslot )}
+
+{( slot og-title )}SSH + Shell: The Configuration Management You Already Have &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Ansible solves a problem that SSH, a for loop, and configs in git solved twenty years earlier. For five servers, you do not need a framework. You need a shell script.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "SSH + Shell: The Configuration Management You Already Have",
+    "datePublished": "2026-01-25",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-ssh-shell-replacement",
+    "description": "Ansible solves a problem that SSH, a for loop, and configs in git solved twenty years earlier. For five servers, you do not need a framework.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-25">25 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>SSH + Shell: The Configuration Management You Already Have</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">ssh</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">devops</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Replacement</em> &#x25A0; Episode 07</p>
+
+        <p>Ansible. Puppet. Chef. Salt. Terraform. All solving the same
+            problem: how do I run the same commands on multiple machines?</p>
+
+        <p>Here is a thought:
+            <a href="https://tools.ietf.org/html/rfc4253" target="_blank" rel="noopener">SSH</a>
+            already does that.</p>
+
+        <h2>The Loop</h2>
+
+        <pre><code>#!/bin/sh
+SERVERS="web1 web2 db1 db2 cache1"
+
+for host in $SERVERS; do
+  ssh "$host" 'pkg upgrade -y && service nginx reload'
+done</code></pre>
+
+        <p>That is configuration management. Five lines. No framework.
+            No YAML. No Python runtime on the target machine. Just a
+            shell, a loop, and the protocol that has been shipping with
+            every Unix system since
+            <a href="https://en.wikipedia.org/wiki/OpenSSH" target="_blank" rel="noopener">1999</a>.</p>
+
+        <h2>Idempotency</h2>
+
+        <p>The usual objection arrives quickly. "But what about
+            idempotency?" A fair question. Here is a fair answer:</p>
+
+        <pre><code>ssh web1 'grep -q "worker_processes 4" /etc/nginx/nginx.conf || \
+  sed -i "" "s/worker_processes.*/worker_processes 4;/" /etc/nginx/nginx.conf && \
+  service nginx reload'</code></pre>
+
+        <p>Only changes if needed. Only reloads if changed. Idempotent.
+            No module system required. The tools are <code>grep</code>,
+            <code>sed</code>, and a conditional. Available since the
+            1970s.</p>
+
+        <h2>State Management</h2>
+
+        <pre><code>#!/bin/sh
+# deploy.sh
+set -e
+
+for host in $SERVERS; do
+  echo "=== $host ==="
+  scp configs/nginx.conf "$host":/etc/nginx/nginx.conf
+  scp configs/rc.conf "$host":/etc/rc.conf
+  ssh "$host" 'service nginx configtest && service nginx reload'
+done</code></pre>
+
+        <p>The state lives in your git repository. The <code>configs/</code>
+            folder. Version controlled. Diffable. Auditable. No inventory
+            plugin. No state file. No backend configuration. Git is the
+            backend.</p>
+
+        <h2>Secrets</h2>
+
+        <pre><code># Encrypt with age (single binary, no GPG complexity)
+age -r age1ql3z7hjy... secret.txt > secret.txt.age
+
+# Decrypt on target
+scp secret.txt.age "$host":~
+ssh "$host" 'age -d -i ~/.age/key.txt secret.txt.age > /etc/secret.txt'</code></pre>
+
+        <p><a href="https://github.com/FiloSottile/age" target="_blank" rel="noopener">age</a>,
+            written by Filippo Valsorda in 2019. One binary. No key
+            servers. No web of trust. No GPG configuration odyssey.
+            Or use ssh-agent forwarding. The tooling exists.</p>
+
+        <h2>Parallel Execution</h2>
+
+        <pre><code>#!/bin/sh
+for host in $SERVERS; do
+  ssh "$host" 'pkg upgrade -y' &
+done
+wait
+echo "All done."</code></pre>
+
+        <p>Background jobs. The ampersand. Available since 1971. No
+            task runner. No worker pool library. The shell has had
+            concurrency longer than most programming languages have
+            existed.</p>
+
+        <svg id="ssh-cm-stack" viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison of Ansible stack (Python, YAML, Jinja2, modules, Galaxy) versus the SSH stack (sh, ssh, scp, git, age). The SSH stack has fewer layers and no runtime dependency on target machines." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ssh-cm-stack .sc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-cm-stack .sc-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ssh-cm-stack .sc-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ssh-cm-stack .sc-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-cm-stack .sc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #ssh-cm-stack .sc-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #ssh-cm-stack .sc-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+            </style>
+            <text class="sc-title" x="260" y="18" text-anchor="middle">Configuration Management Stacks</text>
+            <!-- Ansible side -->
+            <text class="sc-label" x="130" y="46" text-anchor="middle">Ansible</text>
+            <rect class="sc-box" x="50" y="56" width="160" height="28"/>
+            <text class="sc-sub" x="130" y="74" text-anchor="middle">Python on every target</text>
+            <rect class="sc-box" x="50" y="88" width="160" height="28"/>
+            <text class="sc-sub" x="130" y="106" text-anchor="middle">YAML playbooks</text>
+            <rect class="sc-box" x="50" y="120" width="160" height="28"/>
+            <text class="sc-sub" x="130" y="138" text-anchor="middle">Jinja2 templates</text>
+            <rect class="sc-box" x="50" y="152" width="160" height="28"/>
+            <text class="sc-sub" x="130" y="170" text-anchor="middle">Module ecosystem</text>
+            <rect class="sc-box" x="50" y="184" width="160" height="28"/>
+            <text class="sc-sub" x="130" y="202" text-anchor="middle">Galaxy dependencies</text>
+            <rect class="sc-box" x="50" y="216" width="160" height="28"/>
+            <text class="sc-sub" x="130" y="234" text-anchor="middle">Inventory plugins</text>
+            <!-- SSH side -->
+            <text class="sc-accent" x="390" y="46" text-anchor="middle">SSH + Shell</text>
+            <rect class="sc-fill" x="310" y="56" width="160" height="28"/>
+            <rect class="sc-box-accent" x="310" y="56" width="160" height="28"/>
+            <text class="sc-accent" x="390" y="74" text-anchor="middle">/bin/sh</text>
+            <rect class="sc-fill" x="310" y="88" width="160" height="28"/>
+            <rect class="sc-box-accent" x="310" y="88" width="160" height="28"/>
+            <text class="sc-accent" x="390" y="106" text-anchor="middle">ssh + scp</text>
+            <rect class="sc-fill" x="310" y="120" width="160" height="28"/>
+            <rect class="sc-box-accent" x="310" y="120" width="160" height="28"/>
+            <text class="sc-accent" x="390" y="138" text-anchor="middle">git</text>
+            <rect class="sc-fill" x="310" y="152" width="160" height="28"/>
+            <rect class="sc-box-accent" x="310" y="152" width="160" height="28"/>
+            <text class="sc-accent" x="390" y="170" text-anchor="middle">age (optional)</text>
+            <text class="sc-sub" x="390" y="200" text-anchor="middle">runs everywhere</text>
+            <text class="sc-sub" x="390" y="214" text-anchor="middle">no runtime on target</text>
+        </svg>
+
+        <h2>What Ansible Actually Gives You</h2>
+
+        <p>YAML syntax (a debatable improvement over shell). Inventory
+            files (a text file with hostnames). Modules (shell commands
+            with extra steps). Playbooks (shell scripts with extra steps).
+            Galaxy (dependencies with extra steps).</p>
+
+        <p>What you give Ansible: Python on every target machine. A
+            domain-specific language to learn. YAML indentation errors
+            to debug. Tasks that run every time despite being marked
+            "changed." Module version compatibility issues between
+            releases.</p>
+
+        <h2>The Honest Caveat</h2>
+
+        <p>"But we have 500 servers across 3 continents!" Then you need
+            Ansible. Possibly Terraform. Maybe even Kubernetes. Terribly
+            sorry, this article is not for you.</p>
+
+        <p>But if you are managing five servers? Ten? A small startup?
+            A personal lab? You do not need configuration management
+            software. You need <code>ssh</code>, a <code>for</code> loop,
+            and configs in git.</p>
+
+        <svg id="ssh-cm-tree" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A typical infrastructure directory structure: servers.txt, deploy.sh, and a configs folder with nginx.conf, rc.conf, and pf.conf." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ssh-cm-tree .ct-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-cm-tree .ct-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ssh-cm-tree .ct-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ssh-cm-tree .ct-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ssh-cm-tree .ct-line { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text class="ct-title" x="260" y="18" text-anchor="middle">The Complete Stack</text>
+            <text class="ct-accent" x="60" y="50">infrastructure/</text>
+            <line class="ct-line" x1="60" y1="58" x2="60" y2="180"/>
+            <line class="ct-line" x1="60" y1="74" x2="80" y2="74"/>
+            <text class="ct-label" x="90" y="78">servers.txt</text>
+            <text class="ct-sub" x="220" y="78">web1 web2 db1 db2</text>
+            <line class="ct-line" x1="60" y1="100" x2="80" y2="100"/>
+            <text class="ct-label" x="90" y="104">deploy.sh</text>
+            <text class="ct-sub" x="220" y="104">the main script</text>
+            <line class="ct-line" x1="60" y1="126" x2="80" y2="126"/>
+            <text class="ct-accent" x="90" y="130">configs/</text>
+            <line class="ct-line" x1="110" y1="138" x2="110" y2="180"/>
+            <line class="ct-line" x1="110" y1="150" x2="130" y2="150"/>
+            <text class="ct-label" x="140" y="154">nginx.conf</text>
+            <line class="ct-line" x1="110" y1="168" x2="130" y2="168"/>
+            <text class="ct-label" x="140" y="172">rc.conf</text>
+            <line class="ct-line" x1="110" y1="184" x2="130" y2="184"/>
+            <text class="ct-label" x="140" y="188">pf.conf</text>
+        </svg>
+
+        <p>The tools are not complicated. We just convinced ourselves
+            they must be.</p>
+
+        <aside class="vv-aside">
+            <p><strong>When does Ansible make sense?</strong> Large teams
+                with varying skill levels. Hundreds of servers with complex
+                dependency graphs. Compliance that requires declarative
+                descriptions. Windows servers in the mix. For the rest:
+                SSH + Shell + Git. Proven for forty years.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

@@ -1,0 +1,242 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}ZFS Snapshots: Same Commands, Different Experience &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="ZFS commands are identical on FreeBSD and Linux. The snapshots work the same way. The difference is everything around them: kernel integration, boot environments, and what happens when you upgrade.">
+{( endslot )}
+
+{( slot canonical )}/blog/zfs-snapshots{( endslot )}
+
+{( slot og-title )}ZFS Snapshots: Same Commands, Different Experience &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}ZFS commands are identical on both platforms. The snapshots work the same way. The difference is everything around them.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "ZFS Snapshots: Same Commands, Different Experience",
+    "datePublished": "2026-02-09",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/zfs-snapshots",
+    "description": "ZFS commands are identical on FreeBSD and Linux. The snapshots work the same way. The difference is everything around them: kernel integration, boot environments, and what happens when you upgrade.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-02-09">9 February 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>ZFS Snapshots: Same Commands, Different Experience</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">zfs</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 03</p>
+
+        <p>You are about to upgrade your server. Packages, kernel, the lot.
+            Something might break. You want a way back.</p>
+
+        <p>The question is not whether ZFS can help you. It can, brilliantly,
+            on both platforms. The question is how much of the safety net you
+            have to knit yourself.</p>
+
+        <h2>FreeBSD: The Integrated Path</h2>
+
+        <pre><code>bectl create pre-upgrade
+pkg upgrade</code></pre>
+
+        <p>Done. If it breaks, reboot, select the old boot environment from
+            the menu. You are back. Thirty seconds.</p>
+
+        <p><a href="https://www.freebsd.org/releases/12.0R/relnotes/" target="_blank" rel="noopener"><code>bectl</code></a>
+            ships in the base system since FreeBSD 12.0. No package to install.
+            No configuration. The bootloader knows about boot environments
+            natively. <code>freebsd-update</code> goes further: it creates a
+            boot environment automatically before applying patches. You do not
+            even have to ask.</p>
+
+        <pre><code>bectl list
+BE            Active Mountpoint Space  Created
+pre-upgrade   -      -          906M   2026-02-09
+default       NR     /          2.1G   2025-11-20</code></pre>
+
+        <p>Select. Reboot. Done.</p>
+
+        <h2>Linux: Assembly Required</h2>
+
+        <p>Step 1: Install ZFS. It is not in the kernel. It is an
+            <a href="https://sfconservancy.org/blog/2016/feb/25/zfs-and-linux/" target="_blank" rel="noopener">out-of-tree module</a>,
+            built via DKMS against your kernel headers. If the kernel updates
+            before OpenZFS supports it, the build fails. If your root is on
+            ZFS, you do not boot.</p>
+
+        <p>Linus Torvalds,
+            <a href="https://www.theregister.com/2020/01/13/zfs_linux/" target="_blank" rel="noopener">January 2020</a>:
+            <em>"Don't use ZFS. It's that simple."</em></p>
+
+        <p>Step 2: Configure root-on-ZFS. The installer probably does not
+            support it. Ubuntu had it,
+            <a href="https://discourse.ubuntu.com/t/future-of-zfs-on-ubuntu-desktop/33001" target="_blank" rel="noopener">removed it in 23.04</a>,
+            partially restored it in 23.10 as "experimental."</p>
+
+        <p>Step 3: Install a boot environment manager.
+            <code>bectl</code> does not exist on Linux. You need
+            <a href="https://zfsbootmenu.org/" target="_blank" rel="noopener">ZFSBootMenu</a>
+            (which replaces GRUB entirely), or <code>zectl</code>, or a
+            Linux port of <code>beadm</code>. All third-party.</p>
+
+        <p>Step 4: Ubuntu tried to solve this with zsys. Automatic snapshots,
+            boot environments, the works. Development ceased in 2021. The
+            GitHub issue titled
+            <a href="https://github.com/ubuntu/zsys/issues/230" target="_blank" rel="noopener">"Don't use ZSYS"</a>
+            tells the rest.</p>
+
+        <p>Step 5: Hope your next kernel update does not break the DKMS build.
+            Documented failures:
+            <a href="https://github.com/openzfs/zfs/issues/14658" target="_blank" rel="noopener">kernel 6.2.8</a> (2023),
+            <a href="https://github.com/openzfs/zfs/issues/15151" target="_blank" rel="noopener">kernel 6.4</a> (2023),
+            <a href="https://github.com/openzfs/zfs/issues/17639" target="_blank" rel="noopener">kernel 6.12</a> (2025).
+            Each time, root-on-ZFS systems could not boot until the kernel was
+            manually downgraded from a rescue environment.</p>
+
+        <svg id="zfs-snap-cmp" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison: FreeBSD has ZFS in kernel, bectl in base, bootloader-native boot environments, and automatic safety nets. Linux has out-of-tree DKMS module, third-party boot managers, abandoned zsys, and documented kernel breakage." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #zfs-snap-cmp .zc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #zfs-snap-cmp .zc-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #zfs-snap-cmp .zc-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #zfs-snap-cmp .zc-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #zfs-snap-cmp .zc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #zfs-snap-cmp .zc-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #zfs-snap-cmp .zc-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #zfs-snap-cmp .zc-line { stroke: var(--muted); stroke-width: 1; }
+                #zfs-snap-cmp .zc-dot { fill: var(--accent); }
+                #zfs-snap-cmp .zc-dot-warn { fill: var(--muted); }
+            </style>
+            <text class="zc-title" x="260" y="18" text-anchor="middle">ZFS Integration: FreeBSD vs Linux</text>
+            <!-- FreeBSD column -->
+            <text class="zc-accent" x="140" y="46" text-anchor="middle">FreeBSD</text>
+            <rect class="zc-fill" x="40" y="56" width="200" height="32"/>
+            <rect class="zc-box-accent" x="40" y="56" width="200" height="32"/>
+            <circle class="zc-dot" cx="56" cy="72" r="4"/>
+            <text class="zc-label" x="68" y="76">ZFS in kernel</text>
+            <rect class="zc-fill" x="40" y="96" width="200" height="32"/>
+            <rect class="zc-box-accent" x="40" y="96" width="200" height="32"/>
+            <circle class="zc-dot" cx="56" cy="112" r="4"/>
+            <text class="zc-label" x="68" y="116">bectl in base system</text>
+            <rect class="zc-fill" x="40" y="136" width="200" height="32"/>
+            <rect class="zc-box-accent" x="40" y="136" width="200" height="32"/>
+            <circle class="zc-dot" cx="56" cy="152" r="4"/>
+            <text class="zc-label" x="68" y="156">Bootloader-native BEs</text>
+            <rect class="zc-fill" x="40" y="176" width="200" height="32"/>
+            <rect class="zc-box-accent" x="40" y="176" width="200" height="32"/>
+            <circle class="zc-dot" cx="56" cy="192" r="4"/>
+            <text class="zc-label" x="68" y="196">Auto snapshot on update</text>
+            <!-- Linux column -->
+            <text class="zc-accent" x="400" y="46" text-anchor="middle">Linux</text>
+            <rect class="zc-box" x="300" y="56" width="200" height="32"/>
+            <circle class="zc-dot-warn" cx="316" cy="72" r="4"/>
+            <text class="zc-label" x="328" y="76">Out-of-tree DKMS</text>
+            <rect class="zc-box" x="300" y="96" width="200" height="32"/>
+            <circle class="zc-dot-warn" cx="316" cy="112" r="4"/>
+            <text class="zc-label" x="328" y="116">Third-party boot mgr</text>
+            <rect class="zc-box" x="300" y="136" width="200" height="32"/>
+            <circle class="zc-dot-warn" cx="316" cy="152" r="4"/>
+            <text class="zc-label" x="328" y="156">zsys abandoned (2021)</text>
+            <rect class="zc-box" x="300" y="176" width="200" height="32"/>
+            <circle class="zc-dot-warn" cx="316" cy="192" r="4"/>
+            <text class="zc-label" x="328" y="196">DKMS kernel breakage</text>
+            <!-- Shared base -->
+            <line class="zc-line" x1="140" y1="220" x2="260" y2="248"/>
+            <line class="zc-line" x1="400" y1="220" x2="260" y2="248"/>
+            <rect class="zc-fill" x="180" y="240" width="160" height="32"/>
+            <rect class="zc-box-accent" x="180" y="240" width="160" height="32"/>
+            <text class="zc-accent" x="260" y="260" text-anchor="middle">OpenZFS (identical)</text>
+        </svg>
+
+        <h2>The Commands Are the Same</h2>
+
+        <p>This is the part worth emphasising. The ZFS commands are identical.
+            Both platforms run
+            <a href="https://www.theregister.com/2020/12/01/zfs_on_linux_now_openzfs/" target="_blank" rel="noopener">OpenZFS</a>.
+            The snapshots work the same way:</p>
+
+        <pre><code>zfs snapshot zroot@before-upgrade
+zfs rollback zroot@before-upgrade</code></pre>
+
+        <p>Instant. Zero bytes at creation.
+            <a href="https://klarasystems.com/articles/lets-talk-openzfs-snapshots/" target="_blank" rel="noopener">Copy-on-write</a>.
+            Brilliant engineering, regardless of platform. ZFS never overwrites
+            data. A snapshot pins the current block pointers. Sub-second, no
+            performance impact.</p>
+
+        <p>Incremental backups are equally elegant:</p>
+
+        <pre><code>zfs send -i @monday @tuesday | ssh backup zfs recv tank/backup</code></pre>
+
+        <p>One pipe. Encrypted, deduplicated, compressed. The same command on
+            both operating systems.</p>
+
+        <h2>The Difference Is Not ZFS</h2>
+
+        <p>The difference is what surrounds it.</p>
+
+        <p>On FreeBSD, ZFS is
+            <a href="https://docs.freebsd.org/en/books/handbook/zfs/" target="_blank" rel="noopener">in the kernel</a>.
+            <code>bectl</code> is in the base system. The bootloader understands
+            boot environments. <code>freebsd-update</code> creates safety nets
+            automatically. It is one team, one operating system, one design.</p>
+
+        <p>On Linux, ZFS is a legal grey area bolted on from the outside. Every
+            kernel update is a trust exercise.</p>
+
+        <h2>The Btrfs Argument</h2>
+
+        <p>Fair question, and credit where it is due. openSUSE with Btrfs and
+            <code>snapper</code> is the closest Linux gets to the FreeBSD
+            experience. Automatic snapshots before <code>zypper</code> upgrades,
+            GRUB rollback support. It works.</p>
+
+        <p>The caveats: no equivalent to <code>zfs send/receive</code> for
+            incremental backups. No native RAID (Btrfs RAID5/6 still carries a
+            <a href="https://btrfs.readthedocs.io/en/latest/Status.html" target="_blank" rel="noopener">data loss warning</a>).
+            Production-ready since roughly 2015. ZFS: since 2005. LVM snapshots
+            exist too. Nobody would call them elegant.</p>
+
+        <p>Linux has options. They are younger, less integrated, and come with
+            their own trade-offs.</p>
+
+        <h2>The Point</h2>
+
+        <p>Same filesystem. Same commands. Rather different experience.</p>
+
+        <p>One platform treats ZFS as a first-class citizen. The other treats it
+            as a guest who might overstay. The engineering is identical. The
+            integration is not.</p>
+
+        <aside class="vv-aside">
+            <p><strong>How ZFS snapshots work.</strong> ZFS never overwrites data.
+                A snapshot pins the current block pointers. Sub-second, zero bytes
+                at creation, no performance impact. Copy-on-write means the
+                snapshot only grows as the live data diverges. Rollback simply
+                switches the pointer back. The filesystem equivalent of pressing
+                undo.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

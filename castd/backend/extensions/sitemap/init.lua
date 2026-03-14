@@ -106,6 +106,18 @@ local pages = {
     { loc = "/blog/clean-code",             priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-early-access-alibi", priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/jira",                  priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/zfs-snapshots",          priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-markdown-replacement", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/javascript-overuse",     priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-htop", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-closed-source", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/bytes-of-art-prelude-to-neobyte", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-ssh-shell-replacement",     priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-man",           priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/technical-beauty-mc",            priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/ai-padding-waste",              priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-mvc-myth",                  priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-quiet-web",                 priority = "0.7", changefreq = "yearly" },
 }
 
 function route()

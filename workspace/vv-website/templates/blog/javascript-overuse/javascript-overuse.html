@@ -1,0 +1,182 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Browser Is Not a JavaScript Runtime &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="80% of JavaScript on modern websites solves problems that HTML and CSS solved years ago. Accordions, modals, form validation, lazy loading. The browser ships all of it. Zero kilobytes.">
+{( endslot )}
+
+{( slot canonical )}/blog/javascript-overuse{( endslot )}
+
+{( slot og-title )}The Browser Is Not a JavaScript Runtime &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The browser is a rendering engine with JavaScript as an escape hatch. 80% of the JavaScript on modern websites solves problems that do not exist anymore.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Browser Is Not a JavaScript Runtime",
+    "datePublished": "2025-12-21",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/javascript-overuse",
+    "description": "80% of JavaScript on modern websites solves problems that HTML and CSS solved years ago. The browser is a rendering engine with JavaScript as an escape hatch.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2025-12-21">21 December 2025</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Browser Is Not a JavaScript Runtime</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">html</span>
+            <span class="vv-pill">css</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>80% of the JavaScript on modern websites solves problems that do not
+            exist anymore.</p>
+
+        <p>Accordion? <code>&lt;details&gt;</code> and
+            <code>&lt;summary&gt;</code>, HTML
+            <a href="https://caniuse.com/details" target="_blank" rel="noopener">since 2014</a>.
+            Zero JavaScript.</p>
+
+        <p>Layout shifts on resize? CSS Grid, Subgrid, Grid Areas. Reorder
+            elements visually, completely independent of the DOM.</p>
+
+        <p>State management for UI toggles? One line:
+            <code>element.toggleAttribute('data-open')</code>. CSS handles the
+            rest with <code>:has()</code> and attribute selectors.</p>
+
+        <p>Responsive navigation?
+            <a href="https://caniuse.com/css-has" target="_blank" rel="noopener"><code>:has()</code></a>
+            plus checkbox toggle. No JavaScript. No library.</p>
+
+        <h2>The Import List</h2>
+
+        <p>Instead, we import React for a contact form. jQuery for a carousel.
+            A 47 KB accordion library for three collapsible sections. 90% of
+            the library's code unused, but bundled anyway.</p>
+
+        <p>The cost: battery drain on mobile devices. Slower initial page load.
+            Dependency chains you will never audit. Build pipelines for problems
+            HTML solved a decade ago.</p>
+
+        <p>The irony: some call CSS state management "hacky" while writing
+            <code>addEventListener</code> spaghetti to shuffle DOM nodes on
+            every click. Quite.</p>
+
+        <svg id="js-browser-caps" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline of browser capabilities: 2014 details element for native accordions, 2017 CSS Grid for layout without JS, 2022 dialog element for native modals, 2023 has selector, Subgrid, and Container Queries." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #js-browser-caps .jb-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #js-browser-caps .jb-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #js-browser-caps .jb-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #js-browser-caps .jb-year { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #js-browser-caps .jb-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #js-browser-caps .jb-line-accent { stroke: var(--accent); stroke-width: 2; }
+                #js-browser-caps .jb-dot { fill: var(--accent); }
+                #js-browser-caps .jb-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #js-browser-caps .jb-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+            </style>
+            <text class="jb-title" x="260" y="18" text-anchor="middle">The Browser Already Solved It</text>
+            <line class="jb-line-accent" x1="60" y1="44" x2="60" y2="260"/>
+            <!-- 2014 -->
+            <circle class="jb-dot" cx="60" cy="50" r="5"/>
+            <text class="jb-year" x="80" y="54">2014</text>
+            <text class="jb-label" x="130" y="54">&lt;details&gt;</text>
+            <text class="jb-sub" x="200" y="54">native accordions, 97% support</text>
+            <!-- 2017 -->
+            <circle class="jb-dot" cx="60" cy="86" r="5"/>
+            <text class="jb-year" x="80" y="90">2017</text>
+            <text class="jb-label" x="130" y="90">CSS Grid</text>
+            <text class="jb-sub" x="200" y="90">layout without JavaScript</text>
+            <!-- 2022 -->
+            <circle class="jb-dot" cx="60" cy="122" r="5"/>
+            <text class="jb-year" x="80" y="126">2022</text>
+            <text class="jb-label" x="130" y="126">&lt;dialog&gt;</text>
+            <text class="jb-sub" x="200" y="126">native modals, 96% support</text>
+            <!-- 2023 :has() -->
+            <circle class="jb-dot" cx="60" cy="158" r="5"/>
+            <text class="jb-year" x="80" y="162">2023</text>
+            <text class="jb-label" x="130" y="162">:has()</text>
+            <text class="jb-sub" x="180" y="162">parent selector, 93% support</text>
+            <!-- 2023 Subgrid -->
+            <circle class="jb-dot" cx="60" cy="194" r="5"/>
+            <text class="jb-year" x="80" y="198">2023</text>
+            <text class="jb-label" x="130" y="198">Subgrid</text>
+            <text class="jb-sub" x="200" y="198">nested grid alignment, 93% support</text>
+            <!-- 2023 Container Queries -->
+            <circle class="jb-dot" cx="60" cy="230" r="5"/>
+            <text class="jb-year" x="80" y="234">2023</text>
+            <text class="jb-label" x="130" y="234">Container Queries</text>
+            <text class="jb-sub" x="262" y="234">responsive without window events</text>
+            <!-- Punchline -->
+            <rect class="jb-fill" x="100" y="248" width="380" height="24"/>
+            <text class="jb-sub" x="290" y="264" text-anchor="middle">Meanwhile, npm downloads of accordion libraries: +340%</text>
+        </svg>
+
+        <h2>What the Browser Ships</h2>
+
+        <p>Modern HTML and CSS handle accordions (<code>&lt;details&gt;</code>),
+            modals (<a href="https://caniuse.com/dialog" target="_blank" rel="noopener"><code>&lt;dialog&gt;</code></a>),
+            form validation (native), lazy loading
+            (<code>loading="lazy"</code>), smooth scrolling
+            (<code>scroll-behavior</code>), carousels
+            (<code>scroll-snap</code>),
+            <a href="https://caniuse.com/css-container-queries" target="_blank" rel="noopener">container queries</a>,
+            the <code>:has()</code> condition selector, and
+            <a href="https://caniuse.com/css-subgrid" target="_blank" rel="noopener">subgrid</a>.</p>
+
+        <p>Before you <code>npm install</code>, check if the browser already
+            solved it.</p>
+
+        <h2>The Server Export</h2>
+
+        <p>This problem did not stay in the browser. Node.js exported the npm
+            mindset to servers. Your backend now inherits the same dependency
+            debt, with production databases attached. And then its archaic
+            single-threaded architecture forces you to spawn countless service
+            instances, sending your error vectors exponentially through the
+            roof.</p>
+
+        <h2>The Point</h2>
+
+        <p>The browser is not a JavaScript runtime that happens to render HTML.
+            It is a rendering engine with JavaScript as an escape hatch.</p>
+
+        <p>The greenest code is the code you did not ship.</p>
+
+        <aside class="vv-aside">
+            <p><strong>To be clear:</strong> JavaScript has its place. Complex
+                applications, real-time interaction, client-side data processing.
+                That is what it was made for. But most websites are not
+                applications. They are documents with a bit of interaction. HTML
+                has handled that for thirty years. What changed is that
+                <code>&lt;details&gt;</code>,
+                <code>&lt;dialog&gt;</code>,
+                <code>:has()</code>,
+                subgrid, and container queries arrived between 2014 and 2023. Most
+                "JavaScript problems" were solved by HTML and CSS in the last
+                three years. The tutorials and Stack Overflow answers simply have
+                not caught up yet. The
+                <a href="https://almanac.httparchive.org/en/2023/javascript" target="_blank" rel="noopener">median page</a>
+                ships 500 KB of JavaScript. Rather a lot, for a document.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

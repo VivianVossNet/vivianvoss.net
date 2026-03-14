@@ -1,0 +1,195 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Quiet Web &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="The web got far too loud. Pop-overs, cookie banners, newsletter modals, autoplay, scroll-jacking. The native dialog element, content-visibility, and one preferences wizard solve it. Zero banners. Zero interruptions.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-quiet-web{( endslot )}
+
+{( slot og-title )}The Quiet Web &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The web got far too loud. Pop-overs, cookie banners, newsletter modals. The browser already has everything you need for a quieter experience. Zero libraries. Zero interruptions.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Quiet Web",
+    "datePublished": "2024-12-25",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-quiet-web",
+    "description": "The web got far too loud. Pop-overs, cookie banners, newsletter modals. The native dialog element and one preferences wizard replace every banner on your site.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2024-12-25">25 December 2024</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Quiet Web</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Lean Web</em> &#x25A0; Part 4</p>
+
+        <p>The web got far too loud.</p>
+
+        <p>Pop-overs yelling for attention. Cookie banners. Newsletter modals
+            before you have read a single sentence. Autoplay video. Scroll-jacking.
+            Somewhere underneath all of that: content.</p>
+
+        <p>Most of this noise is solvable. Elegantly.</p>
+
+        <h2>What the Browser Already Knows</h2>
+
+        <p>CSS <a href="https://web.dev/content-visibility/" target="_blank" rel="noopener"><code>content-visibility: auto</code></a>
+            renders only what is visible. No JavaScript required. The browser
+            skips layout and paint for everything below the fold until the user
+            scrolls to it.</p>
+
+        <p><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta/name#color-scheme" target="_blank" rel="noopener"><code>&lt;meta name="color-scheme"&gt;</code></a>
+            respects system preferences without a single line of JavaScript.
+            Dark mode. Light mode. The operating system already told the browser
+            what the user wants.</p>
+
+        <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener"><code>prefers-reduced-motion</code></a>
+            stops animating for those who asked. Not a progressive enhancement.
+            A basic courtesy that costs one media query.</p>
+
+        <h2>One Dialog. Zero Banners.</h2>
+
+        <p>If you must ask the user for preferences, build one dialog wizard.
+            Three steps. Slides left-to-right (right-to-left for RTL locales).
+            Clean, visual, asking everything once: cookies, theme, motion,
+            newsletter.</p>
+
+        <p>The native
+            <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog" target="_blank" rel="noopener"><code>&lt;dialog&gt;</code></a>
+            element provides the
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop" target="_blank" rel="noopener">backdrop</a>
+            for free. It blocks background interaction without a single line of
+            JavaScript. <code>showModal()</code> handles focus trapping
+            automatically. ESC closes it by default. Accessible out of the box.</p>
+
+        <svg id="quiet-web-flow" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison: noisy web (five sequential interruptions: cookie banner, newsletter popup, notification prompt, autoplay video, chat widget) versus quiet web (one dialog wizard, then content)." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #quiet-web-flow .qw-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #quiet-web-flow .qw-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #quiet-web-flow .qw-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #quiet-web-flow .qw-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #quiet-web-flow .qw-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #quiet-web-flow .qw-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #quiet-web-flow .qw-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #quiet-web-flow .qw-line { stroke: var(--muted); stroke-width: 1; }
+                #quiet-web-flow .qw-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+                #quiet-web-flow .qw-arrow { fill: var(--accent); }
+                #quiet-web-flow .qw-warn { fill: none; stroke: var(--muted); stroke-width: 1; rx: 3; }
+            </style>
+            <text class="qw-title" x="260" y="18" text-anchor="middle">Noise vs Quiet</text>
+            <!-- Top: Noisy web -->
+            <text class="qw-sub" x="20" y="52">The loud web</text>
+            <rect class="qw-warn" x="100" y="38" width="70" height="26"/>
+            <text class="qw-sub" x="135" y="55" text-anchor="middle">cookies</text>
+            <rect class="qw-warn" x="176" y="38" width="76" height="26"/>
+            <text class="qw-sub" x="214" y="55" text-anchor="middle">newsletter</text>
+            <rect class="qw-warn" x="258" y="38" width="80" height="26"/>
+            <text class="qw-sub" x="298" y="55" text-anchor="middle">notifications</text>
+            <rect class="qw-warn" x="344" y="38" width="64" height="26"/>
+            <text class="qw-sub" x="376" y="55" text-anchor="middle">autoplay</text>
+            <rect class="qw-warn" x="414" y="38" width="54" height="26"/>
+            <text class="qw-sub" x="441" y="55" text-anchor="middle">chat</text>
+            <text class="qw-sub" x="490" y="55">...</text>
+            <!-- Divider -->
+            <line class="qw-line" x1="20" y1="80" x2="500" y2="80" style="stroke-dasharray: 4,4;"/>
+            <!-- Bottom: Quiet web -->
+            <text class="qw-sub" x="20" y="120">The quiet web</text>
+            <rect class="qw-fill" x="100" y="100" width="120" height="40"/>
+            <rect class="qw-box-accent" x="100" y="100" width="120" height="40"/>
+            <text class="qw-accent" x="160" y="118" text-anchor="middle">&lt;dialog&gt;</text>
+            <text class="qw-sub" x="160" y="132" text-anchor="middle">all preferences once</text>
+            <line class="qw-line-accent" x1="220" y1="120" x2="280" y2="120"/>
+            <polygon class="qw-arrow" points="276,116 284,120 276,124"/>
+            <rect class="qw-fill" x="285" y="100" width="180" height="40"/>
+            <rect class="qw-box-accent" x="285" y="100" width="180" height="40"/>
+            <text class="qw-accent" x="375" y="118" text-anchor="middle">Content</text>
+            <text class="qw-sub" x="375" y="132" text-anchor="middle">uninterrupted</text>
+            <!-- Settings cog -->
+            <text class="qw-sub" x="160" y="160" text-anchor="middle">cog icon in menu = change anytime</text>
+        </svg>
+
+        <p>Store the preferences. Respect them. Done. Add a cog icon next to
+            your menu. Let users change their mind whenever they want, exactly
+            as every native application does. No more banners. No more
+            interruptions.</p>
+
+        <h2>The Native Toolkit</h2>
+
+        <p>Every feature listed above ships with every modern browser. No npm
+            packages. No framework. No build step.</p>
+
+        <pre><code>&lt;!-- System theme without JS --&gt;
+&lt;meta name="color-scheme" content="light dark"&gt;
+
+&lt;!-- Respect motion preferences --&gt;
+&lt;style&gt;
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+&lt;/style&gt;
+
+&lt;!-- One dialog, all preferences --&gt;
+&lt;dialog id="prefs"&gt;
+  &lt;!-- wizard steps here --&gt;
+&lt;/dialog&gt;
+&lt;script&gt;
+  document.getElementById('prefs').showModal();
+&lt;/script&gt;</code></pre>
+
+        <p>Focus trapping: automatic. Backdrop: built in. ESC to close:
+            default. Accessibility: handled. The browser does the work.
+            You write the content.</p>
+
+        <h2>The Quietest Websites Are Often the Fastest</h2>
+
+        <p>Every banner is a DOM node. Every modal is a layout recalculation.
+            Every autoplay video is bandwidth your user did not consent to.
+            Remove the noise and you remove the weight.</p>
+
+        <p>One dialog. Zero banners. Zero interruptions. Less noise. Same
+            information.</p>
+
+        <aside class="vv-aside">
+            <p>The native <code>&lt;dialog&gt;</code> element does everything
+                the banner industry sells: backdrop blocking, focus trapping,
+                ESC to close, accessibility by default. One line of JavaScript:
+                <code>showModal()</code>. The wizard approach asks everything
+                once instead of five banners in sequence. Store it, respect it,
+                never ask again.</p>
+            <p>For the curious: something possessed me to see how small a
+                template engine could be. The answer is
+                <a href="https://minline.run" target="_blank" rel="noopener">1,337 bytes</a>.
+                minline.js, plus minline.css for dark/light theming. Make of
+                that what you will.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

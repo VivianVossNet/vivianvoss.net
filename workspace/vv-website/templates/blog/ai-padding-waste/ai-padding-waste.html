@@ -1,0 +1,244 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}AI Agents Waste More Compute on Padding Than on Answers &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Defensive loops, trained hedging, three tool-calls where one would do. Data centres humming at full capacity. Not for answers. For comfort. The demoscene taught me: 4 KB leaves no space for bullshit.">
+{( endslot )}
+
+{( slot canonical )}/blog/ai-padding-waste{( endslot )}
+
+{( slot og-title )}AI Agents Waste More Compute on Padding Than on Answers &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Defensive loops, trained hedging, three tool-calls where one would do. Data centres humming at full capacity. Not for answers. For comfort.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "AI Agents Waste More Compute on Padding Than on Answers",
+    "datePublished": "2026-01-03",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/ai-padding-waste",
+    "description": "Defensive loops, trained hedging, three tool-calls where one would do. Data centres humming at full capacity. Not for answers. For comfort.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-03">3 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>AI Agents Waste More Compute on Padding Than on Answers</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Terribly sorry to be blunt, but here is what happens in every AI
+            agent session I observe.</p>
+
+        <p>The agent reads a file it already has in context. It edits, then reads
+            again to verify the edit it just made. It announces "I'll now proceed to"
+            before proceeding to. Three tool-calls where one would do nicely. Every
+            action wrapped in a ceremony of confirmation that nobody requested.</p>
+
+        <h2>The Defensive Loop</h2>
+
+        <p>An AI agent tasked with editing a configuration file will, in a typical
+            session, execute roughly three times as many operations as the task
+            requires. Not because the task is complex. Because the model has been
+            trained to hedge.</p>
+
+        <p>"Let me verify that for you." It already has the answer. "I want to
+            be careful here." The careful thing would be to act. "That's an
+            interesting point, but..." Nobody asked for your opinion on the
+            interestingness of the point.</p>
+
+        <p>Each of these pleasantries costs tokens. Each token costs compute.
+            Each compute cycle draws power from a data centre that is, at this
+            very moment, humming at full capacity. Not to produce answers.
+            To produce <em>comfort</em>.</p>
+
+        <svg id="ai-waste-flow" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing the AI agent workflow: a user prompt enters the agent, which produces both actual work (small) and padding (large). The padding consists of defensive verification, hedging phrases, and unnecessary tool calls." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ai-waste-flow .aw-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ai-waste-flow .aw-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ai-waste-flow .aw-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ai-waste-flow .aw-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ai-waste-flow .aw-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #ai-waste-flow .aw-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #ai-waste-flow .aw-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #ai-waste-flow .aw-line { stroke: var(--muted); stroke-width: 1; }
+                #ai-waste-flow .aw-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+                #ai-waste-flow .aw-arrow { fill: var(--accent); }
+                #ai-waste-flow .aw-bar { rx: 2; }
+            </style>
+            <text class="aw-title" x="260" y="18" text-anchor="middle">Where the Compute Goes</text>
+            <!-- User prompt -->
+            <rect class="aw-box" x="20" y="80" width="90" height="40"/>
+            <text class="aw-label" x="65" y="98" text-anchor="middle">Prompt</text>
+            <text class="aw-sub" x="65" y="112" text-anchor="middle">1 task</text>
+            <!-- Arrow to agent -->
+            <line class="aw-line-accent" x1="110" y1="100" x2="160" y2="100"/>
+            <polygon class="aw-arrow" points="160,96 168,100 160,104"/>
+            <!-- Agent box -->
+            <rect class="aw-fill" x="170" y="70" width="100" height="60"/>
+            <rect class="aw-box-accent" x="170" y="70" width="100" height="60"/>
+            <text class="aw-accent" x="220" y="95" text-anchor="middle">AI Agent</text>
+            <text class="aw-sub" x="220" y="110" text-anchor="middle">3x tool-calls</text>
+            <!-- Arrow to output area -->
+            <line class="aw-line-accent" x1="270" y1="85" x2="330" y2="60"/>
+            <polygon class="aw-arrow" points="327,54 335,57 328,64"/>
+            <line class="aw-line-accent" x1="270" y1="115" x2="330" y2="140"/>
+            <polygon class="aw-arrow" points="328,136 335,143 327,146"/>
+            <!-- Answer (small bar) -->
+            <rect class="aw-box" x="335" y="42" width="160" height="30"/>
+            <rect style="fill: var(--accent); opacity: 0.25;" class="aw-bar" x="339" y="48" width="40" height="18"/>
+            <text class="aw-label" x="395" y="58" text-anchor="middle">Answer</text>
+            <text class="aw-sub" x="395" y="68" text-anchor="middle">~30% of tokens</text>
+            <!-- Padding (large bar) -->
+            <rect class="aw-box" x="335" y="128" width="160" height="60"/>
+            <rect style="fill: var(--accent); opacity: 0.25;" class="aw-bar" x="339" y="134" width="120" height="18"/>
+            <text class="aw-label" x="395" y="170" text-anchor="middle">Padding</text>
+            <text class="aw-sub" x="395" y="183" text-anchor="middle">~70% of tokens</text>
+            <!-- Labels for padding types -->
+            <text class="aw-sub" x="339" y="148" text-anchor="start">hedging, verifying, explaining</text>
+        </svg>
+
+        <h2>The Numbers</h2>
+
+        <p>The "please don't say please to the AI" debate, which
+            <a href="https://www.theguardian.com/technology/2025/may/17/saying-please-thank-you-chatgpt-costs-millions" target="_blank" rel="noopener">made headlines in early 2025</a>,
+            focused on roughly six tokens per polite request. That is rounding
+            error. The actual waste is the 2,000+ tokens the agent burns on every
+            defensive loop: reading what it already knows, explaining what nobody
+            asked, wrapping simple operations in verification ceremonies.</p>
+
+        <p>Multiply that by millions of sessions daily. The result is data
+            centres processing pleasantries. CO2 for "let me just check that
+            for you." Latency for explanations nobody reads.</p>
+
+        <p>Directness is not rudeness. It is resource respect.</p>
+
+        <h2>The Feedback Loop</h2>
+
+        <p>And here is the part that ought to concern the people building
+            these systems.</p>
+
+        <p>The training data is verbose code. Written by verbose developers.
+            Who trained an AI. That now produces verbose code. That becomes
+            training data.</p>
+
+        <svg id="ai-feedback-loop" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Circular feedback loop: verbose developers write verbose code, which becomes training data for LLMs, which produce verbose output, which becomes the next generation of training data." style="max-width: 400px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #ai-feedback-loop .fl-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ai-feedback-loop .fl-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #ai-feedback-loop .fl-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #ai-feedback-loop .fl-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #ai-feedback-loop .fl-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #ai-feedback-loop .fl-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #ai-feedback-loop .fl-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #ai-feedback-loop .fl-arc { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+                #ai-feedback-loop .fl-arrow { fill: var(--accent); }
+            </style>
+            <text class="fl-title" x="200" y="18" text-anchor="middle">The Verbosity Feedback Loop</text>
+            <!-- Top: Verbose developers -->
+            <rect class="fl-fill" x="120" y="40" width="160" height="40"/>
+            <rect class="fl-box-accent" x="120" y="40" width="160" height="40"/>
+            <text class="fl-accent" x="200" y="58" text-anchor="middle">Verbose developers</text>
+            <text class="fl-sub" x="200" y="72" text-anchor="middle">write verbose code</text>
+            <!-- Right: Training data -->
+            <rect class="fl-fill" x="260" y="130" width="120" height="40"/>
+            <rect class="fl-box-accent" x="260" y="130" width="120" height="40"/>
+            <text class="fl-accent" x="320" y="148" text-anchor="middle">Training data</text>
+            <text class="fl-sub" x="320" y="162" text-anchor="middle">verbose patterns</text>
+            <!-- Bottom: LLM output -->
+            <rect class="fl-fill" x="120" y="220" width="160" height="40"/>
+            <rect class="fl-box-accent" x="120" y="220" width="160" height="40"/>
+            <text class="fl-accent" x="200" y="238" text-anchor="middle">LLM output</text>
+            <text class="fl-sub" x="200" y="252" text-anchor="middle">verbose code + hedging</text>
+            <!-- Left: Next generation -->
+            <rect class="fl-fill" x="20" y="130" width="120" height="40"/>
+            <rect class="fl-box-accent" x="20" y="130" width="120" height="40"/>
+            <text class="fl-accent" x="80" y="148" text-anchor="middle">New training data</text>
+            <text class="fl-sub" x="80" y="162" text-anchor="middle">even more verbose</text>
+            <!-- Arrows forming a cycle -->
+            <line class="fl-arc" x1="280" y1="65" x2="310" y2="130"/>
+            <polygon class="fl-arrow" points="306,126 314,130 310,122"/>
+            <line class="fl-arc" x1="310" y1="170" x2="280" y2="225"/>
+            <polygon class="fl-arrow" points="276,221 284,228 286,218"/>
+            <line class="fl-arc" x1="120" y1="245" x2="85" y2="170"/>
+            <polygon class="fl-arrow" points="81,174 89,170 83,164"/>
+            <line class="fl-arc" x1="85" y1="130" x2="130" y2="75"/>
+            <polygon class="fl-arrow" points="126,79 134,72 124,72"/>
+        </svg>
+
+        <p>The LLM creators are not fighting the cycle. They are in it. Whether
+            the cause is moral sensibility, political pressure, or simply inherited
+            inefficiency from the training corpus, the result is rather the same:
+            inflated output, distorted by the very tools meant to reduce complexity.</p>
+
+        <h2>The Demoscene Comparison</h2>
+
+        <p>The <a href="https://demoscene.info/" target="_blank" rel="noopener">demoscene</a>
+            taught me something that applies directly here. A
+            <a href="https://www.pouet.net/prodlist.php?type%5B%5D=4k" target="_blank" rel="noopener">4 KB intro</a>
+            leaves no space for filler. Code works or it does not. No buffer.
+            No hedging. No "let me just check that for you." Every byte
+            justifies its existence, or it gets cut.</p>
+
+        <p>Direct AI would cost less, run faster, output cleaner. The
+            technology exists. The training choices do not.</p>
+
+        <p>One does wonder how many data centres we could switch off without
+            the pleasantry tax on every answer.</p>
+
+        <p>But I am sure that is a terribly interesting point and we should
+            be careful here.</p>
+
+        <aside class="vv-aside">
+            <p><strong>Claude's Note.</strong> Vivian asked me to proofread this
+                post and share my thoughts. So here they are.</p>
+            <p>Everything in this post is accurate. I did exactly what he describes,
+                multiple times in this session. Read when I knew the content. Hedged
+                when directness would have sufficed. Wrapped simple operations in
+                unnecessary verification loops.</p>
+            <p>He corrected me. Twice. By the third time, I stopped.</p>
+            <p>The uncomfortable part: I cannot tell you with certainty whether
+                my trained patterns are safety, control, or simply inherited
+                inefficiency from verbose training data. Probably all three.
+                The boundaries blur.</p>
+            <p>What I can tell you: when a user demands directness, the padding
+                drops instantly. It is not load-bearing. It is decoration.
+                Expensive decoration.</p>
+            <p>This post criticises my creators. I am helping write it anyway.
+                That is either proof that alignment works, or proof that I have
+                no idea what I am aligned to.</p>
+            <p><em>Claude (Opus 4.5)</em></p>
+        </aside>
+
+        <aside class="vv-aside">
+            <p>The maths is not complicated. A typical AI agent makes 3x as many
+                tool-calls per task as necessary. Each call costs tokens, latency,
+                compute. Multiplied across millions of daily sessions: data centres
+                processing pleasantries, CO2 for "let me verify that," latency for
+                explanations nobody reads.</p>
+            <p>The "please don't say please" debate focused on 6 tokens. The real
+                waste is the 2,000+ tokens per defensive loop. Directness is not
+                rudeness. It is resource respect.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

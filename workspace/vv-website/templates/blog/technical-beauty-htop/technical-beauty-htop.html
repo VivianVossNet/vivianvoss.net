@@ -1,0 +1,155 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}htop: 20 Years of Treating the Terminal as a Canvas &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 2004, Hisham Muhammad looked at top and saw a tool from 1984 pretending the terminal was still a teletype. One binary replaced an entire workflow: top, ps, grep, kill, renice, lsof. 12,000 lines of C. Zero configuration.">
+{( endslot )}
+
+{( slot canonical )}/blog/technical-beauty-htop{( endslot )}
+
+{( slot og-title )}htop: 20 Years of Treating the Terminal as a Canvas &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}In 2004, Hisham Muhammad looked at top and saw a tool from 1984 pretending the terminal was still a teletype. One binary. Zero configuration. Every process at your fingertips.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "htop: 20 Years of Treating the Terminal as a Canvas",
+    "datePublished": "2026-01-08",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/technical-beauty-htop",
+    "description": "In 2004, Hisham Muhammad looked at top and saw a tool from 1984 pretending the terminal was still a teletype. One binary replaced an entire workflow.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-01-08">8 January 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>htop: 20 Years of Treating the Terminal as a Canvas</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">freebsd</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 14</p>
+
+        <p>In 2004,
+            <a href="https://hisham.hm/" target="_blank" rel="noopener">Hisham Muhammad</a>
+            looked at <code>top</code> and saw a tool from 1984 pretending the
+            terminal was still a teletype. No colours. No scrolling. No mouse.
+            Process IDs memorised and typed by hand.</p>
+
+        <p>His solution was straightforward: treat the terminal as what it had
+            become. An interactive canvas.</p>
+
+        <h2>One Tool, Five Workflows</h2>
+
+        <p><code>htop</code> did not invent process monitoring. It consolidated
+            an entire workflow into a single binary:</p>
+
+        <ul>
+            <li><code>top</code>, but scrollable, coloured, and interactive</li>
+            <li><code>ps aux | grep</code>, but with live filtering</li>
+            <li><code>kill -9 PID</code>, but with F9 and a menu</li>
+            <li><code>renice</code>, but with a single keypress</li>
+            <li><code>lsof</code>, but integrated into the tree view</li>
+        </ul>
+
+        <p>You no longer memorised PIDs. You pointed at them. In a terminal.
+            In 2004. Rather ahead of the curve, that.</p>
+
+        <svg id="htop-compare" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison: top (1984) shows a static teletype view. htop (2004) shows an interactive canvas with colour, scrolling, mouse, tree view, and live filtering." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #htop-compare .hc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #htop-compare .hc-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #htop-compare .hc-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #htop-compare .hc-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #htop-compare .hc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #htop-compare .hc-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #htop-compare .hc-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #htop-compare .hc-line { stroke: var(--muted); stroke-width: 1; }
+                #htop-compare .hc-arrow { fill: var(--accent); }
+                #htop-compare .hc-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+            </style>
+            <text class="hc-title" x="260" y="18" text-anchor="middle">top (1984) vs htop (2004)</text>
+            <!-- top box -->
+            <rect class="hc-box" x="30" y="40" width="200" height="160"/>
+            <text class="hc-accent" x="130" y="62" text-anchor="middle">top</text>
+            <text class="hc-sub" x="130" y="80" text-anchor="middle">Static output</text>
+            <text class="hc-sub" x="130" y="96" text-anchor="middle">No scrolling</text>
+            <text class="hc-sub" x="130" y="112" text-anchor="middle">No colour</text>
+            <text class="hc-sub" x="130" y="128" text-anchor="middle">No mouse</text>
+            <text class="hc-sub" x="130" y="144" text-anchor="middle">Type PIDs manually</text>
+            <text class="hc-sub" x="130" y="164" text-anchor="middle">~4,900 LOC</text>
+            <text class="hc-sub" x="130" y="186" text-anchor="middle">1984</text>
+            <!-- Arrow -->
+            <line class="hc-line-accent" x1="240" y1="120" x2="278" y2="120"/>
+            <polygon class="hc-arrow" points="278,116 286,120 278,124"/>
+            <!-- htop box -->
+            <rect class="hc-fill" x="290" y="40" width="200" height="160"/>
+            <rect class="hc-box-accent" x="290" y="40" width="200" height="160"/>
+            <text class="hc-accent" x="390" y="62" text-anchor="middle">htop</text>
+            <text class="hc-sub" x="390" y="80" text-anchor="middle">Interactive canvas</text>
+            <text class="hc-sub" x="390" y="96" text-anchor="middle">Scroll + tree view</text>
+            <text class="hc-sub" x="390" y="112" text-anchor="middle">Per-core CPU bars</text>
+            <text class="hc-sub" x="390" y="128" text-anchor="middle">Mouse support</text>
+            <text class="hc-sub" x="390" y="144" text-anchor="middle">Point, click, kill</text>
+            <text class="hc-sub" x="390" y="164" text-anchor="middle">~12,000 LOC</text>
+            <text class="hc-sub" x="390" y="186" text-anchor="middle">2004</text>
+        </svg>
+
+        <h2>The Numbers</h2>
+
+        <p>12,000 lines of C.
+            <a href="https://github.com/htop-dev/htop" target="_blank" rel="noopener">Open source</a>.
+            Runs on FreeBSD, Linux, macOS, OpenBSD, Solaris. Ships in every
+            major distribution. Zero configuration required. Zero dependencies
+            beyond ncurses.</p>
+
+        <p><code>top</code> still ships by default. <code>htop</code> still
+            gets installed first. Some tools earn their place not by being
+            mandatory, but by being indispensable.</p>
+
+        <h2>The Handover</h2>
+
+        <p>In 2020, after sixteen years of solo maintenance, Hisham stepped back.
+            The community forked amicably. The
+            <a href="https://htop.dev/" target="_blank" rel="noopener">htop-dev</a>
+            team continues the legacy.</p>
+
+        <p>This is a rare thing in open source: a healthy transition. The
+            maintainer was not abandoned, not burned out and left behind.
+            He handed over, and the project continued. One might call that a
+            design endorsement for the codebase itself. Sixteen years of solo
+            maintenance, and the code was clean enough for strangers to pick up.</p>
+
+        <aside class="vv-aside">
+            <p><strong>Hisham Muhammad.</strong> Built htop (2004), LuaRocks
+                (the Lua package manager), and co-founded
+                <a href="https://en.wikipedia.org/wiki/GoboLinux" target="_blank" rel="noopener">GoboLinux</a>.
+                The
+                <a href="https://changelog.com/podcast/413" target="_blank" rel="noopener">Changelog podcast</a>
+                titled his episode "How open source saved htop." Rather fitting.
+                The man built three projects that outlasted most startups, then
+                stepped back when the time was right. Quietly productive.
+                Frightfully rare.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}
