@@ -118,6 +118,7 @@ local pages = {
     { loc = "/blog/ai-padding-waste",              priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-mvc-myth",                  priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-quiet-web",                 priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-nextjs-tax",              priority = "0.7", changefreq = "yearly" },
 }
 
 function route()

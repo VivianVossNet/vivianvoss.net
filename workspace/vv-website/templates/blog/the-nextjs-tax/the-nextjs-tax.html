@@ -1,0 +1,432 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Next.js Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="React ships 136 KB to the browser. Next.js promised to fix that. A fresh project: 247 MB of node_modules. 87 KB of client runtime before your first line of code. The server renders HTML, sends it, and the client rebuilds it from scratch. They call this hydration. PHP calls it unnecessary.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-nextjs-tax{( endslot )}
+
+{( slot og-title )}The Next.js Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}React ships 136 KB. Next.js promised to fix that. 247 MB of node_modules, 87 KB client runtime, and a build tool rewritten in Rust because JavaScript was too slow to bundle JavaScript.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Next.js Tax",
+    "datePublished": "2026-03-15",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-nextjs-tax",
+    "description": "React ships 136 KB to the browser. Next.js promised to fix that. A fresh project: 247 MB of node_modules. 87 KB client runtime. The server renders HTML, then the client rebuilds it from scratch.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-15">15 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Next.js Tax</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">react</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">node</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Performance-Fresser</em> &#x25A0; Episode 17</p>
+
+        <p>React ships 136 KB to the browser. Next.js promised to fix that.</p>
+
+        <p>A fresh Next.js project: 247 MB of <code>node_modules</code>. The
+            App Router ships 87 KB of client runtime before your first line
+            of code executes.</p>
+
+        <p>One does admire a solution that outweighs its problem by a factor
+            of two million.</p>
+
+        <h2>The Server Detour</h2>
+
+        <p>JavaScript was built for the browser. Next.js moved it to the
+            server: Server Components, Server Actions, Middleware. The pitch
+            is compelling. Render on the server, send HTML, skip the client
+            cost. Elegant in theory.</p>
+
+        <p>In practice, the server renders your HTML. Sends it. The browser
+            displays it. Finished? No. React downloads the runtime, parses
+            it, attaches event handlers, and rebuilds the entire component
+            tree in memory. They call this
+            <a href="https://react.dev/reference/react-dom/client/hydrateRoot" target="_blank" rel="noopener">hydration</a>.
+            The server did the work. The client does it again.</p>
+
+        <p>Twice the cost for the privilege of using JavaScript where PHP
+            would have returned the page and moved on.</p>
+
+        <svg id="nextjs-hydration" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hydration flow: server renders HTML, sends it to the browser. Browser displays it, then downloads 87 KB of React runtime, parses it, and rebuilds the component tree. Two rendering passes for one page." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #nextjs-hydration .nh-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nextjs-hydration .nh-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #nextjs-hydration .nh-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #nextjs-hydration .nh-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nextjs-hydration .nh-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #nextjs-hydration .nh-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #nextjs-hydration .nh-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #nextjs-hydration .nh-line { stroke: var(--muted); stroke-width: 1; }
+                #nextjs-hydration .nh-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+                #nextjs-hydration .nh-arrow { fill: var(--accent); }
+                #nextjs-hydration .nh-divider { stroke: var(--border); stroke-width: 1; stroke-dasharray: 4,4; }
+            </style>
+            <text class="nh-title" x="260" y="18" text-anchor="middle">The Hydration Tax</text>
+
+            <!-- Server side -->
+            <text class="nh-accent" x="20" y="50">Server</text>
+            <text class="nh-sub" x="20" y="64">renders HTML once</text>
+
+            <rect class="nh-fill" x="30" y="84" width="90" height="36"/>
+            <rect class="nh-box-accent" x="30" y="84" width="90" height="36"/>
+            <text class="nh-label" x="75" y="106" text-anchor="middle">Render</text>
+
+            <line class="nh-line-accent" x1="120" y1="102" x2="180" y2="102"/>
+            <polygon class="nh-arrow" points="176,98 184,102 176,106"/>
+
+            <rect class="nh-box" x="185" y="84" width="90" height="36"/>
+            <text class="nh-label" x="230" y="106" text-anchor="middle">Send HTML</text>
+
+            <line class="nh-line-accent" x1="275" y1="102" x2="335" y2="102"/>
+            <polygon class="nh-arrow" points="331,98 339,102 331,106"/>
+
+            <rect class="nh-box" x="340" y="84" width="90" height="36"/>
+            <text class="nh-label" x="385" y="100" text-anchor="middle">Display</text>
+            <text class="nh-sub" x="385" y="112" text-anchor="middle">visible</text>
+
+            <!-- Divider -->
+            <line class="nh-divider" x1="20" y1="140" x2="500" y2="140"/>
+
+            <!-- Client side -->
+            <text class="nh-accent" x="20" y="168">Client</text>
+            <text class="nh-sub" x="20" y="182">rebuilds everything</text>
+
+            <rect class="nh-box" x="30" y="202" width="80" height="36"/>
+            <text class="nh-label" x="70" y="218" text-anchor="middle">Download</text>
+            <text class="nh-sub" x="70" y="230" text-anchor="middle">87 KB</text>
+
+            <line class="nh-line-accent" x1="110" y1="220" x2="145" y2="220"/>
+            <polygon class="nh-arrow" points="141,216 149,220 141,224"/>
+
+            <rect class="nh-box" x="150" y="202" width="80" height="36"/>
+            <text class="nh-label" x="190" y="224" text-anchor="middle">Parse</text>
+
+            <line class="nh-line-accent" x1="230" y1="220" x2="265" y2="220"/>
+            <polygon class="nh-arrow" points="261,216 269,220 261,224"/>
+
+            <rect class="nh-box" x="270" y="202" width="80" height="36"/>
+            <text class="nh-label" x="310" y="218" text-anchor="middle">Rebuild</text>
+            <text class="nh-sub" x="310" y="230" text-anchor="middle">tree</text>
+
+            <line class="nh-line-accent" x1="350" y1="220" x2="385" y2="220"/>
+            <polygon class="nh-arrow" points="381,216 389,220 381,224"/>
+
+            <rect class="nh-fill" x="390" y="202" width="80" height="36"/>
+            <rect class="nh-box-accent" x="390" y="202" width="80" height="36"/>
+            <text class="nh-label" x="430" y="218" text-anchor="middle">Hydrate</text>
+            <text class="nh-sub" x="430" y="230" text-anchor="middle">interactive</text>
+
+            <text class="nh-sub" x="260" y="264" text-anchor="middle">two renders for one page</text>
+
+            <!-- PHP comparison -->
+            <text class="nh-accent" x="20" y="290">PHP</text>
+            <text class="nh-sub" x="50" y="290">Render. Send. Done. One pass.</text>
+        </svg>
+
+        <p>This is not a strawman. This is the documented architecture. The
+            page is visually complete after the server response. The user sees
+            it. But until hydration finishes, nothing is interactive. Buttons
+            do not click. Forms do not submit. Links sometimes work, sometimes
+            do not. The industry coined a term for this: the
+            <em>uncanny valley of interactivity</em>.</p>
+
+        <h2>The Build</h2>
+
+        <p>Developers report production builds
+            <a href="https://github.com/vercel/next.js/discussions/34961" target="_blank" rel="noopener">exceeding 30 minutes</a>.
+            Dev mode:
+            <a href="https://github.com/vercel/next.js/issues/48748" target="_blank" rel="noopener">60 seconds for the first page</a>.
+            15 to 20 seconds per code change. One GitHub issue documents a
+            <a href="https://github.com/vercel/next.js/issues/63315" target="_blank" rel="noopener">15x slowdown</a>
+            between versions.</p>
+
+        <p>The fix:
+            <a href="https://vercel.com/blog/turbopack" target="_blank" rel="noopener">Turbopack</a>.
+            A bundler rewritten in Rust. Announced October 2022.
+            <a href="https://nextjs.org/blog/turbopack-for-development-stable" target="_blank" rel="noopener">Stable in 2025</a>.
+            Three years to fix the build tool of the framework that was
+            supposed to fix React.</p>
+
+        <p>They chose Rust because JavaScript was too slow to bundle
+            JavaScript. One rather appreciates the confession embedded
+            in that decision.</p>
+
+        <svg id="nextjs-build" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Build performance comparison: Webpack dev server 60 seconds initial, 15 to 20 seconds per change. Turbopack dev server 2 seconds initial, sub-second changes. Three years of development to fix the build tool." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #nextjs-build .nb-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nextjs-build .nb-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #nextjs-build .nb-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #nextjs-build .nb-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nextjs-build .nb-bar { fill: var(--border); rx: 3; }
+                #nextjs-build .nb-bar-accent { fill: var(--accent); opacity: 0.25; rx: 3; }
+                #nextjs-build .nb-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text class="nb-title" x="260" y="18" text-anchor="middle">Dev Server: First Page Load</text>
+
+            <!-- Webpack bar -->
+            <text class="nb-label" x="20" y="60">Webpack</text>
+            <rect class="nb-bar" x="100" y="46" width="380" height="22"/>
+            <text class="nb-accent" x="490" y="62">60s</text>
+
+            <!-- Turbopack bar -->
+            <text class="nb-label" x="20" y="100">Turbopack</text>
+            <rect class="nb-bar-accent" x="100" y="86" width="13" height="22"/>
+            <text class="nb-accent" x="120" y="102">2s</text>
+
+            <!-- Per-change -->
+            <text class="nb-title" x="260" y="140" text-anchor="middle">Per Code Change</text>
+
+            <text class="nb-label" x="20" y="170">Webpack</text>
+            <rect class="nb-bar" x="100" y="156" width="190" height="22"/>
+            <text class="nb-accent" x="300" y="172">15-20s</text>
+
+            <text class="nb-label" x="20" y="198">Turbopack</text>
+            <rect class="nb-bar-accent" x="100" y="186" width="6" height="22"/>
+            <text class="nb-accent" x="112" y="200">&lt;1s</text>
+        </svg>
+
+        <h2>The Lock</h2>
+
+        <p><code>next/image</code> requires
+            <a href="https://medium.com/@ss-tech/the-next-js-vendor-lock-in-architecture-a0035e66dc18" target="_blank" rel="noopener">Vercel's image pipeline</a>.
+            ISR persists to Vercel's edge, not your filesystem. Middleware
+            runs on Vercel's edge network. Self-host, and you are rebuilding
+            what the framework quietly assumes Vercel provides.</p>
+
+        <p>The
+            <a href="https://eduardoboucas.com/posts/2025-03-25-you-should-know-this-before-choosing-nextjs" target="_blank" rel="noopener">Build Output API</a>
+            has existed for three years. The framework is still not portable.
+            Cloudflare and Netlify created
+            <a href="https://thenewstack.io/vercel-makes-changes-to-next-js-to-simplify-self-hosting/" target="_blank" rel="noopener">OpenNext</a>,
+            an open-source adapter project, because the framework's
+            maintainer would not.</p>
+
+        <p>An open-source project that requires a coalition of competitors
+            to become truly open. Rather novel governance, that.</p>
+
+        <svg id="nextjs-lock" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vercel lock-in diagram: next/image depends on Vercel image pipeline, ISR depends on Vercel edge storage, Middleware depends on Vercel edge runtime. Self-hosting requires rebuilding all three." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #nextjs-lock .nl-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nextjs-lock .nl-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #nextjs-lock .nl-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #nextjs-lock .nl-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nextjs-lock .nl-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #nextjs-lock .nl-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #nextjs-lock .nl-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #nextjs-lock .nl-line { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4,4; }
+                #nextjs-lock .nl-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+                #nextjs-lock .nl-arrow { fill: var(--accent); }
+            </style>
+            <text class="nl-title" x="260" y="18" text-anchor="middle">The Vercel Dependency Graph</text>
+
+            <!-- Next.js features on the left -->
+            <rect class="nl-box" x="20" y="48" width="120" height="34"/>
+            <text class="nl-label" x="80" y="68" text-anchor="middle">next/image</text>
+
+            <rect class="nl-box" x="20" y="102" width="120" height="34"/>
+            <text class="nl-label" x="80" y="122" text-anchor="middle">ISR</text>
+
+            <rect class="nl-box" x="20" y="156" width="120" height="34"/>
+            <text class="nl-label" x="80" y="176" text-anchor="middle">Middleware</text>
+
+            <!-- Arrows -->
+            <line class="nl-line-accent" x1="140" y1="65" x2="240" y2="65"/>
+            <polygon class="nl-arrow" points="236,61 244,65 236,69"/>
+
+            <line class="nl-line-accent" x1="140" y1="119" x2="240" y2="119"/>
+            <polygon class="nl-arrow" points="236,115 244,119 236,123"/>
+
+            <line class="nl-line-accent" x1="140" y1="173" x2="240" y2="173"/>
+            <polygon class="nl-arrow" points="236,169 244,173 236,177"/>
+
+            <!-- Vercel services on the right -->
+            <rect class="nl-fill" x="245" y="48" width="160" height="34"/>
+            <rect class="nl-box-accent" x="245" y="48" width="160" height="34"/>
+            <text class="nl-accent" x="325" y="68" text-anchor="middle">Vercel Image Pipeline</text>
+
+            <rect class="nl-fill" x="245" y="102" width="160" height="34"/>
+            <rect class="nl-box-accent" x="245" y="102" width="160" height="34"/>
+            <text class="nl-accent" x="325" y="122" text-anchor="middle">Vercel Edge Storage</text>
+
+            <rect class="nl-fill" x="245" y="156" width="160" height="34"/>
+            <rect class="nl-box-accent" x="245" y="156" width="160" height="34"/>
+            <text class="nl-accent" x="325" y="176" text-anchor="middle">Vercel Edge Runtime</text>
+
+            <!-- Self-host note -->
+            <text class="nl-sub" x="260" y="210" text-anchor="middle">self-host = rebuild all three yourself</text>
+        </svg>
+
+        <h2>The Retreat</h2>
+
+        <p><a href="https://northflank.com/blog/why-we-ditched-next-js-and-never-looked-back" target="_blank" rel="noopener">Northflank</a>
+            removed Next.js. Custom React SSR. First Contentful Paint:
+            2.1 seconds to 0.5. Largest Contentful Paint: 5.1 seconds to
+            0.8. Speed Index: 8.4 seconds to 1.7. Six times faster by
+            removing the framework.</p>
+
+        <p><a href="https://documenso.com/blog/why-we-moved-off-next-js" target="_blank" rel="noopener">Documenso</a>
+            left for React Router and Vite. Server Actions were opaque.
+            Builds failed without explanation. After the migration:
+            development "practically indistinguishable from production."</p>
+
+        <p>The
+            <a href="https://2024.stateofjs.com/en-US/libraries/" target="_blank" rel="noopener">State of JavaScript</a>
+            survey tells the broader story: Next.js positive sentiment
+            dropped from 80% to below 60%. Usage remains high. Satisfaction
+            does not. One recognises that pattern from
+            <a href="/blog/jira">Jira</a>.</p>
+
+        <svg id="nextjs-retreat" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Performance gains after removing Next.js. Northflank: FCP from 2.1 to 0.5 seconds, LCP from 5.1 to 0.8 seconds, Speed Index from 8.4 to 1.7 seconds." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #nextjs-retreat .nr-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nextjs-retreat .nr-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #nextjs-retreat .nr-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #nextjs-retreat .nr-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nextjs-retreat .nr-bar { fill: var(--border); rx: 3; }
+                #nextjs-retreat .nr-bar-accent { fill: var(--accent); opacity: 0.25; rx: 3; }
+            </style>
+            <text class="nr-title" x="260" y="18" text-anchor="middle">Northflank: After Removing Next.js</text>
+
+            <!-- FCP -->
+            <text class="nr-sub" x="20" y="54">FCP</text>
+            <rect class="nr-bar" x="60" y="40" width="168" height="20"/>
+            <text class="nr-label" x="236" y="54">2.1s</text>
+            <rect class="nr-bar-accent" x="60" y="64" width="40" height="20"/>
+            <text class="nr-accent" x="108" y="78">0.5s</text>
+
+            <!-- LCP -->
+            <text class="nr-sub" x="20" y="112">LCP</text>
+            <rect class="nr-bar" x="60" y="98" width="408" height="20"/>
+            <text class="nr-label" x="476" y="112">5.1s</text>
+            <rect class="nr-bar-accent" x="60" y="122" width="64" height="20"/>
+            <text class="nr-accent" x="132" y="136">0.8s</text>
+
+            <!-- Speed Index -->
+            <text class="nr-sub" x="20" y="168">SI</text>
+            <rect class="nr-bar" x="60" y="156" width="400" height="20"/>
+            <text class="nr-label" x="468" y="168">8.4s</text>
+        </svg>
+
+        <h2>The Layer Cake</h2>
+
+        <p>Consider the archaeology of decisions that led here:</p>
+
+        <p>React added a runtime to the browser. Next.js added that runtime
+            to the server. Then shipped it back to the browser. Then rewrote
+            the bundler in another language because the original language was
+            too slow to process itself. Then locked the result to one
+            deployment platform.</p>
+
+        <p>Each layer solves the previous layer's problem. Not one of them
+            asks whether the first layer was necessary.</p>
+
+        <svg id="nextjs-layers" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Layer diagram: React adds a browser runtime. Next.js adds that runtime to the server. Hydration sends it back to the browser. Turbopack rewrites the bundler in Rust. Vercel locks it to one platform. Each layer solves the previous layer's problem." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #nextjs-layers .nly-label { font: 600 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nextjs-layers .nly-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #nextjs-layers .nly-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #nextjs-layers .nly-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #nextjs-layers .nly-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #nextjs-layers .nly-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #nextjs-layers .nly-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #nextjs-layers .nly-line { stroke: var(--muted); stroke-width: 1; }
+                #nextjs-layers .nly-arrow { fill: var(--muted); }
+            </style>
+            <text class="nly-title" x="260" y="18" text-anchor="middle">Each Layer Solves the Previous Layer</text>
+
+            <rect class="nly-box" x="20" y="40" width="90" height="42"/>
+            <text class="nly-label" x="65" y="58" text-anchor="middle">React</text>
+            <text class="nly-sub" x="65" y="72" text-anchor="middle">browser runtime</text>
+
+            <line class="nly-line" x1="110" y1="61" x2="125" y2="61"/>
+            <polygon class="nly-arrow" points="121,57 129,61 121,65"/>
+
+            <rect class="nly-box" x="130" y="40" width="90" height="42"/>
+            <text class="nly-label" x="175" y="58" text-anchor="middle">Next.js</text>
+            <text class="nly-sub" x="175" y="72" text-anchor="middle">server runtime</text>
+
+            <line class="nly-line" x1="220" y1="61" x2="235" y2="61"/>
+            <polygon class="nly-arrow" points="231,57 239,61 231,65"/>
+
+            <rect class="nly-box" x="240" y="40" width="90" height="42"/>
+            <text class="nly-label" x="285" y="58" text-anchor="middle">Hydration</text>
+            <text class="nly-sub" x="285" y="72" text-anchor="middle">back to browser</text>
+
+            <line class="nly-line" x1="330" y1="61" x2="345" y2="61"/>
+            <polygon class="nly-arrow" points="341,57 349,61 341,65"/>
+
+            <rect class="nly-box" x="350" y="40" width="90" height="42"/>
+            <text class="nly-label" x="395" y="58" text-anchor="middle">Turbopack</text>
+            <text class="nly-sub" x="395" y="72" text-anchor="middle">rewrite in Rust</text>
+
+            <line class="nly-line" x1="440" y1="61" x2="455" y2="61"/>
+            <polygon class="nly-arrow" points="451,57 459,61 451,65"/>
+
+            <rect class="nly-fill" x="460" y="40" width="50" height="42"/>
+            <rect class="nly-box-accent" x="460" y="40" width="50" height="42"/>
+            <text class="nly-label" x="485" y="58" text-anchor="middle">Vercel</text>
+            <text class="nly-sub" x="485" y="72" text-anchor="middle">lock-in</text>
+
+            <!-- Bottom question -->
+            <text class="nly-sub" x="260" y="110" text-anchor="middle">was the first layer necessary?</text>
+
+            <!-- Simple alternative -->
+            <rect class="nly-fill" x="150" y="140" width="220" height="42"/>
+            <rect class="nly-box-accent" x="150" y="140" width="220" height="42"/>
+            <text class="nly-accent" x="260" y="158" text-anchor="middle">Server renders HTML. Done.</text>
+            <text class="nly-sub" x="260" y="172" text-anchor="middle">one layer. one pass. zero hydration.</text>
+        </svg>
+
+        <h2>The Receipts</h2>
+
+        <p>You wanted a faster React. You got a deployment platform with
+            a framework attached. The receipts are public: 30-minute
+            builds, 87 KB runtime floors, hydration that doubles every
+            render, and vendor lock-in disguised as developer experience.</p>
+
+        <p>The alternative is not complicated. It is the thing the web
+            already does: the server renders HTML, the browser displays
+            it, and nobody has to do anything twice.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The numbers, for the arithmetically inclined.</strong>
+                87 KB client runtime (App Router minimum). 247 MB
+                <code>node_modules</code> for a fresh project. Build times
+                reported at 30+ minutes. Dev mode: 60 seconds for the first
+                page, 15-20 seconds per change. Northflank measured a 6x
+                performance improvement by removing Next.js entirely.
+                State of JavaScript 2024: positive sentiment below 60%,
+                down from 80%. Usage remains high. Rather familiar pattern.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}
