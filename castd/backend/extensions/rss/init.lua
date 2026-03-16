@@ -4,6 +4,7 @@
 local SITE = "https://vivianvoss.net"
 
 local articles = {
+    { date = "Mon, 16 Mar 2026 00:00:00 GMT", title = "The Origin", loc = "/blog/the-unix-origins", desc = "In 1969, Ken Thompson wanted to play Space Travel. The mainframe cost $75 per session. So he found a PDP-7 with 9 KB of memory and built an operating system. Its descendants run most of the world." },
     { date = "Sun, 15 Mar 2026 00:00:00 GMT", title = "The Next.js Tax", loc = "/blog/the-nextjs-tax", desc = "React ships 136 KB to the browser. Next.js promised to fix that. 247 MB of node_modules, 87 KB client runtime, hydration that doubles every render, and vendor lock-in disguised as developer experience." },
     { date = "Sat, 14 Mar 2026 00:00:00 GMT", title = "The Early Access Alibi", loc = "/blog/the-early-access-alibi", desc = "Early access was invented so a solo developer in Stockholm could finish a game about mining blocks. Then publishers noticed. They copied the label. Not the honesty. 25,000 jobs lost at record revenue." },
     { date = "Fri, 13 Mar 2026 00:00:00 GMT", title = "Jira: The Workflow Tax", loc = "/blog/jira", desc = "You wanted to track bugs. You got a bureaucracy engine with custom fields nobody remembers creating and workflows nobody dares to simplify. 68% of new users overwhelmed. 1-4 seconds per issue. 883 sites deleted. The Jira invoice, itemised." },

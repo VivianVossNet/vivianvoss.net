@@ -1,0 +1,568 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Origin &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 1969, a developer at Bell Labs wanted to play a video game. The computer he needed cost $75 per session. So he found a PDP-7 with 9 KB of memory in a corner and built an operating system. Its descendants run most of the world. Rather good return on a video game.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-unix-origins{( endslot )}
+
+{( slot og-title )}The Origin &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}In 1969, Ken Thompson wanted to play Space Travel. The mainframe cost $75 per session. So he built Unix on 9 KB. Its descendants run the planet. Rather good return on a video game.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Origin",
+    "datePublished": "2026-03-16",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-unix-origins",
+    "description": "In 1969, a developer at Bell Labs wanted to play a video game. The computer cost $75 per session. So he built an operating system on 9 KB. Its descendants run most of the world.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-16">16 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Origin</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 8</p>
+
+        <p>In 1969, a developer at Bell Labs wanted to play a video game.
+            The computer he needed cost $75 per session. So he found an old
+            machine in a corner and built an operating system to run it.</p>
+
+        <p>Its descendants run most of the world. Rather good return on a
+            video game.</p>
+
+        <h2>Multics: The Warning</h2>
+
+        <p>To understand Unix, one must first understand what it replaced.</p>
+
+        <p>In 1964, MIT, General Electric, and Bell Labs embarked on
+            <a href="https://multicians.org/history.html" target="_blank" rel="noopener">Multics</a>,
+            the Multiplexed Information and Computing Service. The vision
+            was magnificent: a time-sharing operating system for hundreds
+            of simultaneous users, with hierarchical filesystems, dynamic
+            linking, and security rings. Computing as a utility, like
+            electricity or running water.</p>
+
+        <p>The project ran on a
+            <a href="https://en.wikipedia.org/wiki/GE-645" target="_blank" rel="noopener">GE-645</a>
+            mainframe. It required hundreds of engineers. It was, by every
+            account, behind schedule, over budget, and growing in every
+            direction at once. Sam Morgan, the head of Bell Labs' computing
+            research, described it as
+            <em>"climbing too many trees at once."</em></p>
+
+        <p>Bell Labs pulled out in April 1969. Dennis Ritchie, who had
+            worked on the project, later wrote that Multics had become
+            <a href="https://www.nokia.com/bell-labs/about/dennis-m-ritchie/hist.html" target="_blank" rel="noopener">"too late and too expensively"</a>
+            what it set out to be.</p>
+
+        <p>Multics eventually shipped. It ran until the last installation
+            was decommissioned in 2000, at the Canadian Department of
+            National Defence. Thirty-one years of continuous service. Not a
+            failure, then. But a warning. The lesson was clear to everyone
+            who left the project: complexity is a one-way street. Once you
+            are on it, you do not come back.</p>
+
+        <h2>The Game</h2>
+
+        <p><a href="https://en.wikipedia.org/wiki/Ken_Thompson_(computer_scientist)" target="_blank" rel="noopener">Ken Thompson</a>
+            had written Space Travel, a solar system simulation, on the
+            GE-645 while working on Multics. Planets orbited. Gravity pulled.
+            The player navigated between them. It was, by the standards of
+            1969, rather ambitious. It was also rather expensive:
+            <a href="https://www.nokia.com/bell-labs/about/dennis-m-ritchie/spacetravel.html" target="_blank" rel="noopener">$75 per session</a>
+            on the mainframe.</p>
+
+        <p>With Multics gone, Thompson needed somewhere to run his game.
+            He found a
+            <a href="https://en.wikipedia.org/wiki/PDP-7" target="_blank" rel="noopener">PDP-7</a>
+            in a neighbouring department. A Digital Equipment Corporation
+            minicomputer from 1964. 18-bit words. 9 kilobytes of user
+            memory. Barely used. No operating system.</p>
+
+        <svg id="pdp7-specs" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PDP-7 specifications: 18-bit word size, 9 KB user memory, magnetic core storage, no operating system. Cost approximately $72,000 in 1964." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #pdp7-specs .ps-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #pdp7-specs .ps-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #pdp7-specs .ps-accent { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #pdp7-specs .ps-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #pdp7-specs .ps-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #pdp7-specs .ps-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #pdp7-specs .ps-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text class="ps-title" x="260" y="18" text-anchor="middle">PDP-7 (1964)</text>
+            <rect class="ps-fill" x="20" y="32" width="90" height="96"/>
+            <rect class="ps-box-accent" x="20" y="32" width="90" height="96"/>
+            <text class="ps-accent" x="65" y="56" text-anchor="middle">18-bit</text>
+            <text class="ps-sub" x="65" y="72" text-anchor="middle">word size</text>
+            <text class="ps-sub" x="65" y="112" text-anchor="middle">architecture</text>
+
+            <rect class="ps-box" x="125" y="32" width="90" height="96"/>
+            <text class="ps-accent" x="170" y="56" text-anchor="middle">9 KB</text>
+            <text class="ps-sub" x="170" y="72" text-anchor="middle">user memory</text>
+            <text class="ps-sub" x="170" y="112" text-anchor="middle">magnetic core</text>
+
+            <rect class="ps-box" x="230" y="32" width="90" height="96"/>
+            <text class="ps-accent" x="275" y="56" text-anchor="middle">$72,000</text>
+            <text class="ps-sub" x="275" y="72" text-anchor="middle">list price</text>
+            <text class="ps-sub" x="275" y="112" text-anchor="middle">1964 dollars</text>
+
+            <rect class="ps-box" x="335" y="32" width="90" height="96"/>
+            <text class="ps-accent" x="380" y="56" text-anchor="middle">No OS</text>
+            <text class="ps-sub" x="380" y="72" text-anchor="middle">bare metal</text>
+            <text class="ps-sub" x="380" y="112" text-anchor="middle">paper tape I/O</text>
+
+            <rect class="ps-box" x="440" y="32" width="60" height="96"/>
+            <text class="ps-accent" x="470" y="56" text-anchor="middle">DEC</text>
+            <text class="ps-sub" x="470" y="72" text-anchor="middle">Digital</text>
+            <text class="ps-sub" x="470" y="112" text-anchor="middle">Equipment</text>
+        </svg>
+
+        <p>To run Space Travel on this machine, Thompson needed a filesystem
+            to store code, a shell to launch programmes, an editor to write
+            them, and an assembler to translate them into machine
+            instructions. The PDP-7 had none of these things.</p>
+
+        <p>So he wrote them. All of them. On 9 KB.</p>
+
+        <p>One rather suspects a modern team would have opened a Jira
+            ticket, scheduled a sprint planning session, and debated the
+            backlog grooming methodology before writing the first line.</p>
+
+        <p>Thompson wrote
+            <a href="https://wiki.tuhs.org/doku.php?id=systems:pdp7_unix" target="_blank" rel="noopener">the entire system</a>
+            in three weeks during August 1969, while his wife was visiting
+            family. One week for the filesystem. One week for the shell.
+            One week for the editor and assembler. Brian Kernighan, a
+            colleague at Bell Labs, named the result. Multics served many
+            users simultaneously. Thompson's system served one. Multi
+            became Uni. Multics became
+            <a href="https://en.wikipedia.org/wiki/Unics" target="_blank" rel="noopener">Unics</a>,
+            then Unix. The pun was intentional.</p>
+
+        <h2>The Language</h2>
+
+        <p>The PDP-7 version worked, but it was trapped. Written entirely
+            in assembly language, bound to one machine's instruction set.
+            When Unix moved to the
+            <a href="https://en.wikipedia.org/wiki/PDP-11" target="_blank" rel="noopener">PDP-11</a>,
+            a faster 16-bit minicomputer, it had to be rewritten from
+            scratch. Still assembly. Still immovable.</p>
+
+        <p><a href="https://en.wikipedia.org/wiki/Dennis_Ritchie" target="_blank" rel="noopener">Dennis Ritchie</a>
+            solved this. Between 1969 and 1973, working alongside Thompson
+            at Bell Labs, he developed the
+            <a href="https://www.nokia.com/bell-labs/about/dennis-m-ritchie/chist.pdf" target="_blank" rel="noopener">C programming language</a>.
+            Not to build a product. Not to found a startup. To make
+            Thompson's system portable.</p>
+
+        <p>C evolved from Thompson's B, which itself derived from Martin
+            Richards'
+            <a href="https://en.wikipedia.org/wiki/BCPL" target="_blank" rel="noopener">BCPL</a>
+            at Cambridge. Each generation stripped away complexity. BCPL
+            was designed for compiler writing. B simplified it for
+            systems programming. C added data types, structures, and
+            just enough abstraction to describe hardware without hiding
+            it. The language was as minimal as the system it was built
+            for.</p>
+
+        <p>In the summer of 1973, Thompson and Ritchie rewrote Unix in
+            C on the PDP-11. The
+            <a href="https://en.wikipedia.org/wiki/Unix" target="_blank" rel="noopener">first operating system written in a high-level language</a>.
+            One compiler port, and the system ran on a different machine.
+            Quite the upgrade from $75 per session.</p>
+
+        <svg id="unix-language" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Language evolution: BCPL (1967, Richards, Cambridge) to B (1969, Thompson, Bell Labs) to C (1973, Ritchie, Bell Labs). Each generation stripped away complexity." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #unix-language .ul-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #unix-language .ul-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #unix-language .ul-accent { font: 600 14px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #unix-language .ul-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #unix-language .ul-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #unix-language .ul-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #unix-language .ul-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #unix-language .ul-line { stroke: var(--accent); stroke-width: 1.5; }
+                #unix-language .ul-arrow { fill: var(--accent); }
+            </style>
+            <text class="ul-title" x="260" y="18" text-anchor="middle">The Language Lineage</text>
+
+            <rect class="ul-box" x="20" y="42" width="130" height="80"/>
+            <text class="ul-accent" x="85" y="68" text-anchor="middle">BCPL</text>
+            <text class="ul-sub" x="85" y="84" text-anchor="middle">1967</text>
+            <text class="ul-sub" x="85" y="100" text-anchor="middle">Martin Richards</text>
+            <text class="ul-sub" x="85" y="114" text-anchor="middle">Cambridge</text>
+
+            <line class="ul-line" x1="150" y1="82" x2="190" y2="82"/>
+            <polygon class="ul-arrow" points="186,78 194,82 186,86"/>
+
+            <rect class="ul-box" x="195" y="42" width="130" height="80"/>
+            <text class="ul-accent" x="260" y="68" text-anchor="middle">B</text>
+            <text class="ul-sub" x="260" y="84" text-anchor="middle">1969</text>
+            <text class="ul-sub" x="260" y="100" text-anchor="middle">Ken Thompson</text>
+            <text class="ul-sub" x="260" y="114" text-anchor="middle">Bell Labs</text>
+
+            <line class="ul-line" x1="325" y1="82" x2="365" y2="82"/>
+            <polygon class="ul-arrow" points="361,78 369,82 361,86"/>
+
+            <rect class="ul-fill" x="370" y="42" width="130" height="80"/>
+            <rect class="ul-box-accent" x="370" y="42" width="130" height="80"/>
+            <text class="ul-accent" x="435" y="68" text-anchor="middle">C</text>
+            <text class="ul-sub" x="435" y="84" text-anchor="middle">1973</text>
+            <text class="ul-sub" x="435" y="100" text-anchor="middle">Dennis Ritchie</text>
+            <text class="ul-sub" x="435" y="114" text-anchor="middle">Bell Labs</text>
+        </svg>
+
+        <p>Ritchie published
+            <a href="https://en.wikipedia.org/wiki/The_C_Programming_Language" target="_blank" rel="noopener"><em>The C Programming Language</em></a>
+            with Kernighan in 1978. 228 pages. The entire language in a
+            book you could carry in one hand. The "Hello, World" programme
+            on page 6 became the most imitated first line in computing
+            history. Fifty-three years later, C remains the second most
+            used programming language in the world. Not bad for a tool
+            that was built to port a game.</p>
+
+        <h2>The Pipes</h2>
+
+        <p>In 1964, nine years before pipes existed,
+            <a href="https://en.wikipedia.org/wiki/Douglas_McIlroy" target="_blank" rel="noopener">Doug McIlroy</a>
+            wrote an internal memo at Bell Labs:</p>
+
+        <blockquote>
+            <p>"We should have some ways of coupling programs like garden
+                hose: screw in another segment when it becomes necessary
+                to massage data in another way."</p>
+        </blockquote>
+
+        <p>McIlroy was head of the Computing Techniques Research Department,
+            the group that created Unix. He had been thinking about programme
+            composition for nearly a decade. In 1973, Thompson
+            <a href="https://en.wikipedia.org/wiki/Pipeline_(Unix)" target="_blank" rel="noopener">implemented pipes in one night</a>.
+            The syntax was beautiful in its economy:</p>
+
+        <pre><code>ls | grep ".c" | wc -l</code></pre>
+
+        <p>Three programmes. Three jobs. Connected by two characters. The
+            output of one becomes the input of the next. No frameworks. No
+            message brokers. No orchestration layer. Just text flowing
+            between tools that each do one thing well.</p>
+
+        <p>This was not just a technical feature. It was a design philosophy
+            made executable. If every programme reads text and writes text,
+            then every programme can talk to every other programme. The
+            interface is universal. The contract is implicit. The composition
+            is infinite.</p>
+
+        <p>McIlroy distilled it into what became the
+            <a href="https://en.wikipedia.org/wiki/Unix_philosophy" target="_blank" rel="noopener">Unix philosophy</a>:</p>
+
+        <blockquote>
+            <p>"Write programs that do one thing and do it well. Write
+                programs to work together. Write programs to handle text
+                streams, because that is a universal interface."</p>
+        </blockquote>
+
+        <p>Not a manifesto. A lesson from having 9 KB and no room for
+            excess.</p>
+
+        <h2>The Spread</h2>
+
+        <p>Here is where history takes an improbable turn.</p>
+
+        <p>AT&T, Bell Labs' parent company, was bound by a 1956
+            <a href="https://en.wikipedia.org/wiki/Consent_decree" target="_blank" rel="noopener">antitrust consent decree</a>
+            that prohibited it from selling products outside the telephone
+            business. AT&T could not sell software. So they licensed Unix
+            to universities for a nominal fee, including the source code.</p>
+
+        <p>Terribly inconvenient for AT&T. Rather fortunate for
+            civilisation.</p>
+
+        <p>The
+            <a href="https://en.wikipedia.org/wiki/Berkeley_Software_Distribution" target="_blank" rel="noopener">University of California at Berkeley</a>
+            received Unix in 1974. A graduate student named
+            <a href="https://en.wikipedia.org/wiki/Bill_Joy" target="_blank" rel="noopener">Bill Joy</a>
+            took an interest. Joy wrote the vi editor, the C shell, and
+            contributed to TCP/IP networking for Unix. He co-founded
+            Sun Microsystems in 1982 on the strength of what he had
+            built at Berkeley. The university's modifications became
+            the Berkeley Software Distribution: BSD.</p>
+
+        <svg id="unix-tree" viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Unix family tree: Multics (1964) leads to Unix (1969) at Bell Labs. Unix branches to BSD (1977) at Berkeley and System V at AT&amp;T. BSD branches to FreeBSD (1993), OpenBSD (1995), NetBSD (1993), and macOS (2001). Linux (1991) is Unix-inspired, not derived. Android runs on Linux." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #unix-tree .ut-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #unix-tree .ut-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #unix-tree .ut-accent { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #unix-tree .ut-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #unix-tree .ut-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #unix-tree .ut-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #unix-tree .ut-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #unix-tree .ut-line { stroke: var(--border); stroke-width: 1; }
+                #unix-tree .ut-line-accent { stroke: var(--accent); stroke-width: 1.5; }
+                #unix-tree .ut-line-dashed { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4,4; }
+            </style>
+            <text class="ut-title" x="260" y="18" text-anchor="middle">The Unix Family Tree</text>
+
+            <!-- Multics -->
+            <rect class="ut-box" x="200" y="34" width="120" height="30"/>
+            <text class="ut-label" x="260" y="54" text-anchor="middle">Multics (1964)</text>
+
+            <!-- Arrow down to Unix -->
+            <line class="ut-line" x1="260" y1="64" x2="260" y2="80"/>
+
+            <!-- Unix -->
+            <rect class="ut-fill" x="190" y="80" width="140" height="34"/>
+            <rect class="ut-box-accent" x="190" y="80" width="140" height="34"/>
+            <text class="ut-accent" x="260" y="100" text-anchor="middle">Unix (1969)</text>
+            <text class="ut-sub" x="260" y="110" text-anchor="middle">Bell Labs</text>
+
+            <!-- Two branches from Unix -->
+            <line class="ut-line-accent" x1="230" y1="114" x2="130" y2="148"/>
+            <line class="ut-line-accent" x1="290" y1="114" x2="390" y2="148"/>
+
+            <!-- BSD branch -->
+            <rect class="ut-fill" x="60" y="148" width="140" height="34"/>
+            <rect class="ut-box-accent" x="60" y="148" width="140" height="34"/>
+            <text class="ut-accent" x="130" y="168" text-anchor="middle">BSD (1977)</text>
+            <text class="ut-sub" x="130" y="178" text-anchor="middle">Berkeley</text>
+
+            <!-- System V branch -->
+            <rect class="ut-box" x="320" y="148" width="140" height="34"/>
+            <text class="ut-label" x="390" y="168" text-anchor="middle">System V (1983)</text>
+            <text class="ut-sub" x="390" y="178" text-anchor="middle">AT&amp;T</text>
+
+            <!-- BSD children -->
+            <line class="ut-line-accent" x1="80" y1="182" x2="50" y2="218"/>
+            <line class="ut-line-accent" x1="110" y1="182" x2="130" y2="218"/>
+            <line class="ut-line-accent" x1="140" y1="182" x2="210" y2="218"/>
+            <line class="ut-line-accent" x1="170" y1="182" x2="290" y2="218"/>
+
+            <rect class="ut-fill" x="5" y="218" width="90" height="34"/>
+            <rect class="ut-box-accent" x="5" y="218" width="90" height="34"/>
+            <text class="ut-accent" x="50" y="234" text-anchor="middle">FreeBSD</text>
+            <text class="ut-sub" x="50" y="246" text-anchor="middle">1993</text>
+
+            <rect class="ut-box" x="100" y="218" width="70" height="34"/>
+            <text class="ut-label" x="135" y="234" text-anchor="middle">NetBSD</text>
+            <text class="ut-sub" x="135" y="246" text-anchor="middle">1993</text>
+
+            <rect class="ut-box" x="180" y="218" width="75" height="34"/>
+            <text class="ut-label" x="217" y="234" text-anchor="middle">OpenBSD</text>
+            <text class="ut-sub" x="217" y="246" text-anchor="middle">1995</text>
+
+            <rect class="ut-box" x="265" y="218" width="70" height="34"/>
+            <text class="ut-label" x="300" y="234" text-anchor="middle">macOS</text>
+            <text class="ut-sub" x="300" y="246" text-anchor="middle">2001</text>
+
+            <!-- System V children -->
+            <line class="ut-line" x1="390" y1="182" x2="390" y2="218"/>
+            <rect class="ut-box" x="350" y="218" width="80" height="34"/>
+            <text class="ut-label" x="390" y="234" text-anchor="middle">Solaris</text>
+            <text class="ut-sub" x="390" y="246" text-anchor="middle">1992</text>
+
+            <!-- Linux (separate, inspired) -->
+            <line class="ut-line-dashed" x1="260" y1="114" x2="260" y2="278"/>
+
+            <rect class="ut-fill" x="190" y="278" width="140" height="34"/>
+            <rect class="ut-box-accent" x="190" y="278" width="140" height="34"/>
+            <text class="ut-accent" x="260" y="298" text-anchor="middle">Linux (1991)</text>
+            <text class="ut-sub" x="260" y="308" text-anchor="middle">inspired, not derived</text>
+
+            <!-- Android from Linux -->
+            <line class="ut-line" x1="260" y1="312" x2="260" y2="330"/>
+            <text class="ut-sub" x="260" y="340" text-anchor="middle">Android, servers, cloud, IoT</text>
+        </svg>
+
+        <p>From BSD came FreeBSD (1993), NetBSD (1993), and OpenBSD (1995).
+            Apple's macOS runs a BSD derivative called Darwin. Every iPhone
+            runs code that traces its lineage to a corridor at Berkeley in
+            the 1970s.</p>
+
+        <p>And then there was
+            <a href="https://en.wikipedia.org/wiki/Linux" target="_blank" rel="noopener">Linus Torvalds</a>,
+            a Finnish student who, in 1991, wrote a Unix-compatible kernel
+            from scratch. Not derived from AT&T code. Not from BSD. Inspired
+            by the design, reimplemented from zero. Linux now runs on every
+            Android phone, most web servers, the
+            <a href="https://en.wikipedia.org/wiki/Linux_adoption#Supercomputers" target="_blank" rel="noopener">top 500 supercomputers</a>
+            (all of them, since 2017), and the Mars rovers.</p>
+
+        <p>The consent decree that prevented AT&T from selling software
+            effectively seeded Unix across every university computer science
+            department in the Western world. The students who learned on
+            Unix built the systems we now depend on. Antitrust enforcement
+            as open-source policy. One does appreciate the irony.</p>
+
+        <h2>The Timeline</h2>
+
+        <svg id="unix-timeline" viewBox="0 0 520 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Unix timeline from 1964 to 2026, showing the evolution from PDP-7 through C, pipes, BSD, FreeBSD, Linux, and modern Unix derivatives." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #unix-timeline .ut2-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #unix-timeline .ut2-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #unix-timeline .ut2-year { font: 700 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #unix-timeline .ut2-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #unix-timeline .ut2-line { stroke: var(--accent); stroke-width: 2; }
+                #unix-timeline .ut2-dot { fill: var(--accent); }
+                #unix-timeline .ut2-dot-ring { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+            </style>
+            <text class="ut2-title" x="260" y="18" text-anchor="middle">57 Years of Unix</text>
+            <!-- Timeline spine -->
+            <line class="ut2-line" x1="60" y1="46" x2="60" y2="346"/>
+
+            <circle class="ut2-dot" cx="60" cy="52" r="5"/>
+            <text class="ut2-year" x="80" y="56">1964</text>
+            <text class="ut2-label" x="130" y="56">PDP-7 ships</text>
+            <text class="ut2-sub" x="240" y="56">18-bit, 9 KB, $72,000</text>
+
+            <circle class="ut2-dot" cx="60" cy="86" r="5"/>
+            <text class="ut2-year" x="80" y="90">1965</text>
+            <text class="ut2-label" x="130" y="90">Multics begins</text>
+            <text class="ut2-sub" x="240" y="90">MIT + GE + Bell Labs</text>
+
+            <circle class="ut2-dot" cx="60" cy="120" r="5"/>
+            <text class="ut2-year" x="80" y="124">1969</text>
+            <text class="ut2-label" x="130" y="124">Unix born</text>
+            <text class="ut2-sub" x="200" y="124">Thompson, PDP-7, three weeks</text>
+
+            <circle class="ut2-dot" cx="60" cy="154" r="5"/>
+            <text class="ut2-year" x="80" y="158">1970</text>
+            <text class="ut2-label" x="130" y="158">PDP-11</text>
+            <text class="ut2-sub" x="190" y="158">Unix moves to 16-bit hardware</text>
+
+            <circle class="ut2-dot" cx="60" cy="188" r="5"/>
+            <text class="ut2-year" x="80" y="192">1973</text>
+            <text class="ut2-label" x="130" y="192">C + pipes</text>
+            <text class="ut2-sub" x="200" y="192">Ritchie completes C. First portable OS</text>
+
+            <circle class="ut2-dot" cx="60" cy="222" r="5"/>
+            <text class="ut2-year" x="80" y="226">1977</text>
+            <text class="ut2-label" x="130" y="226">BSD 1.0</text>
+            <text class="ut2-sub" x="200" y="226">Bill Joy, Berkeley</text>
+
+            <circle class="ut2-dot" cx="60" cy="256" r="5"/>
+            <text class="ut2-year" x="80" y="260">1978</text>
+            <text class="ut2-label" x="130" y="260">K&amp;R C</text>
+            <text class="ut2-sub" x="190" y="260">Kernighan &amp; Ritchie, 228 pages</text>
+
+            <circle class="ut2-dot" cx="60" cy="290" r="5"/>
+            <text class="ut2-year" x="80" y="294">1991</text>
+            <text class="ut2-label" x="130" y="294">Linux 0.01</text>
+            <text class="ut2-sub" x="215" y="294">Torvalds, from scratch</text>
+
+            <circle class="ut2-dot" cx="60" cy="316" r="5"/>
+            <text class="ut2-year" x="80" y="320">1993</text>
+            <text class="ut2-label" x="130" y="320">FreeBSD 1.0</text>
+            <text class="ut2-sub" x="233" y="320">BSD lineage continues</text>
+
+            <circle class="ut2-dot" cx="60" cy="342" r="4"/>
+            <circle class="ut2-dot-ring" cx="60" cy="342" r="8"/>
+            <text class="ut2-year" x="80" y="346">2026</text>
+            <text class="ut2-label" x="130" y="346">Unix everywhere</text>
+            <text class="ut2-sub" x="258" y="346">servers, phones, rovers, toasters</text>
+        </svg>
+
+        <h2>The Lesson</h2>
+
+        <p>Every good thing in this story was born from constraint.</p>
+
+        <p>9 KB forced Thompson to write only what he needed. Assembly
+            forced Ritchie to invent a portable language. A consent decree
+            forced AT&T to share. Nothing planned. Everything necessary.</p>
+
+        <p>The people who built Unix did not set out to change computing.
+            Thompson wanted to play a game. Ritchie wanted to port a
+            system. McIlroy wanted programmes to talk to each other. Joy
+            wanted better networking. Each solved the problem in front of
+            them, nothing more, and the solutions composed because they
+            were small enough to compose.</p>
+
+        <p>Today, a fresh React project ships 247 MB of dependencies on
+            a machine with 16 GB of memory. The constraint is gone. And
+            with it, quite evidently, the elegance.</p>
+
+        <svg id="unix-contrast" viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Scale comparison: PDP-7 Unix in 1969 had 9 KB of memory. A fresh Next.js project in 2026 has 247 MB of node_modules. Factor 27,444." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #unix-contrast .uc-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #unix-contrast .uc-sub { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #unix-contrast .uc-accent { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #unix-contrast .uc-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #unix-contrast .uc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                #unix-contrast .uc-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                #unix-contrast .uc-fill { fill: var(--accent); opacity: 0.08; rx: 4; }
+                #unix-contrast .uc-bar { fill: var(--border); rx: 3; }
+                #unix-contrast .uc-bar-accent { fill: var(--accent); opacity: 0.25; rx: 3; }
+            </style>
+            <text class="uc-title" x="260" y="18" text-anchor="middle">Then and Now</text>
+
+            <text class="uc-label" x="20" y="52">PDP-7 Unix</text>
+            <text class="uc-sub" x="20" y="66">1969</text>
+            <rect class="uc-bar-accent" x="120" y="44" width="2" height="22"/>
+            <text class="uc-accent" x="130" y="58">9 KB</text>
+
+            <text class="uc-label" x="20" y="98">Next.js project</text>
+            <text class="uc-sub" x="20" y="112">2026</text>
+            <rect class="uc-bar" x="120" y="90" width="340" height="22"/>
+            <text class="uc-accent" x="468" y="104">247 MB</text>
+        </svg>
+
+        <p>The developers who built Unix had no choice but to be
+            economical. We have every choice. The question is whether
+            we still make it.</p>
+
+        <p>Thompson and Ritchie received the
+            <a href="https://amturing.acm.org/award_winners/thompson_4588371.cfm" target="_blank" rel="noopener">Turing Award</a>
+            in 1983. Ritchie received the
+            <a href="https://en.wikipedia.org/wiki/National_Medal_of_Technology_and_Innovation" target="_blank" rel="noopener">National Medal of Technology</a>
+            from President Clinton in 1999, alongside Thompson. He died
+            on 12 October 2011, one week after Steve Jobs. The internet
+            mourned Jobs. Ritchie's death barely made the news. Jobs built
+            products on Ritchie's foundation. The foundation does not
+            tend to make the front page.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The cast.</strong>
+                <a href="https://en.wikipedia.org/wiki/Ken_Thompson_(computer_scientist)" target="_blank" rel="noopener">Ken Thompson</a>:
+                Unix, B, Space Travel, UTF-8, Plan 9, Go. Turing Award
+                1983. Still working at age 83.
+                <a href="https://en.wikipedia.org/wiki/Dennis_Ritchie" target="_blank" rel="noopener">Dennis Ritchie</a>:
+                C, Unix, <em>The C Programming Language</em>. Turing Award
+                1983. Died 2011.
+                <a href="https://en.wikipedia.org/wiki/Douglas_McIlroy" target="_blank" rel="noopener">Doug McIlroy</a>:
+                pipes, diff, spell, join, tr, echo. Still associated with
+                Dartmouth at 93.
+                <a href="https://en.wikipedia.org/wiki/Brian_Kernighan" target="_blank" rel="noopener">Brian Kernighan</a>:
+                named Unix, co-authored K&amp;R C, AWK, AMPL. Professor at
+                Princeton.
+                <a href="https://en.wikipedia.org/wiki/Bill_Joy" target="_blank" rel="noopener">Bill Joy</a>:
+                vi, C shell, TCP/IP for BSD, co-founded Sun Microsystems.
+                Four people, a corridor at Bell Labs, and a borrowed PDP-7.
+                The rest is infrastructure.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+<script src="/assets/js/dictionary.js" defer></script>
+{( endslot )}

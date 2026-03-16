@@ -119,6 +119,7 @@ local pages = {
     { loc = "/blog/the-mvc-myth",                  priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-quiet-web",                 priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-nextjs-tax",              priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-unix-origins",            priority = "0.7", changefreq = "yearly" },
 }
 
 function route()
