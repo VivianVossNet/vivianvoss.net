@@ -1,0 +1,345 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Pipe &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 1964, Douglas McIlroy wrote a memo about coupling programmes like garden hose. Nine years later, Ken Thompson implemented it overnight. One character: the pipe. The most elegant composition model in computing, fifty-three years unchanged.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-pipe{( endslot )}
+
+{( slot og-title )}The Pipe &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}McIlroy's 1964 memo. Thompson's overnight implementation. One character. The most elegant composition model in computing, fifty-three years unchanged.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Pipe",
+    "datePublished": "2026-03-17",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-pipe",
+    "description": "In 1964, Douglas McIlroy wrote a memo about coupling programmes like garden hose. Nine years later, Ken Thompson implemented it overnight. One character changed computing.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-17">17 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Pipe</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 27</p>
+
+        <p>In 1964,
+            <a href="https://www.cs.dartmouth.edu/~doug/" target="_blank" rel="noopener">Douglas McIlroy</a>
+            wrote a memo at Bell Labs. It contained one analogy that would
+            reshape how programmes communicate:</p>
+
+        <blockquote>
+            <p>We should have some ways of coupling programs like garden hose:
+                screw in another segment when it becomes necessary to massage
+                data in another way.</p>
+        </blockquote>
+
+        <p>Nine years passed. Then
+            <a href="https://en.wikipedia.org/wiki/Ken_Thompson" target="_blank" rel="noopener">Ken Thompson</a>
+            read it and implemented it overnight. One character: <code>|</code></p>
+
+        <p>One does appreciate a nine-year requirements phase followed by a
+            one-night delivery. Most organisations achieve the inverse.</p>
+
+        <h2>Before the Pipe</h2>
+
+        <p>Before February 1973, connecting two programmes meant writing the
+            output of the first to a temporary file, then reading that file
+            as input to the second. Every composition required an intermediary.
+            Every intermediary required disk space. Every temporary file
+            required cleanup. Every cleanup was, naturally, forgotten.</p>
+
+        <svg class="pipe-svg" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Before pipes: Programme A writes to a temporary file on disk, then Programme B reads from it. Two steps, one intermediary." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .pipe-box { fill: none; stroke: var(--border); stroke-width: 1.5; rx: 6; }
+                .pipe-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 6; }
+                .pipe-fill { fill: color-mix(in oklch, var(--accent) 8%, transparent); rx: 6; }
+                .pipe-label { font: 600 13px 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .pipe-sub { font: 400 11px 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .pipe-arrow { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#pipe-arrowhead); }
+                .pipe-arrow-accent { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#pipe-arrowhead-accent); }
+            </style>
+            <defs>
+                <marker id="pipe-arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--muted)" stroke-width="1.2"/>
+                </marker>
+                <marker id="pipe-arrowhead-accent" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--accent)" stroke-width="1.2"/>
+                </marker>
+            </defs>
+
+            <!-- Before: two steps via temp file -->
+            <text class="pipe-sub" x="260" y="16" text-anchor="middle">Before pipes (pre-1973)</text>
+
+            <rect class="pipe-box" x="10" y="30" width="120" height="40"/>
+            <text class="pipe-label" x="70" y="55" text-anchor="middle">Programme A</text>
+
+            <line class="pipe-arrow" x1="130" y1="50" x2="185" y2="50"/>
+
+            <rect class="pipe-fill" x="195" y="30" width="130" height="40"/>
+            <rect class="pipe-box-accent" x="195" y="30" width="130" height="40"/>
+            <text class="pipe-label" x="260" y="48" text-anchor="middle">/tmp/data.txt</text>
+            <text class="pipe-sub" x="260" y="62" text-anchor="middle">temporary file</text>
+
+            <line class="pipe-arrow" x1="325" y1="50" x2="380" y2="50"/>
+
+            <rect class="pipe-box" x="390" y="30" width="120" height="40"/>
+            <text class="pipe-label" x="450" y="55" text-anchor="middle">Programme B</text>
+
+            <!-- Labels below -->
+            <text class="pipe-sub" x="160" y="100" text-anchor="middle">write to disk</text>
+            <text class="pipe-sub" x="355" y="100" text-anchor="middle">read from disk</text>
+
+            <text class="pipe-sub" x="260" y="130" text-anchor="middle">Two steps. One intermediary. Cleanup optional.</text>
+            <text class="pipe-sub" x="260" y="148" text-anchor="middle">One suspects the temp files are still on someone's server.</text>
+        </svg>
+
+        <p>The process was cumbersome, error-prone, and utterly at odds with
+            the Unix instinct for economy. McIlroy had seen the problem in
+            1964. He wanted something simpler. Thompson gave him simpler.</p>
+
+        <h2>The Overnight Implementation</h2>
+
+        <p>On the evening of
+            <a href="https://en.wikipedia.org/wiki/Pipeline_(Unix)" target="_blank" rel="noopener">10 February 1973</a>,
+            Thompson sat down and added pipes to
+            <a href="https://wiki.tuhs.org/doku.php?id=systems:3rd_edition" target="_blank" rel="noopener">Unix Version 3</a>.
+            By the next morning, they worked. McIlroy immediately rewrote
+            every programme in <code>/bin</code> to read from standard input
+            and write to standard output, making them composable. The reaction
+            was unanimous:</p>
+
+        <blockquote>
+            <p>The next day, there were pipes, and there were several of us
+                just sitting there saying, "God! Why didn't we think of this
+                before?"</p>
+            <footer>
+                <a href="https://www.princeton.edu/~hos/mike/transcripts/mcilroy.htm" target="_blank" rel="noopener">Douglas McIlroy, An Oral History of Unix</a>
+            </footer>
+        </blockquote>
+
+        <p>One night. One system call. The result: the most enduring
+            composition model in computing.</p>
+
+        <h2>The Mechanism</h2>
+
+        <p>A pipe is a kernel-managed buffer. The writer puts bytes in.
+            The reader takes bytes out. When the buffer is full, the writer
+            waits. When the buffer is empty, the reader waits. When the
+            writer closes its end, the reader receives EOF. That is the
+            entire protocol.</p>
+
+        <svg class="pipe-svg" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pipe mechanism: Programme A writes to a kernel buffer via stdout, Programme B reads from it via stdin. The kernel manages flow control. No temporary files, no disk I/O." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <!-- After: direct pipe -->
+            <text class="pipe-sub" x="260" y="16" text-anchor="middle">After pipes (1973)</text>
+
+            <rect class="pipe-box" x="10" y="34" width="120" height="40"/>
+            <text class="pipe-label" x="70" y="59" text-anchor="middle">Programme A</text>
+
+            <line class="pipe-arrow-accent" x1="130" y1="54" x2="185" y2="54"/>
+            <text class="pipe-sub" x="158" y="44" text-anchor="middle">stdout</text>
+
+            <rect class="pipe-fill" x="195" y="34" width="130" height="40"/>
+            <rect class="pipe-box-accent" x="195" y="34" width="130" height="40"/>
+            <text class="pipe-label" x="260" y="52" text-anchor="middle">kernel buffer</text>
+            <text class="pipe-sub" x="260" y="66" text-anchor="middle">64 KB (Linux) / 16 KB (FreeBSD)</text>
+
+            <line class="pipe-arrow-accent" x1="325" y1="54" x2="380" y2="54"/>
+            <text class="pipe-sub" x="353" y="44" text-anchor="middle">stdin</text>
+
+            <rect class="pipe-box" x="390" y="34" width="120" height="40"/>
+            <text class="pipe-label" x="450" y="59" text-anchor="middle">Programme B</text>
+
+            <!-- Flow control annotations -->
+            <text class="pipe-sub" x="260" y="104" text-anchor="middle">Buffer full: writer waits</text>
+            <text class="pipe-sub" x="260" y="120" text-anchor="middle">Buffer empty: reader waits</text>
+            <text class="pipe-sub" x="260" y="136" text-anchor="middle">Writer closes: reader gets EOF</text>
+
+            <text class="pipe-sub" x="260" y="168" text-anchor="middle">No temporary files. No disk I/O. No configuration.</text>
+            <text class="pipe-sub" x="260" y="186" text-anchor="middle">API surface: read() and write(). That is all.</text>
+        </svg>
+
+        <p>Consider a practical example:</p>
+
+        <pre><code>cat access.log | grep 404 | sort | uniq -c | sort -rn</code></pre>
+
+        <p>Five programmes. No temporary files. No configuration. No API
+            contract. Each programme reads stdin, writes stdout. The pipe
+            connects them. The kernel handles the buffer. The entire
+            interface specification is: bytes in, bytes out.</p>
+
+        <p>One rather struggles to find the documentation. There is nothing
+            to document.</p>
+
+        <h2>The Contract</h2>
+
+        <p>A pipe enforces one rule: text in, text out. No objects. No
+            serialisation format. No schema negotiation. No version
+            compatibility. Each tool is entirely ignorant of its neighbours.
+            <code>grep</code> does not know that <code>sort</code> follows.
+            <code>sort</code> does not care what preceded it.</p>
+
+        <svg class="pipe-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A five-stage pipeline: cat, grep, sort, uniq, sort. Each tool is independent, connected only by the pipe character. Text flows left to right." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <text class="pipe-sub" x="260" y="16" text-anchor="middle">Five tools, zero knowledge of each other</text>
+
+            <rect class="pipe-box" x="4" y="30" width="68" height="34"/>
+            <text class="pipe-label" x="38" y="52" text-anchor="middle">cat</text>
+
+            <text style="font: 600 16px 'Oxanium', system-ui, sans-serif; fill: var(--accent);" x="84" y="52" text-anchor="middle">|</text>
+
+            <rect class="pipe-box" x="96" y="30" width="68" height="34"/>
+            <text class="pipe-label" x="130" y="52" text-anchor="middle">grep</text>
+
+            <text style="font: 600 16px 'Oxanium', system-ui, sans-serif; fill: var(--accent);" x="176" y="52" text-anchor="middle">|</text>
+
+            <rect class="pipe-box" x="188" y="30" width="68" height="34"/>
+            <text class="pipe-label" x="222" y="52" text-anchor="middle">sort</text>
+
+            <text style="font: 600 16px 'Oxanium', system-ui, sans-serif; fill: var(--accent);" x="268" y="52" text-anchor="middle">|</text>
+
+            <rect class="pipe-box" x="280" y="30" width="68" height="34"/>
+            <text class="pipe-label" x="314" y="52" text-anchor="middle">uniq</text>
+
+            <text style="font: 600 16px 'Oxanium', system-ui, sans-serif; fill: var(--accent);" x="360" y="52" text-anchor="middle">|</text>
+
+            <rect class="pipe-box" x="372" y="30" width="68" height="34"/>
+            <text class="pipe-label" x="406" y="52" text-anchor="middle">sort</text>
+
+            <!-- Flow arrows underneath -->
+            <line class="pipe-arrow-accent" x1="38" y1="74" x2="130" y2="74"/>
+            <line class="pipe-arrow-accent" x1="130" y1="74" x2="222" y2="74"/>
+            <line class="pipe-arrow-accent" x1="222" y1="74" x2="314" y2="74"/>
+            <line class="pipe-arrow-accent" x1="314" y1="74" x2="406" y2="74"/>
+            <text class="pipe-sub" x="222" y="92" text-anchor="middle">bytes flow left to right, unmodified by the pipe</text>
+
+            <text class="pipe-sub" x="260" y="122" text-anchor="middle">The thinnest interface produces the widest reuse.</text>
+        </svg>
+
+        <p>This constraint is the design. The less a tool assumes about its
+            neighbours, the more tools it composes with. McIlroy understood
+            in 1964 what microservices are still learning in 2026: the
+            thinnest possible interface produces the widest possible reuse.
+            A tool that expects JSON cannot compose with one that emits CSV.
+            A tool that expects plain text composes with everything.</p>
+
+        <h2>What It Replaced</h2>
+
+        <p>Monolithic programmes that did everything: read, parse, transform,
+            filter, format, write. Each one a kingdom. None of them composable.
+            Rather like enterprise software, come to think of it.</p>
+
+        <p>The pipe turned programmes into functions. Small, single-purpose,
+            stateless. The shell became the orchestrator. The filesystem
+            became the only state. No dependency injection, no service mesh,
+            no API gateway. Just bytes flowing between tools that each do
+            one thing well.</p>
+
+        <h2>Named Pipes</h2>
+
+        <p>In 1979,
+            <a href="https://en.wikipedia.org/wiki/Named_pipe" target="_blank" rel="noopener">named pipes (FIFOs)</a>
+            arrived with Unix Version 7. An anonymous pipe exists only
+            between a parent process and its children. A named pipe exists
+            as a file in the filesystem. Any process that can open the file
+            can read from it or write to it. Same mechanism. Same bytes.
+            No shared ancestor required.</p>
+
+        <pre><code>mkfifo /tmp/stream
+tail -f /var/log/syslog > /tmp/stream &
+grep error < /tmp/stream</code></pre>
+
+        <p>A persistent channel between unrelated processes, implemented
+            as a file. One does admire the Unix instinct: when in doubt,
+            make it a file.</p>
+
+        <h2>The Numbers</h2>
+
+        <svg class="pipe-svg" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pipe internals: kernel buffer sizes (64 KB Linux, 16 KB FreeBSD), zero context switches when buffer has space, API surface is read() and write() only, protocol is bytes in bytes out." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <text class="pipe-sub" x="260" y="16" text-anchor="middle">Pipe internals</text>
+
+            <!-- Grid of stats -->
+            <rect class="pipe-fill" x="20" y="30" width="230" height="56"/>
+            <rect class="pipe-box-accent" x="20" y="30" width="230" height="56"/>
+            <text class="pipe-label" x="135" y="52" text-anchor="middle">Kernel buffer</text>
+            <text class="pipe-sub" x="135" y="72" text-anchor="middle">64 KB (Linux) &#x25A0; 16 KB (FreeBSD)</text>
+
+            <rect class="pipe-fill" x="270" y="30" width="230" height="56"/>
+            <rect class="pipe-box-accent" x="270" y="30" width="230" height="56"/>
+            <text class="pipe-label" x="385" y="52" text-anchor="middle">Context switches</text>
+            <text class="pipe-sub" x="385" y="72" text-anchor="middle">Zero when buffer has space</text>
+
+            <rect class="pipe-fill" x="20" y="100" width="230" height="56"/>
+            <rect class="pipe-box-accent" x="20" y="100" width="230" height="56"/>
+            <text class="pipe-label" x="135" y="122" text-anchor="middle">API surface</text>
+            <text class="pipe-sub" x="135" y="142" text-anchor="middle">read() and write()</text>
+
+            <rect class="pipe-fill" x="270" y="100" width="230" height="56"/>
+            <rect class="pipe-box-accent" x="270" y="100" width="230" height="56"/>
+            <text class="pipe-label" x="385" y="122" text-anchor="middle">Protocol</text>
+            <text class="pipe-sub" x="385" y="142" text-anchor="middle">Bytes in, bytes out</text>
+
+            <text class="pipe-sub" x="260" y="186" text-anchor="middle">Latency: kernel-mediated, no userspace copy on modern systems.</text>
+        </svg>
+
+        <p>The kernel buffer on
+            <a href="https://man7.org/linux/man-pages/man7/pipe.7.html" target="_blank" rel="noopener">Linux defaults to 64 KB</a>.
+            On <a href="https://man.freebsd.org/cgi/man.cgi?pipe(2)" target="_blank" rel="noopener">FreeBSD, 16 KB</a>.
+            Context switches happen only when the buffer is full or empty.
+            The system call interface is <code>read()</code> and
+            <code>write()</code>. Nothing else. No configuration file. No
+            flags. No negotiation phase. The pipe is not a feature with
+            options. It is a constraint with consequences.</p>
+
+        <h2>Fifty-Three Years</h2>
+
+        <p>Every shell script. Every CI pipeline. Every data transformation
+            that chains two tools together. The pipe is not a feature of
+            Unix. It is the idea of Unix, made visible. Small tools, loosely
+            joined, communicating through the simplest possible interface.</p>
+
+        <p>Fifty-three years later, this is still the most elegant
+            composition model in computing. No framework has improved upon
+            "bytes in, bytes out." Several have tried. Their
+            <code>node_modules</code> folders speak for themselves.</p>
+
+        <p>McIlroy's garden hose from 1964, Thompson's implementation from
+            1973, your terminal from this morning. Same character. Same
+            mechanism. Same bytes. Quite reassuring in an industry that
+            rewrites everything every eighteen months.</p>
+
+        <p>Technical beauty emerges from reduction.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The timeline of one character:</strong></p>
+            <ul>
+                <li><strong>1964:</strong> McIlroy's memo. "Garden hose" coupling. Nine years before implementation.</li>
+                <li><strong>1973:</strong> Thompson implements <code>|</code> overnight. Unix V3, February 1973.</li>
+                <li><strong>1973:</strong> McIlroy rewrites every programme in <code>/bin</code> to use stdin/stdout.</li>
+                <li><strong>1979:</strong> Named pipes (FIFOs) added. Pipes without a shared parent process.</li>
+                <li><strong>2026:</strong> Same character. Same mechanism. Same bytes.</li>
+            </ul>
+        </aside>
+    </div>
+</article>
+{( endslot )}
