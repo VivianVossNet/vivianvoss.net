@@ -121,6 +121,7 @@ local pages = {
     { loc = "/blog/the-nextjs-tax",              priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-unix-origins",            priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-pipe",                  priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/form-validation",          priority = "0.7", changefreq = "yearly" },
 }
 
 function route()

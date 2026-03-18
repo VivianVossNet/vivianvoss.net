@@ -1,0 +1,321 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Form the Browser Already Validated &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="The average React project installs a validation library before a single input field exists. The browser has validated forms natively since 2014. Required, email, pattern, minlength. No JavaScript. No bundle size. No excuse.">
+{( endslot )}
+
+{( slot canonical )}/blog/form-validation{( endslot )}
+
+{( slot og-title )}The Form the Browser Already Validated &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The browser has validated forms since 2014. Required, email, pattern, minlength. No JavaScript. No bundle size. No excuse.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Form the Browser Already Validated",
+    "datePublished": "2026-03-18",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/form-validation",
+    "description": "The browser has validated forms natively since 2014. Required, email, pattern, minlength. No JavaScript. No bundle size.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-18">18 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Form the Browser Already Validated</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">html</span>
+            <span class="vv-pill">css</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 8</p>
+
+        <p>The average React project installs a validation library before
+            a single input field exists in the markup. To verify what,
+            precisely? That an email contains an <code>@</code>. That a
+            required field has a value. That a name contains letters.</p>
+
+        <p>The browser has done this since 2014. Rather quietly, given
+            how few seem to have noticed.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>HTML5 introduced
+            <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" target="_blank" rel="noopener">constraint validation</a>
+            as part of the
+            <a href="https://www.w3.org/TR/2014/REC-html5-20141028/" target="_blank" rel="noopener">W3C Recommendation of 28 October 2014</a>.
+            The mechanism is declarative: you describe the constraints in
+            HTML attributes, and the browser enforces them on submit.</p>
+
+        <pre><code>&lt;form&gt;
+  &lt;input type="email" required&gt;
+  &lt;input type="text" required
+    minlength="2" pattern="[A-Za-z\s\-']+"&gt;
+  &lt;input type="url"&gt;
+  &lt;button type="submit"&gt;Send&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+        <p>Required fields must have values. Email fields must contain
+            emails. Pattern fields must match the regex. The browser checks
+            on submit, blocks if invalid, tells the user what went wrong.</p>
+
+        <p>No <code>onChange</code>. No <code>useState</code>. No schema
+            object. No bundle size.</p>
+
+        <svg class="fv-svg" viewBox="0 0 520 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison: native HTML validation uses zero JavaScript and zero bytes of bundle size. A typical React validation stack with react-hook-form, Zod, and custom hooks uses approximately 40 KB of minified JavaScript." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .fv-box { fill: none; stroke: var(--border); stroke-width: 1.5; rx: 6; }
+                .fv-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 6; }
+                .fv-fill { fill: color-mix(in oklch, var(--accent) 8%, transparent); rx: 6; }
+                .fv-label { font: 600 13px 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .fv-sub { font: 400 11px 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .fv-accent { font: 600 13px 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .fv-bar { fill: var(--accent); rx: 3; }
+                .fv-bar-empty { fill: var(--border); rx: 3; opacity: 0.3; }
+            </style>
+
+            <text class="fv-sub" x="260" y="16" text-anchor="middle">Bundle cost of form validation</text>
+
+            <!-- Native HTML -->
+            <rect class="fv-fill" x="20" y="30" width="480" height="70"/>
+            <rect class="fv-box-accent" x="20" y="30" width="480" height="70"/>
+            <text class="fv-label" x="40" y="52">Native HTML validation</text>
+            <text class="fv-sub" x="40" y="68">required, type, pattern, minlength, maxlength</text>
+            <text class="fv-accent" x="40" y="88">0 KB</text>
+            <rect class="fv-bar-empty" x="90" y="80" width="390" height="10"/>
+
+            <!-- React stack -->
+            <rect class="fv-box" x="20" y="116" width="480" height="82"/>
+            <text class="fv-label" x="40" y="138">Typical React validation stack</text>
+            <text class="fv-sub" x="40" y="154">react-hook-form + Zod + custom hooks</text>
+            <text class="fv-accent" x="40" y="180">~40 KB</text>
+            <rect class="fv-bar" x="90" y="172" width="390" height="10"/>
+            <text class="fv-sub" x="260" y="192" text-anchor="middle">126M weekly npm downloads combined</text>
+        </svg>
+
+        <h2>The UX Objection, Resolved</h2>
+
+        <p>"Native validation shows errors on page load." Fair criticism.
+            It did. The <code>:invalid</code> pseudo-class matched the
+            moment the DOM rendered, painting every empty required field
+            red before the user had typed a single character. It was, by
+            any measure, rude.</p>
+
+        <p>Then, in 2023,
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid" target="_blank" rel="noopener"><code>:user-invalid</code></a>
+            arrived.</p>
+
+        <pre><code>input:user-invalid {
+  outline: 2px solid #c00;
+}
+input:user-valid {
+  outline: 2px solid #0a0;
+}</code></pre>
+
+        <p><code>:user-invalid</code> fires only after the user has
+            interacted with the field. Load the page: pristine. Tab
+            through empty fields: pristine. Type something, leave the
+            field: now it validates. The single biggest UX complaint
+            about native validation, resolved in pure CSS.</p>
+
+        <svg class="fv-svg" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline showing user-invalid browser support: Firefox 88 in 2021, Safari 16.5 in 2023, Chrome 119 in 2023. Baseline support since November 2023 at 89.75 per cent." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <text class="fv-sub" x="260" y="16" text-anchor="middle">:user-invalid browser support</text>
+
+            <!-- Timeline line -->
+            <line x1="60" y1="60" x2="480" y2="60" stroke="var(--border)" stroke-width="1.5"/>
+
+            <!-- Firefox -->
+            <circle cx="120" cy="60" r="6" fill="var(--accent)"/>
+            <text class="fv-label" x="120" y="48" text-anchor="middle">Firefox 88</text>
+            <text class="fv-sub" x="120" y="82" text-anchor="middle">2021</text>
+
+            <!-- Safari -->
+            <circle cx="300" cy="60" r="6" fill="var(--accent)"/>
+            <text class="fv-label" x="300" y="48" text-anchor="middle">Safari 16.5</text>
+            <text class="fv-sub" x="300" y="82" text-anchor="middle">Jun 2023</text>
+
+            <!-- Chrome -->
+            <circle cx="420" cy="60" r="6" fill="var(--accent)"/>
+            <text class="fv-label" x="420" y="48" text-anchor="middle">Chrome 119</text>
+            <text class="fv-sub" x="420" y="82" text-anchor="middle">Nov 2023</text>
+
+            <!-- Baseline -->
+            <rect class="fv-fill" x="60" y="106" width="420" height="34"/>
+            <rect class="fv-box-accent" x="60" y="106" width="420" height="34"/>
+            <text class="fv-label" x="270" y="128" text-anchor="middle">Baseline: every modern browser since November 2023</text>
+
+            <text class="fv-sub" x="260" y="168" text-anchor="middle">89.75% global support. 97.54% for the Constraint Validation API itself.</text>
+        </svg>
+
+        <h2>Custom Error Messages</h2>
+
+        <p>"But I need custom error messages." One line:</p>
+
+        <pre><code>input.setCustomValidity("Please use your work email.");</code></pre>
+
+        <p>The
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/ValidityState" target="_blank" rel="noopener">Constraint Validation API</a>
+            ships with every browser. The <code>element.validity</code>
+            object exposes eleven boolean properties:
+            <code>valueMissing</code>, <code>typeMismatch</code>,
+            <code>patternMismatch</code>, <code>tooShort</code>,
+            <code>tooLong</code>, <code>rangeOverflow</code>,
+            <code>rangeUnderflow</code>, <code>stepMismatch</code>,
+            <code>badInput</code>, <code>customError</code>, and
+            <code>valid</code>. Each tells you precisely what failed.
+            All free. All native. All shipped in 2014.</p>
+
+        <p>For those who want a complete example with custom messages,
+            the pattern is straightforward:</p>
+
+        <pre><code>const email = document.querySelector('[type="email"]');
+email.addEventListener('invalid', () =&gt; {
+  email.setCustomValidity(
+    email.validity.typeMismatch
+      ? "That does not look like an email."
+      : "Email is required."
+  );
+});
+email.addEventListener('input', () =&gt; {
+  email.setCustomValidity("");
+});</code></pre>
+
+        <p>Two event listeners. One for the error, one to clear it when
+            the user corrects the input. The browser handles the rest.</p>
+
+        <h2>Cross-Field Validation</h2>
+
+        <p>"But what about cross-field validation? What if the submit
+            button should disable until the entire form is valid?"</p>
+
+        <pre><code>form:has(:invalid) [type="submit"] {
+  opacity: 0.4;
+  pointer-events: none;
+}</code></pre>
+
+        <p>If any field inside the form is invalid, the submit button
+            dims. No JavaScript. CSS checks on every reflow. The
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" target="_blank" rel="noopener"><code>:has()</code></a>
+            pseudo-class turns the parent into a state machine. The form
+            observes its own children and reacts accordingly.</p>
+
+        <svg class="fv-svg" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Native validation layer cake: HTML attributes handle required, type, and pattern constraints. CSS handles visual feedback with user-invalid and user-valid. The Constraint Validation API handles custom messages. A server round-trip handles uniqueness checks. No framework needed at any layer." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <text class="fv-sub" x="260" y="16" text-anchor="middle">The native validation stack</text>
+
+            <!-- Layer 1: HTML -->
+            <rect class="fv-fill" x="40" y="30" width="440" height="34"/>
+            <rect class="fv-box-accent" x="40" y="30" width="440" height="34"/>
+            <text class="fv-label" x="60" y="52">HTML</text>
+            <text class="fv-sub" x="120" y="52">required, type, pattern, minlength, maxlength</text>
+
+            <!-- Layer 2: CSS -->
+            <rect class="fv-fill" x="40" y="72" width="440" height="34"/>
+            <rect class="fv-box-accent" x="40" y="72" width="440" height="34"/>
+            <text class="fv-label" x="60" y="94">CSS</text>
+            <text class="fv-sub" x="120" y="94">:user-invalid, :user-valid, :has(:invalid)</text>
+
+            <!-- Layer 3: JS (minimal) -->
+            <rect class="fv-box" x="40" y="114" width="440" height="34"/>
+            <text class="fv-label" x="60" y="136">JS</text>
+            <text class="fv-sub" x="120" y="136">setCustomValidity() for custom messages (optional)</text>
+
+            <!-- Layer 4: Server -->
+            <rect class="fv-box" x="40" y="156" width="440" height="34"/>
+            <text class="fv-label" x="60" y="178">Server</text>
+            <text class="fv-sub" x="120" y="178">Uniqueness, authorisation, business rules (always needed)</text>
+        </svg>
+
+        <h2>When This Is Not Enough</h2>
+
+        <p>"Does this username already exist?" Fair question. That
+            requires a server round-trip. No amount of client-side
+            validation can answer it. One <code>fetch</code> call:</p>
+
+        <pre><code>const r = await fetch(`/api/check?user=${encodeURIComponent(name)}`);</code></pre>
+
+        <p>One server handler:</p>
+
+        <pre><code>async fn check(q: Query&lt;Name&gt;) -&gt; Json&lt;bool&gt; {
+    Json(db.exists(&amp;q.name).await)
+}</code></pre>
+
+        <p>Four lines. No schema library. No validation framework. Just
+            a question and an answer.</p>
+
+        <p>That is perhaps 5% of forms. The other 95% need nothing
+            the browser did not already provide.</p>
+
+        <p>"But server-side validation!" Quite right. Client validation
+            is UX. Server validation is security. You need both. But the
+            client side was already written for you. By the browser team.
+            In 2014.</p>
+
+        <h2>The Complete Form</h2>
+
+        <p>For those who appreciate a working example, here is a
+            registration form with full native validation, visual feedback,
+            and cross-field awareness. Zero dependencies:</p>
+
+        <pre><code>&lt;form id="signup"&gt;
+  &lt;label&gt;Email
+    &lt;input type="email" required
+      placeholder="you@company.com"&gt;
+  &lt;/label&gt;
+  &lt;label&gt;Password
+    &lt;input type="password" required
+      minlength="8" maxlength="128"&gt;
+  &lt;/label&gt;
+  &lt;label&gt;Website
+    &lt;input type="url"
+      placeholder="https://..."&gt;
+  &lt;/label&gt;
+  &lt;button type="submit"&gt;Sign Up&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+        <pre><code>/* Validation feedback (no JS) */
+input:user-invalid { outline: 2px solid #c00; }
+input:user-valid   { outline: 2px solid #0a0; }
+
+/* Disable submit until valid */
+form:has(:invalid) [type="submit"] {
+  opacity: 0.4;
+  pointer-events: none;
+}</code></pre>
+
+        <p>Load the page: every field pristine, button dimmed. Fill in
+            a valid email: green outline, button still dimmed (password
+            empty). Fill in a password of eight characters: green outline,
+            button activates. Entire interaction model in HTML and CSS.
+            The JavaScript team can have the afternoon off.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The weekly download numbers, for perspective:</strong></p>
+            <ul>
+                <li><a href="https://www.npmjs.com/package/zod" target="_blank" rel="noopener">Zod</a>: 93 million per week</li>
+                <li><a href="https://www.npmjs.com/package/react-hook-form" target="_blank" rel="noopener">react-hook-form</a>: 21.6 million per week</li>
+                <li><a href="https://www.npmjs.com/package/yup" target="_blank" rel="noopener">Yup</a>: 8.5 million per week</li>
+                <li><a href="https://www.npmjs.com/package/formik" target="_blank" rel="noopener">Formik</a>: 3.2 million per week</li>
+            </ul>
+            <p>126 million weekly downloads to validate that an email contains
+                an <code>@</code>. The browser attribute
+                <code>type="email"</code> has done this for twelve years.
+                One does admire the commitment to the redundant.</p>
+        </aside>
+    </div>
+</article>
+{( endslot )}

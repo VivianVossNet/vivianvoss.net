@@ -4,6 +4,7 @@
 local SITE = "https://vivianvoss.net"
 
 local articles = {
+    { date = "Wed, 18 Mar 2026 00:00:00 GMT", title = "The Form the Browser Already Validated", loc = "/blog/form-validation", desc = "The average React project installs a validation library before a single input field exists. The browser has validated forms natively since 2014. Required, email, pattern, minlength. No JavaScript. No bundle size." },
     { date = "Tue, 17 Mar 2026 00:00:00 GMT", title = "The Pipe", loc = "/blog/the-pipe", desc = "In 1964, Douglas McIlroy wrote a memo about coupling programmes like garden hose. Nine years later, Ken Thompson implemented it overnight. One character. The most elegant composition model in computing, fifty-three years unchanged." },
     { date = "Mon, 16 Mar 2026 00:00:00 GMT", title = "The Origin", loc = "/blog/the-unix-origins", desc = "In 1969, Ken Thompson wanted to play Space Travel. The mainframe cost $75 per session. So he found a PDP-7 with 9 KB of memory and built an operating system. Its descendants run most of the world." },
     { date = "Sun, 15 Mar 2026 00:00:00 GMT", title = "The Next.js Tax", loc = "/blog/the-nextjs-tax", desc = "React ships 136 KB to the browser. Next.js promised to fix that. 247 MB of node_modules, 87 KB client runtime, hydration that doubles every render, and vendor lock-in disguised as developer experience." },
