@@ -18,7 +18,7 @@
             var pattern = new RegExp(
                 "\\b(" + keys.map(function (k) {
                     return k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-                }).join("|") + ")\\b", "i"
+                }).join("|") + ")\\b"
             );
             var matched = {};
             var walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, null);
@@ -42,7 +42,7 @@
 
                 var found = m[1];
                 var canonical = keys.filter(function (k) {
-                    return k.toLowerCase() === found.toLowerCase();
+                    return k === found;
                 })[0] || found;
                 if (matched[canonical.toLowerCase()]) continue;
                 matched[canonical.toLowerCase()] = true;
