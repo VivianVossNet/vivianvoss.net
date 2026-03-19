@@ -1,0 +1,388 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Hydration &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 1995, PHP rendered HTML on the server and sent it to the browser. In 2026, the industry renders HTML on the server, sends it to the browser, then ships 558 KB of JavaScript to rebuild the very same DOM. They call this hydration.">
+{( endslot )}
+
+{( slot canonical )}/blog/hydration{( endslot )}
+
+{( slot og-title )}Hydration &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The server rendered your page. The browser displayed it. Then JavaScript rebuilt it from scratch. Twenty years of engineering to return to where PHP started.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Hydration",
+    "datePublished": "2026-03-19",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/hydration",
+    "description": "In 1995, PHP rendered HTML on the server. In 2026, the industry renders HTML on the server, then ships 558 KB of JavaScript to rebuild the same DOM. They call this hydration.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-19">19 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Hydration</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">react</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Copy Cat</em> &#x25A0; Episode 7</p>
+
+        <p>In 1995, PHP rendered HTML on the server and sent it to the
+            browser. The browser displayed it. That was the entire
+            architecture. Terribly straightforward, one must admit.</p>
+
+        <p>In 2026, the industry renders HTML on the server, sends it to
+            the browser, then ships
+            <a href="https://almanac.httparchive.org/en/2024/javascript" target="_blank" rel="noopener">558 KB of JavaScript</a>
+            to rebuild the very same DOM. They call this hydration. One
+            rather wishes they were joking.</p>
+
+        <h2>The Original</h2>
+
+        <p>Server-Side Rendering. CGI, PHP, JSP, ASP. The server produced
+            HTML. The browser consumed it. Forms, links, progressive
+            enhancement. No second pass required. Quite dull, really.
+            It simply worked.</p>
+
+        <p>The model was straightforward: a request arrived, the server
+            assembled HTML from templates and data, and the browser
+            rendered it. Interactivity came from forms and links. Where
+            JavaScript was needed, it enhanced what was already there.
+            The page was usable before a single script loaded. This was
+            not a design philosophy. It was the only option. And it
+            happened to be correct.</p>
+
+        <svg class="hy-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Traditional server-side rendering: the server renders HTML, sends it to the browser, and the browser displays it. One step. Done." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                .hy-box { fill: none; stroke: var(--border); stroke-width: 1.5; rx: 6; }
+                .hy-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 6; }
+                .hy-fill { fill: color-mix(in oklch, var(--accent) 8%, transparent); rx: 6; }
+                .hy-label { font: 600 13px 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                .hy-sub { font: 400 11px 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                .hy-accent { font: 600 13px 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                .hy-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#hy-ah); }
+                .hy-arrow-muted { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#hy-ah-m); }
+            </style>
+            <defs>
+                <marker id="hy-ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--accent)" stroke-width="1.2"/>
+                </marker>
+                <marker id="hy-ah-m" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--muted)" stroke-width="1.2"/>
+                </marker>
+            </defs>
+
+            <text class="hy-sub" x="260" y="16" text-anchor="middle">1995: Server-Side Rendering</text>
+
+            <rect class="hy-fill" x="30" y="34" width="130" height="44"/>
+            <rect class="hy-box-accent" x="30" y="34" width="130" height="44"/>
+            <text class="hy-label" x="95" y="54" text-anchor="middle">Server</text>
+            <text class="hy-sub" x="95" y="68" text-anchor="middle">renders HTML</text>
+
+            <line class="hy-arrow" x1="160" y1="56" x2="228" y2="56"/>
+            <text class="hy-sub" x="194" y="48" text-anchor="middle">HTML</text>
+
+            <rect class="hy-fill" x="238" y="34" width="130" height="44"/>
+            <rect class="hy-box-accent" x="238" y="34" width="130" height="44"/>
+            <text class="hy-label" x="303" y="54" text-anchor="middle">Browser</text>
+            <text class="hy-sub" x="303" y="68" text-anchor="middle">displays it</text>
+
+            <line class="hy-arrow" x1="368" y1="56" x2="416" y2="56"/>
+
+            <text class="hy-accent" x="468" y="60" text-anchor="middle">Done.</text>
+
+            <text class="hy-sub" x="260" y="110" text-anchor="middle">One request. One response. One render. Interactive on arrival.</text>
+            <text class="hy-sub" x="260" y="128" text-anchor="middle">The page worked before JavaScript loaded. Quite the concept.</text>
+        </svg>
+
+        <h2>The Detour</h2>
+
+        <p>Then Single-Page Applications moved rendering to the client.
+            The server sent an empty <code>&lt;div id="root"&gt;</code>
+            and a JavaScript bundle. The browser downloaded the bundle,
+            parsed it, executed it, fetched data via API calls, and
+            finally rendered the page. Performance collapsed. SEO
+            collapsed. First Contentful Paint times tripled. But the
+            developer experience was, one is assured, quite pleasant.</p>
+
+        <p>The industry noticed SPAs were slow. The fix: render on the
+            server again. But they refused to let go of the framework. So
+            now the server renders HTML, the browser displays it, then
+            the framework downloads, parses the DOM a second time,
+            rebuilds the component tree in memory, and attaches event
+            listeners to every interactive element.</p>
+
+        <p>The same page. Built twice. Shipped thrice (HTML, JavaScript
+            bundle, serialised state). The architectural equivalent of
+            building a house, handing over the keys, then demolishing it
+            and rebuilding it while the owner watches.</p>
+
+        <p>React v16 formalised the ceremony in 2017 with
+            <a href="https://en.wikipedia.org/wiki/Hydration_(web_development)" target="_blank" rel="noopener"><code>ReactDOM.hydrate()</code></a>.</p>
+
+        <svg class="hy-svg" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hydration process: the server renders HTML, sends it with a JavaScript bundle to the browser. The browser displays the HTML, then downloads and executes JavaScript which rebuilds the DOM, reconciles the component tree, and attaches event listeners. The page is visually complete but not interactive until hydration finishes." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <text class="hy-sub" x="260" y="16" text-anchor="middle">2026: Server-Side Rendering with Hydration</text>
+
+            <rect class="hy-fill" x="30" y="34" width="130" height="44"/>
+            <rect class="hy-box-accent" x="30" y="34" width="130" height="44"/>
+            <text class="hy-label" x="95" y="54" text-anchor="middle">Server</text>
+            <text class="hy-sub" x="95" y="68" text-anchor="middle">renders HTML</text>
+
+            <line class="hy-arrow" x1="160" y1="46" x2="228" y2="46"/>
+            <text class="hy-sub" x="194" y="38" text-anchor="middle">HTML</text>
+
+            <line class="hy-arrow-muted" x1="160" y1="66" x2="228" y2="66"/>
+            <text class="hy-sub" x="194" y="80" text-anchor="middle">JS bundle</text>
+
+            <rect class="hy-fill" x="238" y="34" width="130" height="44"/>
+            <rect class="hy-box-accent" x="238" y="34" width="130" height="44"/>
+            <text class="hy-label" x="303" y="54" text-anchor="middle">Browser</text>
+            <text class="hy-sub" x="303" y="68" text-anchor="middle">displays HTML</text>
+
+            <!-- Hydration steps -->
+            <line class="hy-arrow-muted" x1="303" y1="78" x2="303" y2="98"/>
+
+            <rect class="hy-box" x="178" y="100" width="250" height="100"/>
+            <text class="hy-label" x="303" y="120" text-anchor="middle">Hydration</text>
+            <text class="hy-sub" x="303" y="138" text-anchor="middle">1. Download 558 KB JavaScript</text>
+            <text class="hy-sub" x="303" y="154" text-anchor="middle">2. Rebuild component tree in memory</text>
+            <text class="hy-sub" x="303" y="170" text-anchor="middle">3. Reconcile with existing DOM</text>
+            <text class="hy-sub" x="303" y="186" text-anchor="middle">4. Attach event listeners</text>
+
+            <text class="hy-sub" x="260" y="218" text-anchor="middle">Visually complete on arrival. Interactive after hydration. Same page, built twice.</text>
+        </svg>
+
+        <h2>The Triple Data Problem</h2>
+
+        <p>Hydration does not merely rebuild the DOM. It ships the same
+            information
+            <a href="https://dev.to/this-is-learning/why-efficient-hydration-in-javascript-frameworks-is-so-challenging-1ca3" target="_blank" rel="noopener">three times</a>:</p>
+
+        <ol>
+            <li><strong>The rendered HTML</strong> (the page the user sees)</li>
+            <li><strong>The JavaScript templates</strong> (the component code that knows how to render it)</li>
+            <li><strong>The serialised state</strong> (JSON data embedded in the page so the framework can reconcile)</li>
+        </ol>
+
+        <p>Three representations of the same content, downloaded over the
+            same connection, processed by the same browser. Instagram
+            ships
+            <a href="https://htmx.org/essays/a-response-to-rich-harris/" target="_blank" rel="noopener">5 MB of JavaScript</a>
+            to display photographs. One suspects the photographs
+            themselves are lighter.</p>
+
+        <h2>The Cascade of Patches</h2>
+
+        <p>Each attempt to fix hydration created the next problem.
+            The history reads like a support ticket that keeps being
+            escalated:</p>
+
+        <svg class="hy-svg" viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The cascade: SPAs move rendering to client (the decision), performance collapses (the consequence), SSR re-invented inside the framework (the patch), hydration blocks interactivity (the cost), partial hydration invented (the patch for the patch), top-down loading required (the limitation), islands architecture invented (the next patch), coordination complexity introduced (the next cost)." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <text class="hy-sub" x="260" y="16" text-anchor="middle">The cascade of patches</text>
+
+            <!-- Step 1 -->
+            <rect class="hy-box" x="30" y="30" width="300" height="28"/>
+            <text class="hy-label" x="40" y="49">SPAs move rendering to the client</text>
+            <text class="hy-sub" x="360" y="49">the decision</text>
+
+            <line x1="180" y1="58" x2="180" y2="66" stroke="var(--muted)" stroke-width="1"/>
+
+            <!-- Step 2 -->
+            <rect class="hy-box" x="30" y="68" width="300" height="28"/>
+            <text class="hy-label" x="40" y="87">Performance and SEO collapse</text>
+            <text class="hy-sub" x="360" y="87">the consequence</text>
+
+            <line x1="180" y1="96" x2="180" y2="104" stroke="var(--muted)" stroke-width="1"/>
+
+            <!-- Step 3 -->
+            <rect class="hy-fill" x="30" y="106" width="300" height="28"/>
+            <rect class="hy-box-accent" x="30" y="106" width="300" height="28"/>
+            <text class="hy-label" x="40" y="125">Re-invent SSR inside the framework</text>
+            <text class="hy-sub" x="360" y="125">the patch</text>
+
+            <line x1="180" y1="134" x2="180" y2="142" stroke="var(--muted)" stroke-width="1"/>
+
+            <!-- Step 4 -->
+            <rect class="hy-box" x="30" y="144" width="300" height="28"/>
+            <text class="hy-label" x="40" y="163">Hydration blocks interactivity</text>
+            <text class="hy-sub" x="360" y="163">the cost</text>
+
+            <line x1="180" y1="172" x2="180" y2="180" stroke="var(--muted)" stroke-width="1"/>
+
+            <!-- Step 5 -->
+            <rect class="hy-fill" x="30" y="182" width="300" height="28"/>
+            <rect class="hy-box-accent" x="30" y="182" width="300" height="28"/>
+            <text class="hy-label" x="40" y="201">Invent partial hydration</text>
+            <text class="hy-sub" x="360" y="201">the patch for the patch</text>
+
+            <line x1="180" y1="210" x2="180" y2="218" stroke="var(--muted)" stroke-width="1"/>
+
+            <!-- Step 6 -->
+            <rect class="hy-box" x="30" y="220" width="300" height="28"/>
+            <text class="hy-label" x="40" y="239">Requires top-down loading order</text>
+            <text class="hy-sub" x="360" y="239">the limitation</text>
+
+            <line x1="180" y1="248" x2="180" y2="256" stroke="var(--muted)" stroke-width="1"/>
+
+            <!-- Step 7 -->
+            <rect class="hy-fill" x="30" y="258" width="300" height="28"/>
+            <rect class="hy-box-accent" x="30" y="258" width="300" height="28"/>
+            <text class="hy-label" x="40" y="277">Invent islands architecture</text>
+            <text class="hy-sub" x="360" y="277">the next patch</text>
+
+            <line x1="180" y1="286" x2="180" y2="294" stroke="var(--muted)" stroke-width="1"/>
+
+            <!-- Step 8 -->
+            <rect class="hy-box" x="30" y="296" width="300" height="28"/>
+            <text class="hy-label" x="40" y="315">Islands introduce coordination cost</text>
+            <text class="hy-sub" x="360" y="315">the next cost</text>
+
+            <text class="hy-sub" x="260" y="340" text-anchor="middle">Each layer solves the problem created by the previous one. The original was solved in 1995.</text>
+        </svg>
+
+        <p><a href="https://nextjs.org/" target="_blank" rel="noopener">Next.js</a>
+            re-invented SSR for React in 2016. Partial hydration followed.
+            <a href="https://astro.build/" target="_blank" rel="noopener">Astro</a>
+            introduced islands architecture in 2020, shipping JavaScript
+            only for interactive components. Each iteration was cleverer
+            than the last. None questioned whether the framework should
+            be there in the first place.</p>
+
+        <h2>The Architect's Confession</h2>
+
+        <p><a href="https://www.builder.io/blog/hydration-is-pure-overhead" target="_blank" rel="noopener">Misko Hevery</a>,
+            creator of Angular, built
+            <a href="https://qwik.dev/docs/concepts/resumable/" target="_blank" rel="noopener">Qwik</a>
+            because hydration is, in his words, "pure overhead." His
+            framework replaces hydration with resumability: the server
+            serialises the application state, and the client resumes
+            execution without replaying it. No re-render. No second
+            pass.</p>
+
+        <p>Even the architects who popularised client-side rendering now
+            build tools to escape its consequences. Rather telling, that.</p>
+
+        <h2>The Modern Answer</h2>
+
+        <p>Rust. Go. Any language that renders HTML on the server without
+            the ceremonial re-enactment.</p>
+
+        <p><a href="https://docs.rs/askama/latest/askama/" target="_blank" rel="noopener">Askama</a>
+            for Rust: compile-time Jinja-like templates, type-checked at
+            build, zero JavaScript. No runtime template engine. No
+            virtual DOM. The compiler catches your typos before the
+            server starts.</p>
+
+        <p><a href="https://templ.guide/" target="_blank" rel="noopener">templ</a>
+            for Go: compiled HTML components with type safety and IDE
+            support. No runtime overhead. No JavaScript required.
+            The template is a Go function. The output is HTML. That is
+            the entire abstraction.</p>
+
+        <p>Need device-specific layouts? In my Rust backends (for example,
+            <a href="/">this very site</a>), the standard approach: one
+            detection request sets a cookie. The server knows the client.
+            Every response after that is byte-optimised for the device.
+            No framework. No second pass. No hydration.</p>
+
+        <p>Need interactivity? A <code>&lt;script&gt;</code> tag. A
+            <code>fetch</code> call. An event listener. Not a framework
+            that rebuilds your page to make a button clickable.</p>
+
+        <svg class="hy-svg" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="JavaScript growth: median JavaScript per mobile page grew from 359 KB in 2019 to 558 KB in 2024, a 55 per cent increase in five years. Desktop grew from 412 KB to 613 KB." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <text class="hy-sub" x="260" y="16" text-anchor="middle">Median JavaScript per page (HTTP Archive)</text>
+
+            <!-- Y axis labels -->
+            <text class="hy-sub" x="48" y="48" text-anchor="end">600 KB</text>
+            <text class="hy-sub" x="48" y="88" text-anchor="end">450 KB</text>
+            <text class="hy-sub" x="48" y="128" text-anchor="end">300 KB</text>
+            <text class="hy-sub" x="48" y="168" text-anchor="end">150 KB</text>
+
+            <!-- Grid lines -->
+            <line x1="56" y1="44" x2="500" y2="44" stroke="var(--border)" stroke-width="0.5" opacity="0.4"/>
+            <line x1="56" y1="84" x2="500" y2="84" stroke="var(--border)" stroke-width="0.5" opacity="0.4"/>
+            <line x1="56" y1="124" x2="500" y2="124" stroke="var(--border)" stroke-width="0.5" opacity="0.4"/>
+            <line x1="56" y1="164" x2="500" y2="164" stroke="var(--border)" stroke-width="0.5" opacity="0.4"/>
+
+            <!-- Baseline -->
+            <line x1="56" y1="178" x2="500" y2="178" stroke="var(--border)" stroke-width="1"/>
+
+            <!-- Mobile line: 359 KB (2019) to 558 KB (2024) -->
+            <!-- 359/700 * 134 = 68.7 from top 178; y = 178 - 68.7 = 109.3 -->
+            <!-- 558/700 * 134 = 106.8; y = 178 - 106.8 = 71.2 -->
+            <line x1="120" y1="109" x2="440" y2="71" stroke="var(--accent)" stroke-width="2"/>
+            <circle cx="120" cy="109" r="4" fill="var(--accent)"/>
+            <circle cx="440" cy="71" r="4" fill="var(--accent)"/>
+            <text class="hy-accent" x="130" y="103">359 KB</text>
+            <text class="hy-accent" x="450" y="65">558 KB</text>
+
+            <!-- Desktop line: 412 KB to 613 KB -->
+            <!-- 412/700 * 134 = 78.9; y = 178 - 78.9 = 99.1 -->
+            <!-- 613/700 * 134 = 117.4; y = 178 - 117.4 = 60.6 -->
+            <line x1="120" y1="99" x2="440" y2="61" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6,4"/>
+            <circle cx="120" cy="99" r="4" fill="var(--muted)"/>
+            <circle cx="440" cy="61" r="4" fill="var(--muted)"/>
+            <text class="hy-sub" x="130" y="93">412 KB</text>
+            <text class="hy-sub" x="450" y="55">613 KB</text>
+
+            <!-- X axis -->
+            <text class="hy-sub" x="120" y="192" text-anchor="middle">2019</text>
+            <text class="hy-sub" x="440" y="192" text-anchor="middle">2024</text>
+
+            <!-- Legend -->
+            <line x1="200" y1="192" x2="220" y2="192" stroke="var(--accent)" stroke-width="2"/>
+            <text class="hy-sub" x="226" y="196">Mobile</text>
+            <line x1="290" y1="192" x2="310" y2="192" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6,4"/>
+            <text class="hy-sub" x="316" y="196">Desktop</text>
+        </svg>
+
+        <h2>The Irony</h2>
+
+        <p>The server rendered your page. The browser displayed it. Then
+            JavaScript arrived and insisted on doing it all again. Twenty
+            years of engineering to return to where PHP started. The
+            median JavaScript payload grew from 359 KB in 2019 to 558 KB
+            in 2024. A 55% increase in five years, solving a problem
+            that did not exist until client-side rendering created it.</p>
+
+        <p>PHP, for all its critics, never asked the browser to rebuild
+            anything. CGI never demanded a second pass. The original
+            server-side model rendered once and was done. The copy renders
+            twice and calls it progress.</p>
+
+        <p>Quite the journey.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The hydration timeline:</strong></p>
+            <ul>
+                <li><strong>1995:</strong> PHP renders HTML. Browser displays it.</li>
+                <li><strong>2010:</strong> SPAs move rendering to the client.</li>
+                <li><strong>2016:</strong> Next.js re-invents SSR for React.</li>
+                <li><strong>2017:</strong> React v16 ships <code>ReactDOM.hydrate()</code>.</li>
+                <li><strong>2020:</strong> Astro introduces islands architecture.</li>
+                <li><strong>2022:</strong> Hevery publishes "Hydration is Pure Overhead."</li>
+                <li><strong>2024:</strong> Median JS per page: 558 KB mobile (HTTP Archive).</li>
+                <li><strong>2026:</strong> Axum + Askama. Go + templ. Server renders HTML. No hydration.</li>
+            </ul>
+        </aside>
+    </div>
+</article>
+{( endslot )}

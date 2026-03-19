@@ -4,6 +4,7 @@
 local SITE = "https://vivianvoss.net"
 
 local articles = {
+    { date = "Thu, 19 Mar 2026 00:00:00 GMT", title = "Hydration", loc = "/blog/hydration", desc = "In 1995, PHP rendered HTML on the server. In 2026, the industry renders HTML on the server, then ships 558 KB of JavaScript to rebuild the same DOM. They call this hydration. Twenty years to return to where PHP started." },
     { date = "Wed, 18 Mar 2026 00:00:00 GMT", title = "The Form the Browser Already Validated", loc = "/blog/form-validation", desc = "The average React project installs a validation library before a single input field exists. The browser has validated forms natively since 2014. Required, email, pattern, minlength. No JavaScript. No bundle size." },
     { date = "Tue, 17 Mar 2026 00:00:00 GMT", title = "The Pipe", loc = "/blog/the-pipe", desc = "In 1964, Douglas McIlroy wrote a memo about coupling programmes like garden hose. Nine years later, Ken Thompson implemented it overnight. One character. The most elegant composition model in computing, fifty-three years unchanged." },
     { date = "Mon, 16 Mar 2026 00:00:00 GMT", title = "The Origin", loc = "/blog/the-unix-origins", desc = "In 1969, Ken Thompson wanted to play Space Travel. The mainframe cost $75 per session. So he found a PDP-7 with 9 KB of memory and built an operating system. Its descendants run most of the world." },
