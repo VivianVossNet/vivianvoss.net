@@ -123,6 +123,7 @@ local pages = {
     { loc = "/blog/the-pipe",                  priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/form-validation",          priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/hydration",               priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/terraform",              priority = "0.7", changefreq = "yearly" },
 }
 
 function route()

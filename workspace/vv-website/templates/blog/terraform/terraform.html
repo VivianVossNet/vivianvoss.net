@@ -1,0 +1,444 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Terraform: The Abstraction Layer &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="You wanted to provision a server. You got a proprietary language, a state file full of secrets in plain text, and a licence that changed overnight. The Terraform invoice, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/terraform{( endslot )}
+
+{( slot og-title )}Terraform: The Abstraction Layer &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}You wanted to provision a server. You got a proprietary language, a state file full of secrets in plain text, and a licence that changed overnight.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Terraform: The Abstraction Layer",
+    "datePublished": "2026-03-20",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/terraform",
+    "description": "You wanted to provision a server. You got a proprietary language, a state file full of secrets in plain text, and a licence that changed overnight. The Terraform invoice, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-20">20 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Terraform: The Abstraction Layer</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">devops</span>
+            <span class="vv-pill">cloud</span>
+            <span class="vv-pill">licensing</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> &#x25A0; Episode 14</p>
+
+        <blockquote>
+            <p>&#x201C;Manage infrastructure as code! Declarative, predictable, multi-cloud!&#x201D;</p>
+        </blockquote>
+
+        <p>Splendid. Let us examine what you are actually paying for.</p>
+
+        <p>You wanted to provision a server. A reasonable ambition. What arrived was
+            a proprietary language that cannot express a conditional, a state file
+            that stores your database passwords in plain text, and a licence that
+            changed overnight after nine years of open-source trust. Three invoices
+            for one abstraction. Shall we itemise them.</p>
+
+        <h2>The Language Invoice</h2>
+
+        <p>HCL, the HashiCorp Configuration Language, is not a programming language.
+            It is a configuration format that grew ambitions. No conditionals, only
+            ternary expressions. No loops, only
+            <a href="https://github.com/hashicorp/terraform/issues/30221" target="_blank" rel="noopener"><code>count</code></a>,
+            a numerical index that was never designed as an iteration primitive but
+            became one because nothing else was available. No first-class functions.
+            Resource references that routinely exceed 100 characters. A language
+            whose expressiveness peaked at <code>key = value</code> and was then
+            asked to orchestrate global infrastructure.</p>
+
+        <p>The canonical example of HCL's limitations is the count hack:
+            <code>count = var.enabled ? 1 : 0</code>. A looping construct abused as
+            a boolean. It functions adequately until you have a list of resources
+            indexed by count and remove an item from the middle. Terraform does not
+            track resources by identity. It tracks them by index. Remove item two
+            from a list of five and items three, four, and five are destroyed and
+            recreated. Your infrastructure, rebuilt because an array shifted.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="The count index hack: removing item 2 from a counted list causes items 3, 4, and 5 to be destroyed and recreated." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tf-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tf-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .tf-idx { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tf-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .tf-box-gone { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; stroke-dasharray: 4 3; }
+                .tf-box-destroy { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .tf-warn { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .tf-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tf-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#tf-arrowhead); }
+            </style>
+            <defs>
+                <marker id="tf-arrowhead" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+                    <path d="M0,0 L6,2 L0,4" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="tf-title" text-anchor="middle">The Count Index Hack</text>
+            <!-- Before -->
+            <text x="20" y="56" class="tf-label">Before:</text>
+            <rect x="80" y="42" width="80" height="28" class="tf-box"/>
+            <text x="120" y="60" class="tf-label" text-anchor="middle">Server A</text>
+            <text x="120" y="80" class="tf-idx" text-anchor="middle">[0]</text>
+            <rect x="170" y="42" width="80" height="28" class="tf-box"/>
+            <text x="210" y="60" class="tf-label" text-anchor="middle">Server B</text>
+            <text x="210" y="80" class="tf-idx" text-anchor="middle">[1]</text>
+            <rect x="260" y="42" width="80" height="28" class="tf-box"/>
+            <text x="300" y="60" class="tf-label" text-anchor="middle">Server C</text>
+            <text x="300" y="80" class="tf-idx" text-anchor="middle">[2]</text>
+            <rect x="350" y="42" width="80" height="28" class="tf-box"/>
+            <text x="390" y="60" class="tf-label" text-anchor="middle">Server D</text>
+            <text x="390" y="80" class="tf-idx" text-anchor="middle">[3]</text>
+            <rect x="440" y="42" width="80" height="28" class="tf-box"/>
+            <text x="480" y="60" class="tf-label" text-anchor="middle">Server E</text>
+            <text x="480" y="80" class="tf-idx" text-anchor="middle">[4]</text>
+            <!-- Remove B -->
+            <text x="210" y="106" class="tf-warn" text-anchor="middle">remove B</text>
+            <!-- After -->
+            <text x="20" y="146" class="tf-label">After:</text>
+            <rect x="80" y="132" width="80" height="28" class="tf-box"/>
+            <text x="120" y="150" class="tf-label" text-anchor="middle">Server A</text>
+            <text x="120" y="170" class="tf-idx" text-anchor="middle">[0]</text>
+            <rect x="170" y="132" width="80" height="28" class="tf-box-gone"/>
+            <text x="210" y="150" class="tf-label" text-anchor="middle" style="text-decoration:line-through;fill:var(--muted)">Server B</text>
+            <rect x="260" y="132" width="80" height="28" class="tf-box-destroy"/>
+            <text x="300" y="150" class="tf-warn" text-anchor="middle">C &#x2192; [1]</text>
+            <text x="300" y="170" class="tf-idx" text-anchor="middle">destroy + recreate</text>
+            <rect x="350" y="132" width="80" height="28" class="tf-box-destroy"/>
+            <text x="390" y="150" class="tf-warn" text-anchor="middle">D &#x2192; [2]</text>
+            <text x="390" y="170" class="tf-idx" text-anchor="middle">destroy + recreate</text>
+            <rect x="440" y="132" width="80" height="28" class="tf-box-destroy"/>
+            <text x="480" y="150" class="tf-warn" text-anchor="middle">E &#x2192; [3]</text>
+            <text x="480" y="170" class="tf-idx" text-anchor="middle">destroy + recreate</text>
+            <!-- Bottom -->
+            <text x="280" y="206" class="tf-muted" text-anchor="middle">Terraform tracks by index, not identity.</text>
+            <text x="280" y="222" class="tf-muted" text-anchor="middle">Remove one item. Three servers destroyed. Marvellous.</text>
+        </svg>
+
+        <p>The <code>for_each</code> construct arrived later as a partial remedy,
+            but it cannot be used everywhere <code>count</code> can, and the damage
+            to existing codebases was already done. A configuration language that
+            destroys infrastructure when you reorder a list is not declarative. It
+            is a trap with documentation.</p>
+
+        <h2>The State Invoice</h2>
+
+        <p><code>terraform.tfstate</code> is a JSON file containing every secret your
+            infrastructure possesses. Database passwords, API keys, connection strings,
+            private IP addresses. In
+            <a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/secure-sensitive-data-secrets-manager-terraform/terraform-state-file.html" target="_blank" rel="noopener">plain text</a>.
+            By default, stored locally on whatever machine ran <code>terraform apply</code>.</p>
+
+        <p>The recommended solution: remote state backends. S3 with encryption, Terraform
+            Cloud, Consul. Each backend introduces its own failure modes, access control
+            requirements, and operational overhead. You are now managing infrastructure
+            to manage the tool that manages your infrastructure. One admires the recursion.</p>
+
+        <p>At scale, the state file becomes the bottleneck. At
+            <a href="https://oneuptime.com/blog/post/2026-02-23-handle-large-terraform-state-files/view" target="_blank" rel="noopener">1,000 resources the state file reaches 20 MB and consumes gigabytes of RAM</a>
+            to parse. Each <code>terraform plan</code> fires over 1,000 API calls to
+            reconcile declared state against reality. Beyond
+            <a href="https://github.com/hashicorp/terraform/issues/16375" target="_blank" rel="noopener">2,000 resources, plan time grows exponentially</a>.
+            The
+            <a href="https://www.gruntwork.io/blog/how-to-manage-large-opentofu-terraform-state-files" target="_blank" rel="noopener">recommended maximum: 200 resources per state</a>.
+            One deployment, a dozen state files. One rather admires the elegance.</p>
+
+        <svg viewBox="0 0 520 280" aria-label="Terraform state file scaling: at 200 resources you are at best practice, at 1,000 resources state is 20 MB and uses gigabytes of RAM, beyond 2,000 plan time grows exponentially." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ts-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ts-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .ts-value { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ts-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ts-bar { fill: var(--accent); opacity: 0.7; }
+                .ts-bar-warn { fill: var(--accent); opacity: 0.5; }
+                .ts-bar-danger { fill: var(--muted); opacity: 0.5; }
+                .ts-axis { stroke: var(--border); stroke-width: 1; }
+                .ts-zone { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+            </style>
+            <text x="260" y="22" class="ts-title" text-anchor="middle">State File Scaling</text>
+            <!-- Axes -->
+            <line class="ts-axis" x1="120" y1="50" x2="120" y2="220"/>
+            <line class="ts-axis" x1="120" y1="220" x2="500" y2="220"/>
+            <!-- Labels -->
+            <text x="310" y="248" class="ts-label" text-anchor="middle">Resources</text>
+            <text x="115" y="48" class="ts-label" text-anchor="end">Cost</text>
+            <!-- 200 resources -->
+            <rect x="145" y="195" width="50" height="25" rx="2" class="ts-bar"/>
+            <text x="170" y="236" class="ts-muted" text-anchor="middle">200</text>
+            <text x="170" y="192" class="ts-value" text-anchor="middle">OK</text>
+            <text x="170" y="258" class="ts-zone" text-anchor="middle">best practice</text>
+            <!-- 500 resources -->
+            <rect x="225" y="170" width="50" height="50" rx="2" class="ts-bar"/>
+            <text x="250" y="236" class="ts-muted" text-anchor="middle">500</text>
+            <text x="250" y="167" class="ts-value" text-anchor="middle">5 MB</text>
+            <!-- 1,000 resources -->
+            <rect x="305" y="130" width="50" height="90" rx="2" class="ts-bar-warn"/>
+            <text x="330" y="236" class="ts-muted" text-anchor="middle">1,000</text>
+            <text x="330" y="125" class="ts-value" text-anchor="middle">20 MB</text>
+            <text x="330" y="112" class="ts-muted" text-anchor="middle">GB of RAM</text>
+            <!-- 2,000 resources -->
+            <rect x="385" y="80" width="50" height="140" rx="2" class="ts-bar-danger"/>
+            <text x="410" y="236" class="ts-muted" text-anchor="middle">2,000</text>
+            <text x="410" y="75" class="ts-value" text-anchor="middle">exponential</text>
+            <!-- 5,000+ resources -->
+            <rect x="465" y="55" width="30" height="165" rx="2" class="ts-bar-danger"/>
+            <text x="480" y="236" class="ts-muted" text-anchor="middle">5K+</text>
+            <text x="480" y="52" class="ts-value" text-anchor="middle">&#x2620;</text>
+            <!-- Note -->
+            <text x="310" y="275" class="ts-muted" text-anchor="middle">Each plan: 1,000+ API calls. Secrets in plain text JSON. Quite the state of affairs.</text>
+        </svg>
+
+        <p>Then there is drift. Someone edits a security group in the console.
+            Terraform does not know. The next <code>apply</code> overwrites it
+            silently. According to
+            <a href="https://spacelift.io/blog/terraform-drift-detection" target="_blank" rel="noopener">Spacelift</a>,
+            90 per cent of drift is caused by humans using the very console the tool
+            was meant to replace. The tool that promises to be the single source of
+            truth quietly becomes the single source of surprise.</p>
+
+        <h2>The Licence Invoice</h2>
+
+        <p>In August 2023,
+            <a href="https://spacelift.io/blog/terraform-license-change" target="_blank" rel="noopener">HashiCorp switched Terraform from the Mozilla Public Licence to the Business Source Licence</a>.
+            Nine years of open-source trust, revised in one announcement. The BSL
+            permits use but prohibits competing products. Your infrastructure tooling,
+            now governed by a licence whose boundaries are defined by the vendor's
+            competitive anxieties.</p>
+
+        <p>The community responded with remarkable speed. Within a month,
+            <a href="https://opentofu.org/manifesto/" target="_blank" rel="noopener">OpenTofu forked under the Linux Foundation</a>
+            and collected
+            <a href="https://www.sdxcentral.com/analysis/open-source-drama-unfolds-as-opentofu-fights-back-against-hashicorp-in-iac-battle/" target="_blank" rel="noopener">33,000 GitHub stars</a>
+            and pledges from over 140 companies. In February 2025,
+            <a href="https://techcrunch.com/2025/02/27/ibm-closes-6-4b-hashicorp-acquisition/" target="_blank" rel="noopener">IBM acquired HashiCorp for $6.4 billion</a>.
+            Your infrastructure tooling now belongs to IBM. Quite the plot twist for
+            a tool that promised vendor independence.</p>
+
+        <svg viewBox="0 0 520 290" aria-label="Terraform licence timeline: MPL open source from 2014 to August 2023, BSL switch, OpenTofu fork in September 2023, IBM acquisition in February 2025." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tl-date { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .tl-event { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .tl-detail { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tl-line { stroke: var(--border); stroke-width: 2; }
+                .tl-dot { fill: var(--accent); }
+                .tl-dot-warn { fill: var(--accent); opacity: 0.6; }
+            </style>
+            <text x="260" y="22" class="tl-title" text-anchor="middle">The Licence Timeline</text>
+            <line x1="60" y1="50" x2="60" y2="270" class="tl-line"/>
+            <!-- 2014 -->
+            <circle cx="60" cy="55" r="4" class="tl-dot"/>
+            <text x="80" y="52" class="tl-date">2014</text>
+            <text x="80" y="65" class="tl-event">Terraform released under MPL 2.0</text>
+            <text x="80" y="78" class="tl-detail">Open source. Community builds providers. Trust established</text>
+            <!-- Aug 2023 -->
+            <circle cx="60" cy="110" r="6" class="tl-dot"/>
+            <text x="80" y="107" class="tl-date">Aug 2023</text>
+            <text x="80" y="120" class="tl-event">Licence switched to BSL</text>
+            <text x="80" y="133" class="tl-detail">Nine years of open-source trust, revised overnight</text>
+            <!-- Sep 2023 -->
+            <circle cx="60" cy="165" r="5" class="tl-dot"/>
+            <text x="80" y="162" class="tl-date">Sep 2023</text>
+            <text x="80" y="175" class="tl-event">OpenTofu fork under Linux Foundation</text>
+            <text x="80" y="188" class="tl-detail">33,000 GitHub stars in one month. 140+ companies pledged support</text>
+            <!-- Feb 2025 -->
+            <circle cx="60" cy="220" r="6" class="tl-dot"/>
+            <text x="80" y="217" class="tl-date">Feb 2025</text>
+            <text x="80" y="230" class="tl-event">IBM acquires HashiCorp for $6.4 billion</text>
+            <text x="80" y="243" class="tl-detail">Your infrastructure tooling belongs to IBM</text>
+            <!-- 2026 -->
+            <circle cx="60" cy="265" r="4" class="tl-dot-warn"/>
+            <text x="80" y="262" class="tl-date">2026</text>
+            <text x="80" y="275" class="tl-event">45% of DevOps teams evaluating alternatives</text>
+        </svg>
+
+        <p>The numbers tell the rest of the story.
+            <a href="https://controlmonkey.io/resource/terraform-license-change-impact-2025/" target="_blank" rel="noopener">45 per cent of DevOps teams are now evaluating alternatives</a>.
+            Yet 80 per cent of IaC work still runs on Terraform. The gap between those
+            two figures is not satisfaction. It is inertia. The same force that keeps
+            teams on Jira long after the joy has left.</p>
+
+        <h2>The Abstraction Invoice</h2>
+
+        <p>Terraform promises cloud-agnosticism. In practice, you learn three things:
+            HCL, the cloud provider's API, and the
+            <a href="https://josvisser.substack.com/p/terrible-terraform" target="_blank" rel="noopener">provider plugin's quirks</a>.
+            Three knowledge layers for one abstraction. The AWS provider maps AWS
+            resources. The Azure provider maps Azure resources. Each with its own naming
+            conventions, its own argument structure, its own undocumented behaviours.
+            The abstraction does not abstract. It translates, and the translation has an accent.</p>
+
+        <svg viewBox="0 0 520 200" aria-label="Three knowledge layers required to use Terraform: HCL syntax, cloud provider API, and provider plugin quirks. Three layers for one abstraction." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tk-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tk-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .tk-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tk-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tk-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tk-arrow { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 14px; }
+            </style>
+            <text x="260" y="22" class="tk-title" text-anchor="middle">Three Knowledge Layers for One Abstraction</text>
+            <!-- Layer 1: HCL -->
+            <rect x="20" y="44" width="140" height="70" class="tk-box"/>
+            <text x="90" y="68" class="tk-label" text-anchor="middle">Layer 1: HCL</text>
+            <text x="90" y="84" class="tk-muted" text-anchor="middle">No conditionals</text>
+            <text x="90" y="96" class="tk-muted" text-anchor="middle">No loops, no functions</text>
+            <!-- Arrow -->
+            <text x="175" y="84" class="tk-arrow">+</text>
+            <!-- Layer 2: Cloud API -->
+            <rect x="195" y="44" width="140" height="70" class="tk-box"/>
+            <text x="265" y="68" class="tk-label" text-anchor="middle">Layer 2: Cloud API</text>
+            <text x="265" y="84" class="tk-muted" text-anchor="middle">AWS, Azure, GCP</text>
+            <text x="265" y="96" class="tk-muted" text-anchor="middle">Each with own semantics</text>
+            <!-- Arrow -->
+            <text x="350" y="84" class="tk-arrow">+</text>
+            <!-- Layer 3: Provider Plugin -->
+            <rect x="370" y="44" width="140" height="70" class="tk-box-accent"/>
+            <text x="440" y="68" class="tk-label" text-anchor="middle">Layer 3: Plugin</text>
+            <text x="440" y="84" class="tk-muted" text-anchor="middle">Provider quirks</text>
+            <text x="440" y="96" class="tk-muted" text-anchor="middle">Undocumented behaviour</text>
+            <!-- Bottom -->
+            <text x="260" y="145" class="tk-label" text-anchor="middle">You are not going multi-cloud. Nobody is.</text>
+            <text x="260" y="165" class="tk-muted" text-anchor="middle">The portability argument funds the sales deck, not the architecture</text>
+            <text x="260" y="185" class="tk-muted" text-anchor="middle">The abstraction does not abstract. It translates. The translation has an accent.</text>
+        </svg>
+
+        <p>The multi-cloud promise is the centrepiece of the sales deck. In practice,
+            nobody is going multi-cloud. You pick AWS or Azure or GCP, you commit,
+            and you stay. The portability argument justifies the tool, not the
+            architecture. When was the last time you saw an organisation migrate from
+            AWS to Azure because Terraform made it easy? Quite.</p>
+
+        <h2>The Alternative</h2>
+
+        <p><a href="https://opentofu.org/" target="_blank" rel="noopener">OpenTofu</a>
+            is the same tool without the licence risk. A drop-in replacement under the
+            Linux Foundation, maintained by the community that built most of the
+            providers in the first place. If your codebase is already Terraform, this
+            is the path of least resistance and the most sensible first step.</p>
+
+        <p><a href="https://www.pulumi.com/docs/iac/comparisons/terraform/" target="_blank" rel="noopener">Pulumi</a>
+            takes the opposite approach: actual programming languages. TypeScript, Python,
+            Go. Real conditionals. Real loops. Real functions. The infrastructure code
+            lives in the same language as the application code, and the IDE already
+            knows how to help you write it.</p>
+
+        <p>Ansible is agentless, idempotent, and mature. No state file, no drift by
+            design, no proprietary language. It describes what should exist and makes
+            it so. Shell scripts and cloud CLIs: transparent, debuggable, no state
+            file, no abstraction layer, no licence concern. They have provisioned
+            servers for decades.</p>
+
+        <p>Or simpler still, do it the Unix way: a Makefile, a CLI, and a deployment
+            that fits in your head.</p>
+
+        <svg viewBox="0 0 520 200" aria-label="Alternatives to Terraform: OpenTofu as drop-in replacement, Pulumi with real programming languages, Ansible without state files, and shell scripts with cloud CLIs." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ta-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ta-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ta-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .ta-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ta-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ta-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="260" y="22" class="ta-title" text-anchor="middle">The Alternatives</text>
+            <!-- OpenTofu -->
+            <rect x="10" y="38" width="118" height="100" class="ta-box-accent"/>
+            <text x="69" y="58" class="ta-head" text-anchor="middle">OpenTofu</text>
+            <text x="69" y="76" class="ta-item" text-anchor="middle">Drop-in replacement</text>
+            <text x="69" y="92" class="ta-item" text-anchor="middle">MPL-licensed</text>
+            <text x="69" y="108" class="ta-item" text-anchor="middle">Linux Foundation</text>
+            <text x="69" y="126" class="ta-muted" text-anchor="middle">Least resistance</text>
+            <!-- Pulumi -->
+            <rect x="138" y="38" width="118" height="100" class="ta-box"/>
+            <text x="197" y="58" class="ta-head" text-anchor="middle">Pulumi</text>
+            <text x="197" y="76" class="ta-item" text-anchor="middle">TS, Python, Go</text>
+            <text x="197" y="92" class="ta-item" text-anchor="middle">Real conditionals</text>
+            <text x="197" y="108" class="ta-item" text-anchor="middle">Real functions</text>
+            <text x="197" y="126" class="ta-muted" text-anchor="middle">Your IDE already helps</text>
+            <!-- Ansible -->
+            <rect x="266" y="38" width="118" height="100" class="ta-box"/>
+            <text x="325" y="58" class="ta-head" text-anchor="middle">Ansible</text>
+            <text x="325" y="76" class="ta-item" text-anchor="middle">No state file</text>
+            <text x="325" y="92" class="ta-item" text-anchor="middle">Agentless</text>
+            <text x="325" y="108" class="ta-item" text-anchor="middle">Idempotent</text>
+            <text x="325" y="126" class="ta-muted" text-anchor="middle">No drift by design</text>
+            <!-- Shell + CLI -->
+            <rect x="394" y="38" width="118" height="100" class="ta-box"/>
+            <text x="453" y="58" class="ta-head" text-anchor="middle">Shell + CLI</text>
+            <text x="453" y="76" class="ta-item" text-anchor="middle">Transparent</text>
+            <text x="453" y="92" class="ta-item" text-anchor="middle">Debuggable</text>
+            <text x="453" y="108" class="ta-item" text-anchor="middle">No state file</text>
+            <text x="453" y="126" class="ta-muted" text-anchor="middle">Decades of proof</text>
+            <!-- Bottom -->
+            <text x="260" y="165" class="ta-item" text-anchor="middle">Or simpler: a Makefile, a CLI, and a deployment that fits in your head.</text>
+        </svg>
+
+        <h2>The Pattern</h2>
+
+        <p>Infrastructure was already manageable. Shell scripts provisioned servers
+            for decades. Ansible configured them. Cloud CLIs controlled them. The
+            tools existed. The workflows existed. The knowledge existed.</p>
+
+        <p>Then Terraform added a DSL that cannot express a conditional, a state file
+            that stores secrets in plain text, and a licence that belongs to IBM. Three
+            new problems for one abstraction. The infrastructure was already there.
+            The tooling was already there. The invoice was not.</p>
+
+        <blockquote>
+            <p>A configuration language that destroys infrastructure when you reorder
+                a list, stores your secrets in plain text, and changed its licence
+                overnight is not infrastructure as code. It is infrastructure as risk.</p>
+        </blockquote>
+
+        <p>The invoice is not a single line item. It is the compound of a language
+            without conditionals, a state file without encryption, a licence without
+            continuity, and an abstraction that requires three knowledge layers to
+            operate. You wanted to provision a server. What arrived was a new class
+            of problems dressed as a solution.</p>
+
+        <p>Rather an expensive abstraction.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The abstraction tax, itemised:</strong></p>
+            <p><strong>The language:</strong> HCL has no if/else, no loops, no functions.
+                <code style="white-space:nowrap">count = var.x ? 1 : 0</code> is a loop abused as a boolean.
+                Reorder a counted list: destroy and recreate. Resource references
+                routinely exceed 100 characters.</p>
+            <p><strong>The state:</strong> secrets in plain text JSON. 1,000 resources:
+                20 MB state, gigabytes of RAM. Plan time grows exponentially beyond
+                2,000 resources. Best practice: 200 resources per state. 90 per cent
+                of drift is caused by humans editing the console.</p>
+            <p><strong>The licence:</strong> MPL to BSL overnight in August 2023.
+                OpenTofu forked within a month. IBM acquired HashiCorp for $6.4 billion
+                in February 2025. 45 per cent of DevOps teams evaluating alternatives.
+                80 per cent of IaC work still on Terraform. The gap is not satisfaction.
+                It is inertia.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

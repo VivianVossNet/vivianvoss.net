@@ -46,6 +46,20 @@
     <nav class="vv-pager" id="pager-top" aria-label="Page navigation"></nav>
 
     <div class="vv-series" id="blog-list">
+        <article class="vv-series-item" data-tags="the-invoice">
+            <span class="day">20 Mar 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">devops</span>
+                <span class="vv-pill">cloud</span>
+                <span class="vv-pill">licensing</span>
+                <span class="vv-pill">tooling</span>
+            </div>
+            <h3><a href="/blog/terraform">Terraform: The Abstraction Layer</a></h3>
+            <p>You wanted to provision a server. You got a proprietary language
+                that cannot express a conditional, a state file that stores your
+                secrets in plain text, and a licence that changed overnight after
+                nine years of open-source trust. Three invoices for one abstraction.</p>
+        </article>
         <article class="vv-series-item" data-tags="the-copy-cat">
             <span class="day">19 Mar 2026</span>
             <div class="vv-pills">
@@ -1554,13 +1568,15 @@
     }
 
     function pageRange(current, total) {
-        /* Up to 6 pages: show all. From 7+: show 3 left, ellipsis, 3 right. */
+        /* Up to 6 pages: show all. 7+: fixed 7 slots with sliding window. */
         if (total <= 6) {
             var seq = [];
             for (var i = 1; i <= total; i++) seq.push(i);
             return seq;
         }
-        return [1, 2, 3, 0, total - 2, total - 1, total]; /* 0 = ellipsis */
+        /* Always: [1] [–] [a][b][c] [–] [last] = 7 elements */
+        var center = Math.max(3, Math.min(current, total - 2));
+        return [1, 0, center - 1, center, center + 1, 0, total];
     }
 
     function renderPager(nav, total) {
