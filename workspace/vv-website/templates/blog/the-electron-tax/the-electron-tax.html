@@ -1,0 +1,408 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Electron Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Every Electron app ships its own copy of Chromium. Slack, Discord, Teams, VS Code. Four apps, four browsers, none displaying a web page. The Electron tax, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-electron-tax{( endslot )}
+
+{( slot og-title )}The Electron Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Every Electron app ships its own copy of Chromium. Four apps, four browsers, none displaying a web page. The Electron tax, itemised.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Electron Tax",
+    "datePublished": "2026-03-21",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-electron-tax",
+    "description": "Every Electron app ships its own copy of Chromium. Slack, Discord, Teams, VS Code. Four apps, four browsers, none displaying a web page. The Electron tax, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-21">21 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Electron Tax</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Beta Stories</em> &#x25A0; Episode 4</p>
+
+        <blockquote>
+            <p>&#x201C;Write once, deploy everywhere! Cross-platform with web technologies!&#x201D;</p>
+        </blockquote>
+
+        <p>In 2014, GitHub released a framework that let web developers build
+            desktop applications. JavaScript, HTML, CSS. One codebase, three
+            platforms. Splendid.</p>
+
+        <p>One small detail: every application ships its very own copy of Chromium.</p>
+
+        <h2>The Promise</h2>
+
+        <p>Cross-platform development without learning three native toolkits.
+            A genuinely attractive proposition. Slack adopted it. Discord adopted
+            it. Microsoft built Teams on it. 1Password rewrote their native macOS
+            app in it. VS Code became the most popular editor in history on it.
+            By 2025,
+            <a href="https://www.electronjs.org/apps" target="_blank" rel="noopener">over 600 applications</a>
+            ship on Electron.</p>
+
+        <p>The promise was efficiency. For the company. Not, as it turns out, for
+            the user.</p>
+
+        <h2>The RAM Invoice</h2>
+
+        <p>Your chat application uses more RAM than your entire operating system
+            did in 2010. With memory prices trading like precious metals, quite the
+            architectural choice.</p>
+
+        <p><a href="https://slack.engineering/reducing-slacks-memory-footprint/" target="_blank" rel="noopener">Slack</a>:
+            130 to 960 MB. For messages. A single workspace, sitting idle, consuming
+            resources that would have run an entire office suite fifteen years ago.</p>
+
+        <p><a href="https://www.techspot.com/news/110542-discord-force-restarting-itself-windows-11-stop-eating.html" target="_blank" rel="noopener">Discord</a>:
+            memory leaks so severe they auto-restart the application when it exceeds
+            4 GB. Their
+            <a href="https://www.pcguide.com/news/discord-dev-says-memory-leak-issues-are-being-worked-on-confirms-restart-fix-is-only-a-temporary-solution/" target="_blank" rel="noopener">fix</a>
+            for a chat client consuming four gigabytes of RAM is to quietly reboot
+            it. Rather creative, that.</p>
+
+        <p><a href="https://www.windowslatest.com/2025/11/27/microsoft-admits-microsoft-teams-eats-ram-on-windows-doing-nothing-and-fix-is-just-another-exe/" target="_blank" rel="noopener">Microsoft Teams</a>:
+            1 to 2 GB idle. In November 2025, Microsoft admitted it
+            &#x201C;eats RAM on Windows doing nothing.&#x201D; Their fix was
+            another process. One rather admires the symmetry: solving a resource
+            problem by adding resources.</p>
+
+        <p><a href="https://markaicode.com/vs/zed-editor-vs-vs-code/" target="_blank" rel="noopener">VS Code</a>:
+            180 MB empty. 890 MB with extensions.
+            <a href="https://www.alphr.com/visual-studio-code-vs-notepad-vs-sublime-text-vs-atom/" target="_blank" rel="noopener">Sublime Text</a>
+            does the same job in 20 MB.</p>
+
+        <p><a href="https://www.1password.community/discussions/1password/1password-8-memory-usage-vs-1password-7-aka-why-electron-is-no-good-/131959" target="_blank" rel="noopener">1Password 8</a>
+            replaced a native macOS application that worked beautifully with an
+            Electron rewrite. RAM: 2.5 times higher. The password manager now needs
+            more resources than the passwords it manages.</p>
+
+        <svg viewBox="0 0 560 320" aria-label="RAM usage comparison: native applications from 2010 used 210 MB combined, while four Electron apps in 2025 use 1.8 to 8.8 GB combined." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .el-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .el-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .el-value { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .el-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .el-bar { fill: var(--accent); opacity: 0.7; }
+                .el-bar-muted { fill: var(--muted); opacity: 0.3; }
+                .el-axis { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="280" y="22" class="el-title" text-anchor="middle">The RAM Tax: Then vs Now</text>
+            <!-- Then column -->
+            <text x="150" y="50" class="el-label" text-anchor="middle">Native (2010)</text>
+            <rect x="90" y="58" width="120" height="24" rx="2" class="el-bar-muted"/>
+            <text x="95" y="74" class="el-label">mIRC</text>
+            <text x="215" y="74" class="el-value">40 MB</text>
+            <rect x="90" y="88" width="120" height="24" rx="2" class="el-bar-muted"/>
+            <text x="95" y="104" class="el-label">Notepad++</text>
+            <text x="215" y="104" class="el-value">50 MB</text>
+            <rect x="90" y="118" width="120" height="24" rx="2" class="el-bar-muted"/>
+            <text x="95" y="134" class="el-label">Sublime Text</text>
+            <text x="215" y="134" class="el-value">20 MB</text>
+            <rect x="90" y="148" width="120" height="24" rx="2" class="el-bar-muted"/>
+            <text x="95" y="164" class="el-label">Skype</text>
+            <text x="215" y="164" class="el-value">100 MB</text>
+            <text x="150" y="196" class="el-label" text-anchor="middle">Total: 210 MB</text>
+            <!-- Now column -->
+            <text x="420" y="50" class="el-label" text-anchor="middle">Electron (2025)</text>
+            <rect x="320" y="58" width="220" height="24" rx="2" class="el-bar"/>
+            <text x="325" y="74" class="el-label">Slack</text>
+            <text x="545" y="74" class="el-value">960 MB</text>
+            <rect x="320" y="88" width="220" height="24" rx="2" class="el-bar"/>
+            <text x="325" y="104" class="el-label">Discord</text>
+            <text x="545" y="104" class="el-value">4 GB*</text>
+            <rect x="320" y="118" width="220" height="24" rx="2" class="el-bar"/>
+            <text x="325" y="134" class="el-label">Teams</text>
+            <text x="545" y="134" class="el-value">2 GB</text>
+            <rect x="320" y="148" width="220" height="24" rx="2" class="el-bar"/>
+            <text x="325" y="164" class="el-label">VS Code</text>
+            <text x="545" y="164" class="el-value">890 MB</text>
+            <text x="420" y="196" class="el-label" text-anchor="middle">Total: 1.8 to 8.8 GB</text>
+            <text x="490" y="210" class="el-muted">* auto-restarts at this point</text>
+            <!-- Bottom -->
+            <line x1="60" y1="228" x2="540" y2="228" class="el-axis"/>
+            <text x="280" y="250" class="el-muted" text-anchor="middle">Same functions. 40x the cost. Four browsers. None displaying a web page.</text>
+        </svg>
+
+        <p>Open Slack, Discord, VS Code, and Teams simultaneously. Four separate
+            Chromium instances. Four browsers. None of them displaying a web page.</p>
+
+        <h2>The Disk Invoice</h2>
+
+        <p>Each Electron application
+            <a href="https://github.com/electron/electron/issues/2003" target="_blank" rel="noopener">bundles approximately 150 MB of Chromium</a>.
+            A &#x201C;Hello World&#x201D; Electron application: 150 MB on disk.
+            Before it does anything. Before it renders a single pixel of your
+            interface. One hundred and fifty megabytes of browser engine to display
+            a window that says hello.</p>
+
+        <p>Four Electron applications: 600 MB of redundant browser engine before you
+            open a single file. The framework has an
+            <a href="https://github.com/electron/electron/issues/6210" target="_blank" rel="noopener">open issue from 2016</a>
+            requesting shared Chromium across applications. Still unresolved. Ten
+            years. The problem is known. It is simply not profitable to solve.</p>
+
+        <svg viewBox="0 0 520 200" aria-label="Disk usage: each Electron app bundles 150 MB of Chromium. Four apps equals 600 MB of redundant browser engine." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .dk-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .dk-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .dk-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .dk-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .dk-chromium { fill: var(--accent); opacity: 0.15; rx: 4; }
+                .dk-app { fill: var(--accent); opacity: 0.7; rx: 2; }
+            </style>
+            <text x="260" y="22" class="dk-title" text-anchor="middle">What You Install vs What You Need</text>
+            <!-- App 1 -->
+            <rect x="20" y="42" width="110" height="80" class="dk-chromium"/>
+            <rect x="25" y="47" width="100" height="14" class="dk-app"/>
+            <text x="75" y="57" class="dk-label" text-anchor="middle" style="fill:var(--bg);font-size:8px">Your app: ~5 MB</text>
+            <text x="75" y="100" class="dk-muted" text-anchor="middle">Chromium</text>
+            <text x="75" y="112" class="dk-muted" text-anchor="middle">150 MB</text>
+            <text x="75" y="136" class="dk-label" text-anchor="middle">Slack</text>
+            <!-- App 2 -->
+            <rect x="145" y="42" width="110" height="80" class="dk-chromium"/>
+            <rect x="150" y="47" width="100" height="14" class="dk-app"/>
+            <text x="200" y="57" class="dk-label" text-anchor="middle" style="fill:var(--bg);font-size:8px">Your app: ~5 MB</text>
+            <text x="200" y="100" class="dk-muted" text-anchor="middle">Chromium</text>
+            <text x="200" y="112" class="dk-muted" text-anchor="middle">150 MB</text>
+            <text x="200" y="136" class="dk-label" text-anchor="middle">Discord</text>
+            <!-- App 3 -->
+            <rect x="270" y="42" width="110" height="80" class="dk-chromium"/>
+            <rect x="275" y="47" width="100" height="14" class="dk-app"/>
+            <text x="325" y="57" class="dk-label" text-anchor="middle" style="fill:var(--bg);font-size:8px">Your app: ~5 MB</text>
+            <text x="325" y="100" class="dk-muted" text-anchor="middle">Chromium</text>
+            <text x="325" y="112" class="dk-muted" text-anchor="middle">150 MB</text>
+            <text x="325" y="136" class="dk-label" text-anchor="middle">Teams</text>
+            <!-- App 4 -->
+            <rect x="395" y="42" width="110" height="80" class="dk-chromium"/>
+            <rect x="400" y="47" width="100" height="14" class="dk-app"/>
+            <text x="450" y="57" class="dk-label" text-anchor="middle" style="fill:var(--bg);font-size:8px">Your app: ~5 MB</text>
+            <text x="450" y="100" class="dk-muted" text-anchor="middle">Chromium</text>
+            <text x="450" y="112" class="dk-muted" text-anchor="middle">150 MB</text>
+            <text x="450" y="136" class="dk-label" text-anchor="middle">VS Code</text>
+            <!-- Bottom -->
+            <text x="260" y="165" class="dk-label" text-anchor="middle">600 MB of the same browser engine. Four copies. Zero web pages.</text>
+            <text x="260" y="185" class="dk-muted" text-anchor="middle">Shared Chromium requested 2016. Still unresolved. Ten years.</text>
+        </svg>
+
+        <h2>The Mechanism</h2>
+
+        <p>Web developers outnumber native developers by orders of magnitude. Cheaper
+            to hire, faster to ship, easier to recruit. The company saves on
+            engineering. The user pays in RAM, battery life, and disk space. This is
+            the exchange. It is never stated explicitly, but it is the transaction
+            at the heart of every Electron application.</p>
+
+        <p>The economics are rational. A native macOS developer costs more than a
+            React developer. Maintaining three native codebases costs more than
+            maintaining one web codebase. The arithmetic is correct. The invoice
+            is simply addressed to the wrong party.</p>
+
+        <h2>The Signal</h2>
+
+        <p>mIRC handled chat in 40 MB. Discord needs 500. Same function. Twelve
+            times the cost. The difference is not features. It is Chromium.</p>
+
+        <p><a href="https://markaicode.com/vs/zed-editor-vs-vs-code/" target="_blank" rel="noopener">Zed</a>,
+            a code editor written in Rust, starts in 0.12 seconds and uses 45 MB.
+            VS Code starts in 1.2 seconds and uses 180 MB. That is before opening
+            a project. With extensions, VS Code reaches 890 MB. Zed: 140 MB. The
+            difference is not features. It is the absence of a bundled browser.</p>
+
+        <svg viewBox="0 0 520 220" aria-label="Editor comparison: Zed uses 45 MB and starts in 0.12 seconds, Sublime Text uses 20 MB, VS Code uses 180 to 890 MB and starts in 1.2 seconds." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ed-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ed-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .ed-value { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ed-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ed-bar { fill: var(--accent); opacity: 0.7; }
+                .ed-bar-good { fill: var(--accent); opacity: 0.9; }
+                .ed-bar-muted { fill: var(--muted); opacity: 0.3; }
+                .ed-axis { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="260" y="22" class="ed-title" text-anchor="middle">Code Editors: RAM Usage</text>
+            <line class="ed-axis" x1="140" y1="44" x2="140" y2="180"/>
+            <!-- Sublime -->
+            <text x="135" y="66" class="ed-label" text-anchor="end">Sublime Text</text>
+            <rect x="140" y="54" width="16" height="18" rx="2" class="ed-bar-good"/>
+            <text x="162" y="68" class="ed-value">20 MB</text>
+            <text x="220" y="68" class="ed-muted">C++</text>
+            <!-- Zed empty -->
+            <text x="135" y="96" class="ed-label" text-anchor="end">Zed (empty)</text>
+            <rect x="140" y="84" width="36" height="18" rx="2" class="ed-bar-good"/>
+            <text x="182" y="98" class="ed-value">45 MB</text>
+            <text x="240" y="98" class="ed-muted">Rust, 0.12s start</text>
+            <!-- Zed loaded -->
+            <text x="135" y="126" class="ed-label" text-anchor="end">Zed (project)</text>
+            <rect x="140" y="114" width="112" height="18" rx="2" class="ed-bar-good"/>
+            <text x="258" y="128" class="ed-value">140 MB</text>
+            <!-- VS Code empty -->
+            <text x="135" y="156" class="ed-label" text-anchor="end">VS Code (empty)</text>
+            <rect x="140" y="144" width="144" height="18" rx="2" class="ed-bar"/>
+            <text x="290" y="158" class="ed-value">180 MB</text>
+            <text x="348" y="158" class="ed-muted">Electron, 1.2s start</text>
+            <!-- VS Code extensions -->
+            <text x="135" y="186" class="ed-label" text-anchor="end">VS Code (ext.)</text>
+            <rect x="140" y="174" width="356" height="18" rx="2" class="ed-bar-muted"/>
+            <text x="502" y="188" class="ed-value">890 MB</text>
+            <!-- Note -->
+            <text x="260" y="212" class="ed-muted" text-anchor="middle">The difference is not features. It is the absence of a bundled browser.</text>
+        </svg>
+
+        <h2>The Alternative</h2>
+
+        <p>The answer is not &#x201C;learn native development for three platforms.&#x201D;
+            The answer is
+            <a href="https://www.levminer.com/blog/tauri-vs-electron" target="_blank" rel="noopener">Tauri</a>.
+            Same HTML, CSS, JavaScript frontend. Same web skills. But Tauri uses
+            the operating system's native WebView instead of bundling Chromium.
+            Installer: 2.5 MB instead of 85 MB. One codebase, all platforms, no
+            bundled browser.</p>
+
+        <p>Even Microsoft noticed. In 2023,
+            <a href="https://www.ghacks.net/2023/03/28/microsoft-teams-new-app-is-2x-faster-and-uses-50-less-memory/" target="_blank" rel="noopener">they abandoned Electron for Teams</a>
+            and rebuilt it on Edge WebView2. Twice as fast, 50 per cent less memory.
+            They did not need to rewrite the frontend. They simply stopped shipping
+            their own browser with every installation.</p>
+
+        <svg viewBox="0 0 520 170" aria-label="Installer size comparison: Electron Hello World is 85 MB, Tauri Hello World is 2.5 MB. 34 times smaller." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .in-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .in-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .in-value { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .in-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .in-bar { fill: var(--muted); opacity: 0.4; }
+                .in-bar-good { fill: var(--accent); opacity: 0.9; }
+                .in-axis { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="260" y="22" class="in-title" text-anchor="middle">Installer Size: Hello World</text>
+            <line class="in-axis" x1="140" y1="44" x2="140" y2="120"/>
+            <!-- Electron -->
+            <text x="135" y="68" class="in-label" text-anchor="end">Electron</text>
+            <rect x="140" y="54" width="340" height="22" rx="2" class="in-bar"/>
+            <text x="488" y="70" class="in-value">85 MB</text>
+            <text x="310" y="68" class="in-muted" text-anchor="middle">150 MB Chromium bundled</text>
+            <!-- Tauri -->
+            <text x="135" y="108" class="in-label" text-anchor="end">Tauri</text>
+            <rect x="140" y="94" width="10" height="22" rx="2" class="in-bar-good"/>
+            <text x="158" y="110" class="in-value">2.5 MB</text>
+            <text x="225" y="110" class="in-muted">native WebView, no bundled browser</text>
+            <!-- Note -->
+            <text x="260" y="148" class="in-muted" text-anchor="middle">Same web skills. Same frontend code. 34x smaller installer.</text>
+        </svg>
+
+        <h2>The Timeline</h2>
+
+        <svg viewBox="0 0 520 260" aria-label="Electron timeline from 2014 to 2026: release, shared Chromium issue, Teams abandoning Electron, Discord memory leaks." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tl-date { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .tl-event { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .tl-detail { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tl-line { stroke: var(--border); stroke-width: 2; }
+                .tl-dot { fill: var(--accent); }
+                .tl-dot-warn { fill: var(--accent); opacity: 0.6; }
+            </style>
+            <text x="260" y="22" class="tl-title" text-anchor="middle">The Electron Timeline</text>
+            <line x1="60" y1="50" x2="60" y2="240" class="tl-line"/>
+            <!-- 2014 -->
+            <circle cx="60" cy="55" r="4" class="tl-dot"/>
+            <text x="80" y="52" class="tl-date">2014</text>
+            <text x="80" y="65" class="tl-event">GitHub releases Electron</text>
+            <!-- 2016 -->
+            <circle cx="60" cy="95" r="4" class="tl-dot-warn"/>
+            <text x="80" y="92" class="tl-date">2016</text>
+            <text x="80" y="105" class="tl-event">Shared Chromium requested (issue #6210)</text>
+            <text x="80" y="118" class="tl-detail">Still unresolved. Ten years</text>
+            <!-- 2023 -->
+            <circle cx="60" cy="145" r="5" class="tl-dot"/>
+            <text x="80" y="142" class="tl-date">2023</text>
+            <text x="80" y="155" class="tl-event">Microsoft abandons Electron for Teams</text>
+            <text x="80" y="168" class="tl-detail">2x faster, 50% less memory. Edge WebView2</text>
+            <!-- 2025 -->
+            <circle cx="60" cy="195" r="5" class="tl-dot"/>
+            <text x="80" y="192" class="tl-date">2025</text>
+            <text x="80" y="205" class="tl-event">Discord admits memory leaks, adds auto-restart</text>
+            <text x="80" y="218" class="tl-detail">Teams admits it "eats RAM doing nothing"</text>
+            <!-- 2026 -->
+            <circle cx="60" cy="240" r="4" class="tl-dot-warn"/>
+            <text x="80" y="237" class="tl-date">2026</text>
+            <text x="80" y="250" class="tl-event">600+ apps. Four browsers per laptop. None displaying a web page</text>
+        </svg>
+
+        <h2>The Pattern</h2>
+
+        <p>Electron is not a bad idea. For a small team building an internal tool,
+            it is a perfectly reasonable trade-off. Ship fast, iterate, move on. The
+            problem is not the framework. The problem is that billion-dollar companies
+            with thousands of engineers use it because hiring web developers is cheaper
+            than hiring native developers, then pass the performance bill to the user.</p>
+
+        <p>The pattern is always the same: a tool designed for convenience at small
+            scale becomes an industry default at large scale, and the costs that were
+            acceptable for a prototype become intolerable for software used by
+            hundreds of millions of people. Discord has 200 million monthly active
+            users. Their chat client auto-restarts when it exceeds 4 GB of RAM.
+            This is not a prototype. This is a product.</p>
+
+        <blockquote>
+            <p>Every Electron app ships its own copy of Chromium. Four apps, four
+                browsers, none displaying a web page. The company saves on engineering.
+                The user pays in RAM, battery, and disk space. The invoice is addressed
+                to the wrong party.</p>
+        </blockquote>
+
+        <p>Tauri proves the alternative exists. Same web skills, same frontend code,
+            34 times smaller installer. Microsoft proved it too, when they rebuilt
+            Teams and halved the memory footprint by simply not shipping their own
+            browser.</p>
+
+        <p>And yet, your laptop still runs six browser instances. None of them
+            displaying a web page.</p>
+
+        <p>Do bring your own RAM. The black market still has stock, I am told.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The Electron tax, itemised:</strong></p>
+            <ul>
+                <li><strong>Slack:</strong> 130 to 960 MB (one workspace, idle)</li>
+                <li><strong>Discord:</strong> auto-restarts at 4 GB (December 2025 &#x201C;fix&#x201D;)</li>
+                <li><strong>Teams:</strong> &#x201C;eats RAM doing nothing&#x201D; (Microsoft, November 2025)</li>
+                <li><strong>VS Code:</strong> 180 MB empty, 890 MB with extensions</li>
+                <li><strong>1Password 8:</strong> 2.5x more RAM than native v7</li>
+                <li><strong>Each app:</strong> ~150 MB Chromium on disk. Hello World: 150 MB</li>
+                <li><strong>Tauri:</strong> 2.5 MB installer. Same skills. No bundled browser</li>
+                <li><strong>Zed:</strong> 45 MB, 0.12s startup. Rust. No Chromium</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

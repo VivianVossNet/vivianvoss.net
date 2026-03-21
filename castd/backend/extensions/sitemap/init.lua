@@ -124,6 +124,7 @@ local pages = {
     { loc = "/blog/form-validation",          priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/hydration",               priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/terraform",              priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-electron-tax",       priority = "0.7", changefreq = "yearly" },
 }
 
 function route()

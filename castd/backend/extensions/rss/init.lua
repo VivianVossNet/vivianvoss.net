@@ -4,6 +4,7 @@
 local SITE = "https://vivianvoss.net"
 
 local articles = {
+    { date = "Sat, 21 Mar 2026 00:00:00 GMT", title = "The Electron Tax", loc = "/blog/the-electron-tax", desc = "Every Electron app ships its own copy of Chromium. Slack, Discord, Teams, VS Code. Four apps, four browsers, none displaying a web page. The company saves on engineering. The user pays in RAM, battery, and disk space." },
     { date = "Fri, 20 Mar 2026 00:00:00 GMT", title = "Terraform: The Abstraction Layer", loc = "/blog/terraform", desc = "You wanted to provision a server. You got a proprietary language that cannot express a conditional, a state file that stores your secrets in plain text, and a licence that changed overnight. Three invoices for one abstraction." },
     { date = "Thu, 19 Mar 2026 00:00:00 GMT", title = "Hydration", loc = "/blog/hydration", desc = "In 1995, PHP rendered HTML on the server. In 2026, the industry renders HTML on the server, then ships 558 KB of JavaScript to rebuild the same DOM. They call this hydration. Twenty years to return to where PHP started." },
     { date = "Wed, 18 Mar 2026 00:00:00 GMT", title = "The Form the Browser Already Validated", loc = "/blog/form-validation", desc = "The average React project installs a validation library before a single input field exists. The browser has validated forms natively since 2014. Required, email, pattern, minlength. No JavaScript. No bundle size." },
