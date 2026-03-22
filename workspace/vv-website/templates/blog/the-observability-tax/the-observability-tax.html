@@ -1,0 +1,341 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Observability Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="syslog has existed since 1983. In 2026, a mid-sized company spends $708,000 per year to know whether its servers are running. One does admire an industry that turned tail -f into a seven-figure problem.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-observability-tax{( endslot )}
+
+{( slot og-title )}The Observability Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}syslog has existed since 1983. In 2026, monitoring costs seven figures. The watchtower now costs more than the castle.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Observability Tax",
+    "datePublished": "2026-03-22",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-observability-tax",
+    "description": "syslog has existed since 1983. In 2026, a mid-sized company spends $708,000 per year to know whether its servers are running. The observability tax, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-22">22 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Observability Tax</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">devops</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">cloud</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Performance-Fresser</em> &#x25A0; Episode 18</p>
+
+        <p><code>syslog</code> has existed since 1983. <code>top</code>,
+            <code>vmstat</code>, <code>netstat</code>, <code>ping</code>: built
+            into every Unix system since before most of today's engineers were born.
+            Zero overhead. Zero cost. Zero dependencies.</p>
+
+        <p>In 2026, a mid-sized company with 100 engineers spends
+            <a href="https://oneuptime.com/blog/post/2026-03-01-the-observability-tax-what-monitoring-actually-costs/view" target="_blank" rel="noopener">$708,000 to $1,080,000 per year</a>
+            to know whether its servers are running.
+            97 per cent report unexpected cost surprises. 67 per cent report them
+            regularly.</p>
+
+        <p>One does admire an industry that turned <code>tail -f</code> into a
+            seven-figure problem.</p>
+
+        <h2>The Stack</h2>
+
+        <p>Consider the modern observability pipeline. Prometheus scrapes metrics
+            every 15 seconds. At
+            <a href="https://signoz.io/guides/why-does-prometheus-consume-so-much-memory/" target="_blank" rel="noopener">one million time series: 3 GB of RAM</a>
+            for storage alone. The
+            <a href="https://oneuptime.com/blog/post/2026-02-06-right-size-cpu-memory-opentelemetry-collector/view" target="_blank" rel="noopener">OpenTelemetry Collector</a>:
+            2 CPU cores and 2 GB as its baseline, handling a modest 20,000 spans
+            per second. Sentry's JavaScript SDK:
+            <a href="https://blog.sentry.io/2022/07/19/javascript-sdk-package-reduced/" target="_blank" rel="noopener">53 KB per page load</a>
+            to watch whether the page loads quickly. An observer that slows down
+            the thing it observes. Heisenberg would have appreciated the irony.</p>
+
+        <p>Then Grafana to visualise what Prometheus scraped. Loki to store what
+            Grafana displayed. Tempo to trace what Loki logged. AlertManager to
+            notify when Tempo found something. PagerDuty to escalate what
+            AlertManager notified. Slack to discuss what PagerDuty escalated.
+            A marvellous pipeline, that. Entirely dedicated to watching.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="The observability pipeline: Prometheus scrapes, Grafana visualises, Loki stores, Tempo traces, AlertManager notifies, PagerDuty escalates, Slack discusses. Seven tools to watch." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ob-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ob-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; font-weight: 600; }
+                .ob-verb { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 8px; font-weight: 700; }
+                .ob-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ob-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ob-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ob-arrow { stroke: var(--accent); stroke-width: 1; fill: none; marker-end: url(#ob-arr); }
+            </style>
+            <defs>
+                <marker id="ob-arr" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+                    <path d="M0,0 L6,2 L0,4" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="ob-title" text-anchor="middle">The Observability Pipeline</text>
+            <!-- Row 1 -->
+            <rect x="15" y="40" width="70" height="36" class="ob-box"/>
+            <text x="50" y="56" class="ob-label" text-anchor="middle">Your App</text>
+            <text x="50" y="68" class="ob-muted" text-anchor="middle">the thing</text>
+            <line x1="85" y1="58" x2="105" y2="58" class="ob-arrow"/>
+            <rect x="108" y="40" width="80" height="36" class="ob-box-accent"/>
+            <text x="148" y="56" class="ob-label" text-anchor="middle">Prometheus</text>
+            <text x="148" y="68" class="ob-verb" text-anchor="middle">scrapes</text>
+            <line x1="188" y1="58" x2="208" y2="58" class="ob-arrow"/>
+            <rect x="211" y="40" width="70" height="36" class="ob-box"/>
+            <text x="246" y="56" class="ob-label" text-anchor="middle">Grafana</text>
+            <text x="246" y="68" class="ob-verb" text-anchor="middle">visualises</text>
+            <line x1="281" y1="58" x2="301" y2="58" class="ob-arrow"/>
+            <rect x="304" y="40" width="60" height="36" class="ob-box"/>
+            <text x="334" y="56" class="ob-label" text-anchor="middle">Loki</text>
+            <text x="334" y="68" class="ob-verb" text-anchor="middle">stores</text>
+            <line x1="364" y1="58" x2="384" y2="58" class="ob-arrow"/>
+            <rect x="387" y="40" width="65" height="36" class="ob-box"/>
+            <text x="419" y="56" class="ob-label" text-anchor="middle">Tempo</text>
+            <text x="419" y="68" class="ob-verb" text-anchor="middle">traces</text>
+            <!-- Row 2 -->
+            <line x1="419" y1="76" x2="419" y2="105" class="ob-arrow"/>
+            <rect x="370" y="108" width="98" height="36" class="ob-box"/>
+            <text x="419" y="124" class="ob-label" text-anchor="middle">AlertManager</text>
+            <text x="419" y="136" class="ob-verb" text-anchor="middle">notifies</text>
+            <line x1="370" y1="126" x2="340" y2="126" class="ob-arrow"/>
+            <rect x="255" y="108" width="82" height="36" class="ob-box"/>
+            <text x="296" y="124" class="ob-label" text-anchor="middle">PagerDuty</text>
+            <text x="296" y="136" class="ob-verb" text-anchor="middle">escalates</text>
+            <line x1="255" y1="126" x2="225" y2="126" class="ob-arrow"/>
+            <rect x="155" y="108" width="67" height="36" class="ob-box"/>
+            <text x="188" y="124" class="ob-label" text-anchor="middle">Slack</text>
+            <text x="188" y="136" class="ob-verb" text-anchor="middle">discusses</text>
+            <line x1="155" y1="126" x2="95" y2="126" class="ob-arrow"/>
+            <rect x="15" y="108" width="77" height="36" class="ob-box"/>
+            <text x="53" y="124" class="ob-label" text-anchor="middle">Engineer</text>
+            <text x="53" y="136" class="ob-verb" text-anchor="middle">investigates</text>
+            <!-- Bottom -->
+            <text x="280" y="172" class="ob-muted" text-anchor="middle">Seven tools. One question: is the server running?</text>
+            <text x="280" y="190" class="ob-muted" text-anchor="middle">In 1983, the answer was: tail -f /var/log/messages</text>
+        </svg>
+
+        <p><a href="https://www.redhat.com/en/blog/openshift-monitoring-stack-playing-with-prometheus-performance-and-scraping-intervals" target="_blank" rel="noopener">Prometheus scraping alone increases Kubelet CPU by a factor of four.</a>
+            The observer changes the observed. One would think physicists
+            settled that question a century ago.</p>
+
+        <h2>The Invoice</h2>
+
+        <p>Observability vendors charge
+            <a href="https://oneuptime.com/blog/post/2026-03-10-observability-tax-monitoring-costs-vs-cloud-spend/view" target="_blank" rel="noopener">$0.10 to $3.00 per gigabyte ingested</a>.
+            Cloud storage costs a fraction of a cent. A 5x to 150x markup for
+            the privilege of looking at your own data through someone else's
+            dashboard.</p>
+
+        <p>Some organisations spend 70 per cent of their infrastructure budget
+            observing their infrastructure. The watchtower now costs more than
+            the castle. Quite the inversion.</p>
+
+        <svg viewBox="0 0 520 260" aria-label="Observability cost breakdown: vendor markup 5x to 150x versus cloud storage, some organisations spend 70 per cent of infrastructure budget on observability." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .co-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .co-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .co-value { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .co-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .co-bar { fill: var(--accent); opacity: 0.7; }
+                .co-bar-muted { fill: var(--muted); opacity: 0.3; }
+                .co-axis { stroke: var(--border); stroke-width: 1; }
+                .co-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="260" y="22" class="co-title" text-anchor="middle">The Markup: Storage vs Observability</text>
+            <line class="co-axis" x1="160" y1="44" x2="160" y2="130"/>
+            <!-- Cloud storage -->
+            <text x="155" y="68" class="co-label" text-anchor="end">Cloud storage</text>
+            <rect x="160" y="54" width="8" height="22" rx="2" class="co-bar-muted"/>
+            <text x="176" y="70" class="co-value">$0.02/GB</text>
+            <!-- Vendor low -->
+            <text x="155" y="100" class="co-label" text-anchor="end">Vendor (low)</text>
+            <rect x="160" y="86" width="40" height="22" rx="2" class="co-bar"/>
+            <text x="208" y="102" class="co-value">$0.10/GB</text>
+            <text x="280" y="102" class="co-muted">5x markup</text>
+            <!-- Vendor high -->
+            <text x="155" y="132" class="co-label" text-anchor="end">Vendor (high)</text>
+            <rect x="160" y="118" width="340" height="22" rx="2" class="co-bar"/>
+            <text x="508" y="134" class="co-value">$3.00/GB</text>
+            <text x="330" y="134" class="co-muted" text-anchor="middle">150x markup</text>
+            <!-- Budget split -->
+            <line x1="60" y1="160" x2="480" y2="160" class="co-axis"/>
+            <text x="260" y="182" class="co-label" text-anchor="middle">Infrastructure Budget Allocation</text>
+            <rect x="60" y="192" width="294" height="30" rx="3" class="co-bar"/>
+            <text x="207" y="212" class="co-label" text-anchor="middle" style="fill:var(--bg)">Observability: 70%</text>
+            <rect x="354" y="192" width="126" height="30" rx="3" class="co-bar-muted"/>
+            <text x="417" y="212" class="co-label" text-anchor="middle">Actual infra: 30%</text>
+            <text x="260" y="245" class="co-muted" text-anchor="middle">The watchtower costs more than the castle.</text>
+        </svg>
+
+        <h2>The Retreat</h2>
+
+        <p><a href="https://openobserve.ai/blog/datadog-vs-openobserve-part-9-cost/" target="_blank" rel="noopener">Evereve left Datadog</a>.
+            Cost reduction: 90 per cent. Not a minor optimisation. A revelation
+            about how much of their monitoring bill was margin rather than value.</p>
+
+        <p><a href="https://technology.discover.com/posts/datadog-migration" target="_blank" rel="noopener">Discover Financial migrated 2,200 services</a>
+            away from their vendor. Two thousand two hundred services. If the
+            migration is that large and still worth doing, one might pause to
+            consider what the vendor was charging.</p>
+
+        <p><a href="https://www.deductive.ai/blogs/datadog-thank-you-for-blocking-us" target="_blank" rel="noopener">Deductive AI</a>
+            had their access revoked overnight. Their monitoring vendor switched
+            off their visibility. They rebuilt on open-source tooling in 48 hours.
+            Rather clarifying, when the company that sells you visibility can
+            unilaterally remove it.</p>
+
+        <svg viewBox="0 0 520 160" aria-label="Three companies that left their observability vendor: Evereve saved 90 per cent, Discover migrated 2,200 services, Deductive AI rebuilt in 48 hours." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .rt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .rt-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .rt-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .rt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .rt-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .rt-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="260" y="22" class="rt-title" text-anchor="middle">The Retreat from Vendor Lock-in</text>
+            <!-- Evereve -->
+            <rect x="15" y="38" width="155" height="80" class="rt-box-accent"/>
+            <text x="92" y="58" class="rt-head" text-anchor="middle">Evereve</text>
+            <text x="92" y="76" class="rt-item" text-anchor="middle">Left Datadog</text>
+            <text x="92" y="92" class="rt-item" text-anchor="middle">Cost reduction: 90%</text>
+            <text x="92" y="108" class="rt-muted" text-anchor="middle">Not optimisation. Revelation</text>
+            <!-- Discover -->
+            <rect x="185" y="38" width="155" height="80" class="rt-box"/>
+            <text x="262" y="58" class="rt-head" text-anchor="middle">Discover Financial</text>
+            <text x="262" y="76" class="rt-item" text-anchor="middle">2,200 services migrated</text>
+            <text x="262" y="92" class="rt-item" text-anchor="middle">Away from vendor</text>
+            <text x="262" y="108" class="rt-muted" text-anchor="middle">Worth the effort at that price</text>
+            <!-- Deductive AI -->
+            <rect x="355" y="38" width="155" height="80" class="rt-box"/>
+            <text x="432" y="58" class="rt-head" text-anchor="middle">Deductive AI</text>
+            <text x="432" y="76" class="rt-item" text-anchor="middle">Access revoked overnight</text>
+            <text x="432" y="92" class="rt-item" text-anchor="middle">Rebuilt in 48 hours</text>
+            <text x="432" y="108" class="rt-muted" text-anchor="middle">Vendor sold visibility, then removed it</text>
+        </svg>
+
+        <h2>The Root Cause</h2>
+
+        <p>Bootcamps teach Grafana dashboards, not <code>vmstat</code>. Universities
+            accept vendor sponsorships, teach vendor stacks, and graduate engineers
+            who have never opened a man page. A computer science graduate in 2026
+            has a fundamentally different foundation than one from 2006. Not better.
+            Not worse. Different. Specifically, different in ways that happen to
+            require a subscription.</p>
+
+        <p>One cannot sell a dashboard subscription to someone who knows what pipes
+            do. So one stops teaching pipes.</p>
+
+        <p>The customer base was not discovered. It was cultivated.</p>
+
+        <p>Eric Allman wrote syslog in 1983. Ritchie and Thompson had logging in
+            Unix V1 in the 1970s. A <code>tail -f</code> and three <code>grep</code>s
+            tell you more in thirty seconds than a dashboard that took a sprint to
+            configure. The tools were always there. They merely required reading a
+            man page instead of clicking a colourful dashboard.</p>
+
+        <svg viewBox="0 0 520 200" aria-label="Resource overhead comparison: Unix tools have zero overhead, while modern observability tools consume significant CPU and RAM." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ov-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ov-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .ov-value { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ov-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ov-bar { fill: var(--accent); opacity: 0.7; }
+                .ov-bar-good { fill: var(--accent); opacity: 0.9; }
+                .ov-bar-muted { fill: var(--muted); opacity: 0.3; }
+                .ov-axis { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="260" y="22" class="ov-title" text-anchor="middle">The Observer Tax: Resource Overhead</text>
+            <line class="ov-axis" x1="180" y1="44" x2="180" y2="170"/>
+            <!-- Unix tools -->
+            <text x="175" y="64" class="ov-label" text-anchor="end">tail + grep</text>
+            <rect x="180" y="52" width="4" height="18" rx="1" class="ov-bar-good"/>
+            <text x="192" y="66" class="ov-value">~0 MB</text>
+            <text x="240" y="66" class="ov-muted">since 1983</text>
+            <!-- vmstat -->
+            <text x="175" y="88" class="ov-label" text-anchor="end">vmstat</text>
+            <rect x="180" y="76" width="4" height="18" rx="1" class="ov-bar-good"/>
+            <text x="192" y="90" class="ov-value">~0 MB</text>
+            <text x="240" y="90" class="ov-muted">since 1986</text>
+            <!-- Sentry SDK -->
+            <text x="175" y="112" class="ov-label" text-anchor="end">Sentry JS SDK</text>
+            <rect x="180" y="100" width="20" height="18" rx="1" class="ov-bar"/>
+            <text x="208" y="114" class="ov-value">53 KB/page</text>
+            <text x="290" y="114" class="ov-muted">watches if the page loads quickly</text>
+            <!-- OTel Collector -->
+            <text x="175" y="136" class="ov-label" text-anchor="end">OTel Collector</text>
+            <rect x="180" y="124" width="120" height="18" rx="1" class="ov-bar"/>
+            <text x="308" y="138" class="ov-value">2 cores + 2 GB</text>
+            <text x="410" y="138" class="ov-muted">baseline</text>
+            <!-- Prometheus -->
+            <text x="175" y="160" class="ov-label" text-anchor="end">Prometheus</text>
+            <rect x="180" y="148" width="200" height="18" rx="1" class="ov-bar-muted"/>
+            <text x="388" y="162" class="ov-value">3 GB RAM</text>
+            <text x="448" y="162" class="ov-muted">at 1M series</text>
+            <!-- Note -->
+            <text x="350" y="190" class="ov-muted" text-anchor="middle">Kubelet CPU: 4x increase from scraping alone</text>
+        </svg>
+
+        <h2>The Pattern</h2>
+
+        <p>You needed to know if your server was healthy. You got a monitoring stack
+            that needs its own monitoring. Prometheus watches your application. Who
+            watches Prometheus? Another Prometheus instance, naturally. <em>Quis
+            custodiet ipsos custodes</em>, but with YAML.</p>
+
+        <p>The tools were always there. Free, fast, composable. They merely required
+            reading a man page instead of clicking a colourful dashboard. In 1983,
+            Eric Allman gave Unix <code>syslog</code>. In 2026, the industry replaced
+            it with a seven-figure subscription. The upgrade was not in capability.
+            It was in invoicing.</p>
+
+        <blockquote>
+            <p>A monitoring stack that needs its own monitoring is not observability.
+                It is overhead with a dashboard. The tools were always there. The
+                invoice was not.</p>
+        </blockquote>
+
+        <p>Fewer dashboards. More fundamentals.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The observability tax, itemised:</strong></p>
+            <ul>
+                <li><strong>Cost:</strong> $708K to $1.08M/year (100 engineers). 97% report cost surprises. 70% of infra budget on observability alone</li>
+                <li><strong>Vendor markup:</strong> $0.10 to $3.00/GB ingested vs $0.02/GB cloud storage. 5x to 150x</li>
+                <li><strong>Prometheus:</strong> 3 GB RAM at 1M time series. 4x Kubelet CPU increase from scraping</li>
+                <li><strong>OTel Collector:</strong> 2 cores + 2 GB baseline at 20K spans/second</li>
+                <li><strong>Sentry JS SDK:</strong> 53 KB per page load to observe page load performance</li>
+                <li><strong>Evereve:</strong> 90% cost reduction leaving Datadog</li>
+                <li><strong>Discover Financial:</strong> 2,200 services migrated away from vendor</li>
+                <li><strong>What was already there:</strong> syslog (1983), top, vmstat, netstat, ping. Zero cost. Zero dependencies</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
