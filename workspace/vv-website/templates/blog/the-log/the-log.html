@@ -1,0 +1,319 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Log &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Eric Allman wrote syslog in the 1980s. Forty years of production. Zero licence fees. Yesterday's observability post drew comments insisting that tail cannot replace a monitoring stack. Quite right. Nobody suggested it should.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-log{( endslot )}
+
+{( slot og-title )}The Log &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}syslog: forty years of production. Zero licence fees. Four commands that do what a vendor contract promises and rather frequently fails to deliver.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Log",
+    "datePublished": "2026-03-23",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-log",
+    "description": "Eric Allman wrote syslog in the 1980s. Forty years of production. Zero licence fees. Four commands that do what a vendor contract promises and rather frequently fails to deliver.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-23">23 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Log</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">devops</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 9</p>
+
+        <p>Eric Allman wrote <code>syslog</code> in the 1980s for Sendmail. It
+            became part of BSD. Then part of every Unix system.
+            <a href="https://datatracker.ietf.org/doc/html/rfc3164" target="_blank" rel="noopener">RFC 3164</a>
+            documented it in 2001.
+            <a href="https://datatracker.ietf.org/doc/html/rfc5424" target="_blank" rel="noopener">RFC 5424</a>
+            standardised it in 2009. Forty years of production. Zero licence fees.</p>
+
+        <p><a href="/blog/the-observability-tax">Yesterday's observability post</a>
+            drew comments insisting that <code>tail</code> cannot replace a
+            monitoring stack. Quite right. Nobody suggested it should. But one
+            would rather like to demonstrate what the built-in tools actually do,
+            before dismissing them over a dashboard.</p>
+
+        <h2>FreeBSD</h2>
+
+        <p>Log rotation. One line in
+            <a href="https://man.freebsd.org/cgi/man.cgi?newsyslog.conf(5)" target="_blank" rel="noopener"><code>/etc/newsyslog.conf</code></a>,
+            executed hourly by cron:</p>
+
+        <pre><code>/var/log/app.log  644  7  1000  *  JC</code></pre>
+
+        <p>Seven compressed archives, rotated at 1 MB. No Loki. No Fluentd. No
+            YAML. The <code>J</code> flag compresses with bzip2. The <code>C</code>
+            flag creates the file if absent. <code>newsyslog</code> has done this
+            since 4.4BSD. One rather appreciates a tool that has not needed a
+            rewrite in three decades.</p>
+
+        <svg viewBox="0 0 520 160" aria-label="newsyslog.conf field breakdown: file path, permissions 644, 7 archives, rotate at 1000 KB, any hour, J for bzip2 compression, C for create if absent." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ns-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ns-field { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .ns-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; font-weight: 600; }
+                .ns-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .ns-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .ns-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+            </style>
+            <text x="260" y="22" class="ns-title" text-anchor="middle">One Line. Complete Log Rotation.</text>
+            <!-- Fields -->
+            <rect x="10" y="38" width="120" height="36" class="ns-box"/>
+            <text x="70" y="56" class="ns-field" text-anchor="middle">/var/log/app.log</text>
+            <text x="70" y="90" class="ns-label" text-anchor="middle">file path</text>
+            <rect x="140" y="38" width="45" height="36" class="ns-box"/>
+            <text x="162" y="56" class="ns-field" text-anchor="middle">644</text>
+            <text x="162" y="90" class="ns-label" text-anchor="middle">permissions</text>
+            <rect x="195" y="38" width="35" height="36" class="ns-box"/>
+            <text x="212" y="56" class="ns-field" text-anchor="middle">7</text>
+            <text x="212" y="90" class="ns-label" text-anchor="middle">archives</text>
+            <rect x="240" y="38" width="55" height="36" class="ns-box"/>
+            <text x="267" y="56" class="ns-field" text-anchor="middle">1000</text>
+            <text x="267" y="90" class="ns-label" text-anchor="middle">KB limit</text>
+            <rect x="305" y="38" width="30" height="36" class="ns-box"/>
+            <text x="320" y="56" class="ns-field" text-anchor="middle">*</text>
+            <text x="320" y="90" class="ns-label" text-anchor="middle">any hour</text>
+            <rect x="345" y="38" width="30" height="36" class="ns-box-accent"/>
+            <text x="360" y="56" class="ns-field" text-anchor="middle">J</text>
+            <text x="360" y="90" class="ns-label" text-anchor="middle">bzip2</text>
+            <rect x="385" y="38" width="30" height="36" class="ns-box-accent"/>
+            <text x="400" y="56" class="ns-field" text-anchor="middle">C</text>
+            <text x="400" y="90" class="ns-label" text-anchor="middle">create</text>
+            <!-- Bottom -->
+            <text x="260" y="120" class="ns-muted" text-anchor="middle">newsyslog: since 4.4BSD. No YAML. No vendor. No rewrite in three decades.</text>
+            <text x="260" y="138" class="ns-muted" text-anchor="middle">Compare: a typical logrotate config is 8 lines for the same result.</text>
+        </svg>
+
+        <p>For comparison, the same task in Linux's <code>logrotate</code> requires
+            a separate configuration block:</p>
+
+        <pre><code>/var/log/app.log {
+    rotate 7
+    size 1M
+    compress
+    missingok
+    create 644 root root
+}</code></pre>
+
+        <p>Seven lines for what FreeBSD does in one. Both work. One is a sentence.
+            The other is a paragraph.</p>
+
+        <p>Live error monitoring across every log on the system:</p>
+
+        <pre><code>tail -f /var/log/*.log | grep -i error</code></pre>
+
+        <p>One pipe. Every log. Every error. In real time. The glob expands to
+            every log file. <code>tail -f</code> follows them all.
+            <code>grep</code> selects what matters. The output is immediate,
+            human-readable, and costs precisely nothing.</p>
+
+        <p>The five noisiest processes today:</p>
+
+        <pre><code>awk '{print $5}' /var/log/messages \
+  | sort | uniq -c | sort -rn | head -5</code></pre>
+
+        <p>Four commands, piped. <code>awk</code> extracts the process field.
+            <code>sort</code> groups identical entries. <code>uniq -c</code> counts
+            them. <code>sort -rn</code> ranks by frequency. <code>head -5</code>
+            shows the top five. This is frequency analysis. A data scientist would
+            recognise the pattern. A vendor would charge for the dashboard.</p>
+
+        <p>Notification when something critical appears:</p>
+
+        <pre><code>tail -f /var/log/app.log \
+  | grep --line-buffered "FATAL" \
+  | while read line; do
+      echo "$line" | mail -s "FATAL" ops@example.com
+    done</code></pre>
+
+        <p><code>tail</code> follows. <code>grep</code> filters.
+            <code>while read</code> iterates. <code>mail</code> notifies. That is
+            PagerDuty in four lines. It runs in a <code>tmux</code> session, costs
+            nothing, and has no vendor who can revoke your access overnight.</p>
+
+        <svg viewBox="0 0 560 200" aria-label="Four Unix pipe patterns for logging: live monitoring, frequency analysis, alerting, and log rotation. Each pattern is a composable pipe chain." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .pp-cmd { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .pp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .pp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .pp-pipe { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+            </style>
+            <text x="280" y="22" class="pp-title" text-anchor="middle">Four Patterns. Four Pipes. Zero Vendors.</text>
+            <!-- Live monitoring -->
+            <rect x="15" y="38" width="125" height="65" class="pp-box"/>
+            <text x="77" y="56" class="pp-head" text-anchor="middle">Live Monitoring</text>
+            <text x="77" y="72" class="pp-cmd" text-anchor="middle">tail -f | grep</text>
+            <text x="77" y="86" class="pp-muted" text-anchor="middle">Every log. Every error</text>
+            <text x="77" y="96" class="pp-muted" text-anchor="middle">Real time</text>
+            <!-- Frequency -->
+            <rect x="155" y="38" width="125" height="65" class="pp-box"/>
+            <text x="217" y="56" class="pp-head" text-anchor="middle">Frequency Analysis</text>
+            <text x="217" y="72" class="pp-cmd" text-anchor="middle">awk | sort | uniq -c</text>
+            <text x="217" y="86" class="pp-muted" text-anchor="middle">Top offenders</text>
+            <text x="217" y="96" class="pp-muted" text-anchor="middle">Data science in a pipe</text>
+            <!-- Alerting -->
+            <rect x="295" y="38" width="125" height="65" class="pp-box"/>
+            <text x="357" y="56" class="pp-head" text-anchor="middle">Alerting</text>
+            <text x="357" y="72" class="pp-cmd" text-anchor="middle">grep | while read | mail</text>
+            <text x="357" y="86" class="pp-muted" text-anchor="middle">PagerDuty in 4 lines</text>
+            <text x="357" y="96" class="pp-muted" text-anchor="middle">No vendor lock-in</text>
+            <!-- Log rotation -->
+            <rect x="435" y="38" width="110" height="65" class="pp-box"/>
+            <text x="490" y="56" class="pp-head" text-anchor="middle">Log Rotation</text>
+            <text x="490" y="72" class="pp-cmd" text-anchor="middle">newsyslog.conf</text>
+            <text x="490" y="86" class="pp-muted" text-anchor="middle">One line</text>
+            <text x="490" y="96" class="pp-muted" text-anchor="middle">Since 4.4BSD</text>
+            <!-- Connectors -->
+            <text x="143" y="72" class="pp-pipe">|</text>
+            <text x="283" y="72" class="pp-pipe">|</text>
+            <text x="423" y="72" class="pp-pipe">|</text>
+            <!-- Bottom -->
+            <text x="280" y="130" class="pp-cmd" text-anchor="middle">Each command does one thing. Together, they do what a vendor contract promises.</text>
+            <text x="280" y="150" class="pp-muted" text-anchor="middle">Log rotation + live monitoring + frequency analysis + alerting.</text>
+            <text x="280" y="168" class="pp-muted" text-anchor="middle">Four commands. Each composable. Each free. Each older than most frameworks.</text>
+        </svg>
+
+        <h2>Linux</h2>
+
+        <p><a href="https://www.freedesktop.org/software/systemd/man/journalctl.html" target="_blank" rel="noopener"><code>journalctl</code></a>,
+            built into every systemd installation since 2012, provides structured
+            logging with native filtering:</p>
+
+        <pre><code>journalctl -f -p err</code></pre>
+
+        <p>Live errors. One command. The <code>-f</code> follows, the <code>-p err</code>
+            filters by priority. No grep required, because the structure is built in.</p>
+
+        <pre><code>journalctl --since "1 hour ago" -p err | wc -l</code></pre>
+
+        <p>How many errors in the last hour? Bounded time queries, natively. No
+            Prometheus range selector. No PromQL. A human sentence as a time
+            specification, which is rather more civilised than
+            <code>time() - 3600</code>.</p>
+
+        <pre><code>journalctl -o json \
+  | jq -r '.SYSLOG_IDENTIFIER' \
+  | sort | uniq -c | sort -rn | head -5</code></pre>
+
+        <p>Structured extraction via JSON and <code>jq</code>. The same pipe
+            pattern as FreeBSD, but feeding from structured data rather than
+            parsing text. Both work. Both compose with the same pipes. Both cost
+            nothing.</p>
+
+        <svg viewBox="0 0 520 180" aria-label="FreeBSD vs Linux logging comparison: newsyslog.conf one line versus logrotate seven lines, syslog text versus journald structured, both composable via pipes." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cmp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cmp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .cmp-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .cmp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cmp-shared { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="260" y="22" class="cmp-title" text-anchor="middle">Two Systems. Same Pipes. Same Result.</text>
+            <!-- FreeBSD -->
+            <rect x="20" y="38" width="220" height="90" class="cmp-box"/>
+            <text x="130" y="56" class="cmp-head" text-anchor="middle">FreeBSD</text>
+            <text x="130" y="72" class="cmp-item" text-anchor="middle">newsyslog.conf: 1 line</text>
+            <text x="130" y="86" class="cmp-item" text-anchor="middle">syslog: plain text, grep-friendly</text>
+            <text x="130" y="100" class="cmp-item" text-anchor="middle">tail -f | grep | awk | mail</text>
+            <text x="130" y="118" class="cmp-muted" text-anchor="middle">Since 4.4BSD. Never rewritten</text>
+            <!-- Linux -->
+            <rect x="280" y="38" width="220" height="90" class="cmp-box"/>
+            <text x="390" y="56" class="cmp-head" text-anchor="middle">Linux</text>
+            <text x="390" y="72" class="cmp-item" text-anchor="middle">logrotate: 7 lines</text>
+            <text x="390" y="86" class="cmp-item" text-anchor="middle">journald: structured, JSON-native</text>
+            <text x="390" y="100" class="cmp-item" text-anchor="middle">journalctl -o json | jq | sort</text>
+            <text x="390" y="118" class="cmp-muted" text-anchor="middle">Since systemd 2012. Binary format</text>
+            <!-- Shared -->
+            <rect x="140" y="138" width="240" height="30" class="cmp-shared"/>
+            <text x="260" y="158" class="cmp-head" text-anchor="middle">Both compose via pipes. Both cost nothing.</text>
+        </svg>
+
+        <h2>The Proof at Scale</h2>
+
+        <p><a href="https://netflixtechblog.com/serving-100-gb-s-from-an-open-connect-appliance-cdb51dda3b99" target="_blank" rel="noopener">Netflix</a>
+            serves a third of global internet traffic from FreeBSD-based Open
+            Connect Appliances. Their content delivery network, the largest single
+            consumer of bandwidth on Earth, runs on an operating system that ships
+            with <code>newsyslog</code> and <code>syslog</code> in the base
+            system.</p>
+
+        <p><a href="https://www.wired.com/2015/09/whatsapp-serves-900-million-users-50-engineers/" target="_blank" rel="noopener">WhatsApp</a>
+            handled 900 million users with 50 engineers on Erlang and FreeBSD.
+            Fifty engineers. Nine hundred million users. Eighteen million users
+            per engineer. Neither Netflix nor WhatsApp required Grafana to read
+            their logs.</p>
+
+        <p>The tools compose: <code>tail</code> filters, <code>grep</code> selects,
+            <code>awk</code> aggregates, <code>mail</code> notifies. Each does one
+            thing. Together, they do what a vendor contract promises and rather
+            frequently fails to deliver.</p>
+
+        <h2>The Curriculum Question</h2>
+
+        <p>Every command in this article has existed for decades. None requires
+            installation. None requires configuration beyond a single line. None
+            requires a subscription, a deployment pipeline, or a Kubernetes cluster
+            to run a sidecar container that watches your logs being watched.</p>
+
+        <p>And yet, ask a junior developer to find the five noisiest processes on
+            their server and watch the silence. Not because the task is hard. Because
+            nobody taught them. Bootcamps teach Grafana. Universities teach vendor
+            stacks. The man page sits unread, patiently waiting, the way it has
+            waited since the 1980s.</p>
+
+        <p>The difference is not capability. It is curriculum.</p>
+
+        <blockquote>
+            <p>Log rotation, live monitoring, frequency analysis, and alerting.
+                Four commands. Each composable. Each free. Each older than most
+                of the frameworks they are supposed to be replaced by. The tools
+                were always there. The curriculum was not.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The references, for those who read man pages before vendor brochures:</strong></p>
+            <ul>
+                <li><strong>newsyslog.conf fields:</strong> 644 (permissions), 7 (archives), 1000 (KB limit), * (any hour), J (bzip2), C (create if absent)</li>
+                <li><strong>Pipe patterns:</strong> tail -f | grep (live filtering), awk | sort | uniq -c | sort -rn (frequency analysis), tail -f | grep | while read | mail (alerting)</li>
+                <li><strong>syslog:</strong> Eric Allman, 1980s. RFC 3164 (2001), RFC 5424 (2009)</li>
+                <li><strong>newsyslog:</strong> FreeBSD base since 4.4BSD</li>
+                <li><strong>journalctl:</strong> systemd, every Linux since 2012</li>
+                <li><strong>Netflix:</strong> FreeBSD-based CDN serving a third of global traffic</li>
+                <li><strong>WhatsApp:</strong> 900 million users, 50 engineers, FreeBSD + Erlang</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

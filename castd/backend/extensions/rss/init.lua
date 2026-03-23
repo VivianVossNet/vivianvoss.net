@@ -4,6 +4,7 @@
 local SITE = "https://vivianvoss.net"
 
 local articles = {
+    { date = "Mon, 23 Mar 2026 00:00:00 GMT", title = "The Log", loc = "/blog/the-log", desc = "Eric Allman wrote syslog in the 1980s. Forty years of production. Zero licence fees. Log rotation, live monitoring, frequency analysis, and alerting. Four commands. Each composable. Each free." },
     { date = "Sun, 22 Mar 2026 00:00:00 GMT", title = "Why Mathematicians Design Languages", loc = "/blog/why-mathematicians-design-languages", desc = "Every mainstream programming language was designed by a mathematician. Not one linguist in the room. Ninety years later, we are still writing in their notation. One does wonder what might have happened if someone had invited one." },
     { date = "Sun, 22 Mar 2026 00:00:00 GMT", title = "The Observability Tax", loc = "/blog/the-observability-tax", desc = "syslog has existed since 1983. In 2026, a mid-sized company spends $708,000 per year to know whether its servers are running. 97% report cost surprises. The watchtower now costs more than the castle." },
     { date = "Sat, 21 Mar 2026 00:00:00 GMT", title = "The Electron Tax", loc = "/blog/the-electron-tax", desc = "Every Electron app ships its own copy of Chromium. Slack, Discord, Teams, VS Code. Four apps, four browsers, none displaying a web page. The company saves on engineering. The user pays in RAM, battery, and disk space." },
