@@ -1,5 +1,7 @@
 # vivianvoss.net
 
+Built by [Vivian Voss](https://vivianvoss.net) — read the [blog](https://vivianvoss.net/blog) for technical deep dives on system architecture, Unix philosophy, and performance engineering.
+
 Personal website of **Vivian Voss** — Software Developer & System Architect.
 
 ## Customer #0
