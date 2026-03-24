@@ -4,6 +4,7 @@
 local SITE = "https://vivianvoss.net"
 
 local articles = {
+    { date = "Tue, 24 Mar 2026 00:00:00 GMT", title = "vi", loc = "/blog/vi", desc = "2.7 million people have visited Stack Overflow to learn how to exit a text editor. The most feared tool in computing is also the most elegant. A composable grammar born from a 300 baud modem. Fifty years of production." },
     { date = "Mon, 23 Mar 2026 00:00:00 GMT", title = "The Log", loc = "/blog/the-log", desc = "Eric Allman wrote syslog in the 1980s. Forty years of production. Zero licence fees. Log rotation, live monitoring, frequency analysis, and alerting. Four commands. Each composable. Each free." },
     { date = "Sun, 22 Mar 2026 00:00:00 GMT", title = "Why Mathematicians Design Languages", loc = "/blog/why-mathematicians-design-languages", desc = "Every mainstream programming language was designed by a mathematician. Not one linguist in the room. Ninety years later, we are still writing in their notation. One does wonder what might have happened if someone had invited one." },
     { date = "Sun, 22 Mar 2026 00:00:00 GMT", title = "The Observability Tax", loc = "/blog/the-observability-tax", desc = "syslog has existed since 1983. In 2026, a mid-sized company spends $708,000 per year to know whether its servers are running. 97% report cost surprises. The watchtower now costs more than the castle." },

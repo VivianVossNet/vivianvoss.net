@@ -128,6 +128,7 @@ local pages = {
     { loc = "/blog/the-observability-tax", priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/why-mathematicians-design-languages", priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-log",                          priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/vi",                               priority = "0.7", changefreq = "yearly" },
 }
 
 function route()

@@ -1,0 +1,371 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}vi &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="2.7 million people have visited Stack Overflow to learn how to exit a text editor. The most feared tool in computing is also the most elegant. A 50-year-old proof that designing for constraints produces tools that outlast the constraints themselves.">
+{( endslot )}
+
+{( slot canonical )}/blog/vi{( endslot )}
+
+{( slot og-title )}vi &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}2.7 million people have visited Stack Overflow to learn how to exit vi. The most feared tool in computing is also the most elegant.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "vi",
+    "datePublished": "2026-03-24",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/vi",
+    "description": "2.7 million people have visited Stack Overflow to learn how to exit a text editor. The most feared tool in computing is also the most elegant.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-24">24 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>vi</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 28</p>
+
+        <p><a href="https://stackoverflow.blog/2017/05/23/stack-overflow-helping-one-million-developers-exit-vim/" target="_blank" rel="noopener">2.7 million people</a>
+            have visited Stack Overflow to learn how to exit a text editor.
+            <a href="https://www.freecodecamp.org/news/one-out-of-every-20-000-stack-overflow-visitors-is-just-trying-to-exit-vim-5a6b6175e7b6/" target="_blank" rel="noopener">One in every 20,000 visitors</a>.
+            During peak hours, 80 people per hour, trapped in a program they
+            opened by accident.</p>
+
+        <p>The most feared tool in computing is also the most elegant. One does
+            appreciate the irony.</p>
+
+        <h2>The Constraint</h2>
+
+        <p>1976.
+            <a href="https://en.wikipedia.org/wiki/Vi_(text_editor)" target="_blank" rel="noopener">Bill Joy</a>,
+            graduate student at UC Berkeley, writing code over a
+            <a href="https://www.theregister.com/2003/09/11/bill_joys_greatest_gift/" target="_blank" rel="noopener">300 baud modem</a>
+            on an
+            <a href="https://en.wikipedia.org/wiki/ADM-3A" target="_blank" rel="noopener">ADM-3A terminal</a>.
+            Three hundred baud is roughly 30 characters per second. The screen
+            redraws slower than he can think. Every keystroke costs time. Every
+            wasted character is a visible delay. At 300 baud, a full screen
+            redraw takes nearly three seconds. Three seconds of staring at a
+            cursor, waiting for the machine to finish drawing what you already
+            know is there.</p>
+
+        <p>So he built an editor where nothing is wasted. No menus. No mouse.
+            No chrome. No decorative pixels. Every single key does something
+            useful. The entire interface fits in 24 lines and 80 columns, because
+            that is what the ADM-3A had, and not one row was going to be sacrificed
+            to a toolbar.</p>
+
+        <p>The Escape key sits where Tab sits on modern keyboards, because on the
+            ADM-3A it was one finger away from the home row. <code>hjkl</code>
+            navigates because the ADM-3A printed arrow symbols on those keys.
+            Colon enters command mode because on that keyboard, colon required no
+            Shift. The tilde (<code>~</code>) was printed on the Home key, which
+            is why Unix still uses <code>~</code> for the home directory fifty
+            years later.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="ADM-3A keyboard layout showing why vi uses hjkl for navigation, Escape where Tab is today, and tilde on the Home key." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .kb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .kb-key { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 600; }
+                .kb-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 8px; font-weight: 700; }
+                .kb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .kb-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .kb-box-accent { fill: none; stroke: var(--accent); stroke-width: 2; rx: 3; }
+            </style>
+            <text x="280" y="22" class="kb-title" text-anchor="middle">The ADM-3A Keyboard: Where vi Comes From</text>
+            <!-- ESC key -->
+            <rect x="20" y="44" width="44" height="32" class="kb-box-accent"/>
+            <text x="42" y="64" class="kb-key" text-anchor="middle">ESC</text>
+            <text x="42" y="92" class="kb-label" text-anchor="middle">Where Tab</text>
+            <text x="42" y="102" class="kb-label" text-anchor="middle">is today</text>
+            <!-- Regular keys row -->
+            <rect x="74" y="44" width="30" height="32" class="kb-box"/>
+            <text x="89" y="64" class="kb-key" text-anchor="middle">1</text>
+            <rect x="108" y="44" width="30" height="32" class="kb-box"/>
+            <text x="123" y="64" class="kb-key" text-anchor="middle">2</text>
+            <rect x="142" y="44" width="30" height="32" class="kb-box"/>
+            <text x="157" y="64" class="kb-key" text-anchor="middle">3</text>
+            <text x="200" y="64" class="kb-muted">. . .</text>
+            <!-- hjkl row -->
+            <text x="200" y="130" class="kb-muted">. . .</text>
+            <rect x="240" y="114" width="34" height="32" class="kb-box-accent"/>
+            <text x="257" y="134" class="kb-key" text-anchor="middle">h</text>
+            <text x="257" y="148" class="kb-label" text-anchor="middle">&#x2190;</text>
+            <rect x="278" y="114" width="34" height="32" class="kb-box-accent"/>
+            <text x="295" y="134" class="kb-key" text-anchor="middle">j</text>
+            <text x="295" y="148" class="kb-label" text-anchor="middle">&#x2193;</text>
+            <rect x="316" y="114" width="34" height="32" class="kb-box-accent"/>
+            <text x="333" y="134" class="kb-key" text-anchor="middle">k</text>
+            <text x="333" y="148" class="kb-label" text-anchor="middle">&#x2191;</text>
+            <rect x="354" y="114" width="34" height="32" class="kb-box-accent"/>
+            <text x="371" y="134" class="kb-key" text-anchor="middle">l</text>
+            <text x="371" y="148" class="kb-label" text-anchor="middle">&#x2192;</text>
+            <rect x="392" y="114" width="34" height="32" class="kb-box-accent"/>
+            <text x="409" y="134" class="kb-key" text-anchor="middle">:</text>
+            <text x="409" y="148" class="kb-label" text-anchor="middle">no Shift</text>
+            <!-- Tilde key -->
+            <rect x="470" y="44" width="70" height="32" class="kb-box-accent"/>
+            <text x="505" y="64" class="kb-key" text-anchor="middle">~ HOME</text>
+            <text x="505" y="92" class="kb-label" text-anchor="middle">Still means</text>
+            <text x="505" y="102" class="kb-label" text-anchor="middle">$HOME in Unix</text>
+            <!-- Bottom -->
+            <text x="280" y="180" class="kb-muted" text-anchor="middle">Arrow symbols printed on h, j, k, l. Escape one finger from home row.</text>
+            <text x="280" y="196" class="kb-muted" text-anchor="middle">Every design decision in vi traces back to this keyboard. Hardware shaped the grammar.</text>
+        </svg>
+
+        <p>vi was not designed for comfort. It was designed for a 300 baud modem
+            and a terminal that could barely keep up. The constraint produced the
+            grammar. And the grammar, as it turned out, was so good that it
+            outlasted the constraint by half a century.</p>
+
+        <h2>The Grammar</h2>
+
+        <p>vi is not an editor. It is a language.</p>
+
+        <p>Every other editor maps actions to key combinations.
+            <code>Ctrl+C</code>, <code>Ctrl+V</code>, <code>Ctrl+Shift+K</code>.
+            Fixed bindings. Memorised, not understood. You learn them one at a
+            time, each independent of the others, each a dead-end of muscle
+            memory. Two hundred shortcuts, each an island.</p>
+
+        <p>vi gives you a grammar. Verbs, counts, and nouns. They compose.</p>
+
+        <p><code>d3w</code>: delete three words. <code>ciw</code>: change inner
+            word. <code>yy</code>: yank this line. <code>p</code>: put it back.
+            <code>d$</code>: delete to end of line. <code>ci"</code>: change
+            everything inside the quotes. <code>gUw</code>: uppercase a word.
+            <code>3dd</code>: delete three lines.</p>
+
+        <svg viewBox="0 0 560 260" aria-label="vi grammar: verbs times nouns equals commands. 10 verbs and 10 nouns give 100 commands. 20 of each give 400." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .vg-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .vg-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .vg-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .vg-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .vg-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .vg-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .vg-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .vg-op { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 16px; font-weight: 700; }
+            </style>
+            <text x="280" y="22" class="vg-title" text-anchor="middle">The Grammar: Verbs + Nouns = Sentences</text>
+            <!-- Verbs -->
+            <rect x="20" y="38" width="150" height="150" class="vg-box"/>
+            <text x="95" y="58" class="vg-head" text-anchor="middle">Verbs</text>
+            <text x="50" y="78" class="vg-code">d</text>
+            <text x="75" y="78" class="vg-item">delete</text>
+            <text x="50" y="96" class="vg-code">c</text>
+            <text x="75" y="96" class="vg-item">change</text>
+            <text x="50" y="114" class="vg-code">y</text>
+            <text x="75" y="114" class="vg-item">yank (copy)</text>
+            <text x="50" y="132" class="vg-code">v</text>
+            <text x="75" y="132" class="vg-item">visual select</text>
+            <text x="50" y="150" class="vg-code">gU</text>
+            <text x="75" y="150" class="vg-item">uppercase</text>
+            <text x="50" y="168" class="vg-code">gu</text>
+            <text x="75" y="168" class="vg-item">lowercase</text>
+            <!-- Operator -->
+            <text x="195" y="115" class="vg-op">+</text>
+            <!-- Nouns -->
+            <rect x="220" y="38" width="150" height="150" class="vg-box"/>
+            <text x="295" y="58" class="vg-head" text-anchor="middle">Nouns</text>
+            <text x="250" y="78" class="vg-code">w</text>
+            <text x="275" y="78" class="vg-item">word</text>
+            <text x="250" y="96" class="vg-code">$</text>
+            <text x="275" y="96" class="vg-item">end of line</text>
+            <text x="250" y="114" class="vg-code">gg</text>
+            <text x="280" y="114" class="vg-item">file start</text>
+            <text x="250" y="132" class="vg-code">G</text>
+            <text x="275" y="132" class="vg-item">file end</text>
+            <text x="250" y="150" class="vg-code">i"</text>
+            <text x="280" y="150" class="vg-item">inside quotes</text>
+            <text x="250" y="168" class="vg-code">ap</text>
+            <text x="280" y="168" class="vg-item">a paragraph</text>
+            <!-- Equals -->
+            <text x="393" y="115" class="vg-op">=</text>
+            <!-- Results -->
+            <rect x="415" y="38" width="130" height="150" class="vg-box-accent"/>
+            <text x="480" y="58" class="vg-head" text-anchor="middle">Sentences</text>
+            <text x="435" y="78" class="vg-code">d3w</text>
+            <text x="480" y="78" class="vg-muted">delete 3 words</text>
+            <text x="435" y="96" class="vg-code">ci"</text>
+            <text x="480" y="96" class="vg-muted">change in quotes</text>
+            <text x="435" y="114" class="vg-code">yG</text>
+            <text x="480" y="114" class="vg-muted">yank to file end</text>
+            <text x="435" y="132" class="vg-code">dap</text>
+            <text x="480" y="132" class="vg-muted">delete paragraph</text>
+            <text x="435" y="150" class="vg-code">gUw</text>
+            <text x="480" y="150" class="vg-muted">uppercase word</text>
+            <text x="435" y="168" class="vg-code">c$</text>
+            <text x="480" y="168" class="vg-muted">change to EOL</text>
+            <!-- Bottom -->
+            <text x="280" y="210" class="vg-item" text-anchor="middle">10 verbs &#x00D7; 10 nouns = 100 commands. 20 of each = 400.</text>
+            <text x="280" y="230" class="vg-muted" text-anchor="middle">A three-year-old composes sentences from verbs and nouns without memorising every combination.</text>
+            <text x="280" y="248" class="vg-muted" text-anchor="middle">That is how vi works. One rather suspects the linguists would approve.</text>
+        </svg>
+
+        <p>Learn 10 verbs and 10 nouns and you have 100 commands. Learn 20 of
+            each and you have 400. The growth is multiplicative, not additive.
+            Every new verb works with every existing noun. Every new noun works
+            with every existing verb. The vocabulary compounds. The shortcuts in
+            every other editor grow linearly: one binding, one action. vi grows
+            quadratically: one new word, dozens of new sentences.</p>
+
+        <p>A three-year-old composes sentences from verbs and nouns without
+            memorising every possible combination. That is how vi works. One
+            rather suspects the
+            <a href="/blog/why-mathematicians-design-languages">linguists would approve</a>.</p>
+
+        <h2>The Modes</h2>
+
+        <p>The terror that sends 80 people per hour to Stack Overflow is modal
+            editing. vi has two primary modes: normal mode, where every key is a
+            command, and insert mode, where keys produce text. Press <code>i</code>
+            to enter insert mode. Press <code>Escape</code> to leave it. That is
+            the entire cognitive load.</p>
+
+        <p>Every other application on your computer is permanently in insert mode.
+            You type, letters appear. To do anything else, you hold modifier keys:
+            Ctrl, Alt, Shift, Command. Your fingers contort into chords. Your
+            pinkie learns to live on Ctrl. Repetitive strain is not a bug. It is
+            the architecture.</p>
+
+        <p>vi inverts this. You spend most of your time navigating, searching,
+            composing commands. You spend a minority of your time actually inserting
+            text. Modal editing reflects this reality. It puts the common case, not
+            the obvious case, in the default mode. The idea is not intuitive. It
+            is, however, correct.</p>
+
+        <h2>The Legacy</h2>
+
+        <p>vi is specified in
+            <a href="https://pubs.opengroup.org/onlinepubs/9699919799/utilities/vi.html" target="_blank" rel="noopener">POSIX</a>.
+            It ships with every Unix system. Every BSD server. Every Linux. Every
+            macOS. It has been there since 1976. Fifty years of production. No
+            subscription. No update that rearranges the interface. No deprecation
+            notice.</p>
+
+        <p><a href="https://en.wikipedia.org/wiki/Bram_Moolenaar" target="_blank" rel="noopener">Bram Moolenaar</a>
+            took vi and built Vim in 1991. He maintained it for 32 years. He coined
+            the term &#x201C;charityware&#x201D; and asked users to donate to
+            <a href="https://tuxcare.com/blog/remembering-bram-moolenaar-vim-creators-legacy/" target="_blank" rel="noopener">orphans in Uganda</a>
+            instead of paying for the software. He died on 3 August 2023, aged 62.
+            <a href="https://fsfe.org/news/2024/news-20241108-01.en.html" target="_blank" rel="noopener">Christian Brabandt</a>
+            continues his work. The editor Moolenaar built runs on more machines
+            than any other text editor in history.</p>
+
+        <svg viewBox="0 0 520 260" aria-label="vi timeline: 1976 Bill Joy creates vi, 1979 ships with 2BSD, 1991 Bram Moolenaar releases Vim, 2003 POSIX standardisation, 2023 Moolenaar dies." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tl-date { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .tl-event { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .tl-detail { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tl-line { stroke: var(--border); stroke-width: 2; }
+                .tl-dot { fill: var(--accent); }
+                .tl-dot-warn { fill: var(--accent); opacity: 0.6; }
+            </style>
+            <text x="260" y="22" class="tl-title" text-anchor="middle">Fifty Years of vi</text>
+            <line x1="60" y1="50" x2="60" y2="240" class="tl-line"/>
+            <!-- 1976 -->
+            <circle cx="60" cy="55" r="5" class="tl-dot"/>
+            <text x="80" y="52" class="tl-date">1976</text>
+            <text x="80" y="65" class="tl-event">Bill Joy creates vi at UC Berkeley</text>
+            <text x="80" y="78" class="tl-detail">Visual mode for ex. 300 baud modem. ADM-3A terminal</text>
+            <!-- 1979 -->
+            <circle cx="60" cy="100" r="4" class="tl-dot-warn"/>
+            <text x="80" y="97" class="tl-date">1979</text>
+            <text x="80" y="110" class="tl-event">vi ships with 2BSD</text>
+            <!-- 1991 -->
+            <circle cx="60" cy="140" r="5" class="tl-dot"/>
+            <text x="80" y="137" class="tl-date">1991</text>
+            <text x="80" y="150" class="tl-event">Bram Moolenaar releases Vim</text>
+            <text x="80" y="163" class="tl-detail">380,000 lines of C. Charityware. ICCF Uganda</text>
+            <!-- 2003 -->
+            <circle cx="60" cy="185" r="4" class="tl-dot-warn"/>
+            <text x="80" y="182" class="tl-date">2003</text>
+            <text x="80" y="195" class="tl-event">vi standardised in POSIX (IEEE Std 1003.1)</text>
+            <!-- 2023 -->
+            <circle cx="60" cy="225" r="5" class="tl-dot"/>
+            <text x="80" y="222" class="tl-date">2023</text>
+            <text x="80" y="235" class="tl-event">Bram Moolenaar dies, aged 62. Christian Brabandt continues Vim</text>
+            <text x="80" y="248" class="tl-detail">32 years of maintenance. More installations than any editor in history</text>
+        </svg>
+
+        <p>Vim: 380,000 lines of C. VS Code: Electron, Chromium, Node.js,
+            hundreds of megabytes. Both edit text. One was built by a man who
+            asked you to help orphans. The other was built by a corporation that
+            would rather like you to use their cloud services. One leaves a small
+            footprint on your machine and a large one on the world. The other does
+            the reverse.</p>
+
+        <h2>The Point</h2>
+
+        <p>The constraints of 1976 produced an editing grammar that no modern editor
+            has matched. Not because modern editors lack features. They have features
+            vi could not dream of: language servers, inline debugging, collaborative
+            editing, AI completion. But they lack a language. They map fixed actions
+            to fixed keys. They grow additively. vi grows multiplicatively. The
+            difference is not power. It is composability.</p>
+
+        <p>There is a reason that every serious editor now offers a vi mode. VS Code
+            has one. IntelliJ has one. Sublime Text has one. Even Emacs has
+            <code>evil-mode</code>. The grammar is so good that editors built on
+            entirely different architectures bolt it on as an afterthought. Nobody
+            has ever bolted Ctrl+C/Ctrl+V onto vi. The traffic is strictly
+            one-directional.</p>
+
+        <p>vi is a 50-year-old proof that designing for constraints produces tools
+            that outlast the constraints themselves. The 300 baud modem is gone. The
+            ADM-3A terminal is a museum piece. The grammar they produced is
+            immortal.</p>
+
+        <blockquote>
+            <p>A text editor designed for a 300 baud modem in 1976 produced a
+                composable grammar that no modern editor has matched. Every key
+                does something. Verbs compose with nouns. Ten of each give you a
+                hundred commands. The constraint is gone. The grammar remains.
+                Fifty years of production. Zero licence fees. One man asked you
+                to help orphans instead of paying.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The history, for those who read man pages:</strong></p>
+            <ul>
+                <li><strong>1976:</strong> Bill Joy creates vi at UC Berkeley (visual mode for ex)</li>
+                <li><strong>1979:</strong> vi ships with 2BSD</li>
+                <li><strong>1991:</strong> Bram Moolenaar releases Vim (&#x201C;Vi IMproved&#x201D;)</li>
+                <li><strong>2003:</strong> vi standardised in POSIX (IEEE Std 1003.1)</li>
+                <li><strong>2023:</strong> Bram Moolenaar dies, aged 62. Christian Brabandt continues Vim</li>
+            </ul>
+            <p><strong>The ADM-3A keyboard:</strong></p>
+            <ul>
+                <li><strong>hjkl:</strong> arrow symbols printed on those keys</li>
+                <li><strong>Escape:</strong> where Tab sits on modern keyboards</li>
+                <li><strong>Colon:</strong> no Shift required</li>
+                <li><strong>Tilde (~):</strong> printed on the Home key. Still means $HOME in Unix</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
