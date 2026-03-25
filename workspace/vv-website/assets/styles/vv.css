@@ -131,16 +131,18 @@
         position: sticky;
         top: 0;
         z-index: 10;
-        display: flex;
+        display: grid;
+        grid-template-areas: "logo actions";
+        grid-template-columns: 1fr auto;
         align-items: center;
-        justify-content: space-between;
         padding: calc(var(--unit) * 2) calc(var(--unit) * 3);
         background: light-dark(oklch(98% 0.005 260 / 0.9), oklch(12% 0.005 260 / 0.9));
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
         border-bottom: 1px solid var(--border);
 
-        & a[aria-label] {
+        & > a[aria-label] {
+            grid-area: logo;
             text-decoration: none;
             color: var(--text);
             font-size: calc(var(--unit) * 2.25);
@@ -155,6 +157,13 @@
         & strong {
             font-weight: 700;
         }
+    }
+
+    .header-actions {
+        grid-area: actions;
+        display: flex;
+        align-items: center;
+        gap: calc(var(--unit) * 1);
     }
 
     .nav-toggle {
@@ -221,14 +230,16 @@
         -webkit-backdrop-filter: blur(8px);
         border-bottom: 1px solid var(--border);
         padding: calc(var(--unit) * 2) calc(var(--unit) * 3);
-        flex-direction: column;
-        gap: calc(var(--unit) * 2);
+        columns: 2;
+        column-gap: calc(var(--unit) * 2);
 
         &.is-open {
-            display: flex;
+            display: block;
         }
 
         & a {
+            display: block;
+            break-inside: avoid;
             color: var(--text);
             text-decoration: none;
             padding: var(--unit) calc(var(--unit) * 1.5);
@@ -794,6 +805,97 @@
         }
     }
 
+    /* --- Print / Book ----------------------------------------------------- */
+
+    .vv-book {
+        display: grid;
+        gap: calc(var(--unit) * 4);
+        grid-template-columns: 1fr;
+
+        @media (min-width: 640px) {
+            grid-template-columns: auto 1fr;
+        }
+    }
+
+    .vv-book-cover img {
+        display: block;
+        max-width: 240px;
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .vv-book-details {
+        display: grid;
+        gap: calc(var(--unit) * 2);
+        align-content: start;
+
+        & h3 {
+            font-size: calc(var(--unit) * 2);
+            margin: 0;
+        }
+
+        & .lead {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        & p {
+            margin: 0;
+        }
+    }
+
+    .vv-book-meta {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: calc(var(--unit) * 0.5) calc(var(--unit) * 2);
+        margin: 0;
+
+        & dt {
+            grid-column: 1;
+            font-weight: 600;
+            margin: 0;
+            padding: 0;
+            align-self: center;
+        }
+
+        & dd {
+            grid-column: 2;
+            margin: 0;
+            color: var(--muted);
+            align-self: center;
+        }
+    }
+
+    .vv-toc-grid {
+        display: grid;
+        gap: calc(var(--unit) * 2);
+        grid-template-columns: 1fr;
+
+        @media (min-width: 640px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (min-width: 1024px) {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        & p {
+            margin: 0;
+        }
+
+        & ol {
+            margin: 0;
+            padding-left: calc(var(--unit) * 3);
+        }
+
+        & li {
+            margin: 0;
+            padding: calc(var(--unit) * 0.25) 0;
+        }
+    }
+
     /* --- Contact list ----------------------------------------------------- */
 
     .vv-contact {
@@ -1104,7 +1206,6 @@
         justify-content: center;
         width: calc(var(--unit) * 5);
         height: calc(var(--unit) * 5);
-        margin-left: 32px;
         background: none;
         border: none;
         cursor: pointer;
@@ -1186,11 +1287,17 @@
        ====================================================================== */
 
     @media (min-width: 960px) {
+        header[role="banner"] {
+            grid-template-areas: "logo nav actions";
+            grid-template-columns: auto 1fr auto;
+        }
+
         .nav-toggle {
             display: none;
         }
 
         nav#nav {
+            grid-area: nav;
             display: flex;
             position: static;
             background: none;
@@ -1199,6 +1306,8 @@
             border-bottom: none;
             padding: 0;
             flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
             gap: calc(var(--unit) * 3);
         }
 

@@ -39,6 +39,7 @@ ultralight web frameworks.
 - /writing — LinkedIn series overview with links
 - /blog — Selected articles on architecture, Unix, performance, frontend
 - /contact — LinkedIn, GitHub, email
+- /print — Voss'scher Verlag: independent technical publishing, book catalogue
 
 ## Blog Topics
 

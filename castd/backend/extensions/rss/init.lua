@@ -4,6 +4,7 @@
 local SITE = "https://vivianvoss.net"
 
 local articles = {
+    { date = "Tue, 25 Mar 2026 00:00:00 GMT", title = "Server-Sent Events", loc = "/blog/sse", desc = "Most real-time features are one-way. The browser solved this in 2015 with one line of JavaScript that nobody teaches. No npm. No reconnect logic. EventSource reconnects automatically. The specification demands it." },
     { date = "Tue, 24 Mar 2026 00:00:00 GMT", title = "vi", loc = "/blog/vi", desc = "2.7 million people have visited Stack Overflow to learn how to exit a text editor. The most feared tool in computing is also the most elegant. A composable grammar born from a 300 baud modem. Fifty years of production." },
     { date = "Mon, 23 Mar 2026 00:00:00 GMT", title = "The Log", loc = "/blog/the-log", desc = "Eric Allman wrote syslog in the 1980s. Forty years of production. Zero licence fees. Log rotation, live monitoring, frequency analysis, and alerting. Four commands. Each composable. Each free." },
     { date = "Sun, 22 Mar 2026 00:00:00 GMT", title = "Why Mathematicians Design Languages", loc = "/blog/why-mathematicians-design-languages", desc = "Every mainstream programming language was designed by a mathematician. Not one linguist in the room. Ninety years later, we are still writing in their notation. One does wonder what might have happened if someone had invited one." },

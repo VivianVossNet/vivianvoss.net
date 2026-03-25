@@ -1,0 +1,322 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Server-Sent Events &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Most real-time features are one-way. The server knows something changed, the client needs to hear about it. The browser solved this in 2015 with one line of JavaScript that nobody teaches.">
+{( endslot )}
+
+{( slot canonical )}/blog/sse{( endslot )}
+
+{( slot og-title )}Server-Sent Events &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Most real-time features are one-way. The browser solved this in 2015 with one line of JavaScript. No npm. No reconnect logic. No babysitter.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Server-Sent Events",
+    "datePublished": "2026-03-25",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/sse",
+    "description": "Most real-time features are one-way. The browser solved this in 2015 with one line of JavaScript that nobody teaches.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-25">25 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Server-Sent Events</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">rust</span>
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 9</p>
+
+        <p><a href="/blog/websocket">Last episode</a> built a WebSocket. Full
+            duplex. Both sides talk. Splendid for chat. Rather generous for a
+            notification badge.</p>
+
+        <p>Most real-time features are one-way: the server knows something changed,
+            the client needs to hear about it. Dashboards, feeds, build logs, stock
+            tickers, deployment progress bars. The client never sends. It listens.</p>
+
+        <p>The browser solved this in 2015 with one line of JavaScript that nobody
+            teaches. Browser support:
+            <a href="https://caniuse.com/eventsource" target="_blank" rel="noopener">97 per cent</a>.
+            Older than most npm packages in your dependency tree. Rather embarrassing,
+            that.</p>
+
+        <h2>The Client</h2>
+
+        <pre><code>const source = new EventSource('/events');
+source.onmessage = e =&gt;
+  document.querySelector('#feed').textContent = e.data;</code></pre>
+
+        <p>One line to connect. One line to handle. No npm. No cleanup. No
+            reconnect logic. <code>EventSource</code> reconnects automatically.
+            The browser handles it. You do not.</p>
+
+        <p>WebSocket requires an <code>onclose</code> handler, a backoff timer,
+            and state reconciliation after reconnect. EventSource requires nothing.
+            It simply reconnects and resumes. The
+            <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html" target="_blank" rel="noopener">specification</a>
+            demands it. Not a library convention. Not a best practice. A specification
+            requirement, implemented by every browser, tested by every browser vendor,
+            maintained without your involvement.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Comparison of WebSocket reconnect logic versus EventSource: WebSocket requires onclose handler, backoff timer, and state reconciliation. EventSource requires nothing." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .se-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .se-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .se-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .se-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .se-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .se-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .se-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+            </style>
+            <text x="280" y="22" class="se-title" text-anchor="middle">Reconnect After Failure</text>
+            <!-- WebSocket -->
+            <rect x="20" y="38" width="245" height="130" class="se-box"/>
+            <text x="142" y="58" class="se-head" text-anchor="middle">WebSocket</text>
+            <text x="40" y="78" class="se-item">1. Detect disconnection (onclose)</text>
+            <text x="40" y="96" class="se-item">2. Implement backoff timer</text>
+            <text x="40" y="114" class="se-item">3. Reconnect manually</text>
+            <text x="40" y="132" class="se-item">4. Re-authenticate</text>
+            <text x="40" y="150" class="se-item">5. Reconcile missed state</text>
+            <text x="142" y="180" class="se-muted" text-anchor="middle">Your responsibility. Your code. Your bugs.</text>
+            <!-- EventSource -->
+            <rect x="295" y="38" width="245" height="130" class="se-box-accent"/>
+            <text x="417" y="58" class="se-head" text-anchor="middle">EventSource (SSE)</text>
+            <text x="417" y="100" class="se-code" text-anchor="middle">Automatic.</text>
+            <text x="417" y="120" class="se-muted" text-anchor="middle">The specification demands it.</text>
+            <text x="417" y="140" class="se-muted" text-anchor="middle">Every browser implements it.</text>
+            <text x="417" y="180" class="se-muted" text-anchor="middle">Your responsibility: none.</text>
+        </svg>
+
+        <h2>The Server</h2>
+
+        <p>Rust, using
+            <a href="https://docs.rs/axum/latest/axum/response/sse/" target="_blank" rel="noopener">axum</a>:</p>
+
+        <pre><code>async fn events() -&gt; Sse&lt;impl Stream&lt;Item = Result&lt;Event, Infallible&gt;&gt;&gt; {
+  let stream = stream::repeat_with(|| {
+    Event::default().data("update")
+  })
+  .map(Ok)
+  .throttle(Duration::from_secs(1));
+  Sse::new(stream).keep_alive(KeepAlive::default())
+}</code></pre>
+
+        <p>One function. Returns a stream. The runtime handles backpressure,
+            keep-alive, and client disconnection. No connection tracking. No
+            upgrade handshake. No WebSocket frame encoding. Plain HTTP from
+            start to finish.</p>
+
+        <p>The
+            <a href="https://github.com/tokio-rs/axum/blob/main/examples/sse/src/main.rs" target="_blank" rel="noopener">complete server</a>
+            is 15 lines. The complete client is 4 lines. Nineteen lines of code
+            for real-time server push. One suspects the Socket.IO authors would
+            prefer you did not know this.</p>
+
+        <h2>The Protocol</h2>
+
+        <p>Three headers. That is the entire specification:</p>
+
+        <pre><code>Content-Type: text/event-stream
+Cache-Control: no-cache
+Connection: keep-alive</code></pre>
+
+        <p>The server sends lines prefixed with <code>data:</code>. The browser
+            parses them. No frame encoding. No masking. No opcodes. No binary
+            protocol. HTTP from start to finish. Every proxy understands it.
+            Every CDN can pass it through. Every load balancer works without
+            configuration. Every debugging tool can read it.</p>
+
+        <svg viewBox="0 0 560 260" aria-label="SSE protocol flow: server sends text/event-stream with data: prefixed lines. Client receives via EventSource. Plain HTTP throughout." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pf-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pf-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .pf-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .pf-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .pf-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .pf-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#pf-arr); }
+            </style>
+            <defs>
+                <marker id="pf-arr" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+                    <path d="M0,0 L6,2 L0,4" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="pf-title" text-anchor="middle">The Protocol: Plain HTTP</text>
+            <!-- Server -->
+            <rect x="20" y="40" width="160" height="50" class="pf-box"/>
+            <text x="100" y="62" class="pf-label" text-anchor="middle">Server</text>
+            <text x="100" y="78" class="pf-muted" text-anchor="middle">Rust, Go, Node, Python</text>
+            <!-- Arrow -->
+            <line x1="180" y1="65" x2="370" y2="65" class="pf-arrow"/>
+            <text x="275" y="55" class="pf-code" text-anchor="middle">text/event-stream</text>
+            <!-- Client -->
+            <rect x="375" y="40" width="160" height="50" class="pf-box"/>
+            <text x="455" y="62" class="pf-label" text-anchor="middle">Browser</text>
+            <text x="455" y="78" class="pf-muted" text-anchor="middle">new EventSource(url)</text>
+            <!-- Data format -->
+            <rect x="100" y="110" width="350" height="100" class="pf-box"/>
+            <text x="275" y="130" class="pf-label" text-anchor="middle">What the server sends:</text>
+            <text x="130" y="152" class="pf-code">data: {"price": 142.50}</text>
+            <text x="130" y="170" class="pf-code">data: {"price": 143.10}</text>
+            <text x="130" y="188" class="pf-code">data: {"price": 142.95}</text>
+            <text x="380" y="152" class="pf-muted">plain text</text>
+            <text x="380" y="170" class="pf-muted">line by line</text>
+            <text x="380" y="188" class="pf-muted">human-readable</text>
+            <!-- Bottom -->
+            <text x="275" y="235" class="pf-muted" text-anchor="middle">No frame encoding. No masking. No opcodes. No binary protocol.</text>
+            <text x="275" y="253" class="pf-muted" text-anchor="middle">Every proxy, CDN, and load balancer understands it. Because it is HTTP.</text>
+        </svg>
+
+        <p>Compare this to WebSocket. WebSocket upgrades the HTTP connection to a
+            different protocol. The upgrade requires a handshake. The frames require
+            masking. The proxy may not understand the upgraded connection. The CDN may
+            buffer it. The load balancer may need configuration. All because you needed
+            a notification badge.</p>
+
+        <h2>Named Events and Last-Event-ID</h2>
+
+        <p>The specification goes further than most developers realise. The server
+            can send named events:</p>
+
+        <pre><code>event: price-update
+data: {"symbol": "AAPL", "price": 142.50}
+
+event: trade-alert
+data: {"symbol": "AAPL", "action": "sell"}</code></pre>
+
+        <p>The client subscribes selectively:</p>
+
+        <pre><code>source.addEventListener('price-update', e =&gt; {
+  updateTicker(JSON.parse(e.data));
+});
+source.addEventListener('trade-alert', e =&gt; {
+  showAlert(JSON.parse(e.data));
+});</code></pre>
+
+        <p>And when the connection drops, the browser sends a <code>Last-Event-ID</code>
+            header on reconnect. The server can use this to resume from where the
+            client left off. No missed events. No state reconciliation. The
+            specification thought of it before you did.</p>
+
+        <h2>When to Use What</h2>
+
+        <svg viewBox="0 0 520 200" aria-label="Decision guide: use SSE for one-way server push like dashboards, notifications, logs, feeds. Use WebSocket for bidirectional like chat, multiplayer, collaborative editing." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .dc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .dc-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .dc-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .dc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .dc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .dc-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="260" y="22" class="dc-title" text-anchor="middle">The Decision</text>
+            <!-- Question -->
+            <text x="260" y="50" class="dc-item" text-anchor="middle">Does the client need to send data to the server?</text>
+            <!-- SSE -->
+            <rect x="20" y="68" width="230" height="100" class="dc-box-accent"/>
+            <text x="135" y="88" class="dc-head" text-anchor="middle">No &#x2192; SSE</text>
+            <text x="135" y="108" class="dc-item" text-anchor="middle">Dashboards</text>
+            <text x="135" y="124" class="dc-item" text-anchor="middle">Notifications, feeds, logs</text>
+            <text x="135" y="140" class="dc-item" text-anchor="middle">Progress bars, stock tickers</text>
+            <text x="135" y="158" class="dc-muted" text-anchor="middle">Auto-reconnect. Plain HTTP. 2 lines</text>
+            <!-- WebSocket -->
+            <rect x="270" y="68" width="230" height="100" class="dc-box"/>
+            <text x="385" y="88" class="dc-head" text-anchor="middle">Yes &#x2192; WebSocket</text>
+            <text x="385" y="108" class="dc-item" text-anchor="middle">Chat</text>
+            <text x="385" y="124" class="dc-item" text-anchor="middle">Multiplayer games</text>
+            <text x="385" y="140" class="dc-item" text-anchor="middle">Collaborative editing</text>
+            <text x="385" y="158" class="dc-muted" text-anchor="middle">Full duplex. Custom reconnect. Upgrade</text>
+            <!-- Bottom -->
+            <text x="260" y="192" class="dc-muted" text-anchor="middle">If the client never sends, SSE is simpler, lighter, and recovers without your help.</text>
+        </svg>
+
+        <p>One-way server push: SSE. Dashboards, notifications, logs, feeds,
+            progress bars, deployment status, build output.</p>
+
+        <p>Bidirectional: WebSocket. Chat, multiplayer, collaborative editing.</p>
+
+        <p>The question is not which is better. The question is whether both sides
+            need to talk. If the client never sends, SSE is simpler, lighter, and
+            recovers from failure without your help. If you reach for WebSocket
+            because your dashboard needs live data, you have built a telephone to
+            listen to the radio.</p>
+
+        <h2>The Complete Example</h2>
+
+        <p>The server, in its entirety:</p>
+
+        <pre><code>use axum::{response::sse::{Event, Sse, KeepAlive}, routing::get, Router};
+use futures_util::stream::{self, Stream};
+use std::{convert::Infallible, time::Duration};
+use tokio_stream::StreamExt;
+
+#[tokio::main]
+async fn main() {
+  let app = Router::new().route("/events", get(events));
+  let l = tokio::net::TcpListener::bind("0.0.0.0:3000")
+    .await.unwrap();
+  axum::serve(l, app).await.unwrap();
+}
+
+async fn events() -&gt; Sse&lt;impl Stream&lt;Item = Result&lt;Event, Infallible&gt;&gt;&gt; {
+  let stream = stream::repeat_with(|| Event::default().data("update"))
+    .map(Ok).throttle(Duration::from_secs(1));
+  Sse::new(stream).keep_alive(KeepAlive::default())
+}</code></pre>
+
+        <p>The client, in its entirety:</p>
+
+        <pre><code>&lt;p id="feed"&gt;waiting...&lt;/p&gt;
+&lt;script&gt;
+const source = new EventSource('/events');
+source.onmessage = e =&gt; feed.textContent = e.data;
+&lt;/script&gt;</code></pre>
+
+        <p>Fifteen lines of Rust. Four lines of HTML. Real-time server push.
+            Automatic reconnection. No npm packages. No framework. No build step.
+            One rather appreciates infrastructure that does not require a
+            babysitter.</p>
+
+        <blockquote>
+            <p>Most real-time features are one-way. The browser solved this in
+                2015 with one line of JavaScript. EventSource reconnects
+                automatically. The specification demands it. Three headers. No
+                frame encoding. No upgrade handshake. Plain HTTP. If the client
+                never sends, you do not need a telephone. You need a radio.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>SSE vs WebSocket, at a glance:</strong></p>
+            <ul>
+                <li><strong>SSE:</strong> one-way (server to client), auto-reconnect, plain HTTP, 97% browser support, 2 lines of client code</li>
+                <li><strong>WebSocket:</strong> bidirectional, manual reconnect, protocol upgrade, custom frame encoding</li>
+                <li><strong>SSE protocol:</strong> 3 headers (Content-Type, Cache-Control, Connection). Server sends <code style="white-space:nowrap">data:</code> lines. Browser parses them</li>
+                <li><strong>Named events:</strong> server sends <code style="white-space:nowrap">event: type</code>, client subscribes with <code style="white-space:nowrap">addEventListener</code></li>
+                <li><strong>Last-Event-ID:</strong> browser sends it on reconnect. Server resumes. No missed events</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

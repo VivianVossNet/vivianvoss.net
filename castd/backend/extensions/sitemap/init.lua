@@ -11,6 +11,7 @@ local pages = {
     { loc = "/blog",       priority = "0.9",  changefreq = "weekly"  },
     { loc = "/dictionary", priority = "0.6",  changefreq = "monthly" },
     { loc = "/contact",    priority = "0.5",  changefreq = "yearly"  },
+    { loc = "/print",      priority = "0.6",  changefreq = "monthly" },
     -- blog articles
     { loc = "/blog/the-angular-tax",                   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/oklch-colour-system",               priority = "0.7", changefreq = "yearly" },
@@ -129,6 +130,7 @@ local pages = {
     { loc = "/blog/why-mathematicians-design-languages", priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-log",                          priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/vi",                               priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/sse",                              priority = "0.7", changefreq = "yearly" },
 }
 
 function route()
