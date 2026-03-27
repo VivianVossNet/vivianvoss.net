@@ -1,0 +1,462 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Single Writer &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 2000, D. Richard Hipp built a database for a U.S. Navy destroyer. The existing Informix installation required a DBA. Hipp's solution was not to fix the server. It was to eliminate it entirely. 600 KB. One file. Zero configuration.">
+{( endslot )}
+
+{( slot canonical )}/blog/by-design-sqlite{( endslot )}
+
+{( slot og-title )}The Single Writer &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}D. Richard Hipp did not forget to add concurrent writes to SQLite. He chose not to. The trade-off bought him everything else. One file. Zero configuration. The most deployed software module in history.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Single Writer",
+    "datePublished": "2026-03-26",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/by-design-sqlite",
+    "description": "In 2000, D. Richard Hipp built a database for a U.S. Navy destroyer. The existing Informix installation required a DBA. Hipp's solution was not to fix the server. It was to eliminate it entirely.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-26">26 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Single Writer</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">sql</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>By Design</em> &#x25A0; Episode 1</p>
+
+        <p>In the year 2000, a man named D. Richard Hipp had a rather specific
+            problem. He was building software for a U.S. Navy guided missile
+            destroyer, and the existing
+            <a href="https://www.ibm.com/products/informix" target="_blank" rel="noopener">Informix</a>
+            database installation required a database administrator. The DBA
+            was not always available. When the database went down, the software
+            went down. One imagines this is somewhat inconvenient on a vessel
+            carrying Tomahawk missiles.</p>
+
+        <p>Hipp's solution was not to fix the server. It was to
+            <a href="https://corecursive.com/066-sqlite-with-richard-hipp/" target="_blank" rel="noopener">eliminate it entirely</a>.
+            The result was a database engine that compiled into
+            <a href="https://sqlite.org/footprint.html" target="_blank" rel="noopener">600 kilobytes</a>,
+            stored everything in a single file, and required precisely zero
+            configuration. No daemon. No socket. No DBA. The library linked
+            into your programme and that was the end of the conversation.</p>
+
+        <p>Twenty-six years later, his "temporary solution" is the
+            <a href="https://sqlite.org/mostdeployed.html" target="_blank" rel="noopener">most widely deployed software module in history</a>.
+            More instances than all other database engines combined. One
+            does wonder whether the Navy knows.</p>
+
+        <h2>The Complaint</h2>
+
+        <p>"SQLite can't handle concurrent writes."</p>
+
+        <p>Correct. Only one writer at a time. The others queue. Every
+            Stack Overflow thread about SQLite eventually contains this
+            revelation, delivered with the gravity of someone discovering
+            that water is wet.</p>
+
+        <p>It is, of course, true. SQLite serialises all write operations.
+            If process A is writing, process B waits. If ten processes want
+            to write simultaneously, nine of them form an orderly British
+            queue. There is no lock escalation, no row-level locking, no
+            MVCC for writers. One writer. Full stop.</p>
+
+        <p>The Stack Overflow commentator then concludes that SQLite is a
+            toy. A footnote. Adequate for prototypes and mobile apps, but
+            certainly not for anything serious. At which point one might
+            gently direct their attention to the avionics system in the
+            <a href="https://news.ycombinator.com/item?id=34265293" target="_blank" rel="noopener">Airbus A350</a>,
+            which runs SQLite under DO-178B certification, the kind where
+            human lives depend on the software working correctly. Not a
+            prototype. Not a mobile app. A fly-by-wire system carrying
+            300 passengers at 900 kilometres per hour.</p>
+
+        <h2>The Decision</h2>
+
+        <p>Hipp did not forget to add concurrent writes. He chose not to.</p>
+
+        <p>This is the distinction that separates engineering from
+            feature accumulation. A single writer means no deadlocks. No
+            lock contention. No transaction ordering puzzles that require
+            a PhD and three cups of coffee to debug. No write-write
+            conflicts. No phantom reads between concurrent transactions.
+            The entire concurrency model fits in your head, which is more
+            than can be said for most PostgreSQL configurations and
+            considerably more than can be said for any distributed
+            database.</p>
+
+        <svg viewBox="0 0 560 280" aria-label="Comparison of concurrency models: traditional databases require complex locking with deadlock detection, lock escalation, and MVCC. SQLite uses a single writer with zero contention." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bd-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .bd-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .bd-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .bd-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .bd-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .bd-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .bd-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+            </style>
+            <text x="280" y="22" class="bd-title" text-anchor="middle">Concurrency: What You Must Manage</text>
+            <!-- Traditional DB -->
+            <rect x="20" y="38" width="245" height="190" class="bd-box"/>
+            <text x="142" y="58" class="bd-head" text-anchor="middle">Traditional RDBMS</text>
+            <text x="40" y="80" class="bd-item">1. Row-level locking</text>
+            <text x="40" y="98" class="bd-item">2. Lock escalation (row &#x2192; page &#x2192; table)</text>
+            <text x="40" y="116" class="bd-item">3. Deadlock detection + resolution</text>
+            <text x="40" y="134" class="bd-item">4. MVCC snapshot isolation</text>
+            <text x="40" y="152" class="bd-item">5. Transaction ordering</text>
+            <text x="40" y="170" class="bd-item">6. Write-write conflict resolution</text>
+            <text x="40" y="188" class="bd-item">7. Phantom read prevention</text>
+            <text x="40" y="206" class="bd-item">8. Connection pool tuning</text>
+            <text x="142" y="240" class="bd-muted" text-anchor="middle">Your DBA's responsibility.</text>
+            <text x="142" y="256" class="bd-muted" text-anchor="middle">Good luck finding one at 3 AM.</text>
+            <!-- SQLite -->
+            <rect x="295" y="38" width="245" height="190" class="bd-box-accent"/>
+            <text x="417" y="58" class="bd-head" text-anchor="middle">SQLite</text>
+            <text x="417" y="120" class="bd-code" text-anchor="middle">One writer at a time.</text>
+            <text x="417" y="144" class="bd-muted" text-anchor="middle">No deadlocks. No contention.</text>
+            <text x="417" y="162" class="bd-muted" text-anchor="middle">No ordering puzzles.</text>
+            <text x="417" y="180" class="bd-muted" text-anchor="middle">Fits in your head.</text>
+            <text x="417" y="240" class="bd-muted" text-anchor="middle">Your responsibility: none.</text>
+            <text x="417" y="256" class="bd-muted" text-anchor="middle">Sleep through the night.</text>
+        </svg>
+
+        <p>Consider what you gain by not having concurrent writes. You do
+            not need a connection pool. You do not need a connection pool
+            manager. You do not need to tune the connection pool manager.
+            You do not need to monitor the connection pool manager. You do
+            not need a dashboard for the monitor of the connection pool
+            manager. You do not need an alert for the dashboard for the
+            monitor of the connection pool manager. The recursion of
+            operational complexity stops before it starts.</p>
+
+        <h2>WAL Mode: The Elegant Completion</h2>
+
+        <p>In 2010, ten years after the initial release, Hipp introduced
+            <a href="https://sqlite.org/wal.html" target="_blank" rel="noopener">Write-Ahead Logging</a>.
+            The idea was simple: instead of writing directly to the database
+            file, write to a separate log first. Readers read from the
+            original file (or from a snapshot of it). The writer appends
+            to the log. Periodically, the log is checkpointed back into
+            the main file.</p>
+
+        <p>The result: unlimited concurrent readers, one writer, zero
+            interference. Readers never block the writer. The writer never
+            blocks readers. No locks held during reads. No stale data. No
+            coordination overhead.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="WAL mode diagram: readers access the database file directly while the single writer appends to the WAL file. Checkpoint merges WAL back into database. No interference between readers and writer." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .wl-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .wl-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .wl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .wl-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .wl-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .wl-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#wl-arr); }
+                .wl-arrow-muted { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#wl-arr-m); stroke-dasharray: 4,3; }
+            </style>
+            <defs>
+                <marker id="wl-arr" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+                    <path d="M0,0 L6,2 L0,4" fill="var(--accent)"/>
+                </marker>
+                <marker id="wl-arr-m" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+                    <path d="M0,0 L6,2 L0,4" fill="var(--muted)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="wl-title" text-anchor="middle">WAL Mode: Readers + Writer, Zero Interference</text>
+            <!-- Readers -->
+            <rect x="20" y="45" width="100" height="36" class="wl-box"/>
+            <text x="70" y="67" class="wl-label" text-anchor="middle">Reader 1</text>
+            <rect x="20" y="90" width="100" height="36" class="wl-box"/>
+            <text x="70" y="112" class="wl-label" text-anchor="middle">Reader 2</text>
+            <rect x="20" y="135" width="100" height="36" class="wl-box"/>
+            <text x="70" y="157" class="wl-label" text-anchor="middle">Reader N</text>
+            <!-- DB file -->
+            <rect x="195" y="60" width="130" height="50" class="wl-box-accent"/>
+            <text x="260" y="82" class="wl-label" text-anchor="middle">database.db</text>
+            <text x="260" y="98" class="wl-muted" text-anchor="middle">single file</text>
+            <!-- Arrows readers to DB -->
+            <line x1="120" y1="63" x2="193" y2="75" class="wl-arrow"/>
+            <line x1="120" y1="108" x2="193" y2="88" class="wl-arrow"/>
+            <line x1="120" y1="153" x2="193" y2="100" class="wl-arrow"/>
+            <!-- Writer -->
+            <rect x="20" y="185" width="100" height="36" class="wl-box-accent"/>
+            <text x="70" y="207" class="wl-code" text-anchor="middle">Writer</text>
+            <!-- WAL file -->
+            <rect x="195" y="170" width="130" height="50" class="wl-box"/>
+            <text x="260" y="192" class="wl-label" text-anchor="middle">WAL file</text>
+            <text x="260" y="208" class="wl-muted" text-anchor="middle">append-only log</text>
+            <!-- Arrow writer to WAL -->
+            <line x1="120" y1="203" x2="193" y2="195" class="wl-arrow"/>
+            <!-- Checkpoint arrow WAL to DB -->
+            <line x1="260" y1="168" x2="260" y2="112" class="wl-arrow-muted"/>
+            <text x="300" y="145" class="wl-muted">checkpoint</text>
+            <!-- Labels -->
+            <text x="420" y="75" class="wl-code">Readers: unlimited</text>
+            <text x="420" y="95" class="wl-code">Writer: exactly one</text>
+            <text x="420" y="115" class="wl-muted">No locks held during reads</text>
+            <text x="420" y="135" class="wl-muted">Writer never blocks readers</text>
+            <text x="420" y="155" class="wl-muted">Readers never block writer</text>
+            <text x="420" y="195" class="wl-muted">WAL checkpoints periodically</text>
+            <text x="420" y="215" class="wl-muted">No coordination overhead</text>
+        </svg>
+
+        <p>This is not a compromise. This is a model so clean that most
+            applications never need anything more. Your web application
+            serves 95 per cent reads? Congratulations, you have unlimited
+            concurrency. The remaining 5 per cent of writes queue for
+            microseconds. The theoretical bottleneck that keeps database
+            architects awake at night simply does not materialise at the
+            scale where 99 per cent of applications operate.</p>
+
+        <h2>The Trade-Off, Honestly Stated</h2>
+
+        <p>If your application genuinely needs hundreds of concurrent
+            write transactions per second, SQLite is the wrong tool. Hipp
+            <a href="https://sqlite.org/whentouse.html" target="_blank" rel="noopener">says so himself</a>,
+            on his own website, in plain English, without hedging. This is
+            not a limitation he is embarrassed about. It is a boundary he
+            drew deliberately. The documentation does not bury the
+            trade-off in a footnote. It leads with it.</p>
+
+        <p>One does note, with a certain admiration, how rarely this level
+            of honesty appears in technical documentation. Most database
+            vendors will tell you their product scales to infinity and
+            beyond, provided you buy the Enterprise tier and attend the
+            three-day certification course. Hipp tells you when not to
+            use his software. On the front page.</p>
+
+        <p>The trade-off bought him everything else:</p>
+
+        <ul>
+            <li><strong>One file.</strong> The entire database is a single,
+                cross-platform, self-describing binary file. Copy it to another
+                machine and it works. No export. No import. No schema migration
+                tool. <code>cp database.db /backup/</code> is a valid backup
+                strategy.</li>
+            <li><strong>Zero configuration.</strong> No <code>my.cnf</code>.
+                No <code>postgresql.conf</code>. No tuning guide. No blog post
+                titled "10 Settings You Must Change In Production."</li>
+            <li><strong>No daemon.</strong> No process to start, stop, monitor,
+                or restart at 3 AM when it segfaults.</li>
+            <li><strong>No DBA.</strong> The role that justified its own salary
+                by managing complexity that SQLite simply does not have.</li>
+            <li><strong>No network.</strong> No TCP connection. No
+                authentication. No TLS certificate renewal. No connection
+                timeout. The database is a function call.</li>
+        </ul>
+
+        <h2>The Proof</h2>
+
+        <p>The numbers are worth pausing over, because they are not
+            marketing figures. They come from SQLite's own
+            <a href="https://sqlite.org/mostdeployed.html" target="_blank" rel="noopener">documentation</a>,
+            which is refreshingly honest about what SQLite is and what it
+            is not.</p>
+
+        <svg viewBox="0 0 560 310" aria-label="SQLite deployment statistics: 1 trillion active databases, every mobile device, every browser, Airbus A350 avionics, Library of Congress archival format, 35 percent faster than filesystem I/O, 156K lines source with 92 million lines of tests, public domain, supported until 2050." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .st-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .st-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 14px; font-weight: 700; }
+                .st-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .st-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .st-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="st-title" text-anchor="middle">SQLite: The Numbers</text>
+            <!-- Row 1 -->
+            <rect x="20" y="38" width="165" height="60" class="st-box"/>
+            <text x="102" y="62" class="st-num" text-anchor="middle">1 trillion</text>
+            <text x="102" y="80" class="st-label" text-anchor="middle">active databases</text>
+            <text x="102" y="92" class="st-muted" text-anchor="middle">worldwide</text>
+
+            <rect x="197" y="38" width="165" height="60" class="st-box"/>
+            <text x="280" y="62" class="st-num" text-anchor="middle">Every device</text>
+            <text x="280" y="80" class="st-label" text-anchor="middle">Android, iOS, browser</text>
+            <text x="280" y="92" class="st-muted" text-anchor="middle">Chrome, Firefox, Safari</text>
+
+            <rect x="375" y="38" width="165" height="60" class="st-box"/>
+            <text x="457" y="62" class="st-num" text-anchor="middle">DO-178B</text>
+            <text x="457" y="80" class="st-label" text-anchor="middle">Airbus A350 avionics</text>
+            <text x="457" y="92" class="st-muted" text-anchor="middle">lives depend on it</text>
+            <!-- Row 2 -->
+            <rect x="20" y="112" width="165" height="60" class="st-box"/>
+            <text x="102" y="136" class="st-num" text-anchor="middle">35% faster</text>
+            <text x="102" y="154" class="st-label" text-anchor="middle">than raw filesystem I/O</text>
+            <text x="102" y="166" class="st-muted" text-anchor="middle">for small reads</text>
+
+            <rect x="197" y="112" width="165" height="60" class="st-box"/>
+            <text x="280" y="136" class="st-num" text-anchor="middle">600 KB</text>
+            <text x="280" y="154" class="st-label" text-anchor="middle">total binary size</text>
+            <text x="280" y="166" class="st-muted" text-anchor="middle">complete SQL engine</text>
+
+            <rect x="375" y="112" width="165" height="60" class="st-box"/>
+            <text x="457" y="136" class="st-num" text-anchor="middle">Public domain</text>
+            <text x="457" y="154" class="st-label" text-anchor="middle">no licence, no fees</text>
+            <text x="457" y="166" class="st-muted" text-anchor="middle">supported until 2050</text>
+            <!-- Row 3 -->
+            <rect x="20" y="186" width="165" height="60" class="st-box"/>
+            <text x="102" y="210" class="st-num" text-anchor="middle">156,000</text>
+            <text x="102" y="228" class="st-label" text-anchor="middle">lines of source code</text>
+            <text x="102" y="240" class="st-muted" text-anchor="middle">hand-written C</text>
+
+            <rect x="197" y="186" width="165" height="60" class="st-box"/>
+            <text x="280" y="210" class="st-num" text-anchor="middle">92 million</text>
+            <text x="280" y="228" class="st-label" text-anchor="middle">lines of tests</text>
+            <text x="280" y="240" class="st-muted" text-anchor="middle">590x test-to-code ratio</text>
+
+            <rect x="375" y="186" width="165" height="60" class="st-box"/>
+            <text x="457" y="210" class="st-num" text-anchor="middle">Archival format</text>
+            <text x="457" y="228" class="st-label" text-anchor="middle">Library of Congress</text>
+            <text x="457" y="240" class="st-muted" text-anchor="middle">recommended standard</text>
+            <!-- Bottom -->
+            <text x="280" y="280" class="st-muted" text-anchor="middle">The "toy database" runs in more places than every other database engine combined.</text>
+            <text x="280" y="296" class="st-muted" text-anchor="middle">Sources: sqlite.org/mostdeployed.html, sqlite.org/fasterthanfs.html, sqlite.org/testing.html</text>
+        </svg>
+
+        <p>That test-to-code ratio deserves its own moment of silence.
+            156,000 lines of source. 92 million lines of tests. That is
+            590 lines of test code for every line of production code. The
+            test suite includes
+            <a href="https://sqlite.org/testing.html" target="_blank" rel="noopener">100 per cent branch coverage</a>,
+            fault injection, out-of-memory simulation, I/O error simulation,
+            and crash recovery testing. The test harness is larger than
+            most commercial databases.</p>
+
+        <p>And yet the code is
+            <a href="https://sqlite.org/copyright.html" target="_blank" rel="noopener">public domain</a>.
+            Not MIT. Not Apache. Not GPL. Public domain. No licence. No
+            attribution requirement. No licence compatibility matrix. No
+            legal department consultation. Hipp placed the entire work in
+            the commons and committed to supporting it
+            until 2050, which, at the time of writing, is
+            rather further away than most venture-backed startups will
+            survive.</p>
+
+        <p>The
+            <a href="https://sqlite.org/fasterthanfs.html" target="_blank" rel="noopener">performance claim</a>
+            is perhaps the most counterintuitive: SQLite is 35 per cent
+            faster than reading directly from the filesystem for small
+            blobs. Not faster than another database. Faster than
+            <code>open()</code>, <code>read()</code>, <code>close()</code>.
+            The overhead of filesystem metadata, directory traversal, and
+            inode lookup exceeds the overhead of a B-tree lookup in a
+            single file. The database is faster than no database at all.</p>
+
+        <h2>The Architecture You Do Not Need</h2>
+
+        <p>Consider the typical web application database deployment. You
+            need a server. The server needs a host. The host needs
+            monitoring. The monitoring needs alerts. The alerts need an
+            on-call rotation. The on-call rotation needs a policy document.
+            The policy document needs a meeting. The meeting needs a
+            calendar invite. The calendar invite needs a distribution list.
+            The distribution list needs an owner. The owner is on holiday.</p>
+
+        <p>SQLite requires a file.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Deployment comparison: PostgreSQL requires server, host, monitoring, backups, authentication, connection pool, and DBA. SQLite requires one file." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .dp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .dp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .dp-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .dp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .dp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .dp-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .dp-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+            </style>
+            <text x="280" y="22" class="dp-title" text-anchor="middle">What You Deploy</text>
+            <!-- PostgreSQL -->
+            <rect x="20" y="38" width="245" height="140" class="dp-box"/>
+            <text x="142" y="58" class="dp-head" text-anchor="middle">Client-Server Database</text>
+            <text x="40" y="78" class="dp-item">Server process (daemon)</text>
+            <text x="40" y="94" class="dp-item">Host machine or container</text>
+            <text x="40" y="110" class="dp-item">Authentication + TLS</text>
+            <text x="40" y="126" class="dp-item">Connection pool</text>
+            <text x="40" y="142" class="dp-item">Monitoring + alerting</text>
+            <text x="40" y="158" class="dp-item">Backup strategy + rotation</text>
+            <text x="142" y="192" class="dp-muted" text-anchor="middle">Six components. Six failure modes.</text>
+            <!-- SQLite -->
+            <rect x="295" y="38" width="245" height="140" class="dp-box-accent"/>
+            <text x="417" y="58" class="dp-head" text-anchor="middle">SQLite</text>
+            <text x="417" y="110" class="dp-code" text-anchor="middle">cp database.db /backup/</text>
+            <text x="417" y="134" class="dp-muted" text-anchor="middle">One file. Zero processes.</text>
+            <text x="417" y="150" class="dp-muted" text-anchor="middle">Copy it. It works.</text>
+            <text x="417" y="192" class="dp-muted" text-anchor="middle">One component. One file. Done.</text>
+        </svg>
+
+        <p>This is not a simplification for the sake of a diagram. This
+            is the actual operational difference. Every component in the
+            left column is a real dependency with real failure modes, real
+            upgrade paths, real security patches, and real 3 AM pages.
+            Every component you do not have is a component that cannot
+            break.</p>
+
+        <h2>The Principle</h2>
+
+        <p>Every design decision is a trade-off. The mediocre ones try to
+            have everything. The brilliant ones know what to sacrifice.</p>
+
+        <p>Hipp sacrificed write concurrency. Not because he could not
+            build it, not because he lacked the engineering skill, but
+            because he understood that the absence of a feature can be
+            more valuable than its presence. He gained simplicity so
+            complete that his database became a file format. The
+            <a href="https://sqlite.org/locrsf.html" target="_blank" rel="noopener">Library of Congress</a>
+            recommends it for archival storage. Not as a database. As a
+            format. The distinction matters: formats outlive software.
+            The data will be readable when the application that created
+            it has long been forgotten.</p>
+
+        <p>One trillion active databases. Every phone. Every browser.
+            Every Airbus A350. The most deployed piece of software in
+            human history, written by one man, supported until 2050, and
+            released into the public domain.</p>
+
+        <p>One does wonder what we might accomplish if we had the courage
+            to say "no" more often.</p>
+
+        <blockquote>
+            <p>Every design decision is a trade-off. Hipp sacrificed write
+                concurrency. He gained simplicity so complete that his
+                database became the most deployed software module in
+                history. 600 KB. One file. Zero configuration. Public
+                domain. Supported until 2050. The "toy database" runs in
+                more places than every other database engine combined.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Further reading:</strong></p>
+            <ul>
+                <li><a href="https://corecursive.com/066-sqlite-with-richard-hipp/" target="_blank" rel="noopener">CoRecursive podcast</a>: Hipp on the Navy origin story and his design philosophy</li>
+                <li><a href="https://sqlite.org/whentouse.html" target="_blank" rel="noopener">When to use SQLite</a>: the official guide on appropriate and inappropriate use cases</li>
+                <li><a href="https://sqlite.org/wal.html" target="_blank" rel="noopener">WAL mode</a>: the engineering behind concurrent reads without a single lock</li>
+                <li><a href="https://sqlite.org/fasterthanfs.html" target="_blank" rel="noopener">Faster than the filesystem</a>: the benchmark that surprised everyone, including Hipp</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

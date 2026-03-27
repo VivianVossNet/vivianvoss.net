@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow Map — Min2Max</title>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+<style>
+/* Copyright 2025 Vivian Voss. Licensed under the Apache License, Version 2.0. */
+/* SPDX-License-Identifier: Apache-2.0 */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Courier New',monospace;background:#f0ede8;color:#2a2820;height:100vh;overflow:hidden}
+#map{width:100%;height:100%}
+#hud{position:absolute;top:12px;left:12px;padding:8px 14px;background:rgba(240,237,232,.92);border:1px solid #d0cdc6;font-size:11px;letter-spacing:.08em;color:#6a6560;pointer-events:none}
+#hud .sun{color:#c07020}
+#panel{position:absolute;bottom:0;left:0;right:0;padding:12px 18px 32px;background:rgba(240,237,232,.95);border-top:1px solid #d0cdc6;display:flex;align-items:center;gap:24px}
+.mapboxgl-ctrl-bottom-left,.mapboxgl-ctrl-bottom-right{bottom:60px}
+.cg{display:flex;align-items:center;gap:8px}
+.cg label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6a6560}
+input[type=range]{-webkit-appearance:none;width:140px;height:2px;background:#d0cdc6;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:#c07020;border-radius:50%;cursor:pointer;border:2px solid #f0ede8}
+input[type=date]{background:#fff;color:#2a2820;border:1px solid #d0cdc6;padding:2px 6px;font-family:inherit;font-size:11px;color-scheme:light}
+.val{font-size:12px;color:#2a2820;min-width:40px}
+#clock{font-size:22px;color:#c07020;letter-spacing:.06em;margin-left:auto}
+.leg{display:flex;gap:14px;font-size:10px;color:#6a6560;letter-spacing:.08em}
+.leg span::before{content:'●';margin-right:4px}
+.leg .s::before{color:#4ab542}
+.leg .h::before{color:#1e6618}
+#stats{font-size:10px;color:#6a6560;letter-spacing:.06em}
+.mapboxgl-popup-content{background:#fff;border:1px solid #d0cdc6;border-radius:8px;padding:18px 22px;font-family:'Courier New',monospace;color:#2a2820;min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.mapboxgl-popup-tip{border-top-color:#fff}
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip{border-top-color:#fff}
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip{border-bottom-color:#fff}
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip{border-right-color:#fff}
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip{border-left-color:#fff}
+.mapboxgl-popup-close-button{color:#6a6560;font-size:16px;padding:4px 8px}
+.mapboxgl-popup-close-button:hover{color:#2a2820;background:transparent}
+.pop-name{font-size:17px;font-weight:700;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
+.pop-type{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6a6560;margin-bottom:8px}
+.pop-status{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.06em;padding:4px 10px;border-radius:4px}
+.pop-status.sun{background:rgba(74,181,66,.12);color:#2d8a26}
+.pop-status.shade{background:rgba(30,102,24,.1);color:#1e6618}
+.pop-status::before{content:'●';font-size:8px}
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div id="hud">
+  <div class="sun" id="sun-info">Loading…</div>
+  <div id="coord-info" style="margin-top:4px"></div>
+</div>
+
+<div id="panel">
+  <div class="cg">
+    <label>Time</label>
+    <input type="range" id="hour" min="0" max="23.75" step="0.25">
+    <span class="val" id="hour-lbl">12:00</span>
+  </div>
+  <div class="cg">
+    <label>Date</label>
+    <input type="date" id="date-in">
+  </div>
+  <div class="leg">
+    <span class="s">Sun</span>
+    <span class="h">Shadow</span>
+  </div>
+  <span id="stats"></span>
+  <div id="clock">12:00</div>
+</div>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+<script>
+// Copyright 2025 Vivian Voss. Licensed under the Apache License, Version 2.0.
+// SPDX-License-Identifier: Apache-2.0
+
+mapboxgl.accessToken = localStorage.getItem('mapbox_token') || prompt('Mapbox Access Token:');
+if (mapboxgl.accessToken) localStorage.setItem('mapbox_token', mapboxgl.accessToken);
+
+const DEG = Math.PI / 180, RAD = 180 / Math.PI;
+
+// ── Sun position ────────────────────────────────────────────────────
+
+function doy(d) {
+  return Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 864e5);
+}
+
+function sunPos(date, hour, lat, lon) {
+  const n = doy(date), lr = lat * DEG;
+  const B = (360 / 365) * (n - 81) * DEG;
+  const decl = Math.asin(Math.sin(23.45 * DEG) * Math.sin(B));
+  const eot = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+  const stm = Math.round(lon / 15) * 15;
+  const st = hour + (lon - stm) / 15 + eot / 60;
+  const ha = (st - 12) * 15 * DEG;
+  const sinA = Math.sin(lr) * Math.sin(decl) + Math.cos(lr) * Math.cos(decl) * Math.cos(ha);
+  const alt = Math.asin(sinA);
+  const cosAz = (Math.sin(decl) - Math.sin(lr) * sinA) / (Math.cos(lr) * Math.cos(alt) + 1e-9);
+  let az = Math.acos(Math.max(-1, Math.min(1, cosAz)));
+  if (ha > 0) az = 2 * Math.PI - az;
+  return { alt, az, altD: alt * RAD, azD: az * RAD, up: alt > 0.01 };
+}
+
+// ── Shadow geometry ─────────────────────────────────────────────────
+
+function shadowOff(h, sun, lat) {
+  const len = Math.min(h / Math.tan(sun.alt), h * 4);
+  return [
+   -len * Math.sin(sun.az) / (111320 * Math.cos(lat * DEG)),
+   -len * Math.cos(sun.az) / 111320
+  ];
+}
+
+function hull(pts) {
+  if (pts.length < 3) return pts;
+  pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cx = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo = [], hi = [];
+  for (const p of pts) { while (lo.length > 1 && cx(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+  for (let i = pts.length - 1; i >= 0; i--) { const p = pts[i]; while (hi.length > 1 && cx(hi[hi.length - 2], hi[hi.length - 1], p) <= 0) hi.pop(); hi.push(p); }
+  return lo.slice(0, -1).concat(hi.slice(0, -1));
+}
+
+function bldShadow(ring, h, sun, lat) {
+  const [dx, dy] = shadowOff(h, sun, lat);
+  const all = [];
+  for (const [ln, lt] of ring) { all.push([ln, lt]); all.push([ln + dx, lt + dy]); }
+  const h2 = hull(all);
+  h2.push(h2[0]);
+  return h2;
+}
+
+// ── Spatial test ────────────────────────────────────────────────────
+
+function pip(px, py, ring) {
+  let hit = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i], [xj, yj] = ring[j];
+    if ((yi > py) !== (yj > py) && px < (xj - xi) * (py - yi) / (yj - yi) + xi) hit = !hit;
+  }
+  return hit;
+}
+
+// ── Map ─────────────────────────────────────────────────────────────
+
+const map = new mapboxgl.Map({
+  container: 'map', style: 'mapbox://styles/mapbox/light-v11',
+  center: [13.4018, 52.5228], zoom: 16.5, pitch: 45, bearing: -17, antialias: true
+});
+map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+map.addControl(new mapboxgl.GeolocateControl({ trackUserLocation: true }), 'top-right');
+
+const now = new Date();
+const dateEl = document.getElementById('date-in');
+const hourEl = document.getElementById('hour');
+dateEl.value = now.toISOString().slice(0, 10);
+hourEl.value = now.getHours() + now.getMinutes() / 60;
+
+let shadows = [], raf = 0;
+
+function fc(f) { return { type: 'FeatureCollection', features: f }; }
+function timeFmt(h) { const hr = Math.floor(h), mn = Math.round((h - hr) * 60); return `${String(hr).padStart(2, '0')}:${String(mn).padStart(2, '0')}`; }
+
+map.on('load', () => {
+  // 3D buildings from vector tiles
+  map.addLayer({
+    id: '3d-bld', source: 'composite', 'source-layer': 'building',
+    type: 'fill-extrusion', minzoom: 14,
+    filter: ['>', ['get', 'height'], 0],
+    paint: {
+      'fill-extrusion-color': '#b0a890',
+      'fill-extrusion-height': ['get', 'height'],
+      'fill-extrusion-base': ['get', 'min_height'],
+      'fill-extrusion-opacity': 1
+    }
+  });
+
+  // Shadow polygons (Mapbox fill layer, rendered below 3D buildings)
+  map.addSource('shd', { type: 'geojson', data: fc([]) });
+  map.addLayer({ id: 'shd', type: 'fill', source: 'shd',
+    paint: { 'fill-color': '#000', 'fill-opacity': 0.2 }
+  }, '3d-bld');
+
+  // Night overlay (full viewport when sun is below horizon)
+  map.addSource('night', { type: 'geojson', data: fc([]) });
+  map.addLayer({ id: 'night', type: 'fill', source: 'night',
+    paint: { 'fill-color': '#000', 'fill-opacity': 0.35 }
+  }, '3d-bld');
+
+  // Hidden layer to ensure POI tile data loads
+  map.addLayer({
+    id: 'poi-loader', source: 'composite', 'source-layer': 'poi_label',
+    type: 'circle', minzoom: 14,
+    filter: ['any', ['==', ['get', 'maki'], 'restaurant'], ['==', ['get', 'maki'], 'cafe']],
+    paint: { 'circle-radius': 0 }
+  });
+
+  // Restaurant dots (from computed GeoJSON)
+  map.addSource('rest', { type: 'geojson', data: fc([]) });
+  map.addLayer({
+    id: 'rest-dot', type: 'circle', source: 'rest',
+    paint: {
+      'circle-radius': 6,
+      'circle-color': ['case', ['get', 'shadowed'], '#2a7a22', '#6ecf5e'],
+      'circle-stroke-width': 1.5, 'circle-stroke-color': '#fff'
+    }
+  });
+  map.addLayer({
+    id: 'rest-lbl', type: 'symbol', source: 'rest',
+    layout: { 'text-field': ['get', 'name'], 'text-size': 10, 'text-offset': [0, 1.4], 'text-anchor': 'top', 'text-optional': true },
+    paint: { 'text-color': '#2a2820', 'text-halo-color': '#fff', 'text-halo-width': 1 }
+  });
+
+  update();
+});
+
+map.on('idle', update);
+
+function scheduleUpdate() {
+  if (raf) return;
+  raf = requestAnimationFrame(() => { raf = 0; update(); });
+}
+
+function update() {
+  if (!map.isStyleLoaded() || !map.getLayer('3d-bld')) return;
+
+  const hour = parseFloat(hourEl.value);
+  const date = new Date(dateEl.value + 'T12:00');
+  const c = map.getCenter();
+  const sun = sunPos(date, hour, c.lat, c.lng);
+  const ts = timeFmt(hour);
+
+  // UI
+  document.getElementById('hour-lbl').textContent = ts;
+  document.getElementById('clock').textContent = ts;
+  document.getElementById('sun-info').textContent = sun.up
+    ? `ELV ${sun.altD.toFixed(1)}\u00b0  AZ ${sun.azD.toFixed(1)}\u00b0`
+    : 'Below horizon';
+  document.getElementById('coord-info').textContent =
+    `${c.lat.toFixed(4)}\u00b0N  ${c.lng.toFixed(4)}\u00b0E`;
+
+  // Shadows from visible 3D buildings
+  shadows = [];
+  if (sun.up && sun.alt > 0.02) {
+    const seen = new Set();
+    const cw = map.getCanvas().clientWidth, ch = map.getCanvas().clientHeight;
+    const pad = 200;
+    for (const f of map.queryRenderedFeatures([[-pad, -pad], [cw + pad, ch + pad]], { layers: ['3d-bld'] })) {
+      const id = f.id != null ? f.id : f.geometry.coordinates[0][0][0].toFixed(7);
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const h = f.properties.height || 0;
+      if (h < 2) continue;
+      const ring = f.geometry.coordinates[0];
+      if (ring.length < 4) continue;
+      shadows.push({ s: bldShadow(ring, h, sun, c.lat), f: ring });
+    }
+  }
+
+  // Update shadow layer data
+  map.getSource('shd').setData(fc(
+    shadows.map(r => ({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [r.s] } }))
+  ));
+
+  // Parallel fade: shadows out + night in between 10° and 0°
+  // Above 10°: full shadows, no night. At 0°: no shadows, full night.
+  const t = Math.min(Math.max(sun.altD / 10, 0), 1); // 0° → 0, 10° → 1
+  map.setPaintProperty('shd', 'fill-opacity', 0.2 * t);
+  map.setPaintProperty('night', 'fill-opacity', 0.35 * (1 - t));
+
+  // Night overlay covers entire world (no edges when panning)
+  map.getSource('night').setData({
+    type: 'FeatureCollection',
+    features: [{ type: 'Feature', properties: {}, geometry: {
+      type: 'Polygon', coordinates: [[[-180,-85],[180,-85],[180,85],[-180,85],[-180,-85]]]
+    }}]
+  });
+
+  // Restaurants — test each against shadow polygons
+  const pois = map.querySourceFeatures('composite', {
+    sourceLayer: 'poi_label',
+    filter: ['any', ['==', ['get', 'maki'], 'restaurant'], ['==', ['get', 'maki'], 'cafe']]
+  });
+
+  const seenP = new Set();
+  const rest = [];
+  for (const p of pois) {
+    if (!p.geometry || p.geometry.type !== 'Point') continue;
+    const [lng, lat] = p.geometry.coordinates;
+    const k = lng.toFixed(6) + ',' + lat.toFixed(6);
+    if (seenP.has(k)) continue;
+    seenP.add(k);
+    const shadowed = !sun.up || shadows.some(r => pip(lng, lat, r.s) && !pip(lng, lat, r.f));
+    rest.push({
+      type: 'Feature',
+      properties: {
+        name: p.properties.name || '',
+        shadowed,
+        maki: p.properties.maki,
+        type: p.properties.type || '',
+        category: p.properties.category_en || p.properties.category_de || ''
+      },
+      geometry: p.geometry
+    });
+  }
+
+  map.getSource('rest').setData(fc(rest));
+
+  const inSun = rest.filter(r => !r.properties.shadowed).length;
+  document.getElementById('stats').textContent =
+    rest.length ? `${rest.length} restaurants  ·  ${inSun} sun  ·  ${rest.length - inSun} shadow` : '';
+}
+
+hourEl.addEventListener('input', scheduleUpdate);
+dateEl.addEventListener('input', scheduleUpdate);
+
+// ── Popup ───────────────────────────────────────────────────────────
+
+const popup = new mapboxgl.Popup({ closeButton: true, closeOnClick: true, maxWidth: '240px', offset: 12 });
+
+function makiLabel(m) { return m === 'restaurant' ? 'Restaurant' : m === 'cafe' ? 'Café' : m || 'Restaurant'; }
+
+map.on('click', 'rest-dot', e => {
+  const f = e.features[0];
+  const p = f.properties;
+  const sc = p.shadowed ? 'shade' : 'sun';
+  const sl = p.shadowed ? 'Shadow' : 'Sunlit';
+  const label = makiLabel(p.maki);
+  const extras = [p.type, p.category]
+    .filter(v => v && v.toLowerCase() !== p.maki && v.toLowerCase() !== label.toLowerCase())
+    .filter((v, i, a) => a.indexOf(v) === i);
+  const sub = extras.length ? ' · ' + extras.join(' · ') : '';
+  popup.setLngLat(f.geometry.coordinates)
+    .setHTML(
+      `<div class="pop-name">${p.name || 'Unknown'}</div>` +
+      `<div class="pop-type">${label}${sub}</div>` +
+      `<div class="pop-status ${sc}">${sl}</div>`
+    )
+    .addTo(map);
+});
+
+map.on('mouseenter', 'rest-dot', () => { map.getCanvas().style.cursor = 'pointer'; });
+map.on('mouseleave', 'rest-dot', () => { map.getCanvas().style.cursor = ''; });
+</script>
+</body>
+</html>

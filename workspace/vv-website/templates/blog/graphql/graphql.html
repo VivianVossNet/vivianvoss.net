@@ -1,0 +1,336 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}GraphQL: The Query Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 2012, Facebook had a problem: hundreds of microservices, a mobile News Feed, constrained bandwidth. They built GraphQL. The solution was brilliant. For Facebook. You have 12 REST endpoints and a fetch() call.">
+{( endslot )}
+
+{( slot canonical )}/blog/graphql{( endslot )}
+
+{( slot og-title )}GraphQL: The Query Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Facebook built GraphQL for a mobile feed consuming hundreds of services. You copied it for a dashboard with 12 endpoints. The query language is excellent. The question is whether you have queries worth asking.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "GraphQL: The Query Tax",
+    "datePublished": "2026-03-27",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/graphql",
+    "description": "In 2012, Facebook had a problem: hundreds of microservices, a mobile News Feed, constrained bandwidth. They built GraphQL. You have 12 REST endpoints.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-27">27 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>GraphQL: The Query Tax</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> &#x25A0; Episode 15</p>
+
+        <p>"Query exactly what you need! One endpoint! No over-fetching!"</p>
+
+        <p>Splendid. Let us examine what you are actually paying for.</p>
+
+        <p>In 2012, Facebook had a rather specific problem. Their iOS News Feed
+            consumed data from hundreds of internal microservices over mobile
+            bandwidth that was, at the time, neither fast nor cheap. The existing
+            REST endpoints returned too much data, too many of them needed to be
+            called in sequence, and the mobile team was spending more time
+            choreographing API calls than building features. So Lee Byron,
+            Dan Schafer, and Nick Schrock
+            <a href="https://blog.postman.com/what-is-graphql-part-one-the-facebook-years/" target="_blank" rel="noopener">built GraphQL</a>
+            to solve it.</p>
+
+        <p>The solution was brilliant. For Facebook. You have 12 REST endpoints
+            and a <code>fetch()</code> call. But do carry on.</p>
+
+        <h2>The N+1 Invoice</h2>
+
+        <p>Consider a modest query: fetch 25 users with their posts. In REST,
+            this is two calls. <code>GET /users</code> returns the list.
+            <code>GET /users/:id/posts</code> returns the posts. Two requests,
+            two responses, two cache entries. Straightforward.</p>
+
+        <p>In GraphQL, you write one query. Elegant. The resolver for <code>users</code>
+            fires once and returns 25 rows. Then the resolver for <code>posts</code>
+            fires once per user. That is 26 database queries for one API call.
+            This is the
+            <a href="https://www.freecodecamp.org/news/n-plus-one-query-problem/" target="_blank" rel="noopener">N+1 problem</a>,
+            and it is not a bug. It is how resolvers work by design.</p>
+
+        <svg viewBox="0 0 560 260" aria-label="N+1 query comparison: REST makes 2 HTTP requests with 2 database queries. GraphQL makes 1 HTTP request but 26 database queries for the same data." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .gq-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .gq-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .gq-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .gq-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .gq-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .gq-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .gq-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 22px; font-weight: 700; }
+            </style>
+            <text x="280" y="22" class="gq-title" text-anchor="middle">25 Users with Posts: The Query Count</text>
+            <!-- REST -->
+            <rect x="20" y="38" width="245" height="170" class="gq-box-accent"/>
+            <text x="142" y="58" class="gq-head" text-anchor="middle">REST</text>
+            <text x="142" y="90" class="gq-num" text-anchor="middle">2</text>
+            <text x="142" y="110" class="gq-item" text-anchor="middle">HTTP requests</text>
+            <text x="142" y="140" class="gq-num" text-anchor="middle">2</text>
+            <text x="142" y="160" class="gq-item" text-anchor="middle">database queries</text>
+            <text x="142" y="195" class="gq-muted" text-anchor="middle">GET /users + GET /users/:id/posts</text>
+            <!-- GraphQL -->
+            <rect x="295" y="38" width="245" height="170" class="gq-box"/>
+            <text x="417" y="58" class="gq-head" text-anchor="middle">GraphQL</text>
+            <text x="417" y="90" class="gq-num" text-anchor="middle">1</text>
+            <text x="417" y="110" class="gq-item" text-anchor="middle">HTTP request</text>
+            <text x="417" y="140" class="gq-num" text-anchor="middle">26</text>
+            <text x="417" y="160" class="gq-item" text-anchor="middle">database queries</text>
+            <text x="417" y="195" class="gq-muted" text-anchor="middle">1 users query + 25 posts resolvers</text>
+            <!-- Bottom -->
+            <text x="280" y="230" class="gq-muted" text-anchor="middle">The fix: DataLoader. A batching utility you must implement yourself.</text>
+            <text x="280" y="248" class="gq-muted" text-anchor="middle">It is not built in. It is homework.</text>
+        </svg>
+
+        <p>The fix exists. It is called
+            <a href="https://github.com/graphql/dataloader" target="_blank" rel="noopener">DataLoader</a>,
+            a batching utility that collects individual resolver calls and
+            combines them into bulk queries. With DataLoader, those 26 queries
+            become 2. Splendid. But DataLoader is not built into GraphQL. It is
+            not part of the specification. It is not enabled by default. It is
+            a separate library that you must install, configure, and integrate
+            into every resolver that touches a database. It is, in the most
+            generous interpretation, homework.</p>
+
+        <p>Without it, a relation-heavy GraphQL endpoint
+            <a href="https://medium.com/jds-engineering/i-was-curious-which-is-faster-rest-or-graphql-so-i-tested-themto-say-hello-world-d6c28fec4f17" target="_blank" rel="noopener">performs measurably worse</a>
+            than the REST equivalent it was meant to replace. REST delivers
+            nearly half the latency and 70 per cent more requests per second
+            for standard CRUD operations. The query language that promised
+            efficiency costs you efficiency.</p>
+
+        <h2>The Caching Invoice</h2>
+
+        <p>REST uses HTTP caching. ETags, <code>Cache-Control</code>, CDN
+            layers. GET requests to unique URLs, cacheable by design. The
+            browser caches them. The CDN caches them. The reverse proxy
+            caches them. Three layers of caching infrastructure, built into
+            the web itself, requiring precisely zero configuration from you.</p>
+
+        <p>GraphQL uses POST to a single endpoint. Every query, every
+            mutation, one URL: <code>/graphql</code>. HTTP caching does not
+            work because every request is a POST to the same address with a
+            different body. The browser cannot cache it. The CDN cannot cache
+            it. The reverse proxy cannot cache it. HTTP, the most
+            battle-tested caching infrastructure in the history of computing,
+            has been demoted to a dumb tunnel.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Caching comparison: REST uses three layers of built-in HTTP caching. GraphQL breaks all of them by using POST to a single URL." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cc-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .cc-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .cc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .cc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cc-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .cc-yes { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .cc-no { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+            </style>
+            <text x="280" y="22" class="cc-title" text-anchor="middle">HTTP Caching: Who Benefits?</text>
+            <!-- REST -->
+            <rect x="20" y="38" width="245" height="130" class="cc-box-accent"/>
+            <text x="142" y="58" class="cc-head" text-anchor="middle">REST (GET /users)</text>
+            <text x="50" y="80" class="cc-item">Browser cache</text><text x="230" y="80" class="cc-yes" text-anchor="end">works</text>
+            <text x="50" y="98" class="cc-item">CDN cache</text><text x="230" y="98" class="cc-yes" text-anchor="end">works</text>
+            <text x="50" y="116" class="cc-item">Reverse proxy</text><text x="230" y="116" class="cc-yes" text-anchor="end">works</text>
+            <text x="50" y="134" class="cc-item">ETags</text><text x="230" y="134" class="cc-yes" text-anchor="end">works</text>
+            <text x="50" y="152" class="cc-item">Cache-Control</text><text x="230" y="152" class="cc-yes" text-anchor="end">works</text>
+            <!-- GraphQL -->
+            <rect x="295" y="38" width="245" height="130" class="cc-box"/>
+            <text x="417" y="58" class="cc-head" text-anchor="middle">GraphQL (POST /graphql)</text>
+            <text x="325" y="80" class="cc-item">Browser cache</text><text x="505" y="80" class="cc-no" text-anchor="end">broken</text>
+            <text x="325" y="98" class="cc-item">CDN cache</text><text x="505" y="98" class="cc-no" text-anchor="end">broken</text>
+            <text x="325" y="116" class="cc-item">Reverse proxy</text><text x="505" y="116" class="cc-no" text-anchor="end">broken</text>
+            <text x="325" y="134" class="cc-item">ETags</text><text x="505" y="134" class="cc-no" text-anchor="end">broken</text>
+            <text x="325" y="152" class="cc-item">Cache-Control</text><text x="505" y="152" class="cc-no" text-anchor="end">broken</text>
+            <!-- Bottom -->
+            <text x="280" y="192" class="cc-muted" text-anchor="middle">56% of teams report caching challenges with GraphQL.</text>
+            <text x="280" y="210" class="cc-muted" text-anchor="middle">One rather suspects the other 44% have not noticed yet.</text>
+        </svg>
+
+        <p>The replacement is Apollo's normalised cache, persisted queries,
+            or custom caching layers that you build and maintain yourself.
+            <a href="https://www.apollographql.com/blog/graphql-caching-the-elephant-in-the-room" target="_blank" rel="noopener">56 per cent of teams</a>
+            report caching challenges with GraphQL. One rather suspects the
+            other 44 per cent have not noticed yet.</p>
+
+        <p>And Apollo Client, the library that provides this custom caching,
+            weighs
+            <a href="https://gist.github.com/mxstbr/d2151f35546b1589902cf86517ee52ee" target="_blank" rel="noopener">43 KB gzipped</a>.
+            <code>fetch()</code> ships with every browser at 0 KB. You are
+            paying 43 kilobytes to restore functionality that HTTP provided
+            for free before you broke it.</p>
+
+        <h2>The Security Invoice</h2>
+
+        <p>A 128-byte nested query can
+            <a href="https://bessey.dev/blog/2024/05/24/why-im-over-graphql/" target="_blank" rel="noopener">consume 10 seconds of CPU time</a>.
+            No authentication required. The query is syntactically valid. The
+            schema permits it. The server dutifully executes it.</p>
+
+        <pre><code>{
+  users {
+    posts {
+      comments {
+        author {
+          posts {
+            comments {
+              author { name }
+            }
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+
+        <p>This is a valid GraphQL query. It is also a denial-of-service
+            attack. The recursive relationship between users, posts, comments,
+            and authors creates exponential depth that REST never exposes,
+            because REST endpoints are flat by design. You cannot accidentally
+            nest <code>GET /users</code> six levels deep.</p>
+
+        <p><a href="https://checkmarx.com/blog/exploiting-graphql-query-depth/" target="_blank" rel="noopener">80 per cent</a>
+            of GraphQL APIs are vulnerable to denial-of-service through
+            query depth. Most frameworks ship with no default depth limit.
+            You must build depth limiting, cost analysis, and
+            complexity-based rate limiting. Traditional rate limiting by
+            endpoint does not work when every request hits the same URL.
+            The <a href="https://cheatsheetseries.owasp.org/cheatsheets/GraphQL_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP GraphQL Cheat Sheet</a>
+            reads like a confession of design decisions that were never
+            made.</p>
+
+        <h2>The Monitoring Invoice</h2>
+
+        <p>GraphQL returns HTTP 200. Always. Even when your application
+            is on fire.</p>
+
+        <p>Errors live in a JSON array inside the response body. Your
+            monitoring dashboard shows 100 per cent success rate. Your
+            users see failures. Your on-call engineer sleeps through the
+            night. Your customers do not. The HTTP status code, that
+            universal language of success and failure that every tool in
+            the ecosystem understands, has been reduced to a decorative
+            constant.</p>
+
+        <svg viewBox="0 0 560 180" aria-label="Monitoring comparison: REST returns appropriate HTTP status codes visible to all monitoring tools. GraphQL returns 200 on every response, hiding errors inside the JSON body." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .mo-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .mo-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .mo-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .mo-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .mo-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .mo-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .mo-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 14px; font-weight: 700; }
+            </style>
+            <text x="280" y="22" class="mo-title" text-anchor="middle">What Your Dashboard Sees</text>
+            <!-- REST -->
+            <rect x="20" y="38" width="245" height="95" class="mo-box-accent"/>
+            <text x="142" y="58" class="mo-head" text-anchor="middle">REST</text>
+            <text x="50" y="80" class="mo-item">Success:</text><text x="230" y="80" class="mo-code" text-anchor="end">200</text>
+            <text x="50" y="98" class="mo-item">Not found:</text><text x="230" y="98" class="mo-code" text-anchor="end">404</text>
+            <text x="50" y="116" class="mo-item">Server error:</text><text x="230" y="116" class="mo-code" text-anchor="end">500</text>
+            <!-- GraphQL -->
+            <rect x="295" y="38" width="245" height="95" class="mo-box"/>
+            <text x="417" y="58" class="mo-head" text-anchor="middle">GraphQL</text>
+            <text x="325" y="80" class="mo-item">Success:</text><text x="505" y="80" class="mo-code" text-anchor="end">200</text>
+            <text x="325" y="98" class="mo-item">Not found:</text><text x="505" y="98" class="mo-code" text-anchor="end">200</text>
+            <text x="325" y="116" class="mo-item">Server error:</text><text x="505" y="116" class="mo-code" text-anchor="end">200</text>
+            <!-- Bottom -->
+            <text x="280" y="155" class="mo-muted" text-anchor="middle">GraphQL errors live in a JSON array inside the response body.</text>
+            <text x="280" y="173" class="mo-muted" text-anchor="middle">Your dashboard shows 100% success. Your users see failures. Marvellous.</text>
+        </svg>
+
+        <h2>The Alternative</h2>
+
+        <p>REST with
+            <a href="https://spec.openapis.org/oas/v3.0.0" target="_blank" rel="noopener">OpenAPI 3.0</a>:
+            self-documenting, typed client generation, HTTP caching built in.
+            <code>fetch()</code> ships with every browser at 0 KB. The
+            specification is stable. The tooling is mature. The caching works.
+            The status codes mean what they say.
+            <a href="https://jsonconsole.com/blog/rest-api-vs-graphql-statistics-trends-performance-comparison-2025" target="_blank" rel="noopener">83 per cent</a>
+            of web services use REST. Not because they have not heard of
+            GraphQL, but because they evaluated the trade-off and chose
+            accordingly.</p>
+
+        <p>GraphQL solves a real problem: aggregating hundreds of services
+            behind a single query interface. If you have that problem, use
+            it. If you have hundreds of microservices, a mobile client on
+            constrained bandwidth, and a frontend team that needs to iterate
+            independently of the backend, GraphQL is genuinely excellent.
+            Facebook built it for exactly this scenario, and it works
+            beautifully there.</p>
+
+        <p>If you do not have that problem, you are paying the invoice for
+            someone else's architecture.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>Facebook built GraphQL for a mobile feed consuming hundreds of
+            services over constrained bandwidth. In
+            <a href="https://engineering.fb.com/core-data/graphql-a-data-query-language/" target="_blank" rel="noopener">2015</a>,
+            they open-sourced it. The industry adopted it without the problem.
+            A dashboard with 12 endpoints gained a query language, a schema
+            layer, a type system, a normalised cache, a depth limiter, a
+            cost analyser, and 43 KB of client library. The original
+            <code>fetch()</code> call is still there, underneath it all,
+            wondering what it did wrong.</p>
+
+        <p>The query language is excellent. The question is whether you
+            have queries worth asking.</p>
+
+        <blockquote>
+            <p>Facebook built GraphQL for hundreds of microservices over
+                mobile bandwidth. You copied it for a dashboard with 12
+                endpoints. N+1 queries by design. HTTP caching broken by
+                design. 200 on errors by design. 80 per cent of APIs
+                vulnerable to depth-based DoS. The query language is
+                excellent. The question is whether you have queries worth
+                asking.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The query tax, itemised:</strong></p>
+            <ul>
+                <li><strong>N+1:</strong> 25 users with posts = 26 database queries per API call. DataLoader reduces to 2, but is not built in</li>
+                <li><strong>Caching:</strong> POST to one URL breaks browser, CDN, and proxy caching. 56% of teams report challenges</li>
+                <li><strong>Security:</strong> 128-byte query consumes 10 seconds of CPU. 80% of APIs vulnerable to depth-based DoS</li>
+                <li><strong>Monitoring:</strong> HTTP 200 on every response, including errors. Dashboards blind</li>
+                <li><strong>Client size:</strong> Apollo Client 43 KB. <code>fetch()</code>: 0 KB</li>
+                <li><strong>REST alternative:</strong> OpenAPI 3.0, typed clients, HTTP caching, meaningful status codes. 83% of web services</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -131,6 +131,8 @@ local pages = {
     { loc = "/blog/the-log",                          priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/vi",                               priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/sse",                              priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/by-design-sqlite",                  priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/graphql",                           priority = "0.7", changefreq = "yearly" },
 }
 
 function route()

@@ -4,6 +4,8 @@
 local SITE = "https://vivianvoss.net"
 
 local articles = {
+    { date = "Fri, 27 Mar 2026 00:00:00 GMT", title = "GraphQL: The Query Tax", loc = "/blog/graphql", desc = "In 2012, Facebook had a problem: hundreds of microservices, a mobile News Feed, constrained bandwidth. They built GraphQL. The solution was brilliant. For Facebook. You have 12 REST endpoints and a fetch() call." },
+    { date = "Thu, 26 Mar 2026 00:00:00 GMT", title = "The Single Writer", loc = "/blog/by-design-sqlite", desc = "In 2000, D. Richard Hipp built a database for a U.S. Navy destroyer. The existing Informix installation required a DBA. Hipp's solution was not to fix the server. It was to eliminate it entirely. 600 KB. One file. Zero configuration. The most deployed software module in history." },
     { date = "Tue, 25 Mar 2026 00:00:00 GMT", title = "Server-Sent Events", loc = "/blog/sse", desc = "Most real-time features are one-way. The browser solved this in 2015 with one line of JavaScript that nobody teaches. No npm. No reconnect logic. EventSource reconnects automatically. The specification demands it." },
     { date = "Tue, 24 Mar 2026 00:00:00 GMT", title = "vi", loc = "/blog/vi", desc = "2.7 million people have visited Stack Overflow to learn how to exit a text editor. The most feared tool in computing is also the most elegant. A composable grammar born from a 300 baud modem. Fifty years of production." },
     { date = "Mon, 23 Mar 2026 00:00:00 GMT", title = "The Log", loc = "/blog/the-log", desc = "Eric Allman wrote syslog in the 1980s. Forty years of production. Zero licence fees. Log rotation, live monitoring, frequency analysis, and alerting. Four commands. Each composable. Each free." },
