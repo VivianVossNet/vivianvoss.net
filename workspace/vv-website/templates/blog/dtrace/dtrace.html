@@ -1,0 +1,335 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}DTrace &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 2001, Bryan Cantrill had built an entirely synthetic system and could not ask it what it was doing. DTrace was the answer. Zero overhead. Safe by construction. Concise answers to arbitrary questions. Twenty-three years later, the system still answers.">
+{( endslot )}
+
+{( slot canonical )}/blog/dtrace{( endslot )}
+
+{( slot og-title )}DTrace &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Zero overhead when probes are disabled. Safe by construction. Concise answers to arbitrary questions about the system. DTrace solved production observability in 2003. The observability industry has been catching up since.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "DTrace",
+    "datePublished": "2026-04-07",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/dtrace",
+    "description": "Zero overhead. Safe by construction. Concise answers to arbitrary questions. DTrace solved production observability in 2003.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-07">7 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>DTrace</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 30</p>
+
+        <p>You have done this. Your production system misbehaves. The
+            logs say nothing. The metrics say nothing. Everything is fine,
+            except it is not. So you do what every developer does: you add
+            a <code>printf</code>, rebuild, redeploy, and wait.</p>
+
+        <p>The bug does not recur. You add three more printfs. Rebuild.
+            Redeploy. Wait. The bug recurs, but not where you expected.
+            You are now debugging your debugging. It is a Tuesday. You
+            had plans for the evening.</p>
+
+        <p>In 2001,
+            <a href="https://en.wikipedia.org/wiki/Bryan_Cantrill" target="_blank" rel="noopener">Bryan Cantrill</a>
+            was doing exactly this at Sun Microsystems. He had helped
+            build an entirely synthetic system: every instruction, every
+            data structure, every byte placed there by human beings. And
+            he could not ask it what it was doing. "We had created this
+            system," he
+            <a href="https://changelog.com/podcast/592" target="_blank" rel="noopener">said</a>,
+            "yet we could not observe it."</p>
+
+        <p>That bothered him rather a lot.</p>
+
+        <h2>The Problem</h2>
+
+        <p>Debugging production systems has always offered two options,
+            both terrible.</p>
+
+        <p><strong>Option one:</strong> add logging statements, rebuild,
+            redeploy, wait for the issue to recur. This works in
+            development. In production, it means restarting a database
+            serving ten thousand connections to add a printf. The cure is
+            worse than the disease. And if you guessed wrong about where
+            to log, you restart again. And again. Each restart is a
+            deployment. Each deployment is a risk. Each risk is a
+            conversation with someone who would rather you did not
+            restart things.</p>
+
+        <p><strong>Option two:</strong> attach a debugger. Stop the
+            process, inspect memory, step through code. This works
+            beautifully on a developer's laptop. On a production trading
+            system processing four million transactions per hour, stopping
+            the process is not debugging. It is an outage with extra
+            steps.</p>
+
+        <p>Be honest. You have attached <code>strace</code> to a
+            production process and watched it crawl to a halt.
+            <a href="https://en.wikipedia.org/wiki/Strace" target="_blank" rel="noopener"><code>strace</code></a>,
+            written by Paul Kranenburg for SunOS in 1991 and ported to
+            Linux by Branko Lankester, traces system calls by intercepting
+            them via <code>ptrace</code>. It stops the traced process for
+            every single syscall. Switches context to the tracer. Records
+            the call. Resumes the process. Stops it again. It is rather
+            like asking someone to describe their day by pausing them
+            after every breath.</p>
+
+        <svg viewBox="0 0 560 230" aria-label="Comparison of strace versus DTrace: strace stops the process per syscall, one process at a time, tells you what happened. DTrace instruments the kernel directly, system-wide, zero overhead when disabled, tells you why." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .dt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .dt-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .dt-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .dt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .dt-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .dt-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .dt-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+            </style>
+            <text x="280" y="22" class="dt-title" text-anchor="middle">strace vs DTrace</text>
+            <!-- strace -->
+            <rect x="20" y="38" width="250" height="140" class="dt-box"/>
+            <text x="145" y="58" class="dt-head" text-anchor="middle">strace / truss</text>
+            <text x="40" y="78" class="dt-item">Stops process per syscall</text>
+            <text x="40" y="96" class="dt-item">Context switch overhead (brutal)</text>
+            <text x="40" y="114" class="dt-item">One process at a time</text>
+            <text x="40" y="132" class="dt-item">Tells you what happened</text>
+            <text x="40" y="150" class="dt-item">Cannot see inside the kernel</text>
+            <text x="40" y="168" class="dt-item">Makes the patient sicker</text>
+            <!-- DTrace -->
+            <rect x="290" y="38" width="250" height="140" class="dt-box-accent"/>
+            <text x="415" y="58" class="dt-head" text-anchor="middle">DTrace</text>
+            <text x="310" y="78" class="dt-item">Instruments kernel directly</text>
+            <text x="310" y="96" class="dt-code">Zero overhead when disabled</text>
+            <text x="310" y="114" class="dt-item">System-wide, all processes</text>
+            <text x="310" y="132" class="dt-item">Tells you what and why</text>
+            <text x="310" y="150" class="dt-item">Traces kernel + userland</text>
+            <text x="310" y="168" class="dt-item">Safe by construction</text>
+            <!-- Bottom -->
+            <text x="280" y="200" class="dt-muted" text-anchor="middle">strace: surgery with the lights off.</text>
+            <text x="280" y="218" class="dt-muted" text-anchor="middle">DTrace: X-ray vision. The patient does not notice.</text>
+        </svg>
+
+        <p><code>truss</code> on FreeBSD. <code>strace</code> on Linux.
+            Both tell you what happened. Neither tells you why. And both
+            make the patient sicker in the process of diagnosis.</p>
+
+        <h2>The Answer</h2>
+
+        <p>DTrace does not stop anything.</p>
+
+        <p>Bryan Cantrill, Mike Shapiro, and Adam Leventhal designed and
+            built DTrace at Sun Microsystems. The original ideation began
+            in the late 1990s. The
+            <a href="https://en.wikipedia.org/wiki/DTrace" target="_blank" rel="noopener">implementation was first integrated</a>
+            into Solaris in September 2003. It shipped with Solaris 10 in
+            January 2005. Development took approximately four years of
+            focused engineering.</p>
+
+        <p>The tagline:
+            <a href="https://codearcana.com/posts/2016/01/03/dtrace-isnt-just-a-tool-its-a-philosophy.html" target="_blank" rel="noopener">"Concise answers to arbitrary questions about the system."</a>
+            Five words. One does admire a tool confident enough to describe
+            itself in fewer words than most error messages.</p>
+
+        <p>DTrace works by compiling probe scripts, written in a
+            purpose-built language called D, into safe bytecode that is
+            injected directly into the running kernel. When a probe fires,
+            the bytecode executes in kernel context: no context switch, no
+            process stop, no overhead beyond the probe itself. When a probe
+            is
+            <a href="https://www.brendangregg.com/blog/2011-02-18/dtrace-pid-provider-overhead.html" target="_blank" rel="noopener">not enabled, the overhead is zero</a>.
+            Not low. Not negligible. Zero. The original machine instruction
+            runs unmodified. The probe point does not exist until you enable
+            it. This is not an optimisation. It is the architecture.</p>
+
+        <h2>The Language</h2>
+
+        <p>The D language is deliberately crippled. It cannot loop
+            infinitely. It cannot dereference invalid pointers. It cannot
+            allocate memory. It cannot modify kernel state. It cannot crash
+            the system. Ever.</p>
+
+        <p>These are not limitations. They are the entire point. Any valid
+            D programme is guaranteed safe on a production system. Safety
+            is not a runtime check. It is a compile-time invariant. The
+            language was designed so that the question "is this script safe
+            to run in production?" is answered by the compiler, not by a
+            change advisory board.</p>
+
+        <p>A DTrace one-liner to count system calls by process on a
+            running FreeBSD server:</p>
+
+        <pre><code>dtrace -n 'syscall:::entry { @[execname] = count(); }'</code></pre>
+
+        <p>No recompilation. No restart. No risk. The answer appears
+            whilst the system continues serving traffic. You can trace
+            every syscall on a FreeBSD server serving ten thousand requests
+            per second. Every function entry in the kernel. Every TCP
+            handshake. Right now. Without asking anyone's permission.
+            Without filing a ticket. Without scheduling a maintenance
+            window.</p>
+
+        <h2>The Proof</h2>
+
+        <p>In 2006, DTrace won the
+            <a href="https://www.technologyreview.com/2006/08/11/100594/sun-software-engineer-bryan-cantrill-on-software-perfection/" target="_blank" rel="noopener">Wall Street Journal's Technology Innovation Award</a>,
+            Gold. Not for a consumer product. Not for an app. For a kernel
+            instrumentation framework that lets you ask a running operating
+            system what it is doing. One does find that rather encouraging
+            about the state of technology journalism, at least in 2006.</p>
+
+        <svg viewBox="0 0 560 200" aria-label="DTrace lineage: created at Sun (2003), FreeBSD has it in base since 2008, macOS since 2007, illumos inherited it, Linux was inspired to create eBPF. Brendan Gregg wrote the book on both." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .dl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .dl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .dl-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .dl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .dl-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .dl-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .dl-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#dl-arr); }
+            </style>
+            <defs>
+                <marker id="dl-arr" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+                    <path d="M0,0 L6,2 L0,4" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="dl-title" text-anchor="middle">The DTrace Lineage</text>
+            <!-- Sun -->
+            <rect x="200" y="38" width="160" height="40" class="dl-box-accent"/>
+            <text x="280" y="56" class="dl-head" text-anchor="middle">Sun Microsystems (2003)</text>
+            <text x="280" y="70" class="dl-muted" text-anchor="middle">Cantrill, Shapiro, Leventhal</text>
+            <!-- Arrows -->
+            <line x1="220" y1="78" x2="100" y2="108" class="dl-arrow"/>
+            <line x1="280" y1="78" x2="280" y2="108" class="dl-arrow"/>
+            <line x1="340" y1="78" x2="460" y2="108" class="dl-arrow"/>
+            <!-- FreeBSD -->
+            <rect x="20" y="110" width="120" height="40" class="dl-box-accent"/>
+            <text x="80" y="128" class="dl-head" text-anchor="middle">FreeBSD</text>
+            <text x="80" y="142" class="dl-muted" text-anchor="middle">in base since 2008</text>
+            <!-- macOS -->
+            <rect x="155" y="110" width="110" height="40" class="dl-box"/>
+            <text x="210" y="128" class="dl-head" text-anchor="middle">macOS</text>
+            <text x="210" y="142" class="dl-muted" text-anchor="middle">since 2007</text>
+            <!-- illumos -->
+            <rect x="280" y="110" width="110" height="40" class="dl-box"/>
+            <text x="335" y="128" class="dl-head" text-anchor="middle">illumos</text>
+            <text x="335" y="142" class="dl-muted" text-anchor="middle">inherited</text>
+            <!-- Linux/eBPF -->
+            <rect x="405" y="110" width="135" height="40" class="dl-box"/>
+            <text x="472" y="128" class="dl-head" text-anchor="middle">Linux (eBPF)</text>
+            <text x="472" y="142" class="dl-muted" text-anchor="middle">inspired by DTrace</text>
+            <!-- Bottom -->
+            <text x="280" y="175" class="dl-muted" text-anchor="middle">Brendan Gregg wrote the definitive DTrace book.</text>
+            <text x="280" y="192" class="dl-muted" text-anchor="middle">He now writes the definitive eBPF book. The ideas survived by being worth stealing.</text>
+        </svg>
+
+        <p><a href="https://klarasystems.com/articles/freebsd-vs-linux-tracing-and-troubleshooting/" target="_blank" rel="noopener">FreeBSD integrated DTrace in 2008</a>.
+            It ships in base. No packages to install, no modules to compile.
+            macOS has included DTrace since Leopard (2007): every Mac ships
+            with a kernel-level dynamic tracing framework that most users
+            will never know exists.
+            <a href="/blog/the-unix-philosophy">illumos</a>, the
+            open-source continuation of OpenSolaris, inherited DTrace from
+            its birthplace.</p>
+
+        <p>On Linux, DTrace's influence is unmistakable.
+            <a href="https://www.brendangregg.com/dtrace.html" target="_blank" rel="noopener">eBPF</a>
+            (extended Berkeley Packet Filter) and its higher-level interface
+            bpftrace provide similar capabilities: safe bytecode execution
+            in the kernel, dynamic instrumentation, production-safe tracing.
+            Brendan Gregg, who wrote the definitive DTrace book, now writes
+            the definitive eBPF material. The ideas travelled. The
+            architecture was validated by imitation.</p>
+
+        <p>The observability industry, Datadog, Grafana, Prometheus, spends
+            billions solving a problem that DTrace solved in 2003. With
+            rather less YAML.</p>
+
+        <h2>The Philosophy</h2>
+
+        <p>Observability is not logging.
+            <a href="/blog/the-log">Logging</a> records what the developer
+            anticipated might go wrong. Observability answers questions the
+            developer never thought to ask. The difference is the difference
+            between a searchlight and the sun.</p>
+
+        <p>DTrace does not require you to predict your questions in advance.
+            You do not instrument your code for DTrace. You do not add
+            tracing libraries. You do not configure exporters. The probes
+            exist at every function boundary, every syscall, every I/O
+            operation. You simply ask.</p>
+
+        <p>This is what makes DTrace beautiful: it treats the running
+            system as something that should be fully transparent to the
+            operator. Not partially visible through pre-configured dashboards.
+            Not indirectly observable through aggregated metrics. Directly,
+            completely, safely observable. In production. Under load. Right
+            now.</p>
+
+        <h2>The Point</h2>
+
+        <p>Twenty-three years after its first integration, DTrace remains
+            the standard against which production tracing tools are measured.
+            Its core design has not changed because it did not need to. Zero
+            overhead when disabled. Safe by construction. Concise answers to
+            arbitrary questions.</p>
+
+        <p>Bryan Cantrill is now CEO of
+            <a href="https://en.wikipedia.org/wiki/Bryan_Cantrill" target="_blank" rel="noopener">Oxide Computer Company</a>,
+            building rack-scale computers with the same philosophy: the
+            system should be fully observable, fully debuggable, and fully
+            understood. The principle survived the company that created it.
+            One does find that rather beautiful.</p>
+
+        <p>DTrace. Ask the system. It will answer.</p>
+
+        <blockquote>
+            <p>Zero overhead when probes are disabled. Safe by construction.
+                Concise answers to arbitrary questions. DTrace solved
+                production observability in 2003. FreeBSD ships it in base.
+                macOS has had it since 2007. Linux built eBPF because the
+                ideas were worth stealing. Logging records what you
+                predicted. DTrace answers what you never thought to ask.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>DTrace, dissected:</strong></p>
+            <ul>
+                <li><strong>Creators:</strong> Bryan Cantrill, Mike Shapiro, Adam Leventhal (Sun Microsystems, 2003)</li>
+                <li><strong>Design:</strong> Zero overhead when disabled. D language: cannot loop, cannot crash kernel. Production-safe by construction</li>
+                <li><strong>Lineage:</strong> FreeBSD (base since 2008), macOS (since 2007), illumos (inherited), Linux (inspired eBPF)</li>
+                <li><strong>Award:</strong> Wall Street Journal Technology Innovation Award, Gold (2006)</li>
+                <li><a href="https://www.brendangregg.com/dtrace.html" target="_blank" rel="noopener">Brendan Gregg: DTrace Tools</a> &#x25A0;
+                    <a href="https://dtrace.org/blogs/" target="_blank" rel="noopener">dtrace.org</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

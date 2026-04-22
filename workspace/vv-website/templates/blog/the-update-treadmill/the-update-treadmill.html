@@ -1,0 +1,292 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Update Treadmill &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Your software worked on Friday. You ran npm update on Monday. It no longer works on Monday. Nothing in your code changed. Angular: 18 major versions in 10 years. 75% of dev time on maintenance.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-update-treadmill{( endslot )}
+
+{( slot og-title )}The Update Treadmill &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Your software worked on Friday. npm update broke it on Monday. Angular: 18 major versions in 10 years. 75% of dev time on maintenance. SQLite has been backwards-compatible since 2004. One of them understood what production means.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Update Treadmill",
+    "datePublished": "2026-04-04",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-update-treadmill",
+    "description": "Your software worked on Friday. npm update broke it on Monday. Angular: 18 major versions in 10 years. 75% of dev time on maintenance.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-04">4 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Update Treadmill</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Beta Stories</em> &#x25A0; Episode 6</p>
+
+        <p>Your software worked on Friday. You ran <code>npm update</code>
+            on Monday. It no longer works on Monday. Nothing in your code
+            changed. Not a single line. Not a character. Not a whitespace
+            alteration that an overzealous linter might have introduced.
+            The platform moved underneath you, like a carpet being pulled
+            by someone who felt the room needed rearranging.</p>
+
+        <p>One does find it rather charming that the industry calls this
+            "progress."</p>
+
+        <h2>The Promise</h2>
+
+        <p>"Ship early, iterate fast, embrace change." Agile taught an
+            entire generation that stability is something to overcome.
+            Sprints replaced milestones. Continuous deployment replaced
+            releases. The word "done" quietly left the building and has
+            not been seen since. Nobody filed a missing persons report,
+            because filing a report would require a finished form, and
+            the form is in the next sprint.</p>
+
+        <p>The ecosystem took the hint.
+            <a href="https://www.herodevs.com/blog-posts/angular-version-history-every-release-date-support-window-and-end-of-life-date-from-angularjs-to-angular-22" target="_blank" rel="noopener">Angular ships a new major version every six months</a>.
+            Eighteen major versions in ten years. Each with breaking
+            changes. Each with an eighteen-month support window. Each
+            politely informing you that the version you spent three months
+            migrating to is now approaching end of life. You are not
+            building software. You are servicing a subscription to your
+            own framework.</p>
+
+        <p>The build tools followed suit. Grunt was the standard in 2013.
+            Gulp replaced it by 2015. Webpack took over by 2017. Now it is
+            <a href="https://2024.stateofjs.com/en-US" target="_blank" rel="noopener">Vite, with Webpack satisfaction down to 26 per cent</a>.
+            Four generations of tooling in ten years, each requiring its
+            own configuration language, its own plugin ecosystem, its own
+            mental model. The code you built did not change. The machinery
+            around it was replaced four times. One does rather admire the
+            confidence required to call this an improvement.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Build tool churn: Grunt (2013), Gulp (2015), Webpack (2017), Vite (2023). Four generations in ten years. Each replaced the previous. The code stayed the same." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ut-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ut-year { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .ut-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .ut-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ut-line { stroke: var(--border); stroke-width: 1.5 }
+                .ut-dot { fill: var(--accent); r: 4 }
+                .ut-strike { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4,3 }
+            </style>
+            <text x="280" y="22" class="ut-title" text-anchor="middle">Build Tool Churn: Four Generations in Ten Years</text>
+            <line x1="70" y1="60" x2="490" y2="60" class="ut-line"/>
+            <circle cx="70" cy="60" class="ut-dot"/><text x="70" y="48" class="ut-year" text-anchor="middle">2013</text><text x="70" y="82" class="ut-item" text-anchor="middle">Grunt</text><line x1="70" y1="88" x2="70" y2="95" class="ut-strike"/><text x="70" y="108" class="ut-muted" text-anchor="middle">replaced</text>
+            <circle cx="210" cy="60" class="ut-dot"/><text x="210" y="48" class="ut-year" text-anchor="middle">2015</text><text x="210" y="82" class="ut-item" text-anchor="middle">Gulp</text><line x1="210" y1="88" x2="210" y2="95" class="ut-strike"/><text x="210" y="108" class="ut-muted" text-anchor="middle">replaced</text>
+            <circle cx="350" cy="60" class="ut-dot"/><text x="350" y="48" class="ut-year" text-anchor="middle">2017</text><text x="350" y="82" class="ut-item" text-anchor="middle">Webpack</text><line x1="350" y1="88" x2="350" y2="95" class="ut-strike"/><text x="350" y="108" class="ut-muted" text-anchor="middle">26% satisfaction</text>
+            <circle cx="490" cy="60" class="ut-dot"/><text x="490" y="48" class="ut-year" text-anchor="middle">2023</text><text x="490" y="82" class="ut-item" text-anchor="middle">Vite</text><text x="490" y="108" class="ut-muted" text-anchor="middle">current</text>
+            <!-- Bottom -->
+            <text x="280" y="145" class="ut-muted" text-anchor="middle">Your code did not change. The machinery around it was replaced four times.</text>
+            <text x="280" y="165" class="ut-muted" text-anchor="middle">Each required its own configuration language, its own plugins, its own mental model.</text>
+            <!-- Angular -->
+            <text x="280" y="195" class="ut-title" text-anchor="middle">Angular: 18 Major Versions in 10 Years</text>
+            <text x="280" y="215" class="ut-muted" text-anchor="middle">Each with breaking changes. Each with an 18-month support window. You are servicing a subscription to your framework.</text>
+        </svg>
+
+        <h2>The Decay</h2>
+
+        <p><a href="https://www.researchgate.net/publication/333333382_What_Do_Package_Dependencies_Tell_Us_About_Semantic_Versioning" target="_blank" rel="noopener">44 per cent of breaking changes in npm packages</a>
+            arrive in minor and patch releases. The versions that semantic
+            versioning promises are safe. They are not. They merely look
+            safe, which is rather worse, because you install them without
+            reading the changelog, and the changelog would not have helped
+            anyway because the breaking change is in a transitive
+            dependency three levels deep that you have never heard of.</p>
+
+        <p><a href="https://nextjs.org/blog/next-15" target="_blank" rel="noopener">Next.js 15 reversed its caching defaults</a>.
+            Code that relied on cached responses now fetches on every
+            request. Performance regressions delivered free of charge,
+            disguised as a feature.
+            <a href="https://www.salmanizhar.com/blog/nextjs-16-migration-guide" target="_blank" rel="noopener">Next.js 16 dropped Node.js 18 entirely</a>.
+            One does not recall requesting either of these changes, yet
+            here one is, updating CI pipelines on a Tuesday afternoon.</p>
+
+        <p>The migrations that do get announced fare little better.
+            <a href="https://lwn.net/Articles/843660/" target="_blank" rel="noopener">Python 2 to 3 took twelve years</a>.
+            Twelve years for a language migration that was meant to be
+            straightforward. The cost to the industry has been estimated
+            at over $100 billion. AngularJS reached end of life in 2021.
+            Four years later, 1.2 million websites still run it, with
+            419,000 weekly npm downloads. The migration was not completed.
+            It was abandoned. The websites are still there, running a
+            framework that nobody supports, serving users who do not know
+            and would not care.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Developer time allocation: 75% maintenance, 33% technical debt, 13.5 hours per week per developer on inefficiencies that produce no value." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tm-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tm-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 22px; font-weight: 700; }
+                .tm-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .tm-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .tm-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="tm-title" text-anchor="middle">Where Developer Time Goes</text>
+            <rect x="20" y="38" width="165" height="75" class="tm-box"/>
+            <text x="102" y="68" class="tm-num" text-anchor="middle">75%</text>
+            <text x="102" y="88" class="tm-item" text-anchor="middle">maintenance</text>
+            <text x="102" y="103" class="tm-muted" text-anchor="middle">not features, not innovation</text>
+
+            <rect x="197" y="38" width="165" height="75" class="tm-box"/>
+            <text x="280" y="68" class="tm-num" text-anchor="middle">33%</text>
+            <text x="280" y="88" class="tm-item" text-anchor="middle">technical debt</text>
+            <text x="280" y="103" class="tm-muted" text-anchor="middle">Stripe, 2018</text>
+
+            <rect x="375" y="38" width="165" height="75" class="tm-box"/>
+            <text x="457" y="68" class="tm-num" text-anchor="middle">13.5h</text>
+            <text x="457" y="88" class="tm-item" text-anchor="middle">per week per dev</text>
+            <text x="457" y="103" class="tm-muted" text-anchor="middle">on inefficiencies</text>
+
+            <!-- Breaking changes -->
+            <rect x="20" y="128" width="250" height="55" class="tm-box"/>
+            <text x="145" y="150" class="tm-num" text-anchor="middle">44%</text>
+            <text x="145" y="170" class="tm-item" text-anchor="middle">of npm breaking changes in minor/patch</text>
+
+            <rect x="290" y="128" width="250" height="55" class="tm-box"/>
+            <text x="415" y="150" class="tm-num" text-anchor="middle">200</text>
+            <text x="415" y="170" class="tm-item" text-anchor="middle">Dependabot PRs/week (one monorepo)</text>
+
+            <text x="280" y="210" class="tm-muted" text-anchor="middle">75% of engineering talent spent keeping the treadmill running</text>
+            <text x="280" y="228" class="tm-muted" text-anchor="middle">so that one may continue running on the treadmill. Splendid.</text>
+        </svg>
+
+        <p><a href="https://stripe.com/files/reports/the-developer-coefficient.pdf" target="_blank" rel="noopener">Stripe measured the damage in 2018</a>:
+            developers spend 33 per cent of their time on technical debt.
+            13.5 hours per week per developer on inefficiencies that produce
+            no value. Across the industry,
+            <a href="https://marketingltb.com/blog/statistics/web-development-statistics/" target="_blank" rel="noopener">75 per cent of development time</a>
+            goes to maintenance. Not features. Not innovation. Keeping the
+            treadmill running so that one may continue running on the
+            treadmill. Splendid use of engineering talent.</p>
+
+        <h2>The Mechanism</h2>
+
+        <p>Framework authors need adoption. Adoption requires novelty.
+            Novelty requires breaking the previous version. Break, migrate,
+            break, migrate. The cycle is not accidental. It is the product.
+            The framework is not a tool. It is a subscription that bills in
+            engineering hours instead of pounds.</p>
+
+        <p>Agile provided the philosophy. "Embrace change" became "inflict
+            change." Sprints guarantee a next iteration, never a stable
+            release. The process ensures that software never reaches a
+            finished state, and the vocabulary ensures nobody notices: it
+            is not instability, it is iteration. It is not churn, it is
+            evolution. It is not a bug, it is a known issue in the backlog
+            of the sprint after the sprint after this one.</p>
+
+        <p>And the tooling enforces it.
+            <a href="https://blog.pullnotifier.com/blog/dependabot-vs-renovate-dependency-update-tools" target="_blank" rel="noopener">Dependabot opens 200 pull requests per week</a>
+            for a monorepo. Not because your code is broken. Because a
+            dependency four levels deep released a patch for a vulnerability
+            in a function you do not call. The automated pull request
+            arrives, the CI runs, the reviewer spends twenty minutes
+            verifying that nothing changed, and the treadmill advances
+            one step. Multiply by fifty projects and you have a full-time
+            job that produces nothing.</p>
+
+        <h2>The Signal</h2>
+
+        <p><a href="https://sqlite.org/lts.html" target="_blank" rel="noopener">SQLite has maintained backwards compatibility since 2004</a>.
+            The developers have committed to preserving the current file
+            format, SQL syntax, and C API until the year 2050. That is not
+            a version policy. That is a promise to every system that depends
+            on it. Twenty-two years of stability so far. Twenty-four more
+            to go. One does rather appreciate a roadmap that fits on a
+            single sentence.</p>
+
+        <p><a href="https://en.wikipedia.org/wiki/POSIX" target="_blank" rel="noopener">POSIX has been stable since 1988</a>.
+            Thirty-eight years of API consistency across operating systems,
+            vendors, and hardware architectures. A shell script written in
+            1990 still runs. A C programme compiled against the POSIX API
+            in 1995 still compiles. The specification was not abandoned.
+            It was finished. The industry has apparently forgotten that
+            this is possible.</p>
+
+        <p><a href="https://forums.freebsd.org/threads/what-is-meant-by-abi.86224/" target="_blank" rel="noopener">FreeBSD has maintained source compatibility</a>
+            across major releases for over thirty years. Code written for
+            FreeBSD in the 1990s compiles and runs on FreeBSD 14 today. Not
+            because nobody touched the system. Because every change was made
+            with the understanding that other people's software depends on
+            it.</p>
+
+        <svg viewBox="0 0 560 180" aria-label="Stability comparison: Angular 18 versions in 10 years. SQLite backwards-compatible since 2004, pledged to 2050. POSIX stable since 1988. FreeBSD source compatibility for 30+ years." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .sb-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .sb-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .sb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .sb-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .sb-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .sb-bar { fill: var(--border); rx: 2; }
+                .sb-bar-accent { fill: var(--accent); rx: 2; }
+            </style>
+            <text x="280" y="22" class="sb-title" text-anchor="middle">Stability: A Design Decision</text>
+            <text x="20" y="52" class="sb-item">Angular</text><rect x="110" y="40" width="63" height="16" class="sb-bar"/><text x="180" y="52" class="sb-head">10 years</text><text x="260" y="52" class="sb-muted">18 breaking versions</text>
+            <text x="20" y="76" class="sb-item">SQLite</text><rect x="110" y="64" width="277" height="16" class="sb-bar-accent"/><text x="394" y="76" class="sb-head">22 years</text><text x="450" y="76" class="sb-muted">0 breaking changes</text>
+            <text x="20" y="100" class="sb-item">POSIX</text><rect x="110" y="88" width="380" height="16" class="sb-bar-accent"/><text x="497" y="100" class="sb-head">38 years</text>
+            <text x="20" y="124" class="sb-item">FreeBSD</text><rect x="110" y="112" width="380" height="16" class="sb-bar-accent"/><text x="497" y="124" class="sb-head">30+ years</text>
+            <text x="280" y="158" class="sb-muted" text-anchor="middle">These are not legacy projects. They are proof that stability is a design decision.</text>
+            <text x="280" y="176" class="sb-muted" text-anchor="middle">The treadmill is not inevitable. It is profitable.</text>
+        </svg>
+
+        <p>These are not legacy projects. They are proof that stability
+            is a design decision, not a technical limitation. The treadmill
+            is not inevitable. It is profitable.</p>
+
+        <p>Your framework updates every six months. Your database file
+            format has not changed in twenty-two years. One of them
+            understood what "production" means.</p>
+
+        <p>"Go into frameworks," they said. They did not mention the
+            frame gets replaced every six months whilst you are still
+            hanging in it.</p>
+
+        <blockquote>
+            <p>Angular: 18 major versions in 10 years. 44% of npm
+                breaking changes in minor/patch releases. 75% of dev
+                time on maintenance. Python 2 to 3: 12 years, $100B+.
+                SQLite: backwards-compatible since 2004. POSIX: stable
+                since 1988. The treadmill is not inevitable. It is
+                profitable.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The treadmill, quantified:</strong></p>
+            <ul>
+                <li><strong>Cost:</strong> 75% of dev time on maintenance. 33% on technical debt (Stripe). 13.5h/week per dev on inefficiencies</li>
+                <li><strong>Churn:</strong> Angular 18 versions in 10 years. 44% of npm breaking changes in minor/patch. Dependabot: 200 PRs/week</li>
+                <li><strong>Migrations:</strong> Python 2 to 3: 12 years, $100B+. AngularJS: 1.2M websites still running after EOL</li>
+                <li><strong>Build tools:</strong> Grunt, Gulp, Webpack, Vite in 10 years. Webpack satisfaction: 26%</li>
+                <li><strong>Counterexample:</strong> SQLite since 2004 (pledged to 2050). POSIX since 1988. FreeBSD 30+ years source compatibility</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

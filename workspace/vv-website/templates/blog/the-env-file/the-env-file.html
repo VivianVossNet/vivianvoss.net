@@ -1,0 +1,408 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The .env File Nobody Needs &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="107 million weekly downloads. dotenv reads KEY=VALUE pairs from a file and places them into process.env. Unix has done this since 1979. Forty-seven years. Zero CVEs on the mechanism itself.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-env-file{( endslot )}
+
+{( slot og-title )}The .env File Nobody Needs &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}107 million weekly downloads for reading lines from a file. Unix has done this since 1979. Even Node.js conceded and shipped --env-file natively. Rather marvellous, that.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The .env File Nobody Needs",
+    "datePublished": "2026-03-30",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-env-file",
+    "description": "107 million weekly downloads for dotenv. Unix has had environment variables since 1979. The .env file is a plaintext file one absent .gitignore away from publication.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-30">30 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The .env File Nobody Needs</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">security</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 10</p>
+
+        <p><a href="https://www.npmjs.com/package/dotenv" target="_blank" rel="noopener">107 million weekly downloads</a>.</p>
+
+        <p>That is the current figure for <code>dotenv</code> on npm. A
+            package whose entire purpose is reading KEY=VALUE pairs from a
+            file and placing them into <code>process.env</code>. Thirteen
+            lines of meaningful code. One regular expression. No
+            cryptography. No validation. No access control. It reads a
+            file. It sets variables. It has 107 million weekly consumers.</p>
+
+        <p>Unix has done this since 1979.</p>
+
+        <h2>The Archaeology</h2>
+
+        <p>Version 7 Unix introduced
+            <a href="https://en.wikipedia.org/wiki/Environment_variable" target="_blank" rel="noopener">environment variables</a>
+            forty-seven years ago. The mechanism is rather elegant: a parent
+            process passes key-value pairs to its children through
+            <code>exec()</code>. Every process inherits. No library. No file
+            to parse. No package to install. The operating system provides
+            the transport. The process receives the values. The contract is
+            simple, universal, and has worked without modification since
+            Jimmy Carter was president.</p>
+
+        <p>Then somewhere along the way, the ecosystem decided this was
+            insufficient. The solution: write your secrets into a file
+            called <code>.env</code>, place it in your repository root, and
+            install a package to read it. One does rather admire the
+            confidence required to look at a forty-seven-year-old mechanism
+            with zero CVEs and think "I can improve this with a text file
+            and an npm install."</p>
+
+        <h2>The Cost</h2>
+
+        <p><a href="https://blog.gitguardian.com/leaking-secrets-on-github-what-to-do/" target="_blank" rel="noopener">GitHub detected 39 million leaked secrets</a>
+            in 2024. A 67 per cent increase from the previous year.
+            <a href="https://pentera.io/blog/git-repo-security-exposed-secrets/" target="_blank" rel="noopener">Toyota exposed 270,000 customer records</a>
+            through a single access key committed to a public repository.
+            Not a sophisticated attack. Not a zero-day exploit. Someone
+            forgot to add a line to <code>.gitignore</code>.</p>
+
+        <p>The <code>.env</code> file is not a security mechanism. It is a
+            plaintext file containing your database credentials, your API
+            keys, and your payment provider secrets, sitting one absent
+            <code>.gitignore</code> entry away from publication. The file
+            has no permissions model. No encryption. No audit trail. It is
+            a sticky note on a monitor, formatted as UTF-8.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Security comparison: .env file is plaintext in the repository root, one .gitignore miss from publication. OS environment variables are inherited by the process, never stored in the repository, with file-system permissions." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ev-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ev-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .ev-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .ev-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ev-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ev-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="ev-title" text-anchor="middle">Where Your Secrets Live</text>
+            <!-- .env -->
+            <rect x="20" y="38" width="250" height="130" class="ev-box"/>
+            <text x="145" y="58" class="ev-head" text-anchor="middle">.env file (dotenv)</text>
+            <text x="40" y="80" class="ev-item">Plaintext in repository root</text>
+            <text x="40" y="98" class="ev-item">One .gitignore miss = published</text>
+            <text x="40" y="116" class="ev-item">No permissions model</text>
+            <text x="40" y="134" class="ev-item">No encryption</text>
+            <text x="40" y="152" class="ev-item">No audit trail</text>
+            <!-- OS env -->
+            <rect x="290" y="38" width="250" height="130" class="ev-box-accent"/>
+            <text x="415" y="58" class="ev-head" text-anchor="middle">OS Environment Variables</text>
+            <text x="310" y="80" class="ev-item">Inherited by process, not stored in repo</text>
+            <text x="310" y="98" class="ev-item">Cannot be accidentally committed</text>
+            <text x="310" y="116" class="ev-item">File-system permissions on config</text>
+            <text x="310" y="134" class="ev-item">Process isolation (per-service)</text>
+            <text x="310" y="152" class="ev-item">47 years. Zero CVEs on mechanism</text>
+            <!-- Bottom -->
+            <text x="280" y="192" class="ev-muted" text-anchor="middle">GitHub: 39 million leaked secrets in 2024. +67% year over year.</text>
+            <text x="280" y="210" class="ev-muted" text-anchor="middle">Toyota: 270,000 customer records exposed via one committed key.</text>
+        </svg>
+
+        <h2>FreeBSD</h2>
+
+        <p>FreeBSD solves this at the operating system level, where it
+            belongs.</p>
+
+        <p><a href="https://man.freebsd.org/cgi/man.cgi?login.conf(5)" target="_blank" rel="noopener"><code>login.conf(5)</code></a>
+            sets environment variables per login class. A developer gets
+            one set of variables. A service account gets another. No file
+            in your repository. No dependency. The operating system handles
+            it before your application starts:</p>
+
+        <pre><code># login.conf: per-class environment
+default:\
+  :setenv=LANG=en_GB.UTF-8,EDITOR=vi:\
+  :path=/sbin /bin /usr/sbin /usr/bin:</code></pre>
+
+        <p>For services, <code>rc.d</code> sources variables from
+            <code>rc.conf</code>:</p>
+
+        <pre><code>myapp_env="DATABASE_URL=postgres://db/prod"</code></pre>
+
+        <p>The configuration lives in <code>/etc</code>, protected by
+            file-system permissions, managed by the system administrator,
+            and entirely invisible to your version control. The application
+            reads <code>process.env.DATABASE_URL</code> and has no idea
+            where it came from. Nor should it.</p>
+
+        <h2>Linux</h2>
+
+        <p><code>/etc/environment</code> provides system-wide variables
+            without requiring a shell:</p>
+
+        <pre><code>DATABASE_URL=postgres://localhost/prod</code></pre>
+
+        <p><a href="https://freedesktop.org/software/systemd/man/systemd.exec.html" target="_blank" rel="noopener">systemd's <code>EnvironmentFile</code></a>
+            does precisely what <code>dotenv</code> does. Since 2010. No
+            <code>npm install</code>. The file lives in <code>/etc</code>,
+            where configuration belongs. Not in your Git repository, where
+            it terribly does not:</p>
+
+        <pre><code>[Service]
+EnvironmentFile=/etc/myapp/env
+Environment=NODE_ENV=production</code></pre>
+
+        <p>The service reads the file at startup. The variables are
+            injected into the process environment. The application code is
+            identical. The secrets never touch your repository. The
+            mechanism has existed for sixteen years. It requires zero
+            packages.</p>
+
+        <svg viewBox="0 0 560 230" aria-label="Configuration location comparison across FreeBSD, Linux, and the dotenv approach. FreeBSD uses login.conf and rc.conf in /etc. Linux uses /etc/environment and systemd EnvironmentFile. dotenv uses .env in the repository root." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .cl-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .cl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .cl-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cl-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .cl-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+            </style>
+            <text x="280" y="22" class="cl-title" text-anchor="middle">Where Configuration Belongs</text>
+            <!-- FreeBSD -->
+            <rect x="20" y="38" width="165" height="80" class="cl-box-accent"/>
+            <text x="102" y="56" class="cl-head" text-anchor="middle">FreeBSD</text>
+            <text x="102" y="74" class="cl-code" text-anchor="middle">login.conf(5)</text>
+            <text x="102" y="90" class="cl-code" text-anchor="middle">rc.conf(5)</text>
+            <text x="102" y="108" class="cl-muted" text-anchor="middle">per-class, per-service</text>
+            <!-- Linux -->
+            <rect x="197" y="38" width="165" height="80" class="cl-box-accent"/>
+            <text x="280" y="56" class="cl-head" text-anchor="middle">Linux</text>
+            <text x="280" y="74" class="cl-code" text-anchor="middle">/etc/environment</text>
+            <text x="280" y="90" class="cl-code" text-anchor="middle">EnvironmentFile=</text>
+            <text x="280" y="108" class="cl-muted" text-anchor="middle">system-wide, per-service</text>
+            <!-- dotenv -->
+            <rect x="375" y="38" width="165" height="80" class="cl-box"/>
+            <text x="457" y="56" class="cl-head" text-anchor="middle">dotenv</text>
+            <text x="457" y="74" class="cl-code" text-anchor="middle">.env in repo root</text>
+            <text x="457" y="90" class="cl-item" text-anchor="middle">107M weekly downloads</text>
+            <text x="457" y="108" class="cl-muted" text-anchor="middle">plaintext, no isolation</text>
+            <!-- Location bar -->
+            <rect x="20" y="132" width="342" height="30" class="cl-box-accent"/>
+            <text x="191" y="152" class="cl-code" text-anchor="middle">/etc — managed by OS, protected by permissions</text>
+            <rect x="375" y="132" width="165" height="30" class="cl-box"/>
+            <text x="457" y="152" class="cl-item" text-anchor="middle">./ — in your Git repo</text>
+            <!-- Bottom -->
+            <text x="280" y="190" class="cl-muted" text-anchor="middle">Your application should not know where its configuration comes from.</text>
+            <text x="280" y="206" class="cl-muted" text-anchor="middle">The OS sets the environment. The process inherits it. That is the contract.</text>
+            <text x="280" y="222" class="cl-muted" text-anchor="middle">Forty-seven years. Zero CVEs on the mechanism itself.</text>
+        </svg>
+
+        <h2>Vault Integration</h2>
+
+        <p>The inevitable objection: "But we use HashiCorp Vault. We use
+            AWS Secrets Manager. We use Azure Key Vault. Surely the
+            application needs a client library to fetch secrets at
+            runtime?"</p>
+
+        <p>It does not. The pattern is identical to everything above,
+            with one additional step: the init system fetches the secret
+            before the process starts, writes it to a transient file, and
+            the process inherits it as an environment variable. The
+            application has no Vault dependency. No SDK. No client
+            library. No retry logic. No token renewal. It reads
+            <code>process.env.DATABASE_URL</code> and carries on with
+            its life, blissfully unaware that a rather expensive piece
+            of enterprise infrastructure was involved.</p>
+
+        <p>HashiCorp Vault with systemd:</p>
+
+        <pre><code>[Service]
+ExecStartPre=/bin/sh -c 'vault kv get -field=dsn secret/myapp &gt; /run/myapp/env'
+EnvironmentFile=/run/myapp/env
+ExecStopPost=/bin/rm -f /run/myapp/env</code></pre>
+
+        <p><code>ExecStartPre</code> runs before the service starts. It
+            calls Vault, extracts the secret, and writes it to
+            <code>/run/myapp/env</code>. That path lives on
+            <code>tmpfs</code>, which means it exists only in memory and
+            vanishes when the service stops or the machine reboots. The
+            secret never touches persistent storage.
+            <code>EnvironmentFile</code> reads it. The application starts.
+            <code>ExecStopPost</code> cleans up. Three lines.</p>
+
+        <p>AWS Secrets Manager, same pattern:</p>
+
+        <pre><code>[Service]
+ExecStartPre=/bin/sh -c 'aws secretsmanager get-secret-value \
+  --secret-id myapp/prod --query SecretString --output text &gt; /run/myapp/env'
+EnvironmentFile=/run/myapp/env</code></pre>
+
+        <p>Different vault. Different CLI. Identical architecture. The
+            init system handles the plumbing. The application inherits
+            the result. One suspects the Vault SDK authors would prefer
+            you did not know this.</p>
+
+        <p>FreeBSD with <code>rc.d</code> and Vault:</p>
+
+        <pre><code>myapp_precmd()
+{
+    export DATABASE_URL=$(/usr/local/bin/vault kv get -field=dsn secret/myapp)
+}
+
+run_rc_command "$1"</code></pre>
+
+        <p>The <code>precmd</code> function runs before the service
+            starts. It calls Vault, sets the variable via
+            <code>export</code>, and the process inherits it. FreeBSD
+            Jails provide an additional isolation boundary: the Vault
+            token can be scoped to the jail, and the secret never leaves
+            the jail's process tree. No SDK. No library. No runtime
+            dependency. A shell function and an <code>export</code>.</p>
+
+        <svg viewBox="0 0 560 200" aria-label="Vault integration pattern: the init system fetches the secret from any vault, writes it to a transient file or exports it, the process inherits it via EnvironmentFile or export. The application has no vault dependency." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .vi-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .vi-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 600; }
+                .vi-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .vi-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .vi-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .vi-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .vi-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#vi-arr); }
+            </style>
+            <defs>
+                <marker id="vi-arr" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+                    <path d="M0,0 L6,2 L0,4" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="vi-title" text-anchor="middle">The Pattern: Init Fetches, Process Inherits</text>
+            <!-- Vault -->
+            <rect x="20" y="45" width="110" height="50" class="vi-box"/>
+            <text x="75" y="67" class="vi-label" text-anchor="middle">Vault</text>
+            <text x="75" y="83" class="vi-muted" text-anchor="middle">any provider</text>
+            <!-- Arrow -->
+            <line x1="130" y1="70" x2="168" y2="70" class="vi-arrow"/>
+            <!-- Init -->
+            <rect x="170" y="40" width="130" height="60" class="vi-box-accent"/>
+            <text x="235" y="62" class="vi-label" text-anchor="middle">Init System</text>
+            <text x="235" y="78" class="vi-code" text-anchor="middle">ExecStartPre=</text>
+            <text x="235" y="92" class="vi-muted" text-anchor="middle">or rc.d precmd</text>
+            <!-- Arrow -->
+            <line x1="300" y1="70" x2="338" y2="70" class="vi-arrow"/>
+            <!-- tmpfs -->
+            <rect x="340" y="45" width="90" height="50" class="vi-box"/>
+            <text x="385" y="67" class="vi-label" text-anchor="middle">/run (tmpfs)</text>
+            <text x="385" y="83" class="vi-muted" text-anchor="middle">memory only</text>
+            <!-- Arrow -->
+            <line x1="430" y1="70" x2="458" y2="70" class="vi-arrow"/>
+            <!-- App -->
+            <rect x="460" y="45" width="80" height="50" class="vi-box-accent"/>
+            <text x="500" y="67" class="vi-label" text-anchor="middle">App</text>
+            <text x="500" y="83" class="vi-code" text-anchor="middle">process.env</text>
+            <!-- Bottom labels -->
+            <text x="75" y="120" class="vi-muted" text-anchor="middle">HashiCorp</text>
+            <text x="75" y="133" class="vi-muted" text-anchor="middle">AWS SM</text>
+            <text x="75" y="146" class="vi-muted" text-anchor="middle">Azure KV</text>
+            <text x="235" y="125" class="vi-muted" text-anchor="middle">systemd, rc.d</text>
+            <text x="235" y="140" class="vi-muted" text-anchor="middle">fetches before start</text>
+            <text x="385" y="125" class="vi-muted" text-anchor="middle">vanishes on stop</text>
+            <text x="385" y="140" class="vi-muted" text-anchor="middle">never on disk</text>
+            <text x="500" y="125" class="vi-muted" text-anchor="middle">no SDK</text>
+            <text x="500" y="140" class="vi-muted" text-anchor="middle">no client lib</text>
+            <!-- Punchline -->
+            <text x="280" y="175" class="vi-muted" text-anchor="middle">The pattern is thirty years old. The vault products are new.</text>
+            <text x="280" y="193" class="vi-muted" text-anchor="middle">The architecture between them is a one-liner.</text>
+        </svg>
+
+        <p>The pattern is thirty years old. The vault products are new. The
+            architecture between them is a one-liner. <code>ExecStartPre</code>
+            fetches. <code>EnvironmentFile</code> delivers. The application
+            inherits. Three moving parts, all provided by the operating system,
+            all battle-tested, all free. One does wonder what the Vault SDK's
+            47 transitive dependencies are doing that a shell script and
+            <code>tmpfs</code> are not.</p>
+
+        <h2>The Concession</h2>
+
+        <p>Even Node.js conceded.
+            <a href="https://pawelgrzybek.com/node-js-with-native-support-for-env-files-you-may-not-need-dotenv-anymore/" target="_blank" rel="noopener">Version 20.6.0</a>
+            added <code>--env-file</code> as a built-in flag. No package
+            required. The runtime spent a decade outsourcing a one-liner
+            to a third-party dependency, then quietly shipped it itself.
+            One imagines the commit message was written with a certain
+            reluctance.</p>
+
+        <pre><code>node --env-file=.env app.js</code></pre>
+
+        <p>But the actual Unix answer is simpler still: your application
+            should not know where its configuration comes from. The OS
+            sets the environment. The process inherits it. That is the
+            contract. It has worked since 1979. It works now. It will work
+            when the npm registry is a historical curiosity and
+            <code>node_modules</code> is studied by digital archaeologists
+            as evidence of a civilisation that optimised for convenience
+            over correctness.</p>
+
+        <h2>If You Must</h2>
+
+        <p>If you must use <code>.env</code> files, and sometimes local
+            development genuinely benefits from them, then at minimum:</p>
+
+        <ul>
+            <li>Never commit them. Ever. Not once. Not "just for testing."
+                Not "it's only the staging key." Ever.</li>
+            <li><code>.gitignore</code> is not optional. It is the first
+                line of defence and the only one you have.</li>
+            <li>Rotate credentials the moment they touch Git history.
+                <code>git rm</code> does not remove them from history.
+                They are there forever. Act accordingly.</li>
+            <li>Consider: if it needs a file, it needs <code>/etc</code>,
+                not <code>./</code></li>
+        </ul>
+
+        <p>107 million weekly downloads. For reading lines from a file.</p>
+
+        <p>Rather marvellous, that.</p>
+
+        <blockquote>
+            <p>Unix has had environment variables since 1979. FreeBSD
+                sets them per login class and per service. Linux sets
+                them via /etc/environment and systemd EnvironmentFile.
+                Node.js shipped --env-file natively in v20.6.0. dotenv
+                has 107 million weekly downloads. GitHub detected 39
+                million leaked secrets in 2024. The .env file is a
+                plaintext sticky note one .gitignore miss from
+                publication.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The alternatives, for those who prefer operating systems over npm install:</strong></p>
+            <ul>
+                <li><strong>FreeBSD:</strong> <a href="https://man.freebsd.org/cgi/man.cgi?login.conf(5)" target="_blank" rel="noopener">login.conf(5)</a> setenv per login class. rc.conf(5) per service. /etc/profile shell-wide</li>
+                <li><strong>Linux:</strong> /etc/environment system-wide. <a href="https://freedesktop.org/software/systemd/man/systemd.exec.html" target="_blank" rel="noopener">systemd EnvironmentFile=</a> per service. /etc/profile.d/*.sh login scripts</li>
+                <li><strong>Node.js:</strong> <code>--env-file</code> native since v20.6.0 (September 2023)</li>
+                <li><strong>Unix env vars:</strong> since Version 7 Unix (1979). 47 years. Zero CVEs</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

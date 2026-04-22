@@ -34,6 +34,7 @@
 
 @layer theme {
     :root {
+        color-scheme: light dark;
         --accent: oklch(68% 0.18 35);
         --accent-subtle: light-dark(oklch(95% 0.04 35), oklch(22% 0.04 35));
         --bg: light-dark(oklch(98% 0.005 260), oklch(12% 0.005 260));
@@ -44,6 +45,21 @@
         --font-body: 'Oxanium', system-ui, sans-serif;
         --font-heading: 'Press Start 2P', monospace;
     }
+
+    html.reading-mode {
+        color-scheme: light;
+    }
+
+    .reading-toggle .icon-moon { display: none; }
+    .reading-toggle .icon-sun { display: block; }
+
+    @media (prefers-color-scheme: light) {
+        .reading-toggle .icon-sun { display: none; }
+        .reading-toggle .icon-moon { display: block; }
+    }
+
+    html.reading-mode .reading-toggle .icon-sun { display: none; }
+    html.reading-mode .reading-toggle .icon-moon { display: block; }
 
     body {
         font-family: var(--font-body);
@@ -1781,6 +1797,18 @@
 /* ========================================================================
    REDUCED MOTION
    ======================================================================== */
+
+/* ── Popovers ─────────────────────────────────────────────────────── */
+
+[popover] {
+    font-family: inherit;
+    padding: 12px 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+    margin: 0;
+    inset: auto;
+}
 
 @media (prefers-reduced-motion: reduce) {
     #stars {

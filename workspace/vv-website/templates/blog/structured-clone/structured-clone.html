@@ -1,0 +1,254 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Deep Clone You Never Had to Install &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="JSON.parse(JSON.stringify()) destroys Date, Map, Set, RegExp, undefined, NaN, and throws on circular references. structuredClone handles all of them. Zero KB. Built in since 2022. Lodash cloneDeep: 17 KB, 22M downloads/week, unchanged for ten years.">
+{( endslot )}
+
+{( slot canonical )}/blog/structured-clone{( endslot )}
+
+{( slot og-title )}The Deep Clone You Never Had to Install &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}You have written JSON.parse(JSON.stringify()). You know you have. The browser has had a proper deep clone since 2022. Zero KB. Handles 30+ types. Lodash cloneDeep: 17 KB, unchanged for a decade. One does note the difference.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Deep Clone You Never Had to Install",
+    "datePublished": "2026-04-15",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/structured-clone",
+    "description": "structuredClone: one line, zero dependencies, 30+ types. The JSON hack destroys your data silently. Lodash cloneDeep: 17 KB, unchanged for a decade.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-15">15 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Deep Clone You Never Had to Install</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 12</p>
+
+        <p>You have written this line. You know you have.</p>
+
+        <pre><code>const copy = JSON.parse(JSON.stringify(original));</code></pre>
+
+        <p>It works. Until it does not. Your <code>Date</code> becomes an
+            ISO string. Your <code>Map</code> becomes an empty object. Your
+            <code>undefined</code> properties vanish without warning. Your
+            <code>RegExp</code> becomes <code>{}</code>. <code>NaN</code>
+            becomes <code>null</code>. <code>Infinity</code> becomes
+            <code>null</code>. <code>BigInt</code> throws a
+            <code>TypeError</code>. Circular references throw a
+            <code>TypeError</code>. And you discover all of this in
+            production, because the test data was flat, simple, and
+            contained none of the types that the real data contained.</p>
+
+        <p>For over a decade, JavaScript had no native deep clone. The
+            <code>JSON.parse(JSON.stringify())</code> hack was the folk
+            remedy: available everywhere, effective enough for simple cases,
+            silently destructive for everything else. Lodash's
+            <a href="https://www.npmjs.com/package/lodash.clonedeep" target="_blank" rel="noopener"><code>cloneDeep</code></a>
+            was the professional fix: 17 KB minified, 22 million weekly
+            downloads, for a function the platform should have provided
+            from the start.</p>
+
+        <p>In 2022, the platform did.</p>
+
+        <h2>The Pattern</h2>
+
+        <pre><code>const copy = structuredClone(original);</code></pre>
+
+        <p>One line. Zero dependencies. Zero kilobytes shipped to the
+            client. It handles <code>Date</code>, <code>RegExp</code>,
+            <code>Map</code>, <code>Set</code>, <code>ArrayBuffer</code>,
+            <code>Blob</code>, <code>File</code>, <code>CryptoKey</code>,
+            <code>Error</code> (including stack and cause), circular
+            references, and over thirty more types. Available in
+            <a href="https://caniuse.com/?search=structuredClone" target="_blank" rel="noopener">every browser</a>
+            since March 2022, in Node.js since v17, in Deno since 1.14.
+            It has been universally available for over four years.</p>
+
+        <h2>The History</h2>
+
+        <p>The
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm" target="_blank" rel="noopener">structured clone algorithm</a>
+            has existed in the HTML specification since approximately 2010.
+            It was used internally by <code>postMessage()</code> (for
+            sending objects between windows and workers) and
+            <code>IndexedDB</code> (for storing objects). For eleven years,
+            the browser contained a complete, type-aware, cycle-safe deep
+            cloning implementation and simply refused to let you use it.
+            Rather like discovering your kitchen has had a dishwasher since
+            2010 and you have been washing up by hand.</p>
+
+        <p>In 2016,
+            <a href="https://github.com/whatwg/html/issues/793" target="_blank" rel="noopener">Surma filed WHATWG Issue #793</a>
+            proposing that the algorithm be exposed as a public function.
+            The resulting
+            <a href="https://github.com/whatwg/html/pull/3414" target="_blank" rel="noopener">pull request</a>
+            took three and a half years to review, iterate, and merge. One
+            does admire the pace.</p>
+
+        <h2>Why It Works</h2>
+
+        <p>The JSON hack operates by serialising your object to a text
+            representation and parsing it back. This round-trip through
+            JSON means every type that JSON does not support is either
+            silently dropped, silently transformed, or throws an error.</p>
+
+        <svg viewBox="0 0 560 320" aria-label="Comparison table: JSON hack destroys Date, Map, Set, RegExp, undefined, NaN, Infinity, BigInt, circular references, and Blob. structuredClone preserves all of them." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .sc-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .sc-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .sc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .sc-bad { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .sc-good { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .sc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="sc-title" text-anchor="middle">JSON Hack vs structuredClone</text>
+            <text x="20" y="48" class="sc-head">Input</text>
+            <text x="220" y="48" class="sc-head">JSON.parse(JSON.stringify())</text>
+            <text x="460" y="48" class="sc-head">structuredClone()</text>
+            <line x1="20" y1="54" x2="540" y2="54" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="72" class="sc-item">Date</text><text x="220" y="72" class="sc-bad">ISO string (loses type)</text><text x="460" y="72" class="sc-good">Date (preserved)</text>
+            <text x="20" y="92" class="sc-item">Map</text><text x="220" y="92" class="sc-bad">{} (empty object)</text><text x="460" y="92" class="sc-good">Map (preserved)</text>
+            <text x="20" y="112" class="sc-item">Set</text><text x="220" y="112" class="sc-bad">{} (empty object)</text><text x="460" y="112" class="sc-good">Set (preserved)</text>
+            <text x="20" y="132" class="sc-item">RegExp</text><text x="220" y="132" class="sc-bad">{} (empty object)</text><text x="460" y="132" class="sc-good">RegExp (preserved)</text>
+            <text x="20" y="152" class="sc-item">undefined</text><text x="220" y="152" class="sc-bad">property omitted</text><text x="460" y="152" class="sc-good">undefined (preserved)</text>
+            <text x="20" y="172" class="sc-item">NaN</text><text x="220" y="172" class="sc-bad">null</text><text x="460" y="172" class="sc-good">NaN (preserved)</text>
+            <text x="20" y="192" class="sc-item">Infinity</text><text x="220" y="192" class="sc-bad">null</text><text x="460" y="192" class="sc-good">Infinity (preserved)</text>
+            <text x="20" y="212" class="sc-item">BigInt</text><text x="220" y="212" class="sc-bad">throws TypeError</text><text x="460" y="212" class="sc-good">BigInt (preserved)</text>
+            <text x="20" y="232" class="sc-item">Circular ref</text><text x="220" y="232" class="sc-bad">throws TypeError</text><text x="460" y="232" class="sc-good">handled correctly</text>
+            <text x="20" y="252" class="sc-item">Blob</text><text x="220" y="252" class="sc-bad">throws TypeError</text><text x="460" y="252" class="sc-good">Blob (preserved)</text>
+
+            <text x="280" y="285" class="sc-muted" text-anchor="middle">The JSON hack serialises to text and parses back. Everything JSON does not support is lost.</text>
+            <text x="280" y="305" class="sc-muted" text-anchor="middle">structuredClone walks the object graph directly. No serialisation. No type erasure. No data loss.</text>
+        </svg>
+
+        <p><code>structuredClone</code> operates on the object graph
+            directly. It walks the structure, preserves types, tracks
+            references to detect cycles, and produces a genuine copy. No
+            serialisation round-trip. No type erasure. No silent data
+            loss.</p>
+
+        <h2>What It Does Not Do</h2>
+
+        <p><code>structuredClone</code> has honest constraints. It throws
+            a <code>DataCloneError</code> (a <code>DOMException</code>)
+            when it encounters something it cannot clone:</p>
+
+        <ul>
+            <li><strong>Functions:</strong> throws immediately. Objects are data; functions are behaviour. The algorithm clones data</li>
+            <li><strong>DOM nodes:</strong> throws immediately. Cloning a DOM tree is <code>cloneNode(true)</code>, not <code>structuredClone</code></li>
+            <li><strong>Property descriptors:</strong> getters and setters are not duplicated. The result is a plain data copy</li>
+            <li><strong>Prototype chain:</strong> discarded. Class instances become plain objects</li>
+            <li><strong>Symbols as keys:</strong> silently ignored</li>
+        </ul>
+
+        <p>These are honest limitations. The JSON hack has many of the
+            same limitations but communicates them by silently returning
+            wrong data. <code>structuredClone</code> throws an exception.
+            One does rather prefer the tool that admits what it cannot do
+            over the tool that pretends it did.</p>
+
+        <h2>Performance</h2>
+
+        <p>For small, simple objects with only JSON-safe types, the JSON
+            hack can be faster (approximately 6x in microbenchmarks). This
+            is because <code>JSON.stringify</code> and
+            <code>JSON.parse</code> are highly optimised V8 built-ins, and
+            the structured clone algorithm performs additional work (type
+            checking, cycle tracking) that the JSON path skips.</p>
+
+        <p>For complex objects with mixed types,
+            <code>structuredClone</code> performs comparably or better, and
+            does not destroy your data in the process. One
+            <a href="https://www.measurethat.net/Benchmarks/Show/18532/0/jsonstringify-jsonparse-vs-structuredclone" target="_blank" rel="noopener">benchmark</a>
+            measured 0.25 seconds for <code>structuredClone</code> versus
+            1.3 seconds for the JSON hack when processing one million
+            objects.</p>
+
+        <p>The pragmatic assessment: if your object is simple enough that
+            the JSON hack is faster, it is probably simple enough that a
+            shallow spread (<code>{ ...obj }</code>) suffices. If you need
+            a true deep clone, you need <code>structuredClone</code>.</p>
+
+        <h2>When to Use</h2>
+
+        <svg viewBox="0 0 560 160" aria-label="Bundle size comparison: Lodash cloneDeep 17 KB, 22M downloads/week, unchanged for 10 years. structuredClone: 0 KB, built in, maintained by every browser vendor." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bz-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .bz-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .bz-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .bz-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .bz-bar { fill: var(--border); rx: 2; }
+                .bz-bar-accent { fill: var(--accent); rx: 2; }
+            </style>
+            <text x="280" y="22" class="bz-title" text-anchor="middle">What You Ship for Deep Cloning</text>
+            <text x="20" y="55" class="bz-item">lodash.cloneDeep</text><rect x="160" y="43" width="250" height="16" class="bz-bar"/><text x="417" y="55" class="bz-head">17 KB</text><text x="455" y="55" class="bz-muted">22M dl/week, 10yr old</text>
+            <text x="20" y="83" class="bz-item">structuredClone</text><rect x="160" y="71" width="4" height="16" class="bz-bar-accent"/><text x="172" y="83" class="bz-head">0 KB</text><text x="200" y="83" class="bz-muted">built in, maintained by every browser</text>
+            <text x="280" y="120" class="bz-muted" text-anchor="middle">One is a dependency you chose. The other is a platform feature you already have.</text>
+            <text x="280" y="140" class="bz-muted" text-anchor="middle">Chrome 98, Firefox 94, Safari 15.4, Node.js 17, Deno 1.14. All since March 2022.</text>
+        </svg>
+
+        <p>Every time you reach for
+            <code>JSON.parse(JSON.stringify())</code>. Every time you
+            consider installing lodash for a single function. Every time
+            you need a true copy of state in a reducer, a cache, a form
+            snapshot, an undo stack, or a worker message.</p>
+
+        <p>Lodash <code>cloneDeep</code>: 17 KB, 22 million weekly
+            downloads, ten years without an update. Twenty-two million
+            developers, every week, downloading a package that has not
+            changed since the platform solved the problem.
+            <code>structuredClone</code>: 0 KB, built in, maintained by
+            every browser vendor. One of these is a dependency you chose.
+            The other is a platform feature you already have.</p>
+
+        <p>One does note the difference.</p>
+
+        <blockquote>
+            <p>JSON.parse(JSON.stringify()) destroys Date, Map, Set,
+                RegExp, undefined, NaN, and throws on circular
+                references. structuredClone handles all of them. Zero
+                KB. Built in since 2022. 30+ types. The browser had the
+                algorithm since 2010 and would not let you use it.
+                Lodash cloneDeep: 17 KB, 22M downloads/week, unchanged
+                for a decade.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The pattern:</strong></p>
+            <ul>
+                <li><strong>Use:</strong> <code>structuredClone(original)</code>. One line. Zero dependencies</li>
+                <li><strong>Handles:</strong> Date, RegExp, Map, Set, ArrayBuffer, Blob, File, Error, circular references, 30+ types</li>
+                <li><strong>Throws on:</strong> functions, DOM nodes, WeakMap/WeakRef (honest constraints)</li>
+                <li><strong>Support:</strong> Chrome 98, Firefox 94, Safari 15.4, Node.js 17, Deno 1.14 (all since March 2022)</li>
+                <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/structuredClone" target="_blank" rel="noopener">MDN: structuredClone</a> &#x25A0;
+                    <a href="https://web.dev/articles/structured-clone" target="_blank" rel="noopener">web.dev: Deep-copying in JavaScript</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

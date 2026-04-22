@@ -1,0 +1,288 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}CSV: The Format Nobody Designed &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 1972, someone at IBM needed to move numbers between programs. They separated them with commas. No specification was written. No committee was formed. Fifty-three years later, everybody uses it.">
+{( endslot )}
+
+{( slot canonical )}/blog/by-design-csv{( endslot )}
+
+{( slot og-title )}CSV: The Format Nobody Designed &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}No specification. No schema. No committee. In 1972, IBM separated values with commas. Thirty-three years later, someone wrote the RFC. The format was rather faster than the standardisation.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "CSV: The Format Nobody Designed",
+    "datePublished": "2026-04-02",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/by-design-csv",
+    "description": "In 1972, IBM separated values with commas. No specification. No committee. Fifty-three years later, 60% of enterprises still use it.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-02">2 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>CSV: The Format Nobody Designed</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>By Design</em> &#x25A0; Episode 2</p>
+
+        <p>In 1972, someone at IBM needed to move numbers between
+            programs. They separated them with commas. It worked. That
+            was the entire design process.</p>
+
+        <p>No specification was written. No committee was formed. No
+            standard was proposed. No working group was convened. No
+            versioning scheme was debated. No logo was commissioned.
+            Someone put commas between values, and the values arrived
+            at the other end in the correct order. The engineering
+            community, presumably satisfied that this was sufficient,
+            moved on to other things.</p>
+
+        <p>Thirty-three years later, Yakov Shafranovich wrote
+            <a href="https://datatracker.ietf.org/doc/html/rfc4180" target="_blank" rel="noopener">RFC 4180</a>
+            to formalise what was already running on every machine on
+            earth. The format, one might say, was rather faster than
+            the standardisation.</p>
+
+        <h2>The Complaint</h2>
+
+        <p>"CSV is not a serious format. No types. No schema. No
+            validation. No standard encoding. One misplaced comma and
+            your import collapses. One semicolon-delimited file from a
+            German colleague and your entire pipeline has a rather bad
+            morning."</p>
+
+        <p>Every data engineer has said this. Most of them said it
+            this week. The complaints are all correct. CSV has no type
+            system: the number 42 and the string "42" are
+            indistinguishable. It has no schema: columns can appear,
+            disappear, or rearrange themselves between files without
+            notice. It has no standard encoding: the same file can be
+            UTF-8 in one system and Windows-1252 in another, and the
+            only way to find out is to open it and look for garbled
+            umlauts.</p>
+
+        <p>And yet.</p>
+
+        <h2>The Decision</h2>
+
+        <p>Nobody decided. That is precisely the point.</p>
+
+        <p>No committee means no politics. No schema means no version
+            conflicts. No types means every system on earth can read
+            it: your database, your spreadsheet, your shell, your
+            thirty-year-old mainframe that everyone is terrified to
+            touch, and your colleague's Excel installation that insists
+            on interpreting gene names as dates. (This is not a
+            hypothetical. It has
+            <a href="https://www.nature.com/articles/s41588-020-0669-3" target="_blank" rel="noopener">corrupted twenty per cent of genomics papers</a>.
+            But that is Excel's fault, not CSV's.)</p>
+
+        <p>And despite the name, CSV is not married to the comma. The
+            format is delimiter-agnostic. Pipe, tab, semicolon: use
+            whatever character does not appear in your data. Use
+            <code>|</code> and commas in your data stop being a problem
+            entirely. The parser does not care. The specification, such
+            as it is, does not care. The data does not care. Only the
+            German colleague cares, and he switched to semicolons twenty
+            years ago because the comma is a decimal separator in German,
+            which is precisely the kind of edge case that a committee would
+            have solved and a non-specification simply absorbs.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="CSV is delimiter-agnostic. The same data can be separated by comma, pipe, tab, or semicolon. The Unix toolchain handles all of them with a single flag." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cv-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cv-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .cv-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .cv-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .cv-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .cv-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="cv-title" text-anchor="middle">One Format, Any Delimiter</text>
+            <rect x="20" y="38" width="125" height="45" class="cv-box"/>
+            <text x="82" y="58" class="cv-code" text-anchor="middle">,</text>
+            <text x="82" y="74" class="cv-item" text-anchor="middle">comma</text>
+            <rect x="157" y="38" width="125" height="45" class="cv-box"/>
+            <text x="220" y="58" class="cv-code" text-anchor="middle">|</text>
+            <text x="220" y="74" class="cv-item" text-anchor="middle">pipe</text>
+            <rect x="295" y="38" width="125" height="45" class="cv-box"/>
+            <text x="357" y="58" class="cv-code" text-anchor="middle">TAB</text>
+            <text x="357" y="74" class="cv-item" text-anchor="middle">tab (TSV)</text>
+            <rect x="432" y="38" width="108" height="45" class="cv-box"/>
+            <text x="486" y="58" class="cv-code" text-anchor="middle">;</text>
+            <text x="486" y="74" class="cv-item" text-anchor="middle">semicolon</text>
+            <text x="280" y="115" class="cv-muted" text-anchor="middle">Parser: split at delimiter. One operation. Zero dependencies.</text>
+            <text x="280" y="135" class="cv-muted" text-anchor="middle">Convention: the first row might be headers. That is the entire schema.</text>
+            <rect x="20" y="152" width="520" height="45" class="cv-box"/>
+            <text x="280" y="172" class="cv-head" text-anchor="middle">Unix: same tools, any delimiter</text>
+            <text x="280" y="188" class="cv-item" text-anchor="middle">grep finds rows. awk -F'|' splits columns. sort -t'|' orders. join -t'|' merges.</text>
+        </svg>
+
+        <p>One parser: split at delimiter. One convention: the first row
+            might be headers. One dependency: none.</p>
+
+        <h2>CSV as a Unix Tool</h2>
+
+        <p>This is where CSV reveals its true elegance. It is not merely
+            a data format. It is a text format, and text is the universal
+            interface of Unix. Every tool in the Unix toolchain operates
+            on delimited text without knowing or caring what the format
+            is called:</p>
+
+        <pre><code># Key-value lookup: find user 42, extract the third field
+grep "^USER_42," users.csv | cut -d, -f3
+
+# Aggregate a column: sum the fourth field across all rows
+awk -F, '{sum+=$4} END {print sum}' sales.csv
+
+# Sort by third column, numerically
+sort -t, -k3 -n data.csv
+
+# Join two CSV files on the first column
+join -t, accounts.csv transactions.csv</code></pre>
+
+        <p>No database. No query language. No dependency. No
+            <code>pip install</code>. No <code>npm install</code>.
+            <code>grep</code>, <code>awk</code>, <code>sort</code>,
+            <code>join</code>: tools from the 1970s, operating on a
+            format from the 1970s. The entire data pipeline is four
+            commands that ship with every Unix installation and have
+            not changed their interface in fifty years. One does rather
+            appreciate stability in an industry that considers six
+            months a long support window.</p>
+
+        <h2>The Trade-Off</h2>
+
+        <p>The complaints are not wrong. They are the price of
+            admission.</p>
+
+        <p>No standard encoding. No escaping convention anyone agrees
+            on. A quoted field containing a comma, inside a
+            comma-delimited file, inside a system that does not handle
+            quotes. One has been there. It was a Friday. It was not
+            pleasant. The debugging involved <code>hexdump</code> and
+            a vocabulary that one does not normally employ in
+            professional correspondence.</p>
+
+        <p>The format pays for its universality with fragility at the
+            edges. Every edge case is a surprise, and every surprise
+            arrives at half past four on a Friday, because that is
+            apparently when German accounting systems decide to export
+            their quarterly reports with semicolons and Windows-1252
+            encoding and a trailing carriage return that makes
+            <code>diff</code> think every line has changed.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Timeline of CSV: 1972 IBM Fortran accepts comma input, 1978 FORTRAN 77 standardises list-directed I/O, 1983 term CSV in common use, 2005 RFC 4180 (33 years late), 2026 still everywhere." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tl-year { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .tl-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .tl-line { stroke: var(--border); stroke-width: 1.5 }
+                .tl-dot { fill: var(--accent); r: 4 }
+            </style>
+            <text x="280" y="22" class="tl-title" text-anchor="middle">53 Years Without a Specification</text>
+            <line x1="60" y1="55" x2="500" y2="55" class="tl-line"/>
+            <circle cx="60" cy="55" class="tl-dot"/><text x="60" y="45" class="tl-year" text-anchor="middle">1972</text><text x="60" y="75" class="tl-item" text-anchor="middle">IBM Fortran</text><text x="60" y="88" class="tl-muted" text-anchor="middle">comma input</text>
+            <circle cx="170" cy="55" class="tl-dot"/><text x="170" y="45" class="tl-year" text-anchor="middle">1978</text><text x="170" y="75" class="tl-item" text-anchor="middle">FORTRAN 77</text><text x="170" y="88" class="tl-muted" text-anchor="middle">list-directed I/O</text>
+            <circle cx="280" cy="55" class="tl-dot"/><text x="280" y="45" class="tl-year" text-anchor="middle">1983</text><text x="280" y="75" class="tl-item" text-anchor="middle">"CSV" in use</text><text x="280" y="88" class="tl-muted" text-anchor="middle">still no spec</text>
+            <circle cx="390" cy="55" class="tl-dot"/><text x="390" y="45" class="tl-year" text-anchor="middle">2005</text><text x="390" y="75" class="tl-item" text-anchor="middle">RFC 4180</text><text x="390" y="88" class="tl-muted" text-anchor="middle">33 years late</text>
+            <circle cx="500" cy="55" class="tl-dot"/><text x="500" y="45" class="tl-year" text-anchor="middle">2026</text><text x="500" y="75" class="tl-item" text-anchor="middle">60% of enterprises</text><text x="500" y="88" class="tl-muted" text-anchor="middle">still CSV</text>
+            <!-- Competitors -->
+            <text x="280" y="120" class="tl-title" text-anchor="middle">What Tried to Replace It</text>
+            <text x="100" y="148" class="tl-year" text-anchor="middle">XML</text><text x="100" y="164" class="tl-muted" text-anchor="middle">too verbose</text>
+            <text x="220" y="148" class="tl-year" text-anchor="middle">JSON</text><text x="220" y="164" class="tl-muted" text-anchor="middle">no tabular structure</text>
+            <text x="340" y="148" class="tl-year" text-anchor="middle">Parquet</text><text x="340" y="164" class="tl-muted" text-anchor="middle">requires a runtime</text>
+            <text x="460" y="148" class="tl-year" text-anchor="middle">Avro</text><text x="460" y="164" class="tl-muted" text-anchor="middle">requires a schema</text>
+            <text x="280" y="195" class="tl-muted" text-anchor="middle">CSV survived them all. Not because it is better.</text>
+            <text x="280" y="212" class="tl-muted" text-anchor="middle">Because it requires nothing: no tooling, no agreement, no runtime, no expertise.</text>
+            <text x="280" y="232" class="tl-muted" text-anchor="middle">A text editor and the ability to count delimiters. That is the entire stack.</text>
+        </svg>
+
+        <h2>The Proof</h2>
+
+        <p><a href="https://www.oneschema.co/blog/csv-files" target="_blank" rel="noopener">60 per cent of enterprises</a>
+            use CSV for data exchange between systems. Every spreadsheet
+            application on earth reads it. Every database exports it.
+            Every CRM, ERP, and accounting system produces it. RFC 4180
+            arrived in 2005; by then, billions of CSV files already
+            existed, blissfully unaware that they were not yet
+            standardised.</p>
+
+        <p>XML tried to replace it: too verbose. A simple three-column
+            table becomes forty lines of angle brackets. JSON tried: no
+            tabular structure. Arrays of objects work, but try opening
+            one in a spreadsheet. Parquet tried: excellent for analytics,
+            but requires a runtime and a library to read. Avro tried:
+            requires a schema registry, which requires a server, which
+            requires an operations team, which rather defeats the
+            purpose of moving data from one place to another quickly.</p>
+
+        <p>CSV survived them all. Not because it is better. Because it
+            requires nothing: no tooling, no agreement, no runtime, no
+            expertise. A text editor and the ability to count delimiters.
+            That is the entire stack.</p>
+
+        <h2>The Principle</h2>
+
+        <p>The format that requires no agreement will outlast the format
+            that requires consensus. CSV has no governance, no authority,
+            no design document, no version number, no logo, no annual
+            conference, and no certification programme. That is not its
+            weakness. It is the reason nobody has managed to kill it in
+            fifty-three years.</p>
+
+        <p><a href="/blog/by-design-sqlite">Last episode</a>, Hipp
+            sacrificed write concurrency and gained the most deployed
+            database in history. CSV sacrificed everything: types,
+            schemas, encoding, validation, escaping, governance. It
+            gained universality so complete that the format predates
+            the specification by three decades and will almost certainly
+            outlive it.</p>
+
+        <p>Nobody designed CSV. Everybody uses it. One does wonder
+            whether there is a lesson in that.</p>
+
+        <blockquote>
+            <p>In 1972, IBM separated values with commas. No
+                specification. No committee. No schema. Thirty-three
+                years later, someone wrote the RFC. 60% of enterprises
+                still use CSV. XML, JSON, Parquet, and Avro all tried
+                to replace it. The format that requires no agreement
+                outlasts the format that requires consensus.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>CSV as a Unix tool:</strong></p>
+            <ul>
+                <li><code>grep "^KEY," file.csv | cut -d, -f3</code> - key-value lookup</li>
+                <li><code>awk -F, '{sum+=$4} END {print sum}'</code> - aggregate a column</li>
+                <li><code>sort -t, -k3 -n data.csv</code> - sort by column</li>
+                <li><code>join -t, a.csv b.csv</code> - join two files on first column</li>
+                <li>Tools from the 1970s. Format from the 1970s. Still working.</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

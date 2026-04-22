@@ -1,0 +1,301 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Let's Encrypt &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Before 2015, a domain-validated certificate cost up to $50 per year. Renewal was manual. Then four people decided this was absurd. 700 million websites. Ten years. Zero pounds.">
+{( endslot )}
+
+{( slot canonical )}/blog/lets-encrypt{( endslot )}
+
+{( slot og-title )}Let's Encrypt &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Before 2015, HTTPS was a luxury. Then four people decided this was absurd. 700 million websites. 10 million certificates per day. Zero pounds. The complexity was never inherent to the problem. It was inherent to the business model.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Let's Encrypt",
+    "datePublished": "2026-03-31",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/lets-encrypt",
+    "description": "Before 2015, HTTPS was a luxury. Then four people decided this was absurd. 700 million websites. Ten years. Zero pounds.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-03-31">31 March 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Let's Encrypt</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 29</p>
+
+        <p>Before 2015, HTTPS was a luxury. A domain-validated certificate
+            cost up to
+            <a href="https://www.hostinger.com/tutorials/ssl-certificate-cost" target="_blank" rel="noopener">$50 per year</a>.
+            Extended validation: $1,500. Renewal was manual: generate a
+            CSR, email it to a certificate authority, wait for a human to
+            approve it, download the certificate, concatenate the
+            intermediate chain (in the correct order, naturally, because
+            reversing it produces an error message that mentions neither
+            chains nor order), install it on the web server, restart the
+            server, and set a calendar reminder to do the entire thing
+            again in twelve months. Miss the reminder by a day and your
+            visitors see a full-page browser warning that makes your
+            website look like a phishing operation.</p>
+
+        <p>This was the state of affairs for the first twenty-five years
+            of the commercial web. Encryption was available, technically,
+            in the way that first-class air travel is available: it exists,
+            it works, and the pricing ensures that most people walk past it.</p>
+
+        <p>Then four people decided this was absurd.</p>
+
+        <h2>The People</h2>
+
+        <p>Josh Aas and Eric Rescorla at Mozilla. Peter Eckersley at the
+            Electronic Frontier Foundation. J. Alex Halderman at the
+            University of Michigan. They
+            <a href="https://letsencrypt.org/2023/05/24/isrg-10th-anniversary" target="_blank" rel="noopener">met at RSA Conference 2012</a>,
+            discovered they were independently working on the same problem,
+            and merged their efforts in 2013. The
+            <a href="https://en.wikipedia.org/wiki/Internet_Security_Research_Group" target="_blank" rel="noopener">Internet Security Research Group</a>
+            was incorporated in May 2013. The first certificate was issued
+            on
+            <a href="https://en.wikipedia.org/wiki/Let%27s_Encrypt" target="_blank" rel="noopener">14 September 2015</a>.</p>
+
+        <p>The idea was straightforward: if you can prove you control a
+            domain, you should be able to get a certificate for it. Instantly.
+            For free. Without emailing anyone. Without paying anyone. Without
+            involving a human at any point. The certificate authority business
+            had spent two decades charging money for a process that could be
+            fully automated. The four of them automated it.</p>
+
+        <p><a href="https://letsencrypt.org/2022/09/12/remembering-peter-eckersley" target="_blank" rel="noopener">Peter Eckersley died in September 2022</a>.
+            He was 43. He co-designed the ACME protocol that made all of
+            this possible. The internet is encrypted in large part because
+            of him. One suspects he would have found the tribute somewhat
+            excessive and the protocol insufficiently documented. Both
+            observations would have been correct.</p>
+
+        <h2>The Numbers</h2>
+
+        <svg viewBox="0 0 560 200" aria-label="Let's Encrypt statistics: 700 million websites, 10 million certificates per day, Firefox HTTPS from 39% to 80%, one billion certificates by 2020, cost zero for ten years." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .le-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .le-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 18px; font-weight: 700; }
+                .le-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .le-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .le-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="le-title" text-anchor="middle">Let's Encrypt: Ten Years</text>
+            <rect x="20" y="38" width="165" height="60" class="le-box"/>
+            <text x="102" y="62" class="le-num" text-anchor="middle">700M</text>
+            <text x="102" y="80" class="le-item" text-anchor="middle">websites</text>
+            <text x="102" y="92" class="le-muted" text-anchor="middle">and counting</text>
+
+            <rect x="197" y="38" width="165" height="60" class="le-box"/>
+            <text x="280" y="62" class="le-num" text-anchor="middle">10M/day</text>
+            <text x="280" y="80" class="le-item" text-anchor="middle">certificates issued</text>
+            <text x="280" y="92" class="le-muted" text-anchor="middle">every single day</text>
+
+            <rect x="375" y="38" width="165" height="60" class="le-box"/>
+            <text x="457" y="62" class="le-num" text-anchor="middle">0</text>
+            <text x="457" y="80" class="le-item" text-anchor="middle">pounds sterling</text>
+            <text x="457" y="92" class="le-muted" text-anchor="middle">for ten years</text>
+
+            <rect x="20" y="112" width="250" height="60" class="le-box"/>
+            <text x="145" y="136" class="le-num" text-anchor="middle">39% &#x2192; 80%</text>
+            <text x="145" y="154" class="le-item" text-anchor="middle">Firefox HTTPS traffic (2016 to 2026)</text>
+            <text x="145" y="166" class="le-muted" text-anchor="middle">from minority to default</text>
+
+            <rect x="290" y="112" width="250" height="60" class="le-box"/>
+            <text x="415" y="136" class="le-num" text-anchor="middle">1 billion</text>
+            <text x="415" y="154" class="le-item" text-anchor="middle">certificates by February 2020</text>
+            <text x="415" y="166" class="le-muted" text-anchor="middle">four and a half years after launch</text>
+
+            <text x="280" y="196" class="le-muted" text-anchor="middle">Sources: letsencrypt.org/stats, letsencrypt.org/2025/12/09/10-years, threatshub.org</text>
+        </svg>
+
+        <p><a href="https://letsencrypt.org/2025/12/09/10-years" target="_blank" rel="noopener">700 million websites</a>.
+            <a href="https://letsencrypt.org/stats" target="_blank" rel="noopener">10 million certificates issued per day</a>.
+            <a href="https://www.threatshub.org/blog/how-lets-encrypt-made-the-internet-safer-and-https-standard-and-free/" target="_blank" rel="noopener">Firefox HTTPS traffic</a>:
+            from 39 per cent in 2016 to 80 per cent today.
+            <a href="https://letsencrypt.org/2020/02/27/one-billion-certs.html" target="_blank" rel="noopener">One billion certificates</a>
+            by February 2020, four and a half years after launch. Cost to
+            the user: precisely zero. For ten years.</p>
+
+        <p>The commercial certificate authorities charged money for domain
+            validation. Let's Encrypt proved that domain validation is a
+            technical problem, not a commercial service. The difference
+            between a $50 certificate and a free one is not quality. It is
+            not security. It is not trustworthiness. It is a business model.
+            The certificate is cryptographically identical. The only thing
+            the money bought was the privilege of doing manually what a
+            machine does in seconds.</p>
+
+        <h2>The Protocol</h2>
+
+        <p>The
+            <a href="https://tools.ietf.org/html/rfc8555" target="_blank" rel="noopener">ACME protocol</a>
+            (Automatic Certificate Management Environment, now IETF RFC 8555)
+            is what makes the automation possible. The idea is elegant in
+            its simplicity: the client proves domain control by placing a
+            file at a predictable URL, the CA verifies the file exists,
+            and issues the certificate. No emails. No humans. No waiting.
+            The entire handshake is machine-to-machine, and the specification
+            is short enough to read over lunch.</p>
+
+        <p><a href="https://www.ralfj.de/blog/2017/12/26/lets-encrypt.html" target="_blank" rel="noopener">acme-tiny</a>
+            implements the entire ACME client in fewer than 200 lines of
+            Python. Two hundred lines. The complete protocol interaction:
+            account registration, domain verification, certificate signing
+            request, certificate retrieval. Two hundred lines of Python
+            replace what was previously a week of emails, three pages of
+            documentation, and a calendar reminder that you would inevitably
+            ignore until your monitoring system told you the certificate
+            had expired yesterday.</p>
+
+        <h2>The Reduction</h2>
+
+        <p>The previous process, for those fortunate enough never to have
+            experienced it:</p>
+
+        <ol>
+            <li>Generate a private key (<code>openssl genrsa</code>)</li>
+            <li>Create a Certificate Signing Request (<code>openssl req</code>)</li>
+            <li>Submit the CSR to a certificate authority via a web form</li>
+            <li>Receive an email asking you to verify domain ownership</li>
+            <li>Click a link in the email</li>
+            <li>Wait for the CA to process the request (hours to days)</li>
+            <li>Download the certificate and the intermediate chain</li>
+            <li>Concatenate them in the correct order</li>
+            <li>Configure the web server to use the certificate and key</li>
+            <li>Restart the web server</li>
+            <li>Set a calendar reminder for 365 days</li>
+            <li>Forget the calendar reminder</li>
+            <li>Discover the certificate expired when customers complain</li>
+        </ol>
+
+        <p>Let's Encrypt reduced steps 1 through 13 to:</p>
+
+        <pre><code>certbot certonly --webroot -w /var/www -d example.com</code></pre>
+
+        <p>One line. Free certificate. Automatic renewal via cron. No
+            human involved at any point. The calendar reminder is replaced
+            by a cron job that runs twice daily and does nothing unless the
+            certificate is within 30 days of expiry. The system operator's
+            involvement is zero after the initial setup. Zero.</p>
+
+        <svg viewBox="0 0 560 200" aria-label="The reduction: before Let's Encrypt, 13 manual steps over days. After: one command. Caddy: zero commands, automatic on first request." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .rd-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .rd-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .rd-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 28px; font-weight: 700; }
+                .rd-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .rd-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .rd-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .rd-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .rd-arrow { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 18px; }
+            </style>
+            <text x="280" y="22" class="rd-title" text-anchor="middle">The Reduction</text>
+            <!-- Before -->
+            <rect x="20" y="40" width="150" height="100" class="rd-box"/>
+            <text x="95" y="60" class="rd-head" text-anchor="middle">Before (2015)</text>
+            <text x="95" y="92" class="rd-num" text-anchor="middle">13</text>
+            <text x="95" y="115" class="rd-item" text-anchor="middle">manual steps</text>
+            <text x="95" y="130" class="rd-muted" text-anchor="middle">hours to days</text>
+            <!-- Arrow -->
+            <text x="195" y="100" class="rd-arrow">&#x2192;</text>
+            <!-- Certbot -->
+            <rect x="215" y="40" width="150" height="100" class="rd-box-accent"/>
+            <text x="290" y="60" class="rd-head" text-anchor="middle">Certbot</text>
+            <text x="290" y="92" class="rd-num" text-anchor="middle">1</text>
+            <text x="290" y="115" class="rd-item" text-anchor="middle">command</text>
+            <text x="290" y="130" class="rd-muted" text-anchor="middle">seconds</text>
+            <!-- Arrow -->
+            <text x="390" y="100" class="rd-arrow">&#x2192;</text>
+            <!-- Caddy -->
+            <rect x="410" y="40" width="130" height="100" class="rd-box-accent"/>
+            <text x="475" y="60" class="rd-head" text-anchor="middle">Caddy</text>
+            <text x="475" y="92" class="rd-num" text-anchor="middle">0</text>
+            <text x="475" y="115" class="rd-item" text-anchor="middle">commands</text>
+            <text x="475" y="130" class="rd-muted" text-anchor="middle">automatic</text>
+            <!-- Bottom -->
+            <text x="280" y="168" class="rd-muted" text-anchor="middle">Let's Encrypt reduced ten steps to a cron job.</text>
+            <text x="280" y="186" class="rd-muted" text-anchor="middle">Caddy reduced the cron job to nothing.</text>
+        </svg>
+
+        <p><a href="/blog/the-caddy-replacement">Caddy</a> took it further:
+            zero lines. Point it at a domain, it fetches the certificate on
+            the first request, renews it automatically, configures TLS,
+            and never mentions it again. No certbot. No cron. No
+            configuration at all. The web server handles encryption the
+            way a light switch handles electricity: you use it without
+            thinking about it, which is precisely the point.</p>
+
+        <h2>The Point</h2>
+
+        <p>Let's Encrypt did not improve the certificate industry. It
+            made it irrelevant. The complexity was never inherent to the
+            problem. It was inherent to the business model. Domain
+            validation is a technical verification that a machine performs
+            in seconds. The industry built a manual process around it,
+            charged money for the manual labour, and called it security.
+            The moment someone removed the profit motive, the entire
+            process collapsed into a single command.</p>
+
+        <p>This is the pattern that Technical Beauty celebrates: the
+            moment someone looks at an entire industry and realises that
+            the complexity is not protecting anyone. It is billing someone.
+            The certificate was always a few kilobytes of signed mathematics.
+            The fifty dollars bought you an email from a human who verified
+            what a script could verify faster, more reliably, and without
+            taking weekends off.</p>
+
+        <p>700 million websites. Ten years. Zero pounds.</p>
+
+        <p>Rather beautiful, that.</p>
+
+        <blockquote>
+            <p>Before 2015, a certificate cost $50 and a week of manual
+                process. Four people at Mozilla, EFF, and the University
+                of Michigan designed the ACME protocol and launched
+                Let's Encrypt. 700 million websites. 10 million
+                certificates per day. Firefox HTTPS from 39% to 80%.
+                The complexity was never inherent to the problem. It was
+                inherent to the business model.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The timeline:</strong></p>
+            <ul>
+                <li><strong>2012:</strong> Eckersley and Halderman begin ACME protocol design at RSA Conference</li>
+                <li><strong>2013:</strong> Join forces with Aas and Rescorla at Mozilla. ISRG incorporated</li>
+                <li><strong>Sep 2015:</strong> First certificate issued</li>
+                <li><strong>Feb 2020:</strong> One billion certificates total</li>
+                <li><strong>Sep 2022:</strong> Peter Eckersley dies, aged 43. Co-designer of ACME</li>
+                <li><strong>2025:</strong> 10 million certificates per day, 700 million websites</li>
+                <li><strong>ACME:</strong> <a href="https://tools.ietf.org/html/rfc8555" target="_blank" rel="noopener">IETF RFC 8555</a>. acme-tiny: full client in fewer than 200 lines of Python</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

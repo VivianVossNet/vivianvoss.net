@@ -1,0 +1,279 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}JavaScript Backend: The Full-Stack Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 1995, Brendan Eich built JavaScript in ten days for form validation. Thirty years later, it runs production backends. Express: 20K RPS. Go: 40K. Rust: 60K. The full-stack tax, itemised.">
+{( endslot )}
+
+{( slot canonical )}/blog/javascript-backend{( endslot )}
+
+{( slot og-title )}JavaScript Backend: The Full-Stack Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}One language for frontend and backend! Express: 20K RPS. Rust: 60K. Idle memory: 30-50 MB vs 1-2 MB. One thread. 500K malicious npm packages. The creator apologised and built Deno.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "JavaScript Backend: The Full-Stack Tax",
+    "datePublished": "2026-04-03",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/javascript-backend",
+    "description": "In 1995, Brendan Eich built JavaScript in ten days. For form validation. Thirty years later, it runs production backends. The full-stack tax, itemised.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-03">3 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>JavaScript Backend: The Full-Stack Tax</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">node</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> &#x25A0; Episode 16</p>
+
+        <p>"One language for frontend and backend! Share code! One team!
+            No context-switching!"</p>
+
+        <p>Splendid. Let us examine what you are actually paying for.</p>
+
+        <p>In 1995,
+            <a href="https://en.wikipedia.org/wiki/JavaScript" target="_blank" rel="noopener">Brendan Eich built JavaScript in ten days</a>.
+            For form validation and image rollovers. The language was
+            designed to make buttons change colour when you hovered over
+            them. It was not designed to serve HTTP requests, manage
+            database connections, handle authentication, or run at scale.
+            Thirty years later, it does all of these things. The language
+            has not changed. The expectations have.</p>
+
+        <h2>The Resource Invoice</h2>
+
+        <p><a href="https://dev.to/hamzakhan/rust-vs-nodejs-vs-go-performance-comparison-for-backend-development-2g69" target="_blank" rel="noopener">Express: 20,000 requests per second</a>.
+            Go: 40,000. Rust: 60,000. On
+            <a href="https://nebjak.dev/blog/benchmarking-aws-lambda-with-node-js-go-and-rust/" target="_blank" rel="noopener">AWS Lambda</a>,
+            Node.js averages 20 milliseconds per invocation. Rust: 1.12
+            milliseconds. Eighteen times faster for the same work. Not a
+            different workload. Not a different algorithm. The same
+            function, the same input, the same output. Eighteen times
+            the latency because of the runtime.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Performance comparison: Express 20K RPS, Go 40K, Rust 60K. Memory: Express 30-50 MB, Go 5-10 MB, Rust 1-2 MB. Lambda latency: Node.js 20ms, Rust 1.12ms." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .jb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .jb-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .jb-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .jb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .jb-bar { fill: var(--border); rx: 2; }
+                .jb-bar-accent { fill: var(--accent); rx: 2; }
+                .jb-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+            </style>
+            <text x="280" y="22" class="jb-title" text-anchor="middle">Requests per Second (higher is better)</text>
+            <text x="20" y="52" class="jb-item">Express</text><rect x="90" y="40" width="133" height="16" class="jb-bar"/><text x="230" y="52" class="jb-num">20K</text>
+            <text x="20" y="76" class="jb-item">Go</text><rect x="90" y="64" width="267" height="16" class="jb-bar"/><text x="364" y="76" class="jb-num">40K</text>
+            <text x="20" y="100" class="jb-item">Rust</text><rect x="90" y="88" width="400" height="16" class="jb-bar-accent"/><text x="497" y="100" class="jb-num">60K</text>
+
+            <text x="280" y="132" class="jb-title" text-anchor="middle">Idle Memory (lower is better)</text>
+            <text x="20" y="162" class="jb-item">Express</text><rect x="90" y="150" width="300" height="16" class="jb-bar"/><text x="397" y="162" class="jb-num">30-50 MB</text>
+            <text x="20" y="186" class="jb-item">Go</text><rect x="90" y="174" width="60" height="16" class="jb-bar"/><text x="157" y="186" class="jb-num">5-10 MB</text>
+            <text x="20" y="210" class="jb-item">Rust</text><rect x="90" y="198" width="12" height="16" class="jb-bar-accent"/><text x="109" y="210" class="jb-num">1-2 MB</text>
+        </svg>
+
+        <p>The real cost is memory.
+            <a href="https://deepu.tech/concurrency-in-modern-languages-final/" target="_blank" rel="noopener">Express idles at 30 to 50 MB</a>.
+            Go: 5 to 10 MB. Rust: 1 to 2 MB. V8's garbage collector runs
+            whether you need it or not. When it pauses, your latency
+            spikes. You are paying for the runtime, not your application.
+            The runtime costs more than the code it runs, which is a
+            rather expensive way to serve JSON.</p>
+
+        <h2>The Architecture Invoice</h2>
+
+        <p>One thread. That is your entire backend. Like a server in 1983.
+            Every CPU-intensive operation blocks every other request. Image
+            processing, PDF generation, data aggregation, cryptographic
+            verification: anything that needs the CPU for more than a few
+            milliseconds queues everything behind it.</p>
+
+        <p>The fix is not fixing the runtime. The fix is containerisation.
+            Cannot use multiple cores? Spin up multiple containers. Cannot
+            manage containers? Add Kubernetes. Cannot manage Kubernetes?
+            Add a managed Kubernetes service. Cannot afford the managed
+            service? Add a cloud cost optimisation tool. The entire
+            cloud-native orchestration stack exists, in part, to compensate
+            for a language that does not know what to do with your lovely
+            CPU cores.</p>
+
+        <p>Go uses all cores by default. Rust uses all cores by default.
+            Node.js uses one, then asks for an orchestration platform.
+            One does wonder how we ended up here.</p>
+
+        <h2>The Type Safety Invoice</h2>
+
+        <p>JavaScript has no types. The number <code>1</code> and the
+            string <code>"1"</code> are loosely equal. An array plus a
+            number is a string. <code>null</code> is an object. These are
+            not bugs. They are the specification. The language was designed
+            for ten-line form validators, not ten-thousand-line API
+            servers.</p>
+
+        <p>The fix: TypeScript. A transpilation layer that adds types to
+            JavaScript at the cost of a mandatory build step to a language
+            that was designed to run directly.
+            <a href="https://github.com/microsoft/TypeScript/wiki/Performance" target="_blank" rel="noopener">Type checking consumes 95 per cent of compilation time</a>.
+            A
+            <a href="https://engineering.outschool.com/posts/agonizing-typescript/" target="_blank" rel="noopener">22,000-line project takes 13 seconds</a>.
+            Large codebases: three minutes per compile. Every save. Every
+            change. Three minutes of waiting for the privilege of knowing
+            that your variables have types.</p>
+
+        <p>The workaround:
+            <a href="https://www.bajorunas.tech/blog/typescript-compiler-performance" target="_blank" rel="noopener">bypass <code>tsc</code> with <code>swc</code></a>
+            (96 per cent faster) and lose type checking at build time.
+            You have added a type system, then disabled it for
+            performance. Marvellous.</p>
+
+        <h2>The Security Invoice</h2>
+
+        <p><a href="https://www.futurice.com/blog/npm-registry-in-numbers" target="_blank" rel="noopener">npm hosts 3.2 million packages</a>.
+            In 2024,
+            <a href="https://www.sonatype.com/state-of-the-software-supply-chain" target="_blank" rel="noopener">500,000 were malicious</a>:
+            98.5 per cent of all malware across every language ecosystem.
+            Not 98.5 per cent of npm malware. 98.5 per cent of all malware,
+            across every registry, in every language. npm is the world's
+            largest software registry, and also, by a considerable margin,
+            the world's largest malware distribution platform.</p>
+
+        <p>In September 2025,
+            <a href="https://www.armorcode.com/blog/inside-the-september-2025-npm-supply-chain-attack" target="_blank" rel="noopener">eighteen packages with 2.6 billion weekly downloads</a>
+            were compromised in a single supply chain attack.
+            <code>debug</code>. <code>chalk</code>. Packages that live in
+            every Node.js project on earth. In your dependency tree right
+            now.</p>
+
+        <p>The insecurity is not merely npm. It is the architecture.
+            Node.js loads third-party code at runtime with full system
+            access. Every <code>require()</code> call trusts the package
+            it loads to not read your filesystem, not open network
+            connections, not exfiltrate environment variables. Go compiles
+            dependencies once at build time. Rust links statically. The
+            attack surface is different by design.</p>
+
+        <h2>The Energy Invoice</h2>
+
+        <p><a href="https://haslab.github.io/SAFER/scp21.pdf" target="_blank" rel="noopener">Pereira et al. (2021)</a>
+            measured energy consumption across programming languages,
+            normalised to C = 1.00. At data centre scale, the numbers
+            become infrastructure decisions:</p>
+
+        <svg viewBox="0 0 560 260" aria-label="Energy consumption per billion requests per day: Rust 45 MWh/year ($4,500, 19.6t CO2), Node.js 195 MWh/year ($19,500, 85t CO2), PHP 1,283 MWh/year ($128,300, 559t CO2)." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .en-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .en-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .en-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 14px; font-weight: 700; }
+                .en-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .en-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .en-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .en-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="en-title" text-anchor="middle">1 Billion Requests/Day: The Energy Invoice</text>
+            <!-- Rust -->
+            <rect x="20" y="38" width="165" height="85" class="en-box-accent"/>
+            <text x="102" y="56" class="en-head" text-anchor="middle">Rust (1.03x)</text>
+            <text x="102" y="76" class="en-num" text-anchor="middle">45 MWh/yr</text>
+            <text x="102" y="94" class="en-item" text-anchor="middle">$4,500/year</text>
+            <text x="102" y="112" class="en-muted" text-anchor="middle">19.6 tonnes CO2</text>
+            <!-- Node.js -->
+            <rect x="197" y="38" width="165" height="85" class="en-box"/>
+            <text x="280" y="56" class="en-head" text-anchor="middle">Node.js (4.45x)</text>
+            <text x="280" y="76" class="en-num" text-anchor="middle">195 MWh/yr</text>
+            <text x="280" y="94" class="en-item" text-anchor="middle">$19,500/year</text>
+            <text x="280" y="112" class="en-muted" text-anchor="middle">85.0 tonnes CO2</text>
+            <!-- PHP -->
+            <rect x="375" y="38" width="165" height="85" class="en-box"/>
+            <text x="457" y="56" class="en-head" text-anchor="middle">PHP (29.30x)</text>
+            <text x="457" y="76" class="en-num" text-anchor="middle">1,283 MWh/yr</text>
+            <text x="457" y="94" class="en-item" text-anchor="middle">$128,300/year</text>
+            <text x="457" y="112" class="en-muted" text-anchor="middle">559.4 tonnes CO2</text>
+            <!-- Tenable -->
+            <rect x="20" y="140" width="520" height="50" class="en-box"/>
+            <text x="280" y="160" class="en-head" text-anchor="middle">Tenable: One Node.js Service Rewritten in Rust</text>
+            <text x="280" y="178" class="en-item" text-anchor="middle">700 CPUs saved. 300 GB RAM freed. 50% latency reduction.</text>
+            <!-- Sources -->
+            <text x="280" y="215" class="en-muted" text-anchor="middle">Energy normalised to C = 1.00. Pereira et al. 2021 (University of Minho).</text>
+            <text x="280" y="232" class="en-muted" text-anchor="middle">CO2 at global average 436g/kWh. Cost at $0.10/kWh.</text>
+            <text x="280" y="249" class="en-muted" text-anchor="middle">Your language choice is an infrastructure decision. And a climate decision.</text>
+        </svg>
+
+        <p><a href="https://medium.com/tenable-techblog/optimizing-700-cpus-away-with-rust" target="_blank" rel="noopener">Tenable</a>
+            rewrote one Node.js service in Rust: 700 CPUs saved, 300 GB
+            RAM freed, 50 per cent latency reduction. One service. Not the
+            entire backend. One service that happened to be doing actual
+            work instead of waiting for I/O, which is the moment Node.js
+            stops being competent and starts being expensive.</p>
+
+        <h2>The Alternative</h2>
+
+        <p>For I/O-bound real-time workloads (chat, streaming, webhooks,
+            notification systems), Node.js is genuinely competent. The
+            event loop was designed for exactly this pattern: wait for
+            data, process it briefly, wait again. If your backend is
+            mostly waiting, Node.js is a reasonable choice. This is not
+            damning with faint praise. This is acknowledging what the
+            tool was designed for.</p>
+
+        <p>For everything else: Rust gives you a single binary with no
+            garbage collector, native concurrency, and static linking at
+            1 to 2 MB. Go gets you halfway there with goroutines and a
+            fast garbage collector, though Google's GC still takes its
+            cut. Neither needs a transpilation step, a bundler, or a
+            package manager at runtime.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>Brendan Eich built JavaScript to validate forms.
+            <a href="https://tinyclouds.org/jsconf2018.pdf" target="_blank" rel="noopener">Ryan Dahl</a>
+            put it on the server, then called <code>node_modules</code>
+            "an irreparable mistake" and built Deno to fix it. The
+            language's own architect moved on. One does wonder whether
+            the ecosystem noticed.</p>
+
+        <blockquote>
+            <p>Built in ten days for form validation. Express: 20K RPS.
+                Rust: 60K. Idle memory: 30-50 MB vs 1-2 MB. One thread.
+                500K malicious npm packages (98.5% of all malware). The
+                creator called node_modules an irreparable mistake and
+                built Deno. Your language choice is an infrastructure
+                decision. And a climate decision.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The full-stack tax, itemised:</strong></p>
+            <ul>
+                <li><strong>Performance:</strong> Express 20K RPS. Go 40K. Rust 60K. Lambda: 18x slower than Rust</li>
+                <li><strong>Memory:</strong> Express 30-50 MB idle. Go 5-10 MB. Rust 1-2 MB</li>
+                <li><strong>Concurrency:</strong> One thread. Fix: containerise, then Kubernetes</li>
+                <li><strong>Types:</strong> TypeScript adds build step. 95% of compile time is type checking. Bypass tsc: lose type safety</li>
+                <li><strong>Security:</strong> 500K malicious npm packages (2024). 2.6B weekly downloads compromised (Sep 2025)</li>
+                <li><strong>Energy:</strong> Node.js 4.45x C. Rust 1.03x C. At scale: $19,500 vs $4,500 per billion requests/day</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

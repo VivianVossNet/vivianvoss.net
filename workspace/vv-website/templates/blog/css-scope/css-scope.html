@@ -1,0 +1,410 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The CSS Scope You Never Had to Compile &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="@scope is the native CSS answer to the global-namespace problem. Chrome 118, Safari 17.4, Firefox 146; Baseline since December 2025; 91% global usage. Scope root adds zero specificity. Scoping proximity is a new cascade tier. The cascade, after twenty-five years, is finally finished.">
+{( endslot )}
+
+{( slot canonical )}/blog/css-scope{( endslot )}
+
+{( slot og-title )}The CSS Scope You Never Had to Compile &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Every web developer has fought this fight. BEM, CSS Modules, 80 KB of styled-components. @scope is the native answer: two selectors fence off a region of the DOM, zero specificity cost, and a new cascade tier called scoping proximity. Cross-browser stable since December 2025.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The CSS Scope You Never Had to Compile",
+    "datePublished": "2026-04-22",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/css-scope",
+    "description": "@scope fences off a region of the DOM, adds zero specificity, and introduces scoping proximity as a new cascade tier. Cross-browser stable since December 2025. 91% global usage.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-22">22 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The CSS Scope You Never Had to Compile</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">css</span>
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">html</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 13</p>
+
+        <p>Every web developer has fought this particular fight. You
+            write a perfectly innocent rule:</p>
+
+        <pre><code>.card h3 { font-weight: 600; }</code></pre>
+
+        <p>Then a third-party widget on the same page turns out to have
+            a <code>.card</code> of its own, with an <code>h3</code>, and
+            your bold heading is now in animated negotiation with
+            someone else's typography. You add a class. Then a more
+            specific class. Then you wrap your component in a unique
+            parent selector. By the end of the year you have either
+            adopted BEM and renamed every selector to
+            <code>.product-card__heading--featured</code>, installed
+            <a href="https://github.com/css-modules/css-modules" target="_blank" rel="noopener">CSS Modules</a>
+            and accepted a build step, or surrendered to 80 KB of
+            styled-components. CSS, in its capacity as a global
+            namespace, has won again.</p>
+
+        <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@scope" target="_blank" rel="noopener">@scope</a>
+            is the native CSS answer, and, as of December 2025, it works
+            in every modern browser.</p>
+
+        <h2>A Brief, Slightly Embarrassing History</h2>
+
+        <p>The idea is rather older than most of the people currently
+            enthusiastic about it. In 2013, the original
+            <a href="https://www.w3.org/TR/css-scoping-1/" target="_blank" rel="noopener">CSS Scoping Module Level 1</a>
+            included a <code>&lt;style scoped&gt;</code> HTML attribute
+            and an <code>@scope</code> block. The plan was simple:
+            declare a region of the DOM, scope styles to it. It was
+            never implemented. By 2018, CSS Cascade Level 4 quietly
+            removed scoping from the cascade sort criteria altogether,
+            with the polite editorial note that nobody had built it.
+            The community drifted towards Shadow DOM (which solved a
+            different, stricter problem) and towards JavaScript-based
+            scoping libraries (which solved the original problem at
+            the cost of a build step and a runtime). One does note
+            the asymmetry.</p>
+
+        <p>The current <code>@scope</code> rule is, in effect, the
+            second attempt. The
+            <a href="https://css.oddbird.net/scope/explainer/" target="_blank" rel="noopener">explainer</a>
+            was written by
+            <a href="https://css.oddbird.net/scope/explainer/" target="_blank" rel="noopener">Miriam Suzanne at Oddbird</a>
+            and driven through the CSS Working Group with input from
+            Google, Mozilla, and Apple.
+            <a href="https://caniuse.com/css-cascade-scope" target="_blank" rel="noopener">Chrome shipped it in version 118 (October 2023)</a>,
+            Safari in 17.4 (March 2024), and Firefox in 146 in
+            December 2025, at which point it reached "Newly available"
+            Baseline status across the board. Global usage is now just
+            over 91 per cent. In total, from the first draft, twenty-five
+            years.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>The standalone form takes a scope root and an optional scope
+            limit:</p>
+
+        <pre><code>@scope (.card) to (.embedded-card) {
+    img { border-radius: 0.5rem; }
+    h3  { font-weight: 600; }
+}</code></pre>
+
+        <p><code>(.card)</code> is the upper bound, where the scope
+            begins; <code>.embedded-card</code> is the lower bound, where
+            it ends. Rules apply to elements between the two boundaries,
+            but never to elements inside an <code>.embedded-card</code>.
+            The pattern has a rather charming nickname: <em>donut
+            scope</em>. Style the doughnut, leave the hole alone. The
+            hole is wherever a nested component takes responsibility for
+            its own styling, and you politely stop interfering.</p>
+
+        <svg viewBox="0 0 560 260" aria-label="Donut scope visualisation: an outer .card container bounded above, with an inner .embedded-card region excluded from scoped rules. Rules inside the scope apply to everything between the two boundaries. The hole is where a nested component manages its own styling." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .dn-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .dn-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .dn-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .dn-cmd { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .dn-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .dn-outer { fill: none; stroke: var(--accent); stroke-width: 2; rx: 8; }
+                .dn-inner { fill: var(--bg); stroke: var(--border); stroke-width: 1.5; stroke-dasharray: 4 3; rx: 6; }
+                .dn-line { stroke: var(--muted); stroke-width: 1; fill: none; }
+            </style>
+            <text x="280" y="22" class="dn-title" text-anchor="middle">Donut Scope</text>
+
+            <rect x="40" y="45" width="480" height="180" class="dn-outer"/>
+            <text x="55" y="68" class="dn-head">@scope (.card)</text>
+            <text x="55" y="86" class="dn-muted">upper bound &#x2014; rules start here</text>
+
+            <text x="80" y="130" class="dn-cmd">h3</text>
+            <text x="100" y="130" class="dn-text">&#x2192; font-weight: 600;</text>
+
+            <text x="80" y="150" class="dn-cmd">img</text>
+            <text x="100" y="150" class="dn-text">&#x2192; border-radius: 0.5rem;</text>
+
+            <text x="80" y="170" class="dn-cmd">a</text>
+            <text x="100" y="170" class="dn-text">&#x2192; text-decoration: underline;</text>
+
+            <rect x="310" y="105" width="190" height="90" class="dn-inner"/>
+            <text x="405" y="130" class="dn-head" text-anchor="middle">to (.embedded-card)</text>
+            <text x="405" y="150" class="dn-muted" text-anchor="middle">hole &#x2014; rules stop here</text>
+            <text x="405" y="170" class="dn-muted" text-anchor="middle">nested component is</text>
+            <text x="405" y="182" class="dn-muted" text-anchor="middle">left to its own devices</text>
+
+            <text x="280" y="250" class="dn-muted" text-anchor="middle">Style the doughnut. Leave the hole alone.</text>
+        </svg>
+
+        <p>When the stylesheet lives inside the component itself, the
+            prelude can be omitted entirely, and things become rather
+            pleasantly compact:</p>
+
+        <pre><code>&lt;article-card&gt;
+    &lt;style&gt;
+        @scope {
+            :scope { padding: 1rem; border: 1px solid #ddd; }
+            h3 { font-weight: 600; margin: 0 0 0.5rem; }
+            p  { color: #555; line-height: 1.5; }
+        }
+    &lt;/style&gt;
+    &lt;h3&gt;Title&lt;/h3&gt;
+    &lt;p&gt;Body copy.&lt;/p&gt;
+&lt;/article-card&gt;</code></pre>
+
+        <p>The implicit scope root is the <code>&lt;style&gt;</code>
+            element's parent. The <code>:scope</code> pseudo-class refers
+            to that root, so <code>:scope</code> matches the
+            <code>&lt;article-card&gt;</code> itself. Drop the markup
+            anywhere on the page and the rules travel with it, scoped
+            to exactly where they should be. This is, conceptually, what
+            styled-components and Vue's <code>scoped</code> CSS have
+            been doing for a decade, except styled-components costs
+            25 KB and a Babel transform, and the browser version costs
+            zero. One has, in two lines of CSS, reinvented an entire
+            library category, and one did not have to install Babel.</p>
+
+        <h2>Why It Works</h2>
+
+        <p>The detail that makes <code>@scope</code> properly elegant is
+            what it deliberately does <em>not</em> do. The scope root
+            contributes nothing to specificity. A bare <code>h3</code>
+            inside <code>@scope (.card)</code> has specificity
+            <code>(0,0,1)</code>, exactly the same as a bare
+            <code>h3</code> outside any scope. The
+            <a href="https://www.w3.org/TR/css-cascade-6/" target="_blank" rel="noopener">CSS Cascade Level 6 Working Draft</a>
+            describes this as the bare selectors behaving as if
+            <code>:where(:scope)</code> were prepended, and
+            <code>:where()</code> is the pseudo-class that adds
+            precisely zero specificity.</p>
+
+        <p>This sounds like a small thing. It is, in fact, the entire
+            reason CSS-in-JS exists. Every framework that hashes class
+            names is solving two problems at once: scoping the rules so
+            they only apply where intended, AND keeping specificity low
+            so future overrides remain possible without an
+            <code>!important</code> arms race. <code>@scope</code>
+            solves both at once, by changing the cascade rather than
+            the markup. One does, on reflection, find this a rather
+            handsome piece of spec-writing.</p>
+
+        <p>The cascade itself gains a new sorting tier:
+            <em>scoping proximity</em>. The revised cascade order, per
+            Cascade Level 6, reads roughly: importance first
+            (<code>!important</code>), then cascade layers
+            (<code>@layer</code>), then specificity, then scoping
+            proximity, then source order. When two <code>@scope</code>
+            blocks produce conflicting declarations for the same
+            element, the rule whose root is fewer DOM hops away from
+            that element wins.</p>
+
+        <svg viewBox="0 0 560 260" aria-label="The CSS cascade sorting order, revised in Cascade Level 6: Importance, then @layer, then Specificity, then Scoping Proximity (new in 2025), then Source Order. Scoping proximity is highlighted as the new tier introduced by @scope." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ca-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ca-rank { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; font-weight: 700; }
+                .ca-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .ca-accent { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ca-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ca-new { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .ca-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ca-box-accent { fill: none; stroke: var(--accent); stroke-width: 2; rx: 4; }
+            </style>
+            <text x="280" y="22" class="ca-title" text-anchor="middle">The Cascade Order &#x2014; Cascade Level 6</text>
+
+            <rect x="80" y="45" width="400" height="32" class="ca-box"/>
+            <text x="100" y="66" class="ca-rank">1</text>
+            <text x="125" y="66" class="ca-label">Importance</text>
+            <text x="460" y="66" class="ca-muted" text-anchor="end">!important wins first</text>
+
+            <rect x="80" y="85" width="400" height="32" class="ca-box"/>
+            <text x="100" y="106" class="ca-rank">2</text>
+            <text x="125" y="106" class="ca-label">Cascade Layers</text>
+            <text x="460" y="106" class="ca-muted" text-anchor="end">@layer order</text>
+
+            <rect x="80" y="125" width="400" height="32" class="ca-box"/>
+            <text x="100" y="146" class="ca-rank">3</text>
+            <text x="125" y="146" class="ca-label">Specificity</text>
+            <text x="460" y="146" class="ca-muted" text-anchor="end">(0,0,1) vs (0,1,0) vs (1,0,0)</text>
+
+            <rect x="80" y="165" width="400" height="32" class="ca-box-accent"/>
+            <text x="100" y="186" class="ca-rank">4</text>
+            <text x="125" y="186" class="ca-accent">Scoping Proximity</text>
+            <text x="460" y="186" class="ca-new" text-anchor="end">NEW (2025)</text>
+
+            <rect x="80" y="205" width="400" height="32" class="ca-box"/>
+            <text x="100" y="226" class="ca-rank">5</text>
+            <text x="125" y="226" class="ca-label">Source Order</text>
+            <text x="460" y="226" class="ca-muted" text-anchor="end">later in stylesheet wins</text>
+
+            <text x="280" y="253" class="ca-muted" text-anchor="middle">Two @scope blocks collide: the root fewer DOM hops away wins.</text>
+        </svg>
+
+        <p>Which makes nested theme switching a quiet pleasure:</p>
+
+        <pre><code>@scope (.dark)  { p { color: white; } }
+@scope (.light) { p { color: black; } }</code></pre>
+
+        <p>A <code>.light</code> wrapper inside a <code>.dark</code>
+            wrapper produces light paragraphs. A <code>.dark</code>
+            wrapper inside a <code>.light</code> wrapper produces dark
+            ones. Nest as deeply as you like; the closest ancestor with
+            a matching scope wins. There is no JavaScript, no media
+            query stack, no design token lookup. The DOM tree is the
+            lookup.</p>
+
+        <h2>The Old Ways, Priced Out</h2>
+
+        <svg viewBox="0 0 560 220" aria-label="Comparison of historic scoping approaches: BEM requires a naming discipline and no build step (0 KB, sanity cost). CSS Modules adds a build step and runtime (roughly 10 KB). styled-components ship a 25 KB runtime plus a Babel transform. Native @scope adds zero runtime, zero build, zero dependency." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .co-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .co-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .co-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .co-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 13px; font-weight: 700; }
+                .co-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .co-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .co-box-accent { fill: none; stroke: var(--accent); stroke-width: 2; rx: 4; }
+            </style>
+            <text x="280" y="22" class="co-title" text-anchor="middle">The Cost Sheet</text>
+
+            <rect x="20" y="45" width="125" height="140" class="co-box"/>
+            <text x="82" y="68" class="co-head" text-anchor="middle">BEM</text>
+            <text x="82" y="92" class="co-num" text-anchor="middle">0 KB</text>
+            <text x="82" y="108" class="co-label" text-anchor="middle">runtime</text>
+            <text x="82" y="130" class="co-num" text-anchor="middle">&#x221E;</text>
+            <text x="82" y="146" class="co-label" text-anchor="middle">discipline cost</text>
+            <text x="82" y="172" class="co-muted" text-anchor="middle">product-card__</text>
+            <text x="82" y="182" class="co-muted" text-anchor="middle">heading--featured</text>
+
+            <rect x="157" y="45" width="125" height="140" class="co-box"/>
+            <text x="219" y="68" class="co-head" text-anchor="middle">CSS Modules</text>
+            <text x="219" y="92" class="co-num" text-anchor="middle">~10 KB</text>
+            <text x="219" y="108" class="co-label" text-anchor="middle">runtime</text>
+            <text x="219" y="130" class="co-num" text-anchor="middle">yes</text>
+            <text x="219" y="146" class="co-label" text-anchor="middle">build step</text>
+            <text x="219" y="172" class="co-muted" text-anchor="middle">hashed class</text>
+            <text x="219" y="182" class="co-muted" text-anchor="middle">names everywhere</text>
+
+            <rect x="294" y="45" width="125" height="140" class="co-box"/>
+            <text x="356" y="68" class="co-head" text-anchor="middle">styled-components</text>
+            <text x="356" y="92" class="co-num" text-anchor="middle">~25 KB</text>
+            <text x="356" y="108" class="co-label" text-anchor="middle">runtime</text>
+            <text x="356" y="130" class="co-num" text-anchor="middle">Babel</text>
+            <text x="356" y="146" class="co-label" text-anchor="middle">transform</text>
+            <text x="356" y="172" class="co-muted" text-anchor="middle">CSS inside JS</text>
+            <text x="356" y="182" class="co-muted" text-anchor="middle">inside React</text>
+
+            <rect x="431" y="45" width="109" height="140" class="co-box-accent"/>
+            <text x="485" y="68" class="co-head" text-anchor="middle">@scope</text>
+            <text x="485" y="92" class="co-num" text-anchor="middle">0 KB</text>
+            <text x="485" y="108" class="co-label" text-anchor="middle">runtime</text>
+            <text x="485" y="130" class="co-num" text-anchor="middle">0</text>
+            <text x="485" y="146" class="co-label" text-anchor="middle">build step</text>
+            <text x="485" y="172" class="co-muted" text-anchor="middle">native,</text>
+            <text x="485" y="182" class="co-muted" text-anchor="middle">91% support</text>
+
+            <text x="280" y="210" class="co-muted" text-anchor="middle">The build-step argument has, rather quietly, expired.</text>
+        </svg>
+
+        <h2>Honest Limitations</h2>
+
+        <p>Two things worth knowing before one ships
+            <code>@scope</code> to production, in the spirit of not
+            selling things one does not entirely own.</p>
+
+        <p>First, the <code>&amp;</code> selector inside
+            <code>@scope</code> blocks has had subtle interoperability
+            differences across engines, particularly in earlier
+            versions. The behaviour is now well-specified
+            (<code>&amp; selector</code> desugars through
+            <code>:is()</code> and inherits its specificity rules), but
+            if one targets browsers older than late 2024, prefer
+            explicit selectors over <code>&amp;</code> for the moment.
+            It will come right; it has come right; it just wasn't,
+            briefly, right everywhere at once.</p>
+
+        <p>Second, and more philosophically:
+            <code>@scope</code> is style scoping, not full
+            encapsulation. Your scoped styles do not leak out, but the
+            global cascade still leaks in. A high-specificity rule from
+            elsewhere on the page can still override your scoped rule.
+            This is a feature, not a bug: it means design system tokens,
+            accessibility overrides, and user stylesheets all continue
+            to work as intended. If one needs true encapsulation, where
+            outside CSS cannot reach in either, Shadow DOM still has a
+            job. Different problem, different tool.</p>
+
+        <h2>When to Use</h2>
+
+        <p>Anywhere one currently uses BEM naming to fake scoping.
+            Anywhere one reaches for CSS Modules. Anywhere one
+            considered styled-components or Emotion for the third time
+            today. Anywhere a third-party widget's stylesheet leaks
+            into one's own, and one would rather solve that with a
+            one-line <code>@scope</code> boundary than a class-name
+            renaming campaign.</p>
+
+        <p>For a fresh design system, build it in scopes from the
+            start. Each component declares its <code>@scope</code>
+            block; the global stylesheet handles tokens and base
+            typography in unscoped form. The result is a CSS file one
+            can read top-to-bottom and reason about with no surprises,
+            which is, after twenty-five years of the genre, a rather
+            novel experience.</p>
+
+        <h2>The Cascade, Civilised</h2>
+
+        <p><a href="/blog/the-specificity-war">Episode 03</a> of this
+            series tackled <code>@layer</code>: the rule that decided
+            which stylesheet's voice prevails when several try to speak
+            at once. <code>@scope</code> decides where each voice may
+            speak in the first place. Between them, they cover the two
+            great unsolved problems of CSS architecture: ordering and
+            bounding. Both have now been quietly solved by reading the
+            spec, rather than by installing the next generation of
+            build tools.</p>
+
+        <p>The cascade, after twenty-five years, is finally finished.</p>
+
+        <blockquote>
+            <p>@scope: native, 91% support since December 2025. Scope
+                root adds zero specificity. "Donut scope": style the
+                doughnut, leave the hole alone. New cascade tier:
+                scoping proximity. Nested theme switching in two lines
+                of CSS. Replaces BEM, CSS Modules, styled-components
+                (~25 KB + Babel). Style-in-JS finally answered by the
+                browser.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>@scope, the short version:</strong></p>
+            <ul>
+                <li><strong>The form:</strong> <code>@scope (.card) to (.embedded-card) { ... }</code>. Upper bound, optional lower bound. Donut scope: style the doughnut, leave the hole alone</li>
+                <li><strong>The component form:</strong> <code>&lt;style&gt;@scope { :scope { ... } h3 { ... } }&lt;/style&gt;</code> inside the component. Implicit scope root is the <code>&lt;style&gt;</code>'s parent. Rules travel with the markup</li>
+                <li><strong>Zero specificity:</strong> bare <code>h3</code> inside <code>@scope</code> keeps (0,0,1). As if <code>:where(:scope)</code> were prepended</li>
+                <li><strong>New cascade tier:</strong> Importance &#x2192; @layer &#x2192; Specificity &#x2192; <strong>Scoping Proximity</strong> &#x2192; Source Order. Closest scope root wins</li>
+                <li><strong>Availability:</strong> Chrome 118 (Oct 2023), Safari 17.4 (Mar 2024), Firefox 146 (Dec 2025). Baseline "Newly available" since December 2025. Global usage ~91%</li>
+                <li><strong>Honest caveats:</strong> <code>&amp;</code> selector had early engine quirks (now well-specified). Global cascade still leaks in (feature, not bug). Shadow DOM if you need true encapsulation</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,335 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}periodic &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="cron tells you when. periodic tells you what happened. FreeBSD solved maintenance reporting in the 1990s. One configuration file. One email. One coffee. The BSDs understood decades ago that the problem was never scheduling. It was accountability.">
+{( endslot )}
+
+{( slot canonical )}/blog/periodic{( endslot )}
+
+{( slot og-title )}periodic &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}cron tells you when. periodic tells you what happened. FreeBSD: one config file, severity-coded output, daily email. OpenBSD: pledge/unveil violation reports every morning. Linux: twenty files for ten tasks. The BSDs understood accountability.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "periodic",
+    "datePublished": "2026-04-13",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/periodic",
+    "description": "cron tells you when. periodic tells you what happened. One config file. One email. One coffee.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-13">13 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>periodic</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">devops</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 12</p>
+
+        <p>You have inherited a server. Congratulations. It runs seventeen
+            cron jobs. Three were written by someone who left in 2019. One
+            backs up a database that was decommissioned last March. Two
+            conflict with each other at 02:15 every Sunday. Nobody knows
+            what the remaining eleven do, because cron does not tell you
+            whether a job succeeded. It tells you it ran. Marvellous
+            distinction, that.</p>
+
+        <p><a href="/blog/technical-beauty-cron">cron</a> is a clock with
+            a trigger. It fires and forgets. Scatter your jobs across
+            per-user crontabs and root's crontab, and within six months you
+            have a system held together by faith, habit, and the vague hope
+            that no one touches it. This is not a theoretical scenario. This
+            is every production server one has ever inherited.</p>
+
+        <p>The BSDs looked at this and asked a rather sensible question:
+            what if the system told you what happened?</p>
+
+        <h2>FreeBSD: periodic(8)</h2>
+
+        <p><a href="https://man.freebsd.org/cgi/man.cgi?query=periodic&sektion=8" target="_blank" rel="noopener">periodic(8)</a>
+            is a framework. Not a scheduler, not a daemon, not a service.
+            A framework that sits on top of cron and provides structure,
+            configuration, and output management for recurring system
+            tasks. FreeBSD built it in the 1990s. It has worked without
+            drama since.</p>
+
+        <p>The architecture is straightforward. Scripts live in
+            directories:</p>
+
+        <pre><code>/etc/periodic/daily/
+/etc/periodic/weekly/
+/etc/periodic/monthly/
+/etc/periodic/security/</code></pre>
+
+        <p>Each script is a self-contained shell script that performs one
+            task and exits with a status code:</p>
+
+        <svg viewBox="0 0 560 200" aria-label="periodic exit codes: 0 = nothing notable (suppressible), 1 = information (suppressible), 2 = config warning (suppressible), greater than 2 = critical (always shown). One config file controls everything." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pd-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pd-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .pd-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .pd-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .pd-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 14px; font-weight: 700; }
+                .pd-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .pd-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="pd-title" text-anchor="middle">periodic Exit Codes: Severity-Based Output</text>
+            <rect x="20" y="38" width="125" height="55" class="pd-box"/>
+            <text x="82" y="58" class="pd-code" text-anchor="middle">0</text>
+            <text x="82" y="74" class="pd-item" text-anchor="middle">nothing notable</text>
+            <text x="82" y="88" class="pd-muted" text-anchor="middle">suppressible</text>
+
+            <rect x="157" y="38" width="125" height="55" class="pd-box"/>
+            <text x="220" y="58" class="pd-code" text-anchor="middle">1</text>
+            <text x="220" y="74" class="pd-item" text-anchor="middle">information</text>
+            <text x="220" y="88" class="pd-muted" text-anchor="middle">suppressible</text>
+
+            <rect x="295" y="38" width="125" height="55" class="pd-box"/>
+            <text x="357" y="58" class="pd-code" text-anchor="middle">2</text>
+            <text x="357" y="74" class="pd-item" text-anchor="middle">config warning</text>
+            <text x="357" y="88" class="pd-muted" text-anchor="middle">suppressible</text>
+
+            <rect x="432" y="38" width="108" height="55" class="pd-box-accent"/>
+            <text x="486" y="58" class="pd-code" text-anchor="middle">&gt;2</text>
+            <text x="486" y="74" class="pd-item" text-anchor="middle">critical</text>
+            <text x="486" y="88" class="pd-muted" text-anchor="middle">always shown</text>
+
+            <text x="280" y="125" class="pd-muted" text-anchor="middle">Output collected from all scripts, filtered by severity, delivered as one report.</text>
+            <text x="280" y="145" class="pd-muted" text-anchor="middle">One email every morning. You read it with your coffee and know the state of the machine.</text>
+            <text x="280" y="170" class="pd-head" text-anchor="middle">Adding a custom task: drop a script into the directory. That is the entire API.</text>
+            <text x="280" y="190" class="pd-muted" text-anchor="middle">No registration. No reload. No daemon restart. The framework discovers it on the next run.</text>
+        </svg>
+
+        <p>One
+            <a href="https://man.freebsd.org/cgi/man.cgi?query=periodic.conf&sektion=5" target="_blank" rel="noopener">configuration file</a>
+            controls the entire system:</p>
+
+        <pre><code># /etc/periodic.conf
+daily_clean_tmps_enable="YES"
+daily_backup_passwd_enable="YES"
+daily_status_security_enable="YES"
+daily_accounting_enable="YES"
+daily_show_success="NO"
+daily_show_info="YES"
+daily_show_badconfig="YES"
+daily_output="/var/log/daily.log"</code></pre>
+
+        <p>Enable a task: set it to <code>"YES"</code>. Disable it:
+            <code>"NO"</code>. Change the output destination: set
+            <code>daily_output</code> to a file path or an email address.
+            One file. Every task. Every setting. The pattern is identical
+            to <code>rc.conf</code>: system defaults are never modified,
+            local changes are applied on top.</p>
+
+        <p>The output is collected from all scripts, filtered by severity,
+            and delivered as a single report. If <code>daily_output</code>
+            is an email address, you receive one email every morning with
+            the complete state of your system: which temp files were cleaned,
+            whether the password database was backed up, what the security
+            check found, and whether anything went wrong. You read one email
+            with your morning coffee and know the state of the machine.</p>
+
+        <p>Adding a custom task is trivial: write a shell script, make it
+            executable, drop it into <code>/etc/periodic/daily/</code>. That
+            is the entire API. No registration, no configuration reload, no
+            daemon restart. The framework discovers it on the next run. One
+            does not recall the last time an API consisted of "put a file
+            somewhere."</p>
+
+        <p><a href="https://man.freebsd.org/cgi/man.cgi?query=newsyslog&sektion=8" target="_blank" rel="noopener"><code>newsyslog(8)</code></a>
+            already knows about <code>/var/log/daily.log</code>,
+            <code>/var/log/weekly.log</code>, and
+            <code>/var/log/monthly.log</code>. The logging of your
+            maintenance framework is itself maintained. One does appreciate
+            the recursion.</p>
+
+        <p>cron still does the scheduling. Three lines in
+            <code>/etc/crontab</code>:</p>
+
+        <pre><code>0  2  *  *  *  root  periodic daily
+0  3  *  *  6  root  periodic weekly
+0  5  1  *  *  root  periodic monthly</code></pre>
+
+        <p>cron triggers periodic. periodic runs the scripts. The scripts
+            report their status. The framework collects the output. The
+            administrator reads one email. The separation of concerns is,
+            one must note, rather elegant.</p>
+
+        <h2>OpenBSD: daily(8)</h2>
+
+        <p><a href="https://man.openbsd.org/daily.8" target="_blank" rel="noopener">OpenBSD</a>
+            takes a characteristically minimal approach. Three shell scripts
+            ship with the base system: <code>/etc/daily</code>,
+            <code>/etc/weekly</code>, and <code>/etc/monthly</code>. These
+            are system scripts. You never modify them.</p>
+
+        <p>Your additions go into <code>/etc/daily.local</code>,
+            <code>/etc/weekly.local</code>, and
+            <code>/etc/monthly.local</code>. These local scripts run first,
+            before the system scripts, which makes it convenient to define
+            variables, perform cleanup, or prepare state that the system
+            scripts depend on.</p>
+
+        <p>The daily script performs a comprehensive set of checks: removes
+            scratch files from <code>/tmp</code>, purges accounting records,
+            checks daemon status (lists any daemons enabled in
+            <code>rc.conf.local</code> that are not actually running),
+            reports which file systems need to be dumped, runs the
+            <a href="https://man.openbsd.org/security.8" target="_blank" rel="noopener"><code>security(8)</code></a>
+            check script, and optionally backs up the root file system to
+            <code>/altroot</code>.</p>
+
+        <p>The rather splendid part: the daily script reports processes
+            killed by <code>pledge(2)</code> and <code>unveil(2)</code>
+            violations. Software that attempted to exceed its declared
+            capabilities or access files it had no business accessing.
+            Security is not a product you install. It is not an agent you
+            deploy. It is a shell script that runs every morning and tells
+            you who misbehaved. Quite civilised.</p>
+
+        <h2>Linux: systemd timers</h2>
+
+        <p>Linux offers
+            <a href="https://www.freedesktop.org/software/systemd/man/systemd.timer.html" target="_blank" rel="noopener">systemd timers</a>
+            as the modern alternative to cron. Each scheduled task requires
+            two files: a <code>.service</code> unit file defining what to
+            run, and a <code>.timer</code> unit file defining when to run
+            it.</p>
+
+        <pre><code># /etc/systemd/system/cleanup.service
+[Unit]
+Description=Daily cleanup
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/cleanup.sh</code></pre>
+
+        <pre><code># /etc/systemd/system/cleanup.timer
+[Unit]
+Description=Run cleanup daily
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target</code></pre>
+
+        <p>Then enable and start it:</p>
+
+        <pre><code>systemctl daemon-reload
+systemctl enable --now cleanup.timer</code></pre>
+
+        <svg viewBox="0 0 560 200" aria-label="Comparison: FreeBSD periodic uses one config file for all tasks. OpenBSD uses three scripts plus three local overrides. Linux systemd timers need two files per task: ten tasks equals twenty files." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .cp-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 16px; font-weight: 700; }
+                .cp-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .cp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .cp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cp-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="cp-title" text-anchor="middle">10 Maintenance Tasks: File Count</text>
+            <rect x="20" y="38" width="165" height="85" class="cp-box-accent"/>
+            <text x="102" y="58" class="cp-head" text-anchor="middle">FreeBSD periodic</text>
+            <text x="102" y="82" class="cp-num" text-anchor="middle">1 config</text>
+            <text x="102" y="100" class="cp-item" text-anchor="middle">+ 10 scripts in directory</text>
+            <text x="102" y="116" class="cp-muted" text-anchor="middle">one daily email report</text>
+
+            <rect x="197" y="38" width="165" height="85" class="cp-box"/>
+            <text x="280" y="58" class="cp-head" text-anchor="middle">OpenBSD daily</text>
+            <text x="280" y="82" class="cp-num" text-anchor="middle">3 + 3</text>
+            <text x="280" y="100" class="cp-item" text-anchor="middle">system + local scripts</text>
+            <text x="280" y="116" class="cp-muted" text-anchor="middle">pledge/unveil reports</text>
+
+            <rect x="375" y="38" width="165" height="85" class="cp-box"/>
+            <text x="457" y="58" class="cp-head" text-anchor="middle">Linux systemd</text>
+            <text x="457" y="82" class="cp-num" text-anchor="middle">20 files</text>
+            <text x="457" y="100" class="cp-item" text-anchor="middle">10 services + 10 timers</text>
+            <text x="457" y="116" class="cp-muted" text-anchor="middle">+ 10 reload commands</text>
+
+            <text x="280" y="155" class="cp-muted" text-anchor="middle">FreeBSD: collected daily report, severity filtering, one config file.</text>
+            <text x="280" y="173" class="cp-muted" text-anchor="middle">OpenBSD: security baked into the daily routine.</text>
+            <text x="280" y="191" class="cp-muted" text-anchor="middle">Linux: each task in its own universe. No collected report.</text>
+        </svg>
+
+        <p>For ten maintenance tasks, this produces twenty files and ten
+            reload-and-enable sequences. The output goes to the journal,
+            retrievable via <code>journalctl -u cleanup.service</code>.
+            There is no collected daily report. There is no severity
+            filtering. There is no single email summarising the state of
+            the system. Each task lives in its own universe.</p>
+
+        <p>systemd timers do offer features that cron does not: monotonic
+            timers (relative to boot), persistent timers (catch up missed
+            runs), calendar expressions with second-level granularity, and
+            dependency ordering. These are genuine capabilities. Whether the
+            complexity is justified for "run this script every morning" is,
+            one suspects, a matter of taste. And file count tolerance.</p>
+
+        <h2>The Point</h2>
+
+        <p>cron tells you when. periodic tells you what happened.</p>
+
+        <p>The difference between a scheduler and a maintenance framework
+            is the difference between "the job ran" and "the job ran,
+            succeeded, found nothing unusual, and here is the proof." One
+            of those lets you sleep. The other requires you to check.</p>
+
+        <p>FreeBSD built a framework: structured directories, a single
+            configuration file, severity-coded output, collected daily
+            reports. OpenBSD built simplicity: three scripts, three local
+            overrides, security baked into the daily routine. Linux built a
+            general-purpose process management system and asked it to also
+            handle cron jobs.</p>
+
+        <p>All three work. The BSDs understood, decades ago, that the
+            problem was never scheduling. It was accountability. One
+            configuration file. One email. One morning coffee. Rather
+            civilised, really.</p>
+
+        <blockquote>
+            <p>cron tells you when. periodic tells you what happened.
+                FreeBSD: one config file, severity-coded output, daily
+                email report. OpenBSD: pledge/unveil violation reports
+                every morning. Linux: twenty files for ten tasks. The
+                BSDs understood that the problem was never scheduling.
+                It was accountability.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The three approaches:</strong></p>
+            <ul>
+                <li><strong>FreeBSD <a href="https://man.freebsd.org/cgi/man.cgi?query=periodic&sektion=8" target="_blank" rel="noopener">periodic(8)</a>:</strong> /etc/periodic/{daily,weekly,monthly,security}. One config. Exit codes 0-2+. Daily email report. Custom task: drop script into directory</li>
+                <li><strong>OpenBSD <a href="https://man.openbsd.org/daily.8" target="_blank" rel="noopener">daily(8)</a>:</strong> /etc/daily + /etc/daily.local. Never touch system scripts. pledge/unveil violation reports. Security is a shell script</li>
+                <li><strong>Linux:</strong> systemd timers. Two files per task. journalctl for output. No collected report</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

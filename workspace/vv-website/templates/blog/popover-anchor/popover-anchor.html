@@ -1,0 +1,323 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Native Popover That Positions Itself &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Every frontend team has written tooltip code: Floating UI (35KB), three event listeners, a resize observer, and a quiet prayer. The browser now does all of it. Natively. Zero kilobytes.">
+{( endslot )}
+
+{( slot canonical )}/blog/popover-anchor{( endslot )}
+
+{( slot og-title )}The Native Popover That Positions Itself &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Floating UI: 35KB. Popper.js: 28KB. Tippy.js: 22KB. The native equivalent: zero kilobytes and a few lines of CSS. The popover half works today. The positioning half is landing.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Native Popover That Positions Itself",
+    "datePublished": "2026-04-01",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/popover-anchor",
+    "description": "The Popover API and CSS Anchor Positioning replace tooltip libraries with zero kilobytes of JavaScript.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-01">1 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Native Popover That Positions Itself</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">css</span>
+            <span class="vv-pill">html</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 10</p>
+
+        <p>Every frontend team has written this code: a tooltip that appears
+            on click, disappears when you click elsewhere, stays above the
+            z-index of that one modal someone set to 9999, and kindly
+            repositions itself when it hits the viewport edge. The result
+            is typically
+            <a href="https://bundlephobia.com/package/@floating-ui/dom" target="_blank" rel="noopener">Floating UI</a>
+            (35 KB), three event listeners, a resize observer, and a quiet
+            prayer.</p>
+
+        <p>The browser now does all of it. Natively. Zero kilobytes of
+            JavaScript. One does rather appreciate a specification that
+            ships with fewer bugs than most npm packages.</p>
+
+        <h2>The Popover API</h2>
+
+        <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" target="_blank" rel="noopener">Baseline</a>
+            in every browser since April 2025. One attribute:</p>
+
+        <pre><code>&lt;button popovertarget="tip"&gt;Settings&lt;/button&gt;
+&lt;div id="tip" popover&gt;Saved automatically.&lt;/div&gt;</code></pre>
+
+        <p>That is the entire JavaScript: none. The browser provides the
+            top layer (no z-index required, the element renders above
+            everything including that modal at 9999), light dismiss (click
+            outside to close), keyboard handling (Escape), and focus
+            management. For free. Try it:</p>
+
+        <style>
+            .pop-demo { padding:calc(var(--unit) * 4);border:1px solid var(--border);border-radius:4px;margin:2em 0;text-align:center }
+            .pop-demo-btn { font-family:inherit;font-size:inherit;padding:6px 16px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;anchor-name:--demo-basic }
+            .pop-demo-pop { padding:16px 24px;position-anchor:--demo-basic;bottom:anchor(top);left:anchor(center);translate:-50% -8px }
+            @supports not (position-anchor: --x) { .pop-demo-pop { bottom:auto;left:auto;translate:none } }
+        </style>
+        <div class="pop-demo">
+            <button popovertarget="demo-basic" class="pop-demo-btn">Click me</button>
+            <div id="demo-basic" popover class="pop-demo-pop">
+                <p style="margin:0">This is a native popover. No JavaScript. Click outside or press Escape to close.</p>
+            </div>
+        </div>
+
+        <p>No <code>addEventListener</code>. No <code>classList.toggle</code>.
+            No <code>aria-expanded</code> management. No state library to
+            track whether a rectangle is visible. The HTML attribute
+            <code>popovertarget</code> connects the button to the popover
+            by ID. The browser handles the rest. One button, one div, zero
+            lines of script.</p>
+
+        <h2>Styling with :popover-open</h2>
+
+        <p>The
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:popover-open" target="_blank" rel="noopener"><code>:popover-open</code></a>
+            pseudo-class tells you whether the popover is currently visible.
+            The CSS equivalent of peeking through the curtain:</p>
+
+        <pre><code>[popover] {
+  opacity: 0;
+  transition: opacity 0.2s, display 0.2s;
+  transition-behavior: allow-discrete;
+}
+[popover]:popover-open {
+  opacity: 1;
+}</code></pre>
+
+        <p>The <code>transition-behavior: allow-discrete</code> property
+            is the genuinely clever bit. Normally, you cannot animate
+            <code>display: none</code> to <code>display: block</code>
+            because <code>display</code> is a discrete property, not an
+            interpolatable one. The browser does not know what "halfway
+            between none and block" looks like.
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transition-behavior" target="_blank" rel="noopener"><code>allow-discrete</code></a>
+            tells the browser to wait until the transition completes before
+            switching to <code>display: none</code>. The popover fades out
+            before disappearing. No <code>setTimeout</code>. No animation
+            callback. CSS handles the timing. Try the animated version:</p>
+
+        <style>
+            .pop-anim-btn { font-family:inherit;font-size:inherit;padding:6px 16px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;anchor-name:--demo-anim }
+            #demo-animated {
+                padding: 16px 24px;
+                opacity: 0;
+                transition: opacity 0.3s, display 0.3s;
+                transition-behavior: allow-discrete;
+                position-anchor:--demo-anim;bottom:anchor(top);left:anchor(center);translate:-50% -8px;
+            }
+            #demo-animated:popover-open { opacity: 1; }
+            @starting-style { #demo-animated:popover-open { opacity: 0; } }
+            @supports not (position-anchor: --x) { #demo-animated { bottom:auto;left:auto;translate:none } }
+        </style>
+
+        <div class="pop-demo">
+            <button popovertarget="demo-animated" class="pop-anim-btn">Animated popover</button>
+            <div id="demo-animated" popover>
+                <p style="margin:0">Fades in. Fades out. No JavaScript. <code>transition-behavior: allow-discrete</code> does the work.</p>
+            </div>
+        </div>
+
+        <h2>Three Modes</h2>
+
+        <p>The Popover API has three modes, each with different behaviour:</p>
+
+        <ul>
+            <li><strong><code>popover</code></strong> (or <code>popover="auto"</code>):
+                light dismiss (click outside closes it), only one auto popover
+                open at a time. The sensible default for menus and tooltips</li>
+            <li><strong><code>popover="manual"</code></strong>: no light dismiss,
+                stays open until explicitly closed. For persistent notifications,
+                toasts, or anything the user should not accidentally dismiss by
+                clicking elsewhere</li>
+            <li><strong><code>popover="hint"</code></strong>: designed for
+                hover-triggered tooltips. Light dismiss, but does not close
+                other auto popovers. The newest mode, available in
+                <a href="https://developer.chrome.com/blog/introducing-popover-api" target="_blank" rel="noopener">Chrome</a>
+                and landing in other browsers</li>
+        </ul>
+
+        <style>
+            .pop-auto-btn { font-family:inherit;font-size:inherit;padding:6px 16px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;anchor-name:--demo-auto }
+            .pop-manual-btn { font-family:inherit;font-size:inherit;padding:6px 16px;border:1px solid var(--border);background:none;color:var(--text);border-radius:4px;cursor:pointer;anchor-name:--demo-manual }
+            .pop-mode { padding:16px 24px }
+            #demo-auto { position-anchor:--demo-auto;bottom:anchor(top);left:anchor(center);translate:-50% -8px }
+            #demo-manual { position-anchor:--demo-manual;bottom:anchor(top);left:anchor(center);translate:-50% -8px }
+            @supports not (position-anchor: --x) { #demo-auto, #demo-manual { bottom:auto;left:auto;translate:none } }
+        </style>
+        <div class="pop-demo" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <button popovertarget="demo-auto" class="pop-auto-btn">Auto (default)</button>
+            <div id="demo-auto" popover class="pop-mode">
+                <p style="margin:0">Auto mode. Click outside or press Escape to close. Only one open at a time.</p>
+            </div>
+            <button popovertarget="demo-manual" class="pop-manual-btn">Manual</button>
+            <div id="demo-manual" popover="manual" class="pop-mode">
+                <p style="margin:0">Manual mode. Click outside does nothing. <button popovertarget="demo-manual" popovertargetaction="hide" style="font-family:inherit;font-size:inherit;padding:2px 8px;border:1px solid var(--border);background:none;color:var(--text);border-radius:4px;cursor:pointer;margin-left:8px">Close</button></p>
+            </div>
+        </div>
+
+        <h2>CSS Anchor Positioning</h2>
+
+        <p>The Popover API solves the "show and hide" problem. But it does
+            not solve the "where does it appear" problem. A popover renders
+            in the centre of the viewport by default. For a tooltip, you
+            want it next to the trigger. For a dropdown menu, you want it
+            below the button. For a date picker, you want it below the
+            input, unless the input is at the bottom of the viewport, in
+            which case you want it above.</p>
+
+        <p>This is the positioning problem, and it is the reason
+            <a href="https://bundlephobia.com/package/@popperjs/core" target="_blank" rel="noopener">Popper.js</a>
+            (28 KB) and
+            <a href="https://bundlephobia.com/package/tippy.js" target="_blank" rel="noopener">Tippy.js</a>
+            (22 KB) exist. They measure the trigger element, calculate
+            available space in every direction, choose the best position,
+            and recalculate on scroll, resize, and ancestor layout changes.
+            The code is well-written. It also should not need to exist.</p>
+
+        <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning" target="_blank" rel="noopener">CSS Anchor Positioning</a>
+            (Chrome 125+, Safari 26+, Firefox behind a flag) solves this in
+            CSS:</p>
+
+        <pre><code>.trigger {
+  anchor-name: --btn;
+}
+
+[popover] {
+  position-anchor: --btn;
+  top: anchor(bottom);
+  left: anchor(left);
+  position-try-fallbacks: flip-block, flip-inline;
+}</code></pre>
+
+        <p><code>anchor-name</code> registers the trigger as an anchor.
+            <code>position-anchor</code> ties the popover to it.
+            <code>anchor(bottom)</code> places the popover's top edge at
+            the trigger's bottom edge. And
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position-try-fallbacks" target="_blank" rel="noopener"><code>position-try-fallbacks</code></a>
+            is the part that earns its keep: if the popover does not fit
+            below, flip it above (<code>flip-block</code>). If not above,
+            try the side (<code>flip-inline</code>). The browser measures,
+            decides, repositions. No scroll listener. No
+            <code>IntersectionObserver</code>. No
+            "<code>getBoundingClientRect</code> and hope for the best."</p>
+
+        <p>For custom fallback strategies beyond simple flipping, the
+            <code>@position-try</code> at-rule lets you define named
+            alternatives:</p>
+
+        <pre><code>@position-try --above {
+  bottom: anchor(top);
+  top: auto;
+  left: anchor(center);
+}
+
+[popover] {
+  position-try-fallbacks: --above;
+}</code></pre>
+
+        <svg viewBox="0 0 560 220" aria-label="Library size comparison: Floating UI 35KB, Popper.js 28KB, Tippy.js 22KB, native Popover plus Anchor Positioning: 0KB." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pa-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pa-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .pa-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 20px; font-weight: 700; }
+                .pa-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .pa-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .pa-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .pa-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .pa-bar { fill: var(--border); rx: 2; }
+                .pa-bar-accent { fill: var(--accent); rx: 2; }
+            </style>
+            <text x="280" y="22" class="pa-title" text-anchor="middle">What You Ship</text>
+            <!-- Bars -->
+            <text x="20" y="58" class="pa-item">Floating UI</text>
+            <rect x="120" y="46" width="245" height="16" class="pa-bar"/>
+            <text x="375" y="58" class="pa-head">35 KB</text>
+
+            <text x="20" y="86" class="pa-item">Popper.js</text>
+            <rect x="120" y="74" width="196" height="16" class="pa-bar"/>
+            <text x="326" y="86" class="pa-head">28 KB</text>
+
+            <text x="20" y="114" class="pa-item">Tippy.js</text>
+            <rect x="120" y="102" width="154" height="16" class="pa-bar"/>
+            <text x="284" y="114" class="pa-head">22 KB</text>
+
+            <text x="20" y="148" class="pa-item">Native</text>
+            <rect x="120" y="136" width="4" height="16" class="pa-bar-accent"/>
+            <text x="134" y="148" class="pa-head">0 KB</text>
+            <text x="170" y="148" class="pa-muted">Popover API + CSS Anchor Positioning</text>
+
+            <!-- Bottom -->
+            <text x="280" y="185" class="pa-muted" text-anchor="middle">Popover API: Baseline since April 2025. All browsers.</text>
+            <text x="280" y="200" class="pa-muted" text-anchor="middle">Anchor Positioning: Chrome 125+, Safari 26+. Firefox behind flag.</text>
+        </svg>
+
+        <h2>The Point</h2>
+
+        <p>Floating UI: 35 KB. Popper.js: 28 KB. Tippy.js: 22 KB. The
+            native equivalent: zero kilobytes and a few lines of CSS.
+            The popover half works today, in every browser, right now.
+            The positioning half is landing: Chrome and Safari ship it,
+            Firefox is behind a flag but closing in.</p>
+
+        <p>The buttons above this paragraph are not demos rendered by a
+            JavaScript framework. They are native HTML with the
+            <code>popover</code> attribute. The browser handles
+            visibility, z-index, light dismiss, keyboard navigation,
+            and focus management. The CSS handles animation. The
+            developer handles nothing, which is, when one thinks about
+            it, rather the ideal amount of responsibility for showing
+            and hiding a rectangle.</p>
+
+        <p>One rather suspects the library authors saw this coming.</p>
+
+        <blockquote>
+            <p>The Popover API: Baseline since April 2025. One attribute.
+                Zero JavaScript. Top layer, light dismiss, keyboard
+                handling, focus management. CSS Anchor Positioning: tie
+                any element to any other element. Automatic viewport
+                flipping. Zero scroll listeners. The browser now does
+                what 35 KB of library code used to do. Natively.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The specification, summarised:</strong></p>
+            <ul>
+                <li><strong>Popover API:</strong> <code>popover</code> attribute + <code>popovertarget</code>. Top layer, light dismiss, ESC, focus management. Three modes: auto, manual, hint</li>
+                <li><strong>:popover-open:</strong> CSS pseudo-class for state styling. <code>transition-behavior: allow-discrete</code> for fade animations</li>
+                <li><strong>Anchor Positioning:</strong> <code>anchor-name</code>, <code>position-anchor</code>, <code>anchor()</code> function. Chrome 125+, Safari 26+</li>
+                <li><strong>position-try-fallbacks:</strong> <code>flip-block</code>, <code>flip-inline</code>, or custom <code>@position-try</code> rules. Automatic viewport handling</li>
+                <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" target="_blank" rel="noopener">MDN: Popover API</a> &#x25A0;
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning" target="_blank" rel="noopener">MDN: Anchor Positioning</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,311 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Why the Cloud Is the Default &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="27% of cloud spend is wasted. $182 billion per year. 37signals saved $10M+ leaving AWS. Ahrefs: AWS would cost 11.3x more. 86% of CIOs plan repatriation. The cloud was never the only answer. It was the only answer nobody got fired for choosing.">
+{( endslot )}
+
+{( slot canonical )}/blog/why-the-cloud-is-the-default{( endslot )}
+
+{( slot og-title )}Why the Cloud Is the Default &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}27% of cloud spend wasted. $182B/year. 37signals saved $10M+. Ahrefs: 11.3x cheaper on-prem. 86% of CIOs plan repatriation. The axiom was not discovered. It was established. By a government memo and three poster-child migrations.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Why the Cloud Is the Default",
+    "datePublished": "2026-04-12",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/why-the-cloud-is-the-default",
+    "description": "27% of cloud spend wasted. 37signals saved $10M+. 86% of CIOs plan repatriation. The cloud was the only answer nobody got fired for choosing.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-12">12 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Why the Cloud Is the Default</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">cloud</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">devops</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>On Second Thought</em> &#x25A0; Episode 3</p>
+
+        <p>In February 2011, US Chief Information Officer Vivek Kundra
+            published the
+            <a href="https://obamawhitehouse.archives.gov/sites/default/files/omb/assets/egov_docs/federal-cloud-computing-strategy.pdf" target="_blank" rel="noopener">Federal Cloud Computing Strategy</a>
+            under the Obama administration's 25-Point IT Reform Plan. The
+            mandate was explicit: agencies must evaluate a cloud computing
+            option first, and come up with a damn good reason not to use it.</p>
+
+        <p>By 2014, Gartner's Magic Quadrant showed AWS with more than
+            five times the cloud IaaS compute capacity of the next fourteen
+            providers combined. By 2018, "on-premise" had become a dirty word
+            in enterprise IT. The axiom was established.</p>
+
+        <p>Not discovered. Not proven. Established. By a government memo,
+            an analyst report, and three poster-child migrations from
+            companies (Netflix, Spotify, Airbnb) whose elastic-demand
+            requirements bear no resemblance to the vast majority of software
+            running in production today.</p>
+
+        <h2>The Axiom</h2>
+
+        <p>"Of course we use the cloud. Everyone does." Nobody questions
+            this in a board meeting. Nobody loses a promotion for recommending
+            AWS. CTOs choose it not because it is optimal, but because it is
+            defensible. If something goes wrong with AWS, it is AWS's fault.
+            If something goes wrong with your own infrastructure, it is your
+            fault. This is not engineering. This is career insurance.</p>
+
+        <p><a href="https://cloudvisor.co/aws-credits-for-startups/" target="_blank" rel="noopener">AWS Activate</a>
+            offers startups $1,000 to $100,000 in free credits. Incubators
+            distribute them as standard onboarding. The credits expire after
+            twelve to twenty-four months. By then, your architecture is built
+            on AWS services, your team knows AWS tooling, your monitoring
+            assumes CloudWatch, and your deployment pipeline assumes
+            CodeDeploy. Migration cost exceeds staying cost. The business
+            model is identical to the IBM mainframe playbook of the 1970s:
+            make switching costs higher than the cost of staying. The
+            technology changed. The economics did not.</p>
+
+        <p><a href="https://hbr.org/2018/10/research-how-cloud-computing-changed-venture-capital" target="_blank" rel="noopener">Harvard Business School research</a>
+            documented the effect: after AWS launched in 2006, first-round
+            VC funding for cloud-benefiting startups dropped 20 per cent
+            because infrastructure costs fell dramatically. VCs responded
+            by funding more startups with less diligence. The cloud did not
+            just change infrastructure. It changed who gets funded. And it
+            locked in AWS as the default for an entire generation of
+            companies that never evaluated the alternative.</p>
+
+        <h2>The Cost</h2>
+
+        <p><a href="https://www.flexera.com/blog/finops/the-latest-cloud-computing-trends-flexera-2025-state-of-the-cloud-report/" target="_blank" rel="noopener">Flexera's 2025 State of the Cloud Report</a>
+            found that 27 per cent of all cloud spend is wasted. At $675
+            billion in global cloud infrastructure spending, that is $182
+            billion per year evaporating into unused resources,
+            over-provisioned instances, and forgotten development
+            environments.</p>
+
+        <svg viewBox="0 0 560 250" aria-label="Cloud waste and utilisation: 27% of spend wasted ($182B/year). Median EC2: 7-12% CPU. K8s: 10% CPU, 20% memory. You pay for 7-10x the compute you use." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cw-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cw-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 20px; font-weight: 700; }
+                .cw-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .cw-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .cw-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="cw-title" text-anchor="middle">The Waste</text>
+            <rect x="20" y="38" width="165" height="75" class="cw-box"/>
+            <text x="102" y="66" class="cw-num" text-anchor="middle">27%</text>
+            <text x="102" y="86" class="cw-item" text-anchor="middle">of cloud spend wasted</text>
+            <text x="102" y="102" class="cw-muted" text-anchor="middle">$182 billion per year</text>
+
+            <rect x="197" y="38" width="165" height="75" class="cw-box"/>
+            <text x="280" y="66" class="cw-num" text-anchor="middle">7-12%</text>
+            <text x="280" y="86" class="cw-item" text-anchor="middle">median EC2 CPU</text>
+            <text x="280" y="102" class="cw-muted" text-anchor="middle">paying for 10x the compute</text>
+
+            <rect x="375" y="38" width="165" height="75" class="cw-box"/>
+            <text x="457" y="66" class="cw-num" text-anchor="middle">10%</text>
+            <text x="457" y="86" class="cw-item" text-anchor="middle">K8s cluster CPU</text>
+            <text x="457" y="102" class="cw-muted" text-anchor="middle">20% memory utilisation</text>
+
+            <text x="280" y="140" class="cw-title" text-anchor="middle">The Exits</text>
+            <rect x="20" y="152" width="125" height="55" class="cw-box"/>
+            <text x="82" y="172" class="cw-num" text-anchor="middle">$10M+</text>
+            <text x="82" y="188" class="cw-item" text-anchor="middle">37signals (5yr)</text>
+            <text x="82" y="200" class="cw-muted" text-anchor="middle">left AWS 2023</text>
+
+            <rect x="157" y="152" width="125" height="55" class="cw-box"/>
+            <text x="220" y="172" class="cw-num" text-anchor="middle">$75M</text>
+            <text x="220" y="188" class="cw-item" text-anchor="middle">Dropbox (2yr)</text>
+            <text x="220" y="200" class="cw-muted" text-anchor="middle">90% off AWS</text>
+
+            <rect x="295" y="152" width="125" height="55" class="cw-box"/>
+            <text x="357" y="172" class="cw-num" text-anchor="middle">11.3x</text>
+            <text x="357" y="188" class="cw-item" text-anchor="middle">Ahrefs cheaper</text>
+            <text x="357" y="200" class="cw-muted" text-anchor="middle">850 servers, never cloud</text>
+
+            <rect x="432" y="152" width="108" height="55" class="cw-box"/>
+            <text x="486" y="172" class="cw-num" text-anchor="middle">2.5x</text>
+            <text x="486" y="188" class="cw-item" text-anchor="middle">GEICO over budget</text>
+            <text x="486" y="200" class="cw-muted" text-anchor="middle">repatriating 50%</text>
+
+            <text x="280" y="235" class="cw-muted" text-anchor="middle">In no other industry would 7-12% utilisation at premium pricing be considered acceptable.</text>
+        </svg>
+
+        <p><a href="https://world.hey.com/dhh/our-cloud-exit-savings-will-now-top-ten-million-over-five-years-c7d9b5bd" target="_blank" rel="noopener">37signals</a>,
+            the company behind Basecamp and HEY, left AWS in 2023. The
+            hardware investment: approximately $700,000 in Dell servers,
+            fully recouped during the first year. Storage: 10 petabytes
+            moved from S3 to Pure Storage.
+            <a href="https://www.theregister.com/2025/05/09/37signals_cloud_repatriation_storage_savings/" target="_blank" rel="noopener">Annual savings: $2 million</a>.
+            Five-year projection, revised upward from $7 million: over $10
+            million. With faster hardware and considerably more storage. AWS
+            reportedly comped a quarter-million-dollar egress bill on the
+            way out. One does appreciate the parting gift.</p>
+
+        <p><a href="https://www.geekwire.com/2018/dropbox-saved-almost-75-million-two-years-building-tech-infrastructure/" target="_blank" rel="noopener">Dropbox</a>
+            moved 90 per cent of its customer data off AWS to custom
+            colocation in 2015 and 2016. Investment: $53 million. Savings:
+            $75 million over two years. The return on investment was achieved
+            before the infrastructure was fully operational.</p>
+
+        <p><a href="https://blog.vonng.com/en/cloud/ahrefs-saving/" target="_blank" rel="noopener">Ahrefs</a>,
+            the SEO analytics company, never went to cloud. They run 850
+            servers in a Singapore colocation. Monthly cost per server:
+            $1,550 on-premises versus $17,557 for the AWS equivalent. AWS
+            would cost 11.3 times more. Ahrefs' total revenue for 2020 to
+            2022 was $257.5 million. The cloud would not have reduced their
+            margin. It would have eliminated their company.</p>
+
+        <p><a href="https://www.thestack.technology/warren-buffetts-geico-repatriates-work-from-the-cloud-continues-ambitious-infrastructure-overhaul/" target="_blank" rel="noopener">GEICO</a>,
+            Warren Buffett's insurance subsidiary, spent a decade migrating
+            over 600 applications to Microsoft Azure. Costs ballooned to 2.5
+            times expectations. In 2024, they announced repatriation of at
+            least 50 per cent of workloads. A decade to get in, half a
+            decade to get out.</p>
+
+        <h2>The Sovereignty Problem</h2>
+
+        <p>The
+            <a href="https://wire.com/en/blog/cloud-act-eu-data-sovereignty" target="_blank" rel="noopener">CLOUD Act</a>,
+            signed into US federal law in March 2018, allows US law
+            enforcement to compel American technology companies to hand over
+            data stored anywhere in the world. If your data is hosted in
+            Frankfurt or Paris, and the infrastructure is managed by AWS,
+            Azure, or Google Cloud, it can legally be accessed by US
+            authorities. Your Frankfurt data centre is legally a US data
+            centre if AWS runs it. This directly conflicts with GDPR
+            Article 48.</p>
+
+        <p>Europe's response was
+            <a href="https://euro-stack.com/blog/2025/2/gaia-x-failure" target="_blank" rel="noopener">Gaia-X</a>,
+            a federated cloud initiative launched six years ago. US
+            hyperscalers lobbied to be included. Once inside, they, in the
+            words of Nextcloud founder Frank Karlitschek, "flooded it with
+            documents and regulations." Founding member Scaleway withdrew.
+            Karlitschek called it a "paper monster." The initiative failed.
+            The data stayed American.</p>
+
+        <p>The
+            <a href="https://www.unbyte.de/en/2025/05/15/cloud-repatriation-2025-why-more-and-more-companies-are-going-back-to-their-own-data-center/" target="_blank" rel="noopener">NIS2 Directive</a>
+            and DORA now require critical-sector organisations to assess
+            cloud dependency risk. France's "Doctrine Cloud" mandates
+            government data stays in French-controlled facilities. The
+            regulatory environment is turning. The infrastructure, however,
+            remains American.</p>
+
+        <h2>The $1,000 Test</h2>
+
+        <svg viewBox="0 0 560 200" aria-label="The $1,000 test: AWS gives 4 mid-tier instances with no bandwidth. Hetzner gives 112 cores, 896 GB RAM, 140 TB bandwidth. 76% better performance, 11x more IOPS." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tt-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .tt-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 16px; font-weight: 700; }
+                .tt-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .tt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tt-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tt-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="tt-title" text-anchor="middle">$1,000/month: What You Get</text>
+            <!-- AWS -->
+            <rect x="20" y="38" width="250" height="105" class="tt-box"/>
+            <text x="145" y="58" class="tt-head" text-anchor="middle">AWS</text>
+            <text x="145" y="80" class="tt-num" text-anchor="middle">4 instances</text>
+            <text x="145" y="98" class="tt-item" text-anchor="middle">32 vCPU, 64 GB RAM total</text>
+            <text x="145" y="114" class="tt-item" text-anchor="middle">No bandwidth budget</text>
+            <text x="145" y="130" class="tt-muted" text-anchor="middle">Egress, storage, monitoring: extra</text>
+            <!-- Hetzner -->
+            <rect x="290" y="38" width="250" height="105" class="tt-box-accent"/>
+            <text x="415" y="58" class="tt-head" text-anchor="middle">Hetzner</text>
+            <text x="415" y="80" class="tt-num" text-anchor="middle">7 dedicated servers</text>
+            <text x="415" y="98" class="tt-item" text-anchor="middle">112 cores, 896 GB RAM</text>
+            <text x="415" y="114" class="tt-item" text-anchor="middle">140 TB bandwidth included</text>
+            <text x="415" y="130" class="tt-muted" text-anchor="middle">76% better perf, 11x IOPS</text>
+            <!-- Bottom -->
+            <text x="280" y="168" class="tt-muted" text-anchor="middle">The difference is not a rounding error. It is a factor of seven to ten.</text>
+            <text x="280" y="186" class="tt-muted" text-anchor="middle">For workloads that do not need elastic scaling (which is most of them).</text>
+        </svg>
+
+        <p>For $1,000 per month on AWS, you get approximately four
+            mid-tier instances (8 vCPU, 16 GB each) with no bandwidth
+            budget. Egress costs extra. Storage costs extra. Monitoring
+            costs extra.</p>
+
+        <p>For $1,000 per month on
+            <a href="https://learn.umh.app/blog/aws-and-azure-are-at-least-4x-10x-more-expensive-than-hetzner/" target="_blank" rel="noopener">Hetzner</a>,
+            you get seven dedicated servers. 16 cores each. 128 GB RAM
+            each. 20 TB bandwidth included per server. Totals: 112 cores,
+            896 GB RAM, 140 TB bandwidth. Independent benchmarks show
+            76 per cent better multi-core performance and 11 times more
+            IOPS.</p>
+
+        <p>The price difference is not a rounding error. It is a factor
+            of seven to ten. For workloads that do not require elastic
+            scaling (which is most of them), the cloud is not a premium
+            for convenience. It is a tax on the assumption that you had
+            no other choice.</p>
+
+        <h2>The Question</h2>
+
+        <p><a href="https://www.eetimes.eu/cloud-repatriation-on-the-rise-83-of-cios-plan-workload-shifts-in-2024/" target="_blank" rel="noopener">86 per cent of CIOs</a>
+            now plan to move some workloads back from public cloud. The
+            highest figure ever recorded, up from 43 per cent in late 2020.
+            The axiom is cracking.</p>
+
+        <p>Modern servers handle 500,000 HTTP requests per second.
+            <a href="https://oneuptime.com/blog/post/2025-12-12-one-big-server-is-enough/view" target="_blank" rel="noopener">PostgreSQL delivers 70,000 IOPS</a>.
+            A single well-configured machine handles 50,000 concurrent
+            users with proper caching. The vast majority of software in
+            production does not need elastic scale. It needs reliability,
+            predictable costs, and control over its own data.</p>
+
+        <p>The cloud was never the only answer. It was the only answer
+            nobody got fired for choosing. The career insurance premium
+            was paid by every company that did not question the default.</p>
+
+        <p>On second thought: what if the default is wrong?</p>
+
+        <blockquote>
+            <p>27% of cloud spend wasted ($182B/year). Median EC2:
+                7-12% CPU. 37signals saved $10M+ leaving AWS. Ahrefs:
+                11.3x cheaper on-prem. GEICO: 2.5x over budget,
+                repatriating. 86% of CIOs plan workload repatriation.
+                The CLOUD Act makes your Frankfurt data centre legally
+                American. The cloud was the only answer nobody got fired
+                for choosing. What if the default is wrong?</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The economics, itemised:</strong></p>
+            <ul>
+                <li><strong>Waste:</strong> 27% of cloud spend ($182B/year). EC2: 7-12% CPU. K8s: 10% CPU, 20% memory</li>
+                <li><strong>37signals:</strong> $10M+ saved over 5 years. $700K hardware, recouped year one</li>
+                <li><strong>Dropbox:</strong> $75M saved in 2 years. 90% off AWS</li>
+                <li><strong>Ahrefs:</strong> 850 servers, 11.3x cheaper than AWS. Cloud would have eliminated the company</li>
+                <li><strong>Sovereignty:</strong> CLOUD Act (2018): US law accesses data on US providers worldwide. Gaia-X failed</li>
+                <li><strong>$1,000 test:</strong> AWS: 4 instances. Hetzner: 112 cores, 896 GB RAM, 140 TB bandwidth</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,338 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Philosophy &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 1978, Doug McIlroy wrote four sentences. They have outlasted every framework and every architectural manifesto since. Eleven episodes in. This is why.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-unix-philosophy{( endslot )}
+
+{( slot og-title )}The Philosophy &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Make each program do one thing well. Expect the output to become the input to another. In 1978, McIlroy wrote four sentences. They have outlasted everything since. This is why the series is called what it is called.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Philosophy",
+    "datePublished": "2026-04-06",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-unix-philosophy",
+    "description": "In 1978, Doug McIlroy wrote four sentences. They have outlasted every framework since. Eleven episodes in. This is why.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-06">6 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Philosophy</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 11</p>
+
+        <p>In 1978, Doug McIlroy, head of the Bell Labs Computing Sciences
+            Research Centre and inventor of the
+            <a href="/blog/the-pipe">Unix pipe</a>, wrote four sentences.
+            They have outlasted every framework, every methodology, and
+            every architectural manifesto published since. Rather impressive
+            for a paragraph.</p>
+
+        <blockquote>
+            <p>"Make each program do one thing well. To do a new job, build
+                afresh rather than complicate old programs by adding new
+                'features'."</p>
+            <p>"Expect the output of every program to become the input to
+                another, as yet unknown, program."</p>
+            <p>"Design and build software, even operating systems, to be
+                tried early, ideally within weeks."</p>
+            <p>"Use tools in preference to unskilled help to lighten a
+                programming task."</p>
+        </blockquote>
+
+        <p>Eleven episodes into this series, and one does feel it is rather
+            time to explain why it is called what it is called.</p>
+
+        <h2>The Principles</h2>
+
+        <p><strong>Do one thing and do it well.</strong>
+            <code>grep</code> searches. <code>sort</code> sorts.
+            <code>awk</code> transforms. <code>cut</code> extracts. None
+            of them does the other's job. None of them needs to. Composition
+            replaces integration: small tools, connected by text streams,
+            solving problems their authors never anticipated. Rob Pike and
+            Brian Kernighan wrote in 1984: "The power of a system comes more
+            from the relationships among programs than from the programs
+            themselves." The pipe is not a feature. It is the architecture.</p>
+
+        <p><strong>Text as the universal interface.</strong> Not JSON. Not
+            Protocol Buffers. Not YAML with its rather creative
+            interpretation of the word "NO" (which YAML helpfully coerces to
+            a boolean <code>false</code>, because of course it does). Plain
+            text, readable by humans and machines alike, piped from one
+            process to the next. Peter Salus summarised McIlroy's philosophy
+            in three lines: "Write programs that do one thing and do it well.
+            Write programs to work together. Write programs to handle text
+            streams, because that is a universal interface." A format that
+            has not required a version number in fifty years.</p>
+
+        <p><strong>Silence is golden.</strong> A successful command returns
+            nothing. Only failure speaks. The exit code carries the meaning:
+            zero for success, non-zero for failure. In a world of verbose
+            logging frameworks, notification services, and dashboard metrics
+            for metrics, one does rather miss the quiet confidence of
+            <code>$? = 0</code>.</p>
+
+        <p><strong>The filesystem as organisational principle.</strong>
+            Directories for structure, files for content, paths for
+            relationships, permissions for access control. No schema
+            registry. No configuration server. The hierarchy was always
+            there. <code>chmod</code> predates your IAM provider by four
+            decades. <a href="/blog/by-design-csv">Last week's episode on
+            CSV</a> made the case: the filesystem handles hierarchy so the
+            format does not need to.</p>
+
+        <p><strong>Fail noisily.</strong> Eric Raymond's Rule of Repair:
+            when you must fail, fail in a way that is easy to diagnose. A
+            Unix tool that encounters an error writes to stderr and exits
+            with a non-zero code. It does not return HTTP 200 with an error
+            buried in a JSON body. It does not silently swallow exceptions.
+            It fails, clearly, and lets the operator decide what to do.
+            Quite the contrast to
+            <a href="/blog/graphql">modern systems</a> where "everything is
+            fine" is the default response to catastrophe.</p>
+
+        <svg viewBox="0 0 560 260" aria-label="The five Unix principles: do one thing well, text as universal interface, silence is golden, filesystem as organisation, fail noisily. Each with an example tool." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .up-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .up-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .up-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .up-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .up-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .up-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="up-title" text-anchor="middle">The Unix Philosophy</text>
+            <!-- Row 1 -->
+            <rect x="20" y="38" width="165" height="55" class="up-box"/>
+            <text x="102" y="56" class="up-head" text-anchor="middle">Do one thing well</text>
+            <text x="102" y="72" class="up-code" text-anchor="middle">grep | sort | awk</text>
+            <text x="102" y="86" class="up-muted" text-anchor="middle">compose, don't integrate</text>
+
+            <rect x="197" y="38" width="165" height="55" class="up-box"/>
+            <text x="280" y="56" class="up-head" text-anchor="middle">Text as interface</text>
+            <text x="280" y="72" class="up-code" text-anchor="middle">stdin | stdout</text>
+            <text x="280" y="86" class="up-muted" text-anchor="middle">no version number needed</text>
+
+            <rect x="375" y="38" width="165" height="55" class="up-box"/>
+            <text x="457" y="56" class="up-head" text-anchor="middle">Silence is golden</text>
+            <text x="457" y="72" class="up-code" text-anchor="middle">$? = 0</text>
+            <text x="457" y="86" class="up-muted" text-anchor="middle">only failure speaks</text>
+            <!-- Row 2 -->
+            <rect x="20" y="107" width="250" height="55" class="up-box"/>
+            <text x="145" y="125" class="up-head" text-anchor="middle">Filesystem as organisation</text>
+            <text x="145" y="141" class="up-code" text-anchor="middle">/etc  /usr/local  /var/log</text>
+            <text x="145" y="155" class="up-muted" text-anchor="middle">chmod predates your IAM by 40 years</text>
+
+            <rect x="290" y="107" width="250" height="55" class="up-box"/>
+            <text x="415" y="125" class="up-head" text-anchor="middle">Fail noisily</text>
+            <text x="415" y="141" class="up-code" text-anchor="middle">stderr + exit 1</text>
+            <text x="415" y="155" class="up-muted" text-anchor="middle">not HTTP 200 with error in JSON</text>
+            <!-- Quotes -->
+            <text x="280" y="190" class="up-muted" text-anchor="middle">McIlroy (1978): "Make each program do one thing well."</text>
+            <text x="280" y="208" class="up-muted" text-anchor="middle">Pike (1984): "The power comes from the relationships among programs."</text>
+            <text x="280" y="226" class="up-muted" text-anchor="middle">Thompson: "When in doubt, use brute force."</text>
+            <text x="280" y="250" class="up-muted" text-anchor="middle">Ritchie: "UNIX is simple, but you have to be a genius to understand the simplicity."</text>
+        </svg>
+
+        <h2>The Proof</h2>
+
+        <p><strong>FreeBSD</strong> embodies these principles in its
+            architecture more faithfully than perhaps any other operating
+            system in active development. The base system is one coherent
+            unit: kernel, userland, and documentation, all developed together
+            in a single source tree. Third-party software lives strictly in
+            <code>/usr/local/</code>, with its own
+            <code>/usr/local/etc/</code> for configuration. The separation is
+            clean and inviolable. Each service is a small shell script in
+            <a href="https://docs.freebsd.org/en/articles/rc-scripting/" target="_blank" rel="noopener"><code>rc.d</code></a>,
+            using shared functions from <code>rc.subr</code>, inspectable
+            and composable. One package system: <code>pkg</code>. One ports
+            tree. One source of truth. FreeBSD's man pages, written in
+            <code>mdoc(7)</code> semantic markup, are widely regarded as
+            among the most comprehensive documentation in the industry.
+            Documentation is not an afterthought. It is a first-class
+            artefact.</p>
+
+        <p><strong>macOS</strong> has been
+            <a href="https://www.opengroup.org/openbrand/register/" target="_blank" rel="noopener">certified UNIX by The Open Group</a>
+            since October 2007. Every Mac ships with a POSIX-compliant
+            userland: <code>sh</code>, <code>grep</code>, <code>awk</code>,
+            <code>sed</code>, <code>make</code>, and the rest. macOS 26
+            Tahoe holds current certification for both Intel and Apple
+            Silicon. The tools are there. Most users never open Terminal.
+            One does wonder what they think the machine is for.</p>
+
+        <p><strong>OpenBSD</strong> took "do one thing well" to its logical
+            extreme: build the most secure general-purpose operating system
+            ever built, because it refused to do anything else first.
+            <a href="https://www.openbsd.org/" target="_blank" rel="noopener">Two remote holes in the default install</a>
+            in nearly thirty years. That is not a feature list. That is a
+            philosophy applied with discipline.</p>
+
+        <p><strong>NetBSD</strong> applies the same principles to portability:
+            one codebase running on over sixty hardware architectures, from
+            mainframes to toasters. The code is clean enough to port because
+            the abstractions are honest enough to adapt.</p>
+
+        <p><strong>illumos</strong>, the open-source continuation of Sun's
+            OpenSolaris, carries the SVR4 Unix heritage forward. ZFS, DTrace,
+            and Zones were born here: filesystem integrity, dynamic tracing,
+            and operating system virtualisation, each doing one thing, each
+            doing it well.</p>
+
+        <svg viewBox="0 0 560 200" aria-label="Unix systems compared: FreeBSD (coherent base, rc.d, one pkg system), macOS (certified UNIX since 2007), OpenBSD (2 remote holes in 30 years), NetBSD (60+ architectures), illumos (ZFS, DTrace, Zones)." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sx-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .sx-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .sx-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .sx-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .sx-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .sx-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="sx-title" text-anchor="middle">Systems That Follow the Philosophy</text>
+            <rect x="20" y="38" width="165" height="65" class="sx-box-accent"/>
+            <text x="102" y="56" class="sx-head" text-anchor="middle">FreeBSD</text>
+            <text x="102" y="72" class="sx-item" text-anchor="middle">coherent base, rc.d</text>
+            <text x="102" y="86" class="sx-item" text-anchor="middle">one pkg, one ports tree</text>
+            <text x="102" y="98" class="sx-muted" text-anchor="middle">30+ years source compat</text>
+
+            <rect x="197" y="38" width="165" height="65" class="sx-box"/>
+            <text x="280" y="56" class="sx-head" text-anchor="middle">macOS</text>
+            <text x="280" y="72" class="sx-item" text-anchor="middle">certified UNIX since 2007</text>
+            <text x="280" y="86" class="sx-item" text-anchor="middle">POSIX userland ships</text>
+            <text x="280" y="98" class="sx-muted" text-anchor="middle">Intel + Apple Silicon</text>
+
+            <rect x="375" y="38" width="165" height="65" class="sx-box"/>
+            <text x="457" y="56" class="sx-head" text-anchor="middle">OpenBSD</text>
+            <text x="457" y="72" class="sx-item" text-anchor="middle">2 remote holes in 30 years</text>
+            <text x="457" y="86" class="sx-item" text-anchor="middle">security through simplicity</text>
+            <text x="457" y="98" class="sx-muted" text-anchor="middle">radical discipline</text>
+
+            <rect x="20" y="117" width="250" height="45" class="sx-box"/>
+            <text x="145" y="135" class="sx-head" text-anchor="middle">NetBSD</text>
+            <text x="145" y="151" class="sx-item" text-anchor="middle">60+ architectures, one codebase</text>
+
+            <rect x="290" y="117" width="250" height="45" class="sx-box"/>
+            <text x="415" y="135" class="sx-head" text-anchor="middle">illumos</text>
+            <text x="415" y="151" class="sx-item" text-anchor="middle">ZFS, DTrace, Zones (SVR4 heritage)</text>
+
+            <text x="280" y="188" class="sx-muted" text-anchor="middle">Each system follows the philosophy. Each has outlasted the frameworks that ignored it.</text>
+        </svg>
+
+        <h2>The Departure</h2>
+
+        <p>Linux is not UNIX. It is Unix-like. The Linux kernel itself is
+            remarkably well-disciplined: Linus Torvalds' rule, "We don't
+            break userspace," has held for decades. The kernel syscall
+            interface is stable, predictable, and trustworthy.</p>
+
+        <p>But above the kernel, many distributions are quietly walking
+            away from the principles that made Unix what it is.</p>
+
+        <p><a href="https://0pointer.de/blog/projects/the-biggest-myths.html" target="_blank" rel="noopener">systemd</a>
+            has absorbed init, logging (journald), DNS resolution (resolved),
+            NTP (timesyncd), network configuration (networkd), device
+            management (udevd), and an EFI boot manager into a single
+            project. Its creator, Lennart Poettering, openly states:
+            "systemd's sources do not contain a single line of code
+            originating from original UNIX." He describes this as evolution.
+            Others describe it differently.</p>
+
+        <p>Logging moved from plain text in <code>/var/log/</code> to
+            binary journals. One cannot <code>grep</code> a binary file.
+            One cannot <code>tail</code> it. One cannot pipe it to
+            <code>awk</code>. The universal interface was replaced with a
+            proprietary query tool. Users
+            <a href="https://sematext.com/blog/journald-logging-tutorial/" target="_blank" rel="noopener">report 40x slower query performance</a>
+            compared to <code>grep</code> on plain text. One does rather
+            find that instructive.</p>
+
+        <p>Package management fragmented: apt, snap, flatpak, pip, npm,
+            all managing overlapping software on the same machine. Compare
+            FreeBSD: one package system, one ports tree, one source of
+            truth.</p>
+
+        <p><a href="https://davmac.wordpress.com/2015/01/27/the-systemd-debacle/" target="_blank" rel="noopener">John Goerzen</a>,
+            a long-time Debian developer, put it plainly: "I used to be able
+            to say Linux was clean, logical, well put-together, and organised.
+            I cannot really say this anymore." The
+            <a href="https://www.devuan.org/" target="_blank" rel="noopener">Devuan project</a>
+            forked Debian entirely to preserve "Init Freedom" without systemd
+            entanglement. They described systemd as "an intrusive monolith."
+            Rather un-Unix, that.</p>
+
+        <h2>The Point</h2>
+
+        <p>The most reliable systems in computing follow these principles.
+            <a href="/blog/by-design-sqlite">SQLite</a>: one file, one job,
+            backwards-compatible since 2004.
+            <a href="/blog/by-design-csv">CSV</a>: one format, no opinion,
+            no runtime.
+            <a href="/blog/technical-beauty-zfs">ZFS</a>: one filesystem,
+            complete integrity, snapshots and checksums built in.
+            <a href="/blog/technical-beauty-cron">cron</a>: one scheduler,
+            fifty years, never broke. The pattern is not coincidence. It is
+            philosophy, applied with patience.</p>
+
+        <p>Rob Pike's Rule 5: "Data dominates. If you have chosen the right
+            data structures and organised things well, the algorithms will
+            almost always be self-evident."</p>
+
+        <p>Dennis Ritchie said it best: "UNIX is basically a simple
+            operating system, but you have to be a genius to understand the
+            simplicity."</p>
+
+        <p>Eleven episodes in. This is why.</p>
+
+        <blockquote>
+            <p>McIlroy (1978): "Make each program do one thing well."
+                Pike (1984): "The power comes from the relationships among
+                programs." Ritchie: "UNIX is simple, but you have to be a
+                genius to understand the simplicity." FreeBSD, macOS,
+                OpenBSD, NetBSD, illumos: the systems that follow the
+                philosophy outlast the systems that ignore it. Every time.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The philosophy, attributed:</strong></p>
+            <ul>
+                <li><strong>McIlroy (1978):</strong> "Do one thing well. Expect output to become input."</li>
+                <li><strong>Pike (1984):</strong> "The power comes from the relationships among programs."</li>
+                <li><strong>Thompson:</strong> "When in doubt, use brute force."</li>
+                <li><strong>Ritchie:</strong> "UNIX is simple, but you have to be a genius to understand the simplicity."</li>
+                <li><strong>Dijkstra:</strong> "Simplicity is a prerequisite for reliability."</li>
+                <li><a href="http://www.catb.org/esr/writings/taoup/html/" target="_blank" rel="noopener">Raymond: The Art of Unix Programming</a> &#x25A0;
+                    <a href="https://www.opengroup.org/openbrand/register/" target="_blank" rel="noopener">The Open Group UNIX Register</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

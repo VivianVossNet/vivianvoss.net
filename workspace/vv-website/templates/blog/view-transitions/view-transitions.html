@@ -1,0 +1,301 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Page Transition You Never Had to Build &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="We shipped 400KB of JavaScript so a heading could fade whilst the URL changed. The browser does it now. In CSS. Three lines. Zero JavaScript. Progressive enhancement built in.">
+{( endslot )}
+
+{( slot canonical )}/blog/view-transitions{( endslot )}
+
+{( slot og-title )}The Page Transition You Never Had to Build &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}We need an SPA because users expect smooth transitions. The browser does it now. Three lines of CSS. Zero JavaScript. Barba.js: 7.5KB. Framer Motion: 32KB. View Transition API: 0KB. Because it is the browser.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Page Transition You Never Had to Build",
+    "datePublished": "2026-04-08",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/view-transitions",
+    "description": "The browser does page transitions now. Three lines of CSS. Zero JavaScript. Barba.js: 7.5KB. Framer Motion: 32KB. View Transition API: 0KB.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-08">8 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Page Transition You Never Had to Build</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">css</span>
+            <span class="vv-pill">html</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 11</p>
+
+        <p>"We need a single-page application because users expect smooth
+            transitions between pages."</p>
+
+        <p>One has heard this argument rather a lot over the past decade.
+            It justified React. It justified Vue Router. It justified
+            <a href="https://bundlephobia.com/package/framer-motion" target="_blank" rel="noopener">Framer Motion</a>
+            (32 KB minified). It justified
+            <a href="https://bundlephobia.com/package/@barba/core" target="_blank" rel="noopener">Barba.js</a>.
+            It justified entire application architectures built around the
+            premise that clicking a link should not, under any circumstances,
+            feel like clicking a link.</p>
+
+        <p>400 KB of JavaScript so that a heading could fade whilst the URL
+            changed. Marvellous.</p>
+
+        <p>The browser does it now. In CSS. Three lines.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>Both pages include this CSS:</p>
+
+        <pre><code>@view-transition {
+  navigation: auto;
+}</code></pre>
+
+        <p>That is the entire opt-in. Click a link that navigates to
+            another page on the same origin. The browser takes a screenshot
+            of the old page, loads the new page, takes a screenshot of the
+            new page, and cross-fades between them. No JavaScript. No
+            framework. No hydration. No virtual DOM diffing the entire
+            document tree so that a title can slide thirty pixels to the
+            left.</p>
+
+        <p>The default transition is a cross-fade. It works immediately.
+            For many sites, this is sufficient, and one does find sufficiency
+            rather underrated.</p>
+
+        <h2>Named Transitions</h2>
+
+        <p>Want a specific element to animate from its old position to its
+            new one? One CSS property:</p>
+
+        <pre><code>h1 { view-transition-name: heading; }</code></pre>
+
+        <p>The same <code>view-transition-name</code> on the corresponding
+            element on both pages. The browser snapshots the old position,
+            snapshots the new position, and animates between them. The
+            element does not need to be the same DOM node. It does not need
+            to be the same component. It does not need to exist in the same
+            JavaScript context. It merely needs the same name.</p>
+
+        <p>This is the key insight: the browser matches elements across
+            pages by name, not by identity. Two entirely separate HTML
+            documents, served by any backend in any language, connected only
+            by a CSS property. The elegance is rather difficult to
+            overstate.</p>
+
+        <pre><code>h1       { view-transition-name: heading; }
+.hero    { view-transition-name: hero; }
+nav      { view-transition-name: navigation; }
+.sidebar { view-transition-name: sidebar; }</code></pre>
+
+        <p>Each named element transitions independently. Unnamed elements
+            participate in the default cross-fade.</p>
+
+        <h2>Custom Animations</h2>
+
+        <p>The
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API" target="_blank" rel="noopener">API</a>
+            exposes CSS pseudo-elements for both the old and new states:</p>
+
+        <pre><code>::view-transition-old(heading) {
+  animation: 0.3s ease-out slide-out;
+}
+::view-transition-new(heading) {
+  animation: 0.3s ease-in slide-in;
+}</code></pre>
+
+        <p>The old state and the new state are separate snapshots rendered
+            as replaced elements. You animate them independently. The browser
+            composites them. The result is buttery smooth because it happens
+            in the compositor thread, not in JavaScript. You can slide, scale,
+            rotate, clip, or apply any CSS animation you would normally use.
+            The full power of CSS keyframes is available. No library API to
+            learn. No React hooks to chain. Just CSS.</p>
+
+        <h2>The Cost We Paid</h2>
+
+        <p>Let us be honest about what the industry traded for smooth page
+            transitions.</p>
+
+        <p>We abandoned server-rendered HTML. We shipped 300 KB JavaScript
+            runtimes to the client. We broke the back button and spent
+            engineering hours rebuilding it in JavaScript. We reinvented
+            routing in userland because the browser's native navigation was
+            "not smooth enough." We lost native browser caching. We invented
+            <a href="/blog/hydration">hydration</a> to fix the problem we
+            created by removing HTML in the first place. We built entire
+            state management libraries (Redux, Zustand, Jotai, Pinia, the
+            list grows quarterly) so the client could remember what the
+            server already knew.</p>
+
+        <p>We broke accessibility. Screen readers that worked perfectly
+            with server-rendered pages now had to contend with
+            JavaScript-mutated DOMs, focus management nightmares, and route
+            changes that announced nothing. We broke SEO. Google had to
+            build a headless Chrome renderer just to index SPA content. We
+            broke the browser's loading indicator. Users no longer knew
+            whether a page was loading or frozen. So we built skeleton
+            screens to simulate the loading indicator we had removed.</p>
+
+        <p>All so a heading could slide.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="What page transitions used to cost: Barba.js 7.5KB, Framer Motion 32KB, SPA router (entire framework), View Transition API: 0KB. The browser is the runtime you already shipped." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .vt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .vt-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .vt-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .vt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .vt-bar { fill: var(--border); rx: 2; }
+                .vt-bar-accent { fill: var(--accent); rx: 2; }
+            </style>
+            <text x="280" y="22" class="vt-title" text-anchor="middle">What You Ship for Page Transitions</text>
+            <text x="20" y="55" class="vt-item">Barba.js</text><rect x="110" y="43" width="107" height="16" class="vt-bar"/><text x="224" y="55" class="vt-head">7.5 KB</text><text x="275" y="55" class="vt-muted">+ JS required</text>
+            <text x="20" y="83" class="vt-item">Framer Motion</text><rect x="110" y="71" width="229" height="16" class="vt-bar"/><text x="346" y="83" class="vt-head">32 KB</text><text x="385" y="83" class="vt-muted">+ React required</text>
+            <text x="20" y="111" class="vt-item">SPA router</text><rect x="110" y="99" width="400" height="16" class="vt-bar"/><text x="517" y="111" class="vt-head">300+ KB</text>
+            <text x="20" y="145" class="vt-item">View Transitions</text><rect x="110" y="133" width="4" height="16" class="vt-bar-accent"/><text x="122" y="145" class="vt-head">0 KB</text><text x="155" y="145" class="vt-muted">CSS only. No JS. Progressive enhancement.</text>
+            <text x="280" y="185" class="vt-muted" text-anchor="middle">Zero kilobytes. Because it is the browser.</text>
+            <text x="280" y="203" class="vt-muted" text-anchor="middle">The runtime you already shipped.</text>
+        </svg>
+
+        <h2>Browser Support</h2>
+
+        <p>Here is where honesty matters.</p>
+
+        <p><strong>Full
+            <a href="https://developer.chrome.com/docs/web-platform/view-transitions/cross-document" target="_blank" rel="noopener">cross-document support</a>:</strong>
+            Chrome 126+, Edge 126+, Safari 18.2+ (including iOS Safari),
+            Opera 112+, Samsung Internet 29+.</p>
+
+        <p><strong>Partial:</strong>
+            <a href="https://caniuse.com/view-transitions" target="_blank" rel="noopener">Firefox 146+</a>
+            supports same-document view transitions, but cross-document
+            transitions remain behind a flag as of April 2026.</p>
+
+        <p><strong>Global coverage:</strong> 87.82 per cent (CanIUse,
+            April 2026). High, but not universal. Firefox's absence from
+            the cross-document specification is notable.</p>
+
+        <svg viewBox="0 0 560 180" aria-label="Browser support: Chrome 126+, Edge 126+, Safari 18.2+ full support. Firefox partial. 87.82% global coverage. Unsupported browsers see a normal page load: zero cost fallback." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bs-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .bs-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .bs-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .bs-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .bs-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 18px; font-weight: 700; }
+                .bs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .bs-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .bs-yes { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .bs-partial { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+            </style>
+            <text x="280" y="22" class="bs-title" text-anchor="middle">Cross-Document View Transitions: Browser Support</text>
+            <rect x="20" y="38" width="100" height="40" class="bs-box-accent"/><text x="70" y="56" class="bs-head" text-anchor="middle">Chrome 126+</text><text x="70" y="72" class="bs-yes" text-anchor="middle">full</text>
+            <rect x="130" y="38" width="100" height="40" class="bs-box-accent"/><text x="180" y="56" class="bs-head" text-anchor="middle">Edge 126+</text><text x="180" y="72" class="bs-yes" text-anchor="middle">full</text>
+            <rect x="240" y="38" width="100" height="40" class="bs-box-accent"/><text x="290" y="56" class="bs-head" text-anchor="middle">Safari 18.2+</text><text x="290" y="72" class="bs-yes" text-anchor="middle">full</text>
+            <rect x="350" y="38" width="100" height="40" class="bs-box"/><text x="400" y="56" class="bs-head" text-anchor="middle">Firefox 146+</text><text x="400" y="72" class="bs-partial" text-anchor="middle">partial</text>
+            <rect x="460" y="38" width="80" height="40" class="bs-box-accent"/><text x="500" y="56" class="bs-num" text-anchor="middle">87.8%</text><text x="500" y="72" class="bs-muted" text-anchor="middle">global</text>
+            <text x="280" y="108" class="bs-muted" text-anchor="middle">Unsupported browsers see a normal page load. No error. No fallback code. No polyfill.</text>
+            <text x="280" y="126" class="bs-muted" text-anchor="middle">The feature costs nothing when absent and delights when present.</text>
+            <text x="280" y="148" class="bs-muted" text-anchor="middle">Compare: SPA JavaScript fails to load = blank white page.</text>
+            <text x="280" y="166" class="bs-muted" text-anchor="middle">View Transition fails = normal page load. One does note the asymmetry.</text>
+        </svg>
+
+        <p>And here is why the gap does not matter as much as you think:
+            for browsers that do not support the API, nothing breaks. The
+            user sees a normal page load. No error. No fallback code. No
+            polyfill. No broken layout. The feature costs nothing when
+            absent and delights when present. That is progressive
+            enhancement in its purest form.</p>
+
+        <p>Compare this with the SPA approach: if your JavaScript bundle
+            fails to load (network timeout, CDN outage, ad blocker,
+            corporate proxy), your users see a blank white page. The
+            "enhanced" experience degrades to nothing. The View Transition
+            API degrades to a normal page load. One does note the
+            asymmetry.</p>
+
+        <h2>The Constraints</h2>
+
+        <p><strong>Same-origin only.</strong> Cross-document view
+            transitions work for same-origin navigations only. This is a
+            security constraint: the browser needs access to both documents
+            to snapshot them.</p>
+
+        <p><strong>Unique names per page.</strong> Each
+            <code>view-transition-name</code> must be unique within a single
+            document. Two elements on the same page cannot share a name.</p>
+
+        <p><strong>Performance.</strong> The browser captures raster
+            screenshots of named elements. Naming three to five key elements
+            (header, hero, navigation) produces smooth results. Naming
+            everything is rather missing the point of selective
+            enhancement.</p>
+
+        <h2>The Point</h2>
+
+        <p>For a decade, "smooth page transitions" was the argument that
+            justified client-side routing, framework adoption, and the
+            entire SPA architecture for websites that were, at their core,
+            pages linked together with anchor tags. The browser lacked the
+            capability, so we built it in JavaScript. Reasonably enough.</p>
+
+        <p>The browser has the capability now. Three lines of CSS. Zero
+            JavaScript. Progressive enhancement built in. 87.82 per cent
+            global support and climbing. Firefox is the last holdout for
+            cross-document, and the same-document variant already works
+            there.</p>
+
+        <p>The argument no longer applies. The question is no longer
+            "should we use an SPA for transitions?" The question is: "what
+            were the other reasons?" One does suspect the list is rather
+            shorter than expected.</p>
+
+        <p>One does wonder how many SPAs will be reconsidered. One does
+            rather suspect the answer is: not enough.</p>
+
+        <blockquote>
+            <p>We shipped 400KB of JavaScript so a heading could fade.
+                The browser does it now. Three lines of CSS. Zero
+                JavaScript. Barba.js: 7.5KB. Framer Motion: 32KB.
+                View Transition API: 0KB. Because it is the browser.
+                87.82% global coverage. Unsupported browsers see a
+                normal page load. Progressive enhancement, done
+                properly.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The complete pattern:</strong></p>
+            <ul>
+                <li><strong>Step 1:</strong> <code>@view-transition { navigation: auto; }</code> on both pages</li>
+                <li><strong>Step 2:</strong> <code>h1 { view-transition-name: heading; }</code> to name elements (optional)</li>
+                <li><strong>Step 3:</strong> <code>::view-transition-old(heading) { animation: ... }</code> to customise (optional)</li>
+                <li><strong>Support:</strong> Chrome 126+, Edge 126+, Safari 18.2+. Firefox partial. 87.82% global</li>
+                <li><strong>Constraint:</strong> same-origin navigations only. Unique names per page</li>
+                <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API" target="_blank" rel="noopener">MDN: View Transition API</a> &#x25A0;
+                    <a href="https://developer.chrome.com/docs/web-platform/view-transitions/cross-document" target="_blank" rel="noopener">Chrome: Cross-Document Transitions</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,379 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Snapshot That Travels &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="At 3 AM on a production cluster measured in terabytes, the question is whether any of your backup tools will finish before breakfast. ZFS snapshot, send, clone: three workflows, three uses of the same primitive. The filesystem is the version control.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-snapshot-that-travels{( endslot )}
+
+{( slot og-title )}The Snapshot That Travels &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}ZFS treats snapshots, replication, and copy-on-write as properties of the filesystem itself. Local snapshots in milliseconds. Incremental send across a cluster in seconds. Clones that cost nothing until they diverge. Backup, replication, and branching are not three tools. They are three uses of the same primitive.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Snapshot That Travels",
+    "datePublished": "2026-04-20",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-snapshot-that-travels",
+    "description": "ZFS snapshot, send, clone: three workflows, three uses of the same primitive. Backup, replication, and branching on one filesystem.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-20">20 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Snapshot That Travels</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">zfs</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">devops</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 13</p>
+
+        <p>At three in the morning, on a production cluster whose state
+            is measured in terabytes, the question is not which backup
+            tool you happen to have installed. It is whether any of them
+            will finish before breakfast.</p>
+
+        <p>FreeBSD's answer has been sitting in the base system since
+            <a href="https://en.wikipedia.org/wiki/ZFS" target="_blank" rel="noopener">FreeBSD 7.0 in 2008</a>,
+            and arrived first-class with FreeBSD 8.0 in 2009.
+            <a href="https://openzfs.github.io/openzfs-docs/" target="_blank" rel="noopener">ZFS</a>
+            treats snapshots, replication, and copy-on-write not as
+            features bolted onto the filesystem, but as properties of the
+            filesystem itself. Three separate workflows, in consequence,
+            collapse into three uses of a single primitive. One does, on
+            first encounter, find this a little disorientating. On
+            second encounter, one finds everything else rather ornate.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Three workflows on ZFS derived from one primitive: local snapshot via zfs snapshot, replication via zfs send piped over ssh to zfs receive, and Git-like branching via zfs clone of a snapshot. Snapshot, send, clone: backup, replication, and branching are three uses of the same primitive." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .th-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .th-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .th-cmd { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .th-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .th-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .th-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .th-core { fill: none; stroke: var(--accent); stroke-width: 2; rx: 4; }
+                .th-line { stroke: var(--accent); stroke-width: 1.2; fill: none; }
+            </style>
+            <text x="280" y="22" class="th-title" text-anchor="middle">One Primitive, Three Workflows</text>
+
+            <rect x="220" y="40" width="120" height="40" class="th-core"/>
+            <text x="280" y="58" class="th-head" text-anchor="middle">zfs snapshot</text>
+            <text x="280" y="72" class="th-muted" text-anchor="middle">atomic, block-level</text>
+
+            <path d="M 280 80 L 100 120" class="th-line"/>
+            <path d="M 280 80 L 280 120" class="th-line"/>
+            <path d="M 280 80 L 460 120" class="th-line"/>
+
+            <rect x="20" y="120" width="160" height="75" class="th-box"/>
+            <text x="100" y="140" class="th-head" text-anchor="middle">Backup</text>
+            <text x="100" y="158" class="th-cmd" text-anchor="middle">@before-deploy</text>
+            <text x="100" y="176" class="th-muted" text-anchor="middle">milliseconds</text>
+            <text x="100" y="188" class="th-muted" text-anchor="middle">no locks, no copy</text>
+
+            <rect x="200" y="120" width="160" height="75" class="th-box"/>
+            <text x="280" y="140" class="th-head" text-anchor="middle">Replication</text>
+            <text x="280" y="158" class="th-cmd" text-anchor="middle">send | ssh | receive</text>
+            <text x="280" y="176" class="th-muted" text-anchor="middle">incremental, block-level</text>
+            <text x="280" y="188" class="th-muted" text-anchor="middle">40 TB delta in seconds</text>
+
+            <rect x="380" y="120" width="160" height="75" class="th-box"/>
+            <text x="460" y="140" class="th-head" text-anchor="middle">Branching</text>
+            <text x="460" y="158" class="th-cmd" text-anchor="middle">zfs clone @A tank/exp</text>
+            <text x="460" y="176" class="th-muted" text-anchor="middle">copy-on-write</text>
+            <text x="460" y="188" class="th-muted" text-anchor="middle">zero cost until divergence</text>
+
+            <text x="280" y="215" class="th-muted" text-anchor="middle">Backup, replication, and branching are not three tools. They are three uses of the same primitive.</text>
+        </svg>
+
+        <h2>Local Snapshots</h2>
+
+        <p>The command, complete with what one might fairly call a proper
+            commit message:</p>
+
+        <pre><code>zfs snapshot tank/data@before-i-try-something-clever</code></pre>
+
+        <p>Atomic. Takes milliseconds, even on an active dataset. No
+            locks. No files copied. The snapshot is an immutable view of
+            every block at that instant, held open for as long as one
+            pleases. Reverting to it is a single command and, again,
+            takes the time one needs to type it.</p>
+
+        <p>The distinction worth being rather precise about: a snapshot
+            is not a copy, it is a <em>reference</em> to the blocks as
+            they were. Writing to the live dataset allocates new blocks;
+            the snapshot quietly continues to point to the old ones. This
+            is copy-on-write at the filesystem layer, not a housekeeping
+            task bolted on top of it. The consequence is that snapshots
+            are cheap enough to create generously and keep forever, which
+            is the unspoken precondition for everything that follows.</p>
+
+        <p>Linux has
+            <a href="https://btrfs.readthedocs.io/en/latest/Status.html" target="_blank" rel="noopener">btrfs</a>,
+            which offers broadly similar subvolume snapshots, and it is,
+            in fairness, the only serious counterpart on that side of the
+            aisle. Btrfs has genuine strengths: it ships with the mainline
+            Linux kernel, is well integrated into Ubuntu and Fedora, and
+            its single-disk and mirrored-RAID configurations are perfectly
+            serviceable for a great many workloads. Alas, btrfs RAID 5/6
+            is still formally discouraged for production use in 2026,
+            which one does find a trifle awkward for a system intended
+            to hold long-term state. It is not, in short, what one chooses
+            for a 40 TB cluster with parity RAID.</p>
+
+        <h2>Across a Cluster</h2>
+
+        <p>The same primitive, unchanged, becomes replication:</p>
+
+        <pre><code>zfs send tank/data@A | ssh standby zfs receive tank/data
+zfs send -i tank/data@A tank/data@B | ssh standby zfs receive tank/data</code></pre>
+
+        <p>Block-level, not file-level. The first command ships the
+            entire dataset as a stream. The second ships only the delta
+            between snapshots A and B.
+            <a href="https://zfs-discuss.zfsonlinux.narkive.com/SpozlPKR/zfs-send-receive-performance" target="_blank" rel="noopener">Published benchmarks</a>
+            put full-send rates at 100 to 300 MB/s and incremental sends
+            at roughly 60 MB/s on commodity hardware. The real surprise,
+            however, is not the rate but the volume: a
+            <a href="https://cr0x.net/en/zfs-incremental-send-backups/" target="_blank" rel="noopener">1 TB dataset with a 1 per cent daily change rate</a>
+            ships roughly 10 GB per replication cycle, and a 512 MB
+            benchmark dataset in which only metadata changed ships 33 KB.
+            Once the initial full send is done, ongoing replication is
+            close to free for stable workloads.</p>
+
+        <p>This is how disaster-recovery standbys are kept in sync. This
+            is how clusters replicate read replicas. This is how staging
+            is rebuilt from production in the time it takes to boil a
+            kettle.</p>
+
+        <p>The automation ecosystem around the primitive is mature. One
+            does not, in practice, type <code>zfs send</code> by hand at
+            3 AM.
+            <a href="https://klarasystems.com/articles/zfs-orchestration-tools-part-2-replication/" target="_blank" rel="noopener">Sanoid</a>
+            handles policy-driven snapshot scheduling: hourlies, dailies,
+            monthlies, pruned on a declared retention. Syncoid orchestrates
+            the incremental sends over SSH, typically from cron.
+            <a href="https://zrepl.github.io/" target="_blank" rel="noopener">zrepl</a>
+            runs as a long-lived daemon with TLS and bandwidth limiting,
+            for links where one rather cares. Each of these sits on top
+            of the same five or six <code>zfs</code> subcommands, and one
+            could write a passable version over a weekend if one were so
+            inclined.</p>
+
+        <p>Btrfs
+            <a href="https://btrfs.readthedocs.io/en/latest/Send-receive.html" target="_blank" rel="noopener">send and receive</a>
+            do exist. They (alas) require the source subvolume to be made
+            read-only before the send, which one does find a trifle
+            inconvenient for continuously active state, and its automation
+            ecosystem has not reached the same maturity. The alternatives,
+            inevitably, involve a scheduled read-only window, which is
+            itself an accounting exercise one had rather hoped to avoid.</p>
+
+        <h2>Something Rather Like Git</h2>
+
+        <p>If one insists on the metaphor, and one usually does: every
+            snapshot is an immutable commit, and every clone a branch.</p>
+
+        <pre><code>zfs clone tank/data@A tank/branch-experiment</code></pre>
+
+        <svg viewBox="0 0 560 240" aria-label="ZFS clones as Git branches: from a parent snapshot, multiple writable clones share the baseline data. Each clone costs no disk space until it diverges, then pays only for the blocks it actually changes. Fifty engineers, fifty branches of a multi-terabyte database." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .gt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .gt-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .gt-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .gt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .gt-cmd { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .gt-snap { fill: var(--accent); }
+                .gt-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .gt-line { stroke: var(--border); stroke-width: 1.2; fill: none; }
+                .gt-line-accent { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+            </style>
+            <text x="280" y="22" class="gt-title" text-anchor="middle">The Filesystem Is the Version Control</text>
+
+            <circle cx="60" cy="110" r="6" class="gt-snap"/>
+            <text x="60" y="92" class="gt-text" text-anchor="middle">@A</text>
+
+            <circle cx="160" cy="110" r="6" class="gt-snap"/>
+            <text x="160" y="92" class="gt-text" text-anchor="middle">@B</text>
+
+            <circle cx="260" cy="110" r="6" class="gt-snap"/>
+            <text x="260" y="92" class="gt-text" text-anchor="middle">@C</text>
+
+            <path d="M 66 110 L 154 110" class="gt-line-accent"/>
+            <path d="M 166 110 L 254 110" class="gt-line-accent"/>
+
+            <path d="M 260 110 C 310 110, 330 60, 400 60" class="gt-line"/>
+            <circle cx="400" cy="60" r="5" fill="var(--text)"/>
+            <text x="445" y="64" class="gt-text">feature-A</text>
+
+            <path d="M 260 110 C 310 110, 330 110, 400 110" class="gt-line"/>
+            <circle cx="400" cy="110" r="5" fill="var(--text)"/>
+            <text x="445" y="114" class="gt-text">experiment-B</text>
+
+            <path d="M 260 110 C 310 110, 330 160, 400 160" class="gt-line"/>
+            <circle cx="400" cy="160" r="5" fill="var(--text)"/>
+            <text x="445" y="164" class="gt-text">staging</text>
+
+            <text x="60" y="150" class="gt-cmd" text-anchor="middle">parent dataset</text>
+            <text x="160" y="150" class="gt-cmd" text-anchor="middle">shared baseline</text>
+
+            <text x="280" y="200" class="gt-muted" text-anchor="middle">Each clone costs nothing until it diverges. Reads come from the shared baseline.</text>
+            <text x="280" y="220" class="gt-muted" text-anchor="middle">Fifty engineers, fifty branches of a multi-terabyte database, for the price of the blocks they actually change.</text>
+        </svg>
+
+        <p>The clone costs no disk space until it diverges. Reads still
+            come from the shared baseline. Git's copy-on-write semantics,
+            effectively, applied to the entire filesystem, except the
+            unit of comparison is the block rather than the line, and
+            the system has no particular opinion about whether the
+            content is source code, a PostgreSQL data directory, or
+            40 TB of scientific observations. One can spin up fifty
+            clones of a multi-terabyte database for fifty engineers,
+            each with their own writable branch, for the price of the
+            blocks they actually change. One does appreciate the
+            economics of it.</p>
+
+        <p>The pattern has been quietly productised. AWS
+            <a href="https://aws.amazon.com/blogs/storage/synchronize-your-oracle-databases-quickly-and-easily-with-amazon-fsx-for-openzfs/" target="_blank" rel="noopener">FSx for OpenZFS</a>
+            ships Oracle databases at near-petabyte scale, cloned in
+            seconds, with zero additional capacity consumed until
+            divergence. CI pipelines increasingly use the same mechanism
+            to give every test run its own writable snapshot of the
+            production dataset, torn down automatically when the run
+            completes. One does find it charming that the pattern is old
+            enough to be boring, and new enough to still surprise people.</p>
+
+        <p><code>zfs diff</code> reports changes at file level between
+            two snapshots. <code>zfs rollback</code> returns a dataset
+            to a prior snapshot, undoing every write since.
+            <code>zfs promote</code> swaps a clone with its origin,
+            turning the branch into the main line. Replication via
+            <code>send</code> is, in practical effect, <code>git
+            push</code>. The filesystem is the version control. One is
+            not, at this point, extending an analogy; one is describing
+            the semantics.</p>
+
+        <p>Btrfs, to be fair, offers subvolume snapshots and clones too.
+            Its RAID 5/6 is still officially marked as "should not be
+            used for production", its deduplication is offline-only
+            (batch, not inline), and its quota accounting has
+            historically slowed noticeably with many snapshots. One
+            would, all things considered, prefer rather more predictable
+            ground under the version-control layer of one's
+            infrastructure.</p>
+
+        <h2>Feature Comparison</h2>
+
+        <svg viewBox="0 0 560 230" aria-label="ZFS versus btrfs feature comparison: ZFS snapshot and clone are inline and mature; btrfs offers them too. ZFS send/receive on writable source; btrfs requires the source to be made read-only. ZFS inline deduplication; btrfs offline batch only. ZFS RAID 5/6 production-ready; btrfs RAID 5/6 still discouraged for production use in 2026." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .cp-row { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .cp-ok { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .cp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .cp-line { stroke: var(--border); stroke-width: 1; fill: none; }
+            </style>
+            <text x="280" y="22" class="cp-title" text-anchor="middle">ZFS vs btrfs &#x2014; The Inventory</text>
+
+            <text x="220" y="55" class="cp-head" text-anchor="middle">ZFS / OpenZFS</text>
+            <text x="430" y="55" class="cp-head" text-anchor="middle">btrfs</text>
+
+            <line x1="20" y1="68" x2="540" y2="68" class="cp-line"/>
+
+            <text x="30" y="88" class="cp-row">Snapshots</text>
+            <text x="220" y="88" class="cp-ok" text-anchor="middle">inline, atomic</text>
+            <text x="430" y="88" class="cp-row" text-anchor="middle">inline, atomic</text>
+
+            <text x="30" y="108" class="cp-row">send on writable source</text>
+            <text x="220" y="108" class="cp-ok" text-anchor="middle">yes</text>
+            <text x="430" y="108" class="cp-muted" text-anchor="middle">no &#x2014; must be read-only</text>
+
+            <text x="30" y="128" class="cp-row">Deduplication</text>
+            <text x="220" y="128" class="cp-ok" text-anchor="middle">inline</text>
+            <text x="430" y="128" class="cp-muted" text-anchor="middle">offline (batch)</text>
+
+            <text x="30" y="148" class="cp-row">RAID 5/6 in production</text>
+            <text x="220" y="148" class="cp-ok" text-anchor="middle">production-grade</text>
+            <text x="430" y="148" class="cp-muted" text-anchor="middle">discouraged (2026)</text>
+
+            <text x="30" y="168" class="cp-row">Quota accounting, many snapshots</text>
+            <text x="220" y="168" class="cp-ok" text-anchor="middle">stable</text>
+            <text x="430" y="168" class="cp-muted" text-anchor="middle">historically slow</text>
+
+            <line x1="20" y1="182" x2="540" y2="182" class="cp-line"/>
+
+            <text x="280" y="212" class="cp-muted" text-anchor="middle">btrfs is the only serious counterpart. That is the compliment it deserves. The rest is the inventory.</text>
+        </svg>
+
+        <h2>The Point</h2>
+
+        <p>On FreeBSD, ZFS is the installer default. Ticking a box
+            during setup gets one the filesystem, the snapshots, the
+            replication primitive, and the version-control semantics. No
+            third-party backup agent. No scheduled read-only window. No
+            separate replication daemon. No weekend dedicated to
+            ensuring that your snapshots are, in fact, snapshots rather
+            than best-effort approximations.</p>
+
+        <p>There is no separate "backup layer", "replication layer", or
+            "branching layer" waiting to be integrated. There is the
+            pool, the dataset, the snapshot, and the stream.
+            <code>snapshot</code>, <code>send</code>, <code>receive</code>,
+            <code>clone</code>, <code>diff</code>, <code>rollback</code>,
+            and <code>promote</code> are variations on the same model.
+            Everything else one does with ZFS is a composition of those
+            few operations. This is the Unix philosophy applied to
+            storage: small, orthogonal operations that compose. The value
+            is not in any one of the commands. It is in the fact that
+            they share a single mental model.</p>
+
+        <p>The snapshot-as-stream philosophy is not a backup strategy
+            bolted on top of the filesystem. It is the filesystem.</p>
+
+        <p>Backup, replication, and branching are not three tools. They
+            are three uses of the same primitive.</p>
+
+        <blockquote>
+            <p>zfs snapshot: atomic, milliseconds, no locks. zfs send |
+                ssh | zfs receive: block-level, 40 TB delta in seconds.
+                zfs clone: copy-on-write branching, zero cost until
+                divergence. btrfs is the only serious counterpart; its
+                RAID 5/6 remains discouraged for production in 2026. One
+                primitive. Three workflows. The filesystem is the version
+                control.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Commands worth keeping close:</strong></p>
+            <ul>
+                <li><strong>Local snapshot:</strong> <code>zfs snapshot tank/data@name</code>, <code>zfs list -t snapshot</code>, <code>zfs rollback tank/data@name</code></li>
+                <li><strong>Replication:</strong> <code>zfs send tank/data@A | ssh host zfs receive tank/data</code>. Incremental with <code>-i @A tank/data@B</code>. Add <code>-R</code> for recursive, <code>-e</code> for encrypted streams</li>
+                <li><strong>Git-like branching:</strong> <code>zfs clone tank/data@A tank/feature</code>. <code>zfs diff @A @B</code>. <code>zfs promote tank/feature</code> swaps clone and origin</li>
+                <li><strong>Automation:</strong> <code>sanoid</code>, <code>zrepl</code>, <code>zfs-autobackup</code> sit on top of these primitives and add schedule, retention, and pruning</li>
+                <li><strong>Read replicas:</strong> <code>zfs receive -o readonly=on</code>, plus <code>zfs hold</code> to protect snapshots from automated garbage collection</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

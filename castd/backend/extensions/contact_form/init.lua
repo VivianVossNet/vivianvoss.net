@@ -30,8 +30,6 @@ local function sanitise(s)
     return s:gsub("[\r\n]", " ")
 end
 
-local TOKEN_TTL = 7200
-
 local function validate_csrf(token)
     if not token or token == "" then return false end
 
@@ -40,11 +38,7 @@ local function validate_csrf(token)
 
     for _, t in ipairs(tokens) do
         if t.token == token then
-            local age = os.time() - (tonumber(t.created) or 0)
-            if age > TOKEN_TTL then
-                cn.db.delete("csrf_tokens", { id = t.id })
-                return false
-            end
+            -- consume token (use-once)
             cn.db.delete("csrf_tokens", { id = t.id })
             return true
         end

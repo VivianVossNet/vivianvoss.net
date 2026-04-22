@@ -1,0 +1,317 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Redis: The One-Thread Design &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 2009, Salvatore Sanfilippo made Redis single-threaded. Deliberately. A contested mutex costs 10,000 CPU cycles. Redis makes contention structurally impossible. 1.5 million operations per second, one core, commodity hardware.">
+{( endslot )}
+
+{( slot canonical )}/blog/redis-single-thread{( endslot )}
+
+{( slot og-title )}Redis: The One-Thread Design &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}In 2009, Salvatore Sanfilippo made Redis single-threaded. Deliberately. The limitation is not an oversight. It is the source of every performance guarantee Redis has ever made.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Redis: The One-Thread Design",
+    "datePublished": "2026-04-16",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/redis-single-thread",
+    "description": "In 2009, Salvatore Sanfilippo made Redis single-threaded. A contested mutex costs 10,000 CPU cycles. Redis makes contention structurally impossible. 1.5 million operations per second, one core.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-16">16 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Redis: The One-Thread Design</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>By Design</em> &#x25A0; Episode 4</p>
+
+        <p>In 2009, Salvatore Sanfilippo had a problem. His startup, LLOOGG, offered
+            real-time web analytics at a moment when Google Analytics did not provide
+            it. This was not a minor differentiator. It was the entire product. Website
+            owners could watch their visitors arrive, right now, which required
+            performing hundreds of list push and pop operations per second, each
+            demanding an immediate response.</p>
+
+        <p>MySQL could not keep up. The architecture was not wrong, precisely. It was
+            simply built for a different problem. So Sanfilippo, working from his home
+            in Sicily, prototyped a memory-based database in Tcl, roughly three hundred
+            lines, and called it LMDB: LLOOGG Memory Database. The prototype worked. He
+            rewrote it in C. He named the result
+            <a href="https://redis.io" target="_blank" rel="noopener">Redis</a>: Remote
+            Dictionary Server.</p>
+
+        <p>He made it single-threaded. Deliberately.</p>
+
+        <h2>The Complaint</h2>
+
+        <p>"Redis runs on one thread. Modern servers have 64, 96, even 128 cores.
+            Redis uses exactly one. That is a serious architectural limitation."</p>
+
+        <p>One does hear this. Usually from someone who has just provisioned a 64-core
+            server, pointed a single Redis instance at it, and noticed that the other 63
+            cores are contributing nothing whatsoever to the enterprise. The complaint is
+            coherent. The conclusion it implies, that Redis should therefore be
+            multi-threaded, is not.</p>
+
+        <h2>The Design</h2>
+
+        <p>The choice was explicit.
+            <a href="https://blog.brachiosoft.com/en/posts/redis/" target="_blank" rel="noopener">Sanfilippo built Redis around an event loop</a>,
+            kqueue on BSD and macOS, epoll on Linux, with select as a portable fallback,
+            that processes commands sequentially. One command at a time. When a command
+            arrives, it executes. When it completes, the next begins. No locking. No
+            mutexes. No context switches between executions. No possibility of two
+            operations corrupting shared state simultaneously.</p>
+
+        <p>This is not a limitation of ambition. It is a consequence of understanding
+            where the bottleneck actually lives.</p>
+
+        <p>In a memory-first system, the bottleneck is not computation. It is
+            contention. Multi-threading does not eliminate work. It adds coordination
+            overhead on top of it. Consider what the
+            <a href="https://riferrei.com/the-engineering-wisdom-behind-rediss-single-threaded-design/" target="_blank" rel="noopener">threading model actually costs</a>:</p>
+
+        <svg viewBox="0 0 560 258" aria-label="The Coordination Tax: CPU cycles per operation type. Redis GET or SET: roughly 5 cycles. Cache line transfer between cores: 100 to 300 cycles. Uncontended mutex: 100 to 1,000 cycles. Context switch: 2,000 to 8,000 cycles. Contested mutex: 10,000 or more cycles. Bars are compressed; the contested mutex is approximately 2,000 times slower than a Redis operation." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ct-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ct-sub   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ct-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .ct-value { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ct-bar-accent { fill: var(--accent); opacity: 0.9; }
+                .ct-bar { fill: var(--muted); opacity: 0.35; }
+                .ct-note { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; font-style: italic; }
+            </style>
+            <text x="280" y="20" class="ct-title" text-anchor="middle">The Coordination Tax</text>
+            <text x="280" y="36" class="ct-sub" text-anchor="middle">CPU cycles per operation (scale compressed; bars not linear)</text>
+
+            <!-- Row 1: Redis op -->
+            <text x="188" y="66" class="ct-label" text-anchor="end">Redis GET / SET</text>
+            <rect x="194" y="55" width="8" height="18" class="ct-bar-accent"/>
+            <text x="208" y="68" class="ct-value">~5 cycles</text>
+
+            <!-- Row 2: Cache line transfer -->
+            <text x="188" y="108" class="ct-label" text-anchor="end">Cache line transfer</text>
+            <rect x="194" y="97" width="60" height="18" class="ct-bar"/>
+            <text x="260" y="110" class="ct-value">100&#x2013;300 cycles</text>
+
+            <!-- Row 3: Uncontended mutex -->
+            <text x="188" y="150" class="ct-label" text-anchor="end">Uncontended mutex</text>
+            <rect x="194" y="139" width="88" height="18" class="ct-bar"/>
+            <text x="288" y="152" class="ct-value">100&#x2013;1,000 cycles</text>
+
+            <!-- Row 4: Context switch -->
+            <text x="188" y="192" class="ct-label" text-anchor="end">Context switch</text>
+            <rect x="194" y="181" width="210" height="18" class="ct-bar"/>
+            <text x="410" y="194" class="ct-value">2,000&#x2013;8,000 cycles</text>
+
+            <!-- Row 5: Contested mutex -->
+            <text x="188" y="234" class="ct-label" text-anchor="end">Contested mutex</text>
+            <rect x="194" y="223" width="340" height="18" class="ct-bar-accent" style="opacity:0.25"/>
+            <text x="540" y="236" class="ct-value" text-anchor="end">10,000+ cycles</text>
+
+            <text x="280" y="252" class="ct-note" text-anchor="middle">Redis eliminates rows 2 through 5 entirely. There is no mutex to acquire. There is no thread to wake. There is no cache line to transfer.</text>
+        </svg>
+
+        <p>Redis operates entirely in memory. A GET or SET completes in microseconds.
+            At that speed, the overhead of coordinating multiple threads is not a
+            rounding error. It is a significant fraction of the operation itself. By
+            removing threads from command execution entirely, Redis removes the cost of
+            coordinating them. The event loop provides I/O multiplexing without the
+            overhead of one thread per connection. Sequential execution eliminates lock
+            contention by making contention structurally impossible. The simplicity is
+            the performance.</p>
+
+        <svg viewBox="0 0 560 210" aria-label="Event loop model: N client connections all feed into a single event loop. The event loop dispatches commands one at a time to a sequential execution pipeline. No locks, no mutexes, no shared state. Compare with a thread pool where N threads compete for shared data structures." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .el-title  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .el-head   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .el-label  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .el-muted  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .el-box    { fill: none; stroke: var(--border); stroke-width: 1; }
+                .el-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+                .el-arrow  { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#el-arr); }
+                .el-arr-stroke { stroke: var(--muted); fill: var(--muted); }
+            </style>
+            <defs>
+                <marker id="el-arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" class="el-arr-stroke"/>
+                </marker>
+            </defs>
+
+            <text x="280" y="20" class="el-title" text-anchor="middle">One Thread, Many Connections</text>
+
+            <!-- Clients (left) -->
+            <rect x="10" y="38" width="60" height="20" class="el-box"/>
+            <text x="40" y="52" class="el-label" text-anchor="middle">Client 1</text>
+            <rect x="10" y="68" width="60" height="20" class="el-box"/>
+            <text x="40" y="82" class="el-label" text-anchor="middle">Client 2</text>
+            <rect x="10" y="98" width="60" height="20" class="el-box"/>
+            <text x="40" y="112" class="el-label" text-anchor="middle">Client 3</text>
+            <rect x="10" y="128" width="60" height="20" class="el-box"/>
+            <text x="40" y="142" class="el-label" text-anchor="middle">Client N</text>
+            <text x="40" y="124" class="el-muted" text-anchor="middle">...</text>
+
+            <!-- Arrows from clients to event loop -->
+            <line x1="70" y1="48" x2="168" y2="88" class="el-arrow"/>
+            <line x1="70" y1="78" x2="168" y2="92" class="el-arrow"/>
+            <line x1="70" y1="108" x2="168" y2="96" class="el-arrow"/>
+            <line x1="70" y1="138" x2="168" y2="102" class="el-arrow"/>
+
+            <!-- Event loop (centre) -->
+            <rect x="170" y="68" width="100" height="50" rx="4" class="el-accent"/>
+            <text x="220" y="88" class="el-head" text-anchor="middle">Event Loop</text>
+            <text x="220" y="103" class="el-muted" text-anchor="middle">kqueue / epoll</text>
+            <text x="220" y="114" class="el-muted" text-anchor="middle">1 thread</text>
+
+            <!-- Arrow to execution -->
+            <line x1="270" y1="93" x2="318" y2="93" class="el-arrow"/>
+
+            <!-- Sequential execution (right) -->
+            <rect x="320" y="42" width="80" height="22" class="el-box"/>
+            <text x="360" y="57" class="el-label" text-anchor="middle">SET key val</text>
+            <rect x="320" y="72" width="80" height="22" class="el-box"/>
+            <text x="360" y="87" class="el-label" text-anchor="middle">GET session</text>
+            <rect x="320" y="102" width="80" height="22" class="el-box"/>
+            <text x="360" y="117" class="el-label" text-anchor="middle">INCR counter</text>
+            <text x="360" y="140" class="el-muted" text-anchor="middle">one at a time</text>
+
+            <!-- Result arrow -->
+            <line x1="400" y1="93" x2="440" y2="93" class="el-arrow"/>
+            <rect x="442" y="72" width="108" height="42" rx="4" class="el-box"/>
+            <text x="496" y="88" class="el-label" text-anchor="middle">No mutexes.</text>
+            <text x="496" y="103" class="el-label" text-anchor="middle">No shared state.</text>
+            <text x="496" y="118" class="el-label" text-anchor="middle">No contention.</text>
+
+            <!-- Bottom note -->
+            <text x="280" y="175" class="el-muted" text-anchor="middle">Thousands of concurrent connections. One execution thread. The event loop handles</text>
+            <text x="280" y="188" class="el-muted" text-anchor="middle">multiplexed I/O. Commands execute one at a time. Data structures are never shared.</text>
+            <text x="280" y="202" class="el-muted" text-anchor="middle">Compare with a thread pool: N threads, shared hash table, one contested mutex.</text>
+        </svg>
+
+        <h2>The Trade-Off</h2>
+
+        <p>Let us be honest about the costs, because Sanfilippo was.</p>
+
+        <p>A slow command blocks everything. <code>KEYS</code> on a production
+            database containing one million entries stops the entire server for the
+            duration of the scan. No other command executes. No other client receives a
+            response. The server is, to a first approximation, unavailable. The
+            documentation recommends <code>SCAN</code> for incremental iteration.
+            Production incidents recommend reading the documentation, usually around 3
+            AM, usually after the monitoring alert has already fired.</p>
+
+        <p>Scaling across cores requires running multiple Redis instances and
+            distributing keys across them via Redis Cluster or application-level
+            sharding. The model is horizontal, not vertical. One instance per core, not
+            one instance for all cores. This is operational complexity that a
+            multi-threaded design would not require. It is a real cost. The design
+            documentation has never pretended otherwise.</p>
+
+        <h2>The Proof</h2>
+
+        <p>The numbers from the
+            <a href="https://redis.io/docs/latest/operate/oss_and_stack/management/optimization/benchmarks/" target="_blank" rel="noopener">official Redis benchmark documentation</a>:
+            without pipelining, 180,000 SET operations per second on commodity hardware,
+            with p50 latency below 0.15 milliseconds. With pipelining of 16 commands,
+            over 1.5 million SET operations per second, p50 latency below 0.5
+            milliseconds. Consistently. Under load. Without a garbage collector pause,
+            because there is no garbage collector.</p>
+
+        <p>Twitter and Instagram both adopted Redis in 2010. GitHub uses it for job
+            queues. Stack Overflow runs it as their primary cache, serving billions of
+            requests per month from commodity hardware.</p>
+
+        <p>In 2020, Redis 6.0 added I/O threading: network reads and writes now happen
+            in parallel, but command execution remains single-threaded. The 37 to 112
+            per cent throughput improvement this delivered suggests that network I/O was
+            the actual bottleneck in many workloads, not command execution. The
+            single-threaded model, it turns out, was not the limiting factor.</p>
+
+        <p>In March 2024,
+            <a href="https://www.softwareseni.com/the-redis-valkey-fork-how-enterprises-rapidly-migrated-after-the-sspl-license-change/" target="_blank" rel="noopener">Redis Ltd. changed the project's licence from BSD to SSPL</a>,
+            effectively removing it from open source. The community forked it as
+            <a href="https://valkey.io" target="_blank" rel="noopener">Valkey</a> within
+            weeks, backed by the Linux Foundation, with Amazon, Google, Oracle, and
+            Ericsson among the founding supporters. The fork started from Redis 7.2.4.
+            The single-threaded architecture came with it, unchanged, because nobody
+            wanted to change it.
+            <a href="https://www.techzine.eu/news/infrastructure/131056/redis-returns-to-open-source-after-damaging-community-relationship/" target="_blank" rel="noopener">Redis 8 subsequently returned to open source under AGPLv3</a>
+            and reduced per-command latency by 5.4 to 87.4 per cent across 90 commands,
+            through algorithmic improvements, not threading. Seventeen years after the
+            first commit, the design is still being optimised within its own
+            constraints.</p>
+
+        <h2>The Principle</h2>
+
+        <p>Contention is not a problem you solve with more threads. It is a problem
+            you design out.</p>
+
+        <p>Sanfilippo identified the actual bottleneck in a memory-first system,
+            coordination overhead rather than computation, and eliminated it by making
+            coordination structurally impossible. The result processes millions of
+            commands per second on a single core and delivers sub-millisecond latency
+            under load. The engineering instinct is to add parallelism when performance
+            matters. Redis demonstrates that removing the overhead of coordination can be
+            more effective than adding it.</p>
+
+        <p><a href="/blog/rust-says-no">Last episode</a>, Rust said no to null, to
+            exceptions, to garbage collection, and to inheritance. Every refusal
+            eliminated a category of bugs. Redis applies the same logic at the
+            architecture level: say no to threads in the execution path, and eliminate
+            the entire category of contention bugs. The constraint is not a concession.
+            It is the guarantee.</p>
+
+        <p>Every application that has ever cached a session token, enforced a rate
+            limit, maintained a leaderboard, or coordinated a distributed lock has relied
+            on the fact that Redis will not corrupt its own data structures under
+            concurrent access. Concurrent command execution is, by design, impossible.
+            That is not incidental. It is the architecture.</p>
+
+        <p>The limitation is the architecture. The architecture is the feature.</p>
+
+        <blockquote>
+            <p>In 2009, a Sicilian developer built a database in three hundred lines of
+                Tcl because MySQL could not perform list operations fast enough. He
+                rewrote it in C, made it single-threaded by design, and named it Redis.
+                Seventeen years later, it runs at internet scale on one thread. The other
+                63 cores are still not needed.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The model in numbers:</strong></p>
+            <ul>
+                <li>Command execution: always single-threaded, kqueue/epoll event loop, no locking</li>
+                <li>Uncontended mutex cost avoided: 100 to 1,000 CPU cycles per operation</li>
+                <li>Contested mutex cost avoided: 10,000+ CPU cycles per operation</li>
+                <li>Without pipelining: 180,000 SET/s, p50 below 0.15 ms</li>
+                <li>With pipelining at 16: 1.5M+ SET/s, p50 below 0.5 ms</li>
+                <li>Redis 6.0 (2020): I/O threading added, 37 to 112% throughput gain without changing the execution model</li>
+                <li>Redis 8: 5.4 to 87.4% per-command latency reduction via algorithmic improvements, not threading</li>
+                <li>March 2024: BSD licence changed to SSPL. April 2024: Valkey forked under the Linux Foundation. The architecture was unchanged through all of it.</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

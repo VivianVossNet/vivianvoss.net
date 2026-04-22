@@ -1,0 +1,384 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Markdown &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="On 15 March 2004, John Gruber posted a blog entry and a 1,400-line Perl script. Aaron Swartz was the sole beta-tester. Twenty-one years on, GitHub, GitLab, Reddit, Discord, Notion, and every major LLM speak Markdown. Plain text won. One rather thought it might.">
+{( endslot )}
+
+{( slot canonical )}/blog/markdown{( endslot )}
+
+{( slot og-title )}Markdown &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Two men, one blog post, one Perl script. Twenty-one years later, Markdown is the default writing surface of the modern internet, the 2025 Stack Overflow Developer Survey's most admired documentation format (third year running), and the format every major LLM emits by default. A codification, not an invention. Plain text won.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Markdown",
+    "datePublished": "2026-04-21",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/markdown",
+    "description": "Gruber and Swartz, 2004. 1,400 lines of Perl, no lexer, no parser. CommonMark 2014. Every LLM emits Markdown by default. Plain text won.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-21">21 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Markdown</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">html</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 32</p>
+
+        <p>You have never opened a formatting toolbar to read a README.
+            You have never needed to. The <strong>bold</strong> was
+            <code>**bold**</code>, the heading was <code># Heading</code>,
+            the link was <code>[here](somewhere)</code>, and your eyes
+            did the rendering without any help at all. One has become so
+            used to this that one tends to forget how recently it was not
+            the case.</p>
+
+        <h2>Two Men, One Blog Post, One Perl Script</h2>
+
+        <p>On 15 March 2004, John Gruber posted
+            <a href="https://daringfireball.net/projects/markdown/" target="_blank" rel="noopener">"Introducing Markdown"</a>
+            on his blog
+            <a href="https://daringfireball.net/" target="_blank" rel="noopener">Daring Fireball</a>.
+            The credits listed Aaron Swartz as the sole beta-tester,
+            which rather understates the case. Swartz had already spent
+            two years refining
+            <a href="https://en.wikipedia.org/wiki/Aaron_Swartz" target="_blank" rel="noopener">atx</a>,
+            his own plain-text shorthand for HTML; the hash-prefix
+            headings came directly from it. He also wrote html2text, the
+            reverse converter that turns HTML back into Markdown.</p>
+
+        <p>Gruber wrote the Perl. Swartz argued it into shape. That was
+            the entire launch. Two men, one blog post, one script.</p>
+
+        <h2>The Design</h2>
+
+        <p>The reference implementation,
+            <a href="https://daringfireball.net/projects/markdown/" target="_blank" rel="noopener">Markdown.pl</a>,
+            was approximately 1,400 lines of Perl. It processed text
+            through regular expressions. There was no lexer, no parser,
+            no abstract syntax tree. It was not, by any generous
+            definition of the word, rigorous. It was, rather deliberately,
+            only as rigorous as it needed to be. Few projects have been
+            this relaxed about engineering discipline and this
+            uncompromising about outcome.</p>
+
+        <p>The design goal fit in a single sentence, which one rather
+            admires:</p>
+
+        <blockquote>
+            <p>A Markdown-formatted document should be publishable as-is,
+                as plain text, without looking like it has been tagged or
+                formatted with special instructions.</p>
+        </blockquote>
+
+        <p>Readability came first. Everything else came second, if at
+            all. In December 2004, Gruber stopped active development on
+            Markdown.pl. He did not add a plugin system. He did not
+            start a foundation. He did not even keep the known bugs
+            fixed. He published his thing, and left it. Rather
+            refreshing, that.</p>
+
+        <h2>The Elegance</h2>
+
+        <p>The syntax is aggressively un-special. Emphasis is asterisks,
+            because that is how people already indicated emphasis in
+            plain-text email. Headings are hashes (Swartz's atx, 2002).
+            Links are brackets followed by parentheses, because that is
+            how people already wrote footnotes. Lists are dashes or
+            asterisks, because that is how people marked bullets in the
+            absence of a renderer. Block quotes are greater-than signs,
+            because that is how email has quoted messages since the
+            1980s. Code is indented, or fenced between backticks.</p>
+
+        <svg viewBox="0 0 560 260" aria-label="Markdown syntax cheat sheet: asterisks for emphasis, hashes for headings, brackets and parentheses for links, dashes for lists, greater-than signs for block quotes, backticks for code. Each convention existed in plain-text email and IRC long before 2004; Markdown codified them rather than inventing them." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .md-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .md-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .md-src { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .md-out { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; }
+                .md-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .md-arrow { stroke: var(--accent); stroke-width: 1.2; fill: none; }
+                .md-line { stroke: var(--border); stroke-width: 1; fill: none; }
+            </style>
+            <text x="280" y="22" class="md-title" text-anchor="middle">Codification, Not Invention</text>
+
+            <text x="80" y="50" class="md-head" text-anchor="middle">You type</text>
+            <text x="280" y="50" class="md-head" text-anchor="middle">It renders</text>
+            <text x="480" y="50" class="md-head" text-anchor="middle">Because</text>
+
+            <line x1="20" y1="60" x2="540" y2="60" class="md-line"/>
+
+            <text x="80" y="85" class="md-src" text-anchor="middle">**bold**</text>
+            <text x="280" y="85" class="md-out" text-anchor="middle">bold</text>
+            <text x="480" y="85" class="md-muted" text-anchor="middle">asterisks in email</text>
+
+            <text x="80" y="110" class="md-src" text-anchor="middle"># Heading</text>
+            <text x="280" y="110" class="md-out" text-anchor="middle">Heading</text>
+            <text x="480" y="110" class="md-muted" text-anchor="middle">atx, Swartz, 2002</text>
+
+            <text x="80" y="135" class="md-src" text-anchor="middle">[text](url)</text>
+            <text x="280" y="135" class="md-out" text-anchor="middle">text</text>
+            <text x="480" y="135" class="md-muted" text-anchor="middle">academic footnotes</text>
+
+            <text x="80" y="160" class="md-src" text-anchor="middle">- item</text>
+            <text x="280" y="160" class="md-out" text-anchor="middle">&#x2022; item</text>
+            <text x="480" y="160" class="md-muted" text-anchor="middle">typewritten bullets</text>
+
+            <text x="80" y="185" class="md-src" text-anchor="middle">&gt; quoted</text>
+            <text x="280" y="185" class="md-out" text-anchor="middle">quoted</text>
+            <text x="480" y="185" class="md-muted" text-anchor="middle">email quoting, 1980s</text>
+
+            <text x="80" y="210" class="md-src" text-anchor="middle">`code`</text>
+            <text x="280" y="210" class="md-out" text-anchor="middle">code</text>
+            <text x="480" y="210" class="md-muted" text-anchor="middle">IRC, Usenet</text>
+
+            <line x1="20" y1="225" x2="540" y2="225" class="md-line"/>
+
+            <text x="280" y="246" class="md-muted" text-anchor="middle">Gruber did not invent any of this. He noticed what people were already doing, and made it official.</text>
+        </svg>
+
+        <p>The central insight, which is smaller than it looks, is that
+            all of these conventions pre-dated Markdown. Gruber did not
+            invent them. He noticed that people were already using
+            asterisks for emphasis; that hashes already felt like
+            section markers in notebooks and IRC; that brackets and
+            parentheses were already a footnote idiom; that dashes were
+            already the bullet of the unrendered. Markdown is a
+            codification of how people were already writing, not a
+            prescription of how people should write. One can teach the
+            entire language to a non-programmer in about ten minutes.
+            The challenge, oddly, is convincing them that this is all
+            there is.</p>
+
+        <p>This is the difference between a language and a convention
+            made explicit.</p>
+
+        <h2>The Fragmentation</h2>
+
+        <p>Gruber's informal prose specification, combined with known
+            edge-case bugs in Markdown.pl that he had stopped
+            maintaining, produced the predictable result. Implementations
+            diverged. PHP Markdown, Python-Markdown, Showdown (for
+            JavaScript), Marked, and a great many others each handled the
+            ambiguous cases differently. Writing a document that rendered
+            identically across all of them was, for the better part of a
+            decade, a minor dark art practised by the very patient.</p>
+
+        <p><a href="https://github.github.com/gfm/" target="_blank" rel="noopener">GitHub Flavored Markdown</a>,
+            introduced in 2009 and formally specified in 2017, added
+            tables, task lists, strikethrough, and autolinks. GFM is the
+            flavour that most developers now actually mean when they say
+            "Markdown". It has become, effectively, the default.</p>
+
+        <h2>The Standardisation</h2>
+
+        <p>In 2012,
+            <a href="https://pandoc.org/" target="_blank" rel="noopener">John MacFarlane</a>,
+            author of Pandoc, and
+            <a href="https://blog.codinghorror.com/standard-markdown-is-now-common-markdown/" target="_blank" rel="noopener">Jeff Atwood</a>,
+            co-founder of Stack Overflow and Discourse, began work on an
+            unambiguous specification. The effort drew contributors from
+            GitHub, GitLab, Reddit, and Stack Exchange. In September
+            2014, they launched
+            <a href="https://commonmark.org/" target="_blank" rel="noopener">CommonMark</a>:
+            a formal specification with over 500 conformance tests,
+            reference implementations in C and JavaScript, and
+            unambiguous rules for every edge case one might care to
+            argue about.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Markdown timeline: 2002 Aaron Swartz releases atx. March 2004 Gruber posts Introducing Markdown. December 2004 Gruber halts development. 2009 GitHub Flavored Markdown. 2012 MacFarlane and Atwood begin standardisation. September 2014 CommonMark launches with 500 conformance tests. 2025 Markdown is the most admired documentation format for the third year running." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tm-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tm-year { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .tm-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .tm-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .tm-line { stroke: var(--border); stroke-width: 1; fill: none; }
+            </style>
+            <text x="280" y="22" class="tm-title" text-anchor="middle">Twenty-One Years, Mostly Uneventful</text>
+
+            <line x1="30" y1="110" x2="530" y2="110" class="tm-line"/>
+
+            <circle cx="55" cy="110" r="4" fill="var(--accent)"/>
+            <text x="55" y="82" class="tm-year" text-anchor="middle">2002</text>
+            <text x="55" y="134" class="tm-text" text-anchor="middle">atx (Swartz)</text>
+            <text x="55" y="148" class="tm-muted" text-anchor="middle"># headings</text>
+
+            <circle cx="155" cy="110" r="5" fill="var(--accent)"/>
+            <text x="155" y="82" class="tm-year" text-anchor="middle">Mar 2004</text>
+            <text x="155" y="134" class="tm-text" text-anchor="middle">Markdown</text>
+            <text x="155" y="148" class="tm-muted" text-anchor="middle">1,400 lines Perl</text>
+
+            <circle cx="235" cy="110" r="4" fill="var(--accent)"/>
+            <text x="235" y="82" class="tm-year" text-anchor="middle">Dec 2004</text>
+            <text x="235" y="134" class="tm-text" text-anchor="middle">Gruber halts</text>
+            <text x="235" y="148" class="tm-muted" text-anchor="middle">development</text>
+
+            <circle cx="320" cy="110" r="4" fill="var(--accent)"/>
+            <text x="320" y="82" class="tm-year" text-anchor="middle">2009</text>
+            <text x="320" y="134" class="tm-text" text-anchor="middle">GFM</text>
+            <text x="320" y="148" class="tm-muted" text-anchor="middle">tables, tasks</text>
+
+            <circle cx="410" cy="110" r="5" fill="var(--accent)"/>
+            <text x="410" y="82" class="tm-year" text-anchor="middle">2014</text>
+            <text x="410" y="134" class="tm-text" text-anchor="middle">CommonMark</text>
+            <text x="410" y="148" class="tm-muted" text-anchor="middle">500+ tests</text>
+
+            <circle cx="505" cy="110" r="5" fill="var(--accent)"/>
+            <text x="505" y="82" class="tm-year" text-anchor="middle">2025</text>
+            <text x="505" y="134" class="tm-text" text-anchor="middle">most admired</text>
+            <text x="505" y="148" class="tm-muted" text-anchor="middle">3rd year running</text>
+
+            <text x="280" y="190" class="tm-muted" text-anchor="middle">A 21-year timeline in which not much had to change.</text>
+            <text x="280" y="206" class="tm-muted" text-anchor="middle">One does notice how short this picture is compared to the list of formats it replaced.</text>
+        </svg>
+
+        <p>Gruber objected to the original name, "Standard Markdown".
+            Atwood published a public apology, the project was renamed
+            to CommonMark, and Gruber eventually accepted the name.
+            Sharing the format, in the end, proved more important than
+            territory over it. Which was itself, one notes, rather a
+            Markdown-ish outcome.</p>
+
+        <h2>The Proof</h2>
+
+        <p>Twenty-one years after the Perl script and the blog post,
+            Markdown is the default writing surface of the modern
+            internet. GitHub, GitLab, Reddit, Discord, Stack Overflow,
+            and Swift all use CommonMark-based rendering. Notion,
+            Obsidian, Logseq, and an entire generation of
+            personal-knowledge-management tools store their content as
+            Markdown by default. For the third year running, the 2025
+            Stack Overflow Developer Survey lists Markdown as the most
+            admired documentation format of all.</p>
+
+        <p>ChatGPT, Claude, and every other major large language model
+            emit Markdown by default, because it is what humans now
+            read. The generation of developers who learned to write in
+            GitHub READMEs in the 2010s became the audience that LLM
+            outputs are now tuned for. The feedback loop is complete:
+            Markdown shaped the way humans write online, and now models
+            write back to humans in Markdown. One could not have planned
+            this if one tried, which is, of course, rather the point.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Markdown adoption landscape: collaboration platforms (GitHub, GitLab, Reddit, Discord, Stack Overflow, Swift), note-taking and personal knowledge management tools (Notion, Obsidian, Logseq), and large language models (ChatGPT, Claude, Gemini) all default to Markdown. A single 1,400-line Perl script from 2004 sits quietly at the centre of the diagram." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ad-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ad-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ad-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .ad-core { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ad-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ad-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ad-core-box { fill: none; stroke: var(--accent); stroke-width: 2; rx: 4; }
+            </style>
+            <text x="280" y="22" class="ad-title" text-anchor="middle">The Default Writing Surface</text>
+
+            <rect x="220" y="100" width="120" height="40" class="ad-core-box"/>
+            <text x="280" y="118" class="ad-core" text-anchor="middle">Markdown</text>
+            <text x="280" y="132" class="ad-muted" text-anchor="middle">1,400 lines, 2004</text>
+
+            <rect x="20" y="50" width="160" height="55" class="ad-box"/>
+            <text x="100" y="70" class="ad-head" text-anchor="middle">Collaboration</text>
+            <text x="100" y="86" class="ad-text" text-anchor="middle">GitHub, GitLab, Reddit,</text>
+            <text x="100" y="98" class="ad-text" text-anchor="middle">Discord, Stack Overflow</text>
+
+            <rect x="380" y="50" width="160" height="55" class="ad-box"/>
+            <text x="460" y="70" class="ad-head" text-anchor="middle">Knowledge</text>
+            <text x="460" y="86" class="ad-text" text-anchor="middle">Notion, Obsidian,</text>
+            <text x="460" y="98" class="ad-text" text-anchor="middle">Logseq, Joplin</text>
+
+            <rect x="20" y="145" width="160" height="55" class="ad-box"/>
+            <text x="100" y="165" class="ad-head" text-anchor="middle">Documentation</text>
+            <text x="100" y="181" class="ad-text" text-anchor="middle">Swift docs, MkDocs,</text>
+            <text x="100" y="193" class="ad-text" text-anchor="middle">Hugo, Docusaurus</text>
+
+            <rect x="380" y="145" width="160" height="55" class="ad-box"/>
+            <text x="460" y="165" class="ad-head" text-anchor="middle">LLM output</text>
+            <text x="460" y="181" class="ad-text" text-anchor="middle">ChatGPT, Claude,</text>
+            <text x="460" y="193" class="ad-text" text-anchor="middle">Gemini, all of them</text>
+
+            <line x1="180" y1="77" x2="220" y2="110" stroke="var(--accent)" stroke-width="1"/>
+            <line x1="380" y1="77" x2="340" y2="110" stroke="var(--accent)" stroke-width="1"/>
+            <line x1="180" y1="172" x2="220" y2="130" stroke="var(--accent)" stroke-width="1"/>
+            <line x1="380" y1="172" x2="340" y2="130" stroke="var(--accent)" stroke-width="1"/>
+
+            <text x="280" y="225" class="ad-muted" text-anchor="middle">The feedback loop: Markdown shaped how humans write online. Now models write back in Markdown.</text>
+        </svg>
+
+        <h2>Aaron</h2>
+
+        <p>Aaron Swartz died in January 2013, aged twenty-six, during a
+            federal prosecution for downloading academic papers from
+            JSTOR. He was, by any reasonable measure, one of the most
+            consequential programmers of his generation: co-author of
+            the
+            <a href="https://en.wikipedia.org/wiki/RSS" target="_blank" rel="noopener">RSS 1.0 specification</a>
+            at age fourteen, principal architect of the Creative Commons
+            technical infrastructure, founder of the web.py framework,
+            co-founder of Reddit, and the "sole beta-tester" whose
+            feedback shaped Markdown's syntax during its year of
+            design.</p>
+
+        <p>The technologies he helped shape (RSS, Creative Commons,
+            Markdown) continue to do quietly, and rather well, what they
+            were meant to do: make written information easier to share,
+            to read, and to preserve. One does not quite read a README
+            without thinking of him.</p>
+
+        <h2>The Point</h2>
+
+        <p>Markdown was not engineered for scale. It was engineered for
+            readability. It did not aim for standards-body approval. It
+            did not aim to be taught in schools. It aimed for something
+            smaller and rather harder: a syntax that a writer could use
+            without feeling they were tagging their own prose.</p>
+
+        <p>Twenty-one years later, plain text won. One rather thought it
+            might.</p>
+
+        <blockquote>
+            <p>15 March 2004: Gruber posts "Introducing Markdown".
+                Aaron Swartz is the sole beta-tester. 1,400 lines of
+                Perl, no lexer, no parser, no AST. 2009: GFM adds
+                tables and task lists. 2014: CommonMark, 500+ conformance
+                tests. 2025: most admired documentation format, third
+                year running. Every major LLM emits Markdown by default.
+                Plain text won.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Markdown, the short version:</strong></p>
+            <ul>
+                <li><strong>Origin:</strong> 15 March 2004. Gruber's blog post plus Markdown.pl, ~1,400 lines of Perl. Aaron Swartz sole beta-tester; hash headings from Swartz's 2002 atx</li>
+                <li><strong>Design goal:</strong> "Publishable as-is, as plain text, without looking like it has been tagged or formatted with special instructions"</li>
+                <li><strong>Fragmentation:</strong> Informal spec + unfixed bugs &#x2192; PHP Markdown, Python-Markdown, Showdown, Marked all diverged. GFM (2009, spec 2017) added tables, task lists, strikethrough, autolinks</li>
+                <li><strong>Standardisation:</strong> CommonMark, September 2014. MacFarlane (Pandoc) + Atwood (Stack Overflow, Discourse). 500+ conformance tests. Name dispute resolved with an apology</li>
+                <li><strong>Adoption:</strong> GitHub, GitLab, Reddit, Discord, Stack Overflow, Swift, Notion, Obsidian, Logseq. 2025 SO Survey: most admired documentation format, 3rd year. Every major LLM emits Markdown by default</li>
+                <li><strong>Aaron Swartz:</strong> RSS 1.0 at 14, Creative Commons architect, web.py, Reddit co-founder, Markdown co-shaper. Died January 2013, aged 26</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,315 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Compute-Is-Cheap Decade &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Knuth's full quote was 97%/3%. Only the 97% survived. Discord Go to Rust: memory down 40%, latency 160x. Twitter: 148,000 servers decommissioned. WhatsApp 2015: 1 engineer per 18 million users. Data centres: 415 TWh in 2024, 945 TWh projected by 2030.">
+{( endslot )}
+
+{( slot canonical )}/blog/compute-is-cheap-decade{( endslot )}
+
+{( slot og-title )}The Compute-Is-Cheap Decade &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}A generation trained on frameworks, never the layers underneath. Discord rewrote Go in Rust. Twitter decommissioned 148,000 servers and continued to function. Data centres now consume 415 TWh and rising at 17% per year. The bill was always there.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Compute-Is-Cheap Decade",
+    "datePublished": "2026-04-18",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/compute-is-cheap-decade",
+    "description": "Knuth's quote was 97%/3%. Only the 97% survived. Discord, Twitter, and WhatsApp show the 3% still exists. Data centres: 415 TWh and rising at 17% per year.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-18">18 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Compute-Is-Cheap Decade</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">cloud</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Beta Stories</em> &#x25A0; Episode 08</p>
+
+        <p>In 1974,
+            <a href="https://dl.acm.org/doi/10.1145/356635.356640" target="_blank" rel="noopener">Donald Knuth wrote a sentence</a>
+            that would later be deployed to justify rather a lot of
+            mediocre software:</p>
+
+        <blockquote>
+            <p>"Premature optimisation is the root of all evil."</p>
+        </blockquote>
+
+        <p>A splendid line. Short, memorable, and almost invariably quoted
+            without the qualifier that precedes it and the one that
+            follows. The full sentence, for those with the constitution to
+            read it, runs rather differently:</p>
+
+        <blockquote>
+            <p>"We should forget about small efficiencies, say about
+                <strong>97% of the time</strong>: premature optimisation is
+                the root of all evil. Yet we should not pass up our
+                opportunities in that <strong>critical 3%</strong>."</p>
+        </blockquote>
+
+        <svg viewBox="0 0 560 220" aria-label="Knuth quote dissected: the industry kept the 97 per cent and forgot the 3 per cent. The full quote contained both." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .kn-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .kn-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .kn-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 20px; font-weight: 700; }
+                .kn-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .kn-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .kn-strike { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; text-decoration: line-through; }
+                .kn-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .kn-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="kn-title" text-anchor="middle">What Knuth Actually Wrote</text>
+
+            <rect x="20" y="45" width="250" height="130" class="kn-box"/>
+            <text x="145" y="68" class="kn-head" text-anchor="middle">The 97%</text>
+            <text x="145" y="96" class="kn-num" text-anchor="middle">kept</text>
+            <text x="145" y="120" class="kn-text" text-anchor="middle">"premature optimisation</text>
+            <text x="145" y="134" class="kn-text" text-anchor="middle">is the root of all evil"</text>
+            <text x="145" y="160" class="kn-muted" text-anchor="middle">universally quoted, weaponised</text>
+
+            <rect x="290" y="45" width="250" height="130" class="kn-box-accent"/>
+            <text x="415" y="68" class="kn-head" text-anchor="middle">The 3%</text>
+            <text x="415" y="96" class="kn-num" text-anchor="middle">forgotten</text>
+            <text x="415" y="120" class="kn-text" text-anchor="middle">"we should not pass up</text>
+            <text x="415" y="134" class="kn-text" text-anchor="middle">opportunities in that critical 3%"</text>
+            <text x="415" y="160" class="kn-muted" text-anchor="middle">the clause that justified the work</text>
+
+            <text x="280" y="205" class="kn-muted" text-anchor="middle">The 3% disappeared. Only the 97% survived. An entire industry built its habits on the surviving half.</text>
+        </svg>
+
+        <p>The 3% disappeared. Only the 97% survived. An industry built
+            its habits on the surviving half. Combined with Moore's Law on
+            the hardware side and an invisible cloud bill on the
+            procurement side, a generation of developers grew up assuming
+            computational waste was a solved problem. Hardware, after all,
+            is cheap.</p>
+
+        <h2>The Decay</h2>
+
+        <p>Median desktop web page weight in
+            <a href="https://almanac.httparchive.org/en/2024/page-weight" target="_blank" rel="noopener">2010 was roughly 500 KB</a>;
+            in
+            <a href="https://almanac.httparchive.org/en/2025/page-weight" target="_blank" rel="noopener">2025 it is 2.9 MB</a>.
+            A 5.3x inflation for, very often, the same paragraph of text
+            and a photograph. One does note that the paragraph has not
+            grown.</p>
+
+        <p>Slack, originally built to send short messages, routinely
+            consumes well above 1 GB of RAM on a modern desktop.
+            <a href="https://discord.com/blog/why-discord-is-switching-from-go-to-rust" target="_blank" rel="noopener">Discord</a>
+            took the same lesson in the opposite direction. Until 2020,
+            their Go-based Read States service suffered from
+            garbage-collector spikes that fleets of boxes could barely
+            contain. They rewrote it in Rust. Memory dropped by 40 per
+            cent. Latency improved 6.5x in the best case and 160x in the
+            worst. Same product. Less hardware. The difference was not
+            magic. It was the willingness to look at what was running.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Three case studies in computational discipline: Discord Go to Rust (memory down 40 per cent, latency improved up to 160x), Twitter 2022 (148,000 servers decommissioned, cloud spend down 60 to 75 per cent), WhatsApp 2015 (one engineer per 18 million users)." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cs-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cs-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .cs-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 16px; font-weight: 700; }
+                .cs-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .cs-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .cs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="cs-title" text-anchor="middle">The 3% Is Still Out There</text>
+
+            <rect x="20" y="45" width="165" height="140" class="cs-box"/>
+            <text x="102" y="66" class="cs-head" text-anchor="middle">Discord 2020</text>
+            <text x="102" y="90" class="cs-num" text-anchor="middle">-40%</text>
+            <text x="102" y="106" class="cs-text" text-anchor="middle">memory on Read States</text>
+            <text x="102" y="128" class="cs-num" text-anchor="middle">160x</text>
+            <text x="102" y="144" class="cs-text" text-anchor="middle">worst-case latency</text>
+            <text x="102" y="168" class="cs-muted" text-anchor="middle">Go &#x2192; Rust.</text>
+            <text x="102" y="180" class="cs-muted" text-anchor="middle">Same product.</text>
+
+            <rect x="197" y="45" width="165" height="140" class="cs-box"/>
+            <text x="280" y="66" class="cs-head" text-anchor="middle">Twitter 2022</text>
+            <text x="280" y="90" class="cs-num" text-anchor="middle">148,000</text>
+            <text x="280" y="106" class="cs-text" text-anchor="middle">servers decommissioned</text>
+            <text x="280" y="128" class="cs-num" text-anchor="middle">-60 to -75%</text>
+            <text x="280" y="144" class="cs-text" text-anchor="middle">cloud spend</text>
+            <text x="280" y="168" class="cs-muted" text-anchor="middle">Sacramento DC exit.</text>
+            <text x="280" y="180" class="cs-muted" text-anchor="middle">The site still loaded.</text>
+
+            <rect x="375" y="45" width="165" height="140" class="cs-box"/>
+            <text x="457" y="66" class="cs-head" text-anchor="middle">WhatsApp 2015</text>
+            <text x="457" y="90" class="cs-num" text-anchor="middle">900M</text>
+            <text x="457" y="106" class="cs-text" text-anchor="middle">users</text>
+            <text x="457" y="128" class="cs-num" text-anchor="middle">50</text>
+            <text x="457" y="144" class="cs-text" text-anchor="middle">engineers (1:18M)</text>
+            <text x="457" y="168" class="cs-muted" text-anchor="middle">FreeBSD + Erlang.</text>
+            <text x="457" y="180" class="cs-muted" text-anchor="middle">Acquisition ended it.</text>
+
+            <text x="280" y="210" class="cs-muted" text-anchor="middle">The ratio was deliberate. Most companies do not aim for it; most do not consider that they could.</text>
+        </svg>
+
+        <p>Set politics aside: in November 2022,
+            <a href="https://www.cnbc.com/2023/01/20/twitter-is-down-to-fewer-than-550-full-time-engineers.html" target="_blank" rel="noopener">Elon Musk dismissed roughly 80 per cent of Twitter's staff</a>
+            and demanded $1 billion in annual infrastructure cuts. Twitter
+            <a href="https://www.datacenterdynamics.com/en/news/xtwitter-claims-100m-in-annual-savings-after-exiting-sacramento-data-center/" target="_blank" rel="noopener">exited its Sacramento data centre</a>,
+            decommissioning 5,200 racks and 148,000 servers. Cloud spend
+            dropped 60 to 75 per cent. The
+            <a href="https://nibzard.github.io/twitter-algorithm-tufte/" target="_blank" rel="noopener">Scala recommendation engine was rewritten in Rust</a>,
+            and the resulting Home Mixer ran roughly 10x faster than its
+            predecessor. The site continued to function. Faster than
+            before, in fact. One does pause at this.</p>
+
+        <p>WhatsApp, for context, served
+            <a href="https://sequoiacap.com/article/four-numbers-that-explain/" target="_blank" rel="noopener">900 million users in 2015 with fifty engineers</a>.
+            A ratio of one engineer per eighteen million users. The stack
+            was
+            <a href="https://medium.com/@yashbatra11111/whatsapps-billion-user-database-how-freebsd-and-erlang-handled-the-impossible-5e699f7f078d" target="_blank" rel="noopener">FreeBSD with Erlang, ejabberd, the BEAM virtual machine, and Mnesia</a>.
+            The ratio was deliberate. Most companies do not aim for it;
+            most companies do not consider that they could.</p>
+
+        <p>Then Facebook bought it. The stack
+            <a href="https://news.ycombinator.com/item?id=22028689" target="_blank" rel="noopener">moved from FreeBSD to Linux</a>,
+            not because Linux was technically preferable, but because it
+            fit the new owner's containerised operations. By 2024, the
+            fifty engineers had become roughly two and a half thousand.
+            The architecture survived its original engineers. It did not
+            survive the acquisition.</p>
+
+        <h2>The Mechanism</h2>
+
+        <p>The cloud abstracts cost away from the developer. An additional
+            instance is a single API call; the bill arrives at someone
+            else's desk, usually accompanied by an emailed PDF and a
+            quarter-end conversation with procurement. By 2010, the
+            mechanism was complete: Moore's Law on the hardware side, AWS
+            on the procurement side, and "premature optimisation" on the
+            cultural side. Each reinforced the others.</p>
+
+        <p>Every generation since has trained on frameworks, never the
+            layers underneath. React, Next.js, an npm tree of 1,400
+            packages, and a build script that needs four gigabytes of
+            memory to produce a landing page. The runtime cost is
+            invisible until the cloud bill becomes visible, at which
+            point the architecture is too large to change and the person
+            who could have asked the question has been promoted out of
+            asking it.</p>
+
+        <p>Bootcamps, in particular, optimise for time-to-employability.
+            That means teaching the framework, not the model underneath
+            it. The student ships, the company hires, and the question of
+            what happens at runtime is deferred indefinitely. By the time
+            the engineer is senior enough to ask it, the system is large
+            enough that nobody else wants to.</p>
+
+        <h2>The Signal</h2>
+
+        <p>Your build script needs 4 GB of RAM. Your editor consumes 800
+            MB to display text. The architecture review concludes "we'll
+            scale horizontally". A senior engineer suggests the data
+            structure could be smaller, and is politely informed that
+            this is premature optimisation.</p>
+
+        <p>The single most reliable signal is the question that never
+            gets asked: how much does this cost to run? Not in
+            development hours, not in team size, but in watts, in
+            memory, in the laptop fan currently audible under your
+            fingertips.</p>
+
+        <h2>The Bill</h2>
+
+        <p>Globally,
+            <a href="https://www.iea.org/reports/energy-and-ai/energy-demand-from-ai" target="_blank" rel="noopener">data centres consumed 415 TWh of electricity in 2024</a>,
+            approximately 1.5 per cent of all electricity produced on the
+            planet. In 2025 the figure rose 17 per cent year on year,
+            against 3 per cent growth in general electricity demand. The
+            <a href="https://www.spglobal.com/energy/en/news-research/latest-news/electric-power/041025-global-data-center-power-demand-to-double-by-2030-on-ai-surge-iea" target="_blank" rel="noopener">IEA projects 945 TWh by 2030</a>:
+            roughly twice today's figure, and four times the growth rate
+            of all other sectors combined. AI is responsible for 5 to 15
+            per cent of data centre power today, projected to reach 35 to
+            50 per cent by 2030.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Global data centre electricity consumption: 415 TWh in 2024 (1.5 per cent of world supply), 486 TWh in 2025 (17 per cent growth), 945 TWh projected by 2030 (approximately 2.3x today). AI share rises from 5 to 15 per cent today to 35 to 50 per cent by 2030." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .bl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .bl-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 14px; font-weight: 700; }
+                .bl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .bl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .bl-bar { fill: var(--border); rx: 2; }
+                .bl-bar-accent { fill: var(--accent); rx: 2; }
+            </style>
+            <text x="280" y="22" class="bl-title" text-anchor="middle">Global Data Centre Electricity &#x2014; TWh per Year</text>
+
+            <text x="20" y="62" class="bl-text">2024</text>
+            <rect x="80" y="50" width="175" height="18" class="bl-bar"/>
+            <text x="265" y="62" class="bl-num">415 TWh</text>
+            <text x="340" y="62" class="bl-muted">1.5% of global supply</text>
+
+            <text x="20" y="96" class="bl-text">2025</text>
+            <rect x="80" y="84" width="205" height="18" class="bl-bar"/>
+            <text x="295" y="96" class="bl-num">~486 TWh</text>
+            <text x="380" y="96" class="bl-muted">+17% YoY (vs 3% general)</text>
+
+            <text x="20" y="130" class="bl-text">2030</text>
+            <rect x="80" y="118" width="400" height="18" class="bl-bar-accent"/>
+            <text x="490" y="130" class="bl-num">945 TWh</text>
+
+            <text x="280" y="162" class="bl-muted" text-anchor="middle">AI share: 5-15% today &#x2192; 35-50% by 2030.</text>
+            <text x="280" y="180" class="bl-muted" text-anchor="middle">Growth rate: 4x every other electricity sector combined.</text>
+
+            <line x1="80" y1="200" x2="480" y2="200" stroke="var(--border)" stroke-width="1"/>
+            <text x="280" y="222" class="bl-muted" text-anchor="middle">Hardware is not free. It was simply cheap enough that nobody bothered to look at the bill.</text>
+        </svg>
+
+        <p>These numbers are not abstract. They translate into transformer
+            stations, transmission lines, cooling water, and the carbon
+            budget of countries that made political commitments years ago
+            and now find themselves in an arithmetic problem.</p>
+
+        <p>Hardware is not free. It was simply cheap enough that nobody
+            bothered to look at the bill. The bill, as it turns out, is
+            paid by the grid, the cooling, the climate, and the laptop
+            fan currently spinning under your fingertips.</p>
+
+        <blockquote>
+            <p>Knuth's full quote was 97%/3%. Only the 97% survived.
+                Discord rewrote Go in Rust: memory down 40%, latency 160x.
+                Twitter decommissioned 148,000 servers and continued to
+                function. WhatsApp 2015: fifty engineers for 900 million
+                users. Global data centres: 415 TWh in 2024, 945 TWh
+                projected by 2030. The bill was always there.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The compute-is-cheap decade, itemised:</strong></p>
+            <ul>
+                <li><strong>The misquote:</strong> Knuth wrote "97% of the time... yet we should not pass up our opportunities in that critical 3%". The 3% clause disappeared</li>
+                <li><strong>The evidence:</strong> Page weight 500 KB (2010) &#x2192; 2.9 MB (2025). Slack uses 1 GB of RAM to send messages. Build scripts need 4 GB</li>
+                <li><strong>The counter-examples:</strong> Discord Go &#x2192; Rust (-40% memory, 160x latency). Twitter 2022 (148,000 servers decommissioned, -60 to -75% cloud). WhatsApp 2015 (50 engineers, 900M users)</li>
+                <li><strong>The mechanism:</strong> Moore's Law + AWS + "premature optimisation" + frameworks all the way down. Runtime cost invisible until cloud bill isn't</li>
+                <li><strong>The bill:</strong> 415 TWh (2024, 1.5% of global). +17% in 2025 vs 3% general. 945 TWh projected 2030. AI share rising 5-15% &#x2192; 35-50%</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

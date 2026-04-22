@@ -1,0 +1,281 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}ssh-agent &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="2,624 lines of C. One file. One socket. One environment variable. No config. The private key never leaves the process. Tatu Ylonen wrote it in 1995 because typing passphrases was tedious. It is still the authentication backbone of modern software delivery.">
+{( endslot )}
+
+{( slot canonical )}/blog/ssh-agent{( endslot )}
+
+{( slot og-title )}ssh-agent &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}2,624 lines of C. One file. One socket. No config. No YAML. The private key never leaves the process. Born from impatience in 1995, designed with discipline, still the authentication backbone of every CI/CD system on earth.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "ssh-agent",
+    "datePublished": "2026-04-14",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/ssh-agent",
+    "description": "2,624 lines of C. One file. One socket. No config. The private key never leaves the process. Born from impatience, designed with discipline.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-14">14 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>ssh-agent</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">ssh</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 31</p>
+
+        <p>You have typed your passphrase four times this morning. Once
+            to pull from GitHub. Once to deploy to staging. Once to SSH
+            into production. Once because you mistyped it the third time
+            and had to start over. By lunch, you will have typed it twelve
+            more times, and by the end of the week you will have created
+            a key without a passphrase because life, one feels, is too
+            short.</p>
+
+        <p>Congratulations. Your private key is now a plaintext file on
+            disk. Anyone who reads <code>~/.ssh/id_ed25519</code> owns
+            every server you can reach. This is not a hypothetical. This
+            is a Tuesday.</p>
+
+        <p>In 1995, a password-sniffing attack hit the network at Helsinki
+            University of Technology.
+            <a href="https://machaddr.substack.com/p/ssh-the-origins-of-how-tatu-ylonen" target="_blank" rel="noopener">Tatu Ylonen</a>,
+            a researcher there, decided this was unacceptable and wrote SSH
+            that same year. As part of that implementation, he wrote
+            ssh-agent: a process that holds your private keys in memory and
+            signs authentication challenges on your behalf. The key never
+            leaves the process. Not to the client. Not to the server. Not
+            to the wire. Never.</p>
+
+        <p>Thirty-one years later, that agent is still the authentication
+            backbone of modern software delivery.</p>
+
+        <h2>The Design</h2>
+
+        <p>The entire agent is
+            <a href="https://github.com/openssh/openssh-portable/blob/master/ssh-agent.c" target="_blank" rel="noopener">2,624 lines of C</a>
+            in a single file: <code>ssh-agent.c</code>. Key storage, socket
+            management, the full agent protocol, PKCS#11 smart card support,
+            FIDO/U2F hardware key support, agent forwarding with destination
+            constraints, and locking. In one file. Shorter than most React
+            components one has had the pleasure of reviewing.</p>
+
+        <p>The API is a Unix domain socket. When the agent starts, it
+            creates a socket, sets its permissions to owner-only
+            (<code>umask(0177)</code>), and prints two environment
+            variables:</p>
+
+        <pre><code>SSH_AUTH_SOCK=/tmp/ssh-XXXXXXXXXX/agent.12345
+SSH_AGENT_PID=12345</code></pre>
+
+        <p>That is the entire interface. No configuration file. No service
+            manager. No daemon registration. No YAML. The socket exists.
+            Programs that know <code>SSH_AUTH_SOCK</code> can talk to it.
+            Programs that do not, cannot. One does find this rather
+            refreshing.</p>
+
+        <svg viewBox="0 0 560 200" aria-label="ssh-agent protocol: five operations. List keys, sign data, add key, remove key, lock/unlock. The private key never crosses a process boundary." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sa-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .sa-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .sa-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .sa-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .sa-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .sa-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .sa-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="sa-title" text-anchor="middle">The Protocol: Five Operations</text>
+            <rect x="20" y="38" width="100" height="40" class="sa-box"/><text x="70" y="56" class="sa-head" text-anchor="middle">List keys</text><text x="70" y="72" class="sa-muted" text-anchor="middle">public keys</text>
+            <rect x="130" y="38" width="100" height="40" class="sa-box-accent"/><text x="180" y="56" class="sa-head" text-anchor="middle">Sign data</text><text x="180" y="72" class="sa-muted" text-anchor="middle">signature only</text>
+            <rect x="240" y="38" width="100" height="40" class="sa-box"/><text x="290" y="56" class="sa-head" text-anchor="middle">Add key</text><text x="290" y="72" class="sa-muted" text-anchor="middle">+ constraints</text>
+            <rect x="350" y="38" width="100" height="40" class="sa-box"/><text x="400" y="56" class="sa-head" text-anchor="middle">Remove key</text><text x="400" y="72" class="sa-muted" text-anchor="middle">one or all</text>
+            <rect x="460" y="38" width="80" height="40" class="sa-box"/><text x="500" y="56" class="sa-head" text-anchor="middle">Lock</text><text x="500" y="72" class="sa-muted" text-anchor="middle">passphrase</text>
+            <text x="280" y="108" class="sa-muted" text-anchor="middle">The IETF draft describing the protocol is shorter than most framework tutorials.</text>
+            <text x="280" y="130" class="sa-title" text-anchor="middle">2,624 Lines of C. One File. 31 Years.</text>
+            <text x="280" y="155" class="sa-muted" text-anchor="middle">Key storage + socket + protocol + PKCS#11 + FIDO + forwarding + locking.</text>
+            <text x="280" y="175" class="sa-muted" text-anchor="middle">Shorter than most React components one has had the pleasure of reviewing.</text>
+            <text x="280" y="195" class="sa-muted" text-anchor="middle">No configuration file. No YAML. No cloud dependency. No subscription.</text>
+        </svg>
+
+        <h2>The Elegance</h2>
+
+        <p>The authentication flow:</p>
+
+        <ol>
+            <li>Your SSH client connects to a server</li>
+            <li>The server sends a challenge (data to be signed)</li>
+            <li>The client forwards the challenge to the agent via the Unix socket</li>
+            <li>The agent signs the challenge with the private key internally</li>
+            <li>The agent returns only the signature</li>
+            <li>The client sends the signature to the server</li>
+        </ol>
+
+        <p>Step four is where the beauty lives. The agent calls the signing
+            function internally. The result, a sequence of signature bytes,
+            is sent back to the client. The private key material never
+            crosses a process boundary. It is never serialised to any output
+            channel. It exists in exactly one place: the agent's memory.</p>
+
+        <p>When the agent process terminates, the operating system reclaims
+            the memory. The keys are gone. No cleanup script. No cache file
+            to purge. No "secure delete" to trust. No residual state. The
+            process was the vault, and the vault is demolished.</p>
+
+        <p>The agent also monitors its parent process. If the parent shell
+            dies (detected by <code>getppid()</code> returning 1), the agent
+            cleans up its socket and exits. No orphan processes accumulating
+            in your process table. One does appreciate software that tidies
+            up after itself.</p>
+
+        <h2>The Constraints</h2>
+
+        <p><code>ssh-add</code> is the interface for managing keys in the
+            agent:</p>
+
+        <pre><code>ssh-add ~/.ssh/id_ed25519          # Add a key (passphrase prompt)
+ssh-add -t 3600                     # Key expires after 1 hour
+ssh-add -c                          # Confirm each signing operation
+ssh-add -l                          # List loaded key fingerprints
+ssh-add -D                          # Delete all keys</code></pre>
+
+        <p>The <code>-t</code> flag stores an absolute expiry time. After
+            that time, the key is automatically removed. No cron job. No
+            external timer. The <code>-c</code> flag requires interactive
+            confirmation before every signing operation. You see who is
+            asking, and you decide whether to sign. For forwarded agents,
+            this is the difference between convenience and a security
+            incident.</p>
+
+        <p>The locking mechanism makes all keys inaccessible until the
+            agent is unlocked with the correct passphrase. For stepping away
+            from your desk, this is rather more civilised than terminating
+            the agent and re-adding all keys when you return.</p>
+
+        <h2>The Security</h2>
+
+        <p>The agent takes security seriously at the implementation
+            level:</p>
+
+        <ul>
+            <li><strong>Anti-tracing:</strong> <code>platform_disable_tracing(0)</code> at startup prevents other processes from attaching a debugger to read key material from memory</li>
+            <li><strong>Privilege dropping:</strong> <code>setegid(getgid())</code> at startup. The agent runs with minimal privileges</li>
+            <li><strong>Memory hygiene:</strong> <code>freezero()</code> for PINs (zeroes memory before freeing). <code>explicit_bzero()</code> for lock password hashes, which prevents the compiler from optimising away the zeroing because the variable is "no longer used"</li>
+            <li><strong>Socket permissions:</strong> created with <code>umask(0177)</code>. Owner-only access. The directory is created with <code>mkdtemp()</code> for additional protection</li>
+        </ul>
+
+        <p>These are not features listed on a marketing page. These are
+            manners. The kind of quiet, disciplined engineering that
+            distinguishes software built by people who understand what
+            they are protecting.</p>
+
+        <h2>Agent Forwarding</h2>
+
+        <p>Agent forwarding (<code>ssh -A</code> or
+            <code>ForwardAgent yes</code>) allows a remote machine to use
+            your local agent. The remote <code>sshd</code> creates a Unix
+            socket, sets <code>SSH_AUTH_SOCK</code>, and tunnels requests
+            back through the SSH connection to your local agent. You can
+            hop from server to server without copying keys.</p>
+
+        <p>The risk: anyone with root on the remote machine can access the
+            forwarded socket while your session is active. The mitigations
+            are characteristically minimal. <code>ssh-add -c</code> requires
+            confirmation per use. <code>ProxyJump</code> avoids forwarding
+            entirely by routing through an intermediate host without giving
+            it agent access. Recent OpenSSH versions add
+            <a href="https://vincent.bernat.ch/en/blog/2020-safer-ssh-agent-forwarding" target="_blank" rel="noopener">destination constraints</a>:
+            keys can be restricted to specific hosts.</p>
+
+        <p>The design philosophy is consistent: provide the mechanism, make
+            the risks visible, let the operator decide. No hand-holding. No
+            default that pretends to be safe. Honest tooling for people who
+            read the man page.</p>
+
+        <h2>The Proof</h2>
+
+        <p>Every CI/CD system on earth uses ssh-agent.
+            <a href="https://github.com/webfactory/ssh-agent" target="_blank" rel="noopener">GitHub Actions</a>
+            has a dedicated action.
+            <a href="https://docs.gitlab.com/ci/jobs/ssh_keys/" target="_blank" rel="noopener">GitLab's documentation</a>
+            recommends <code>eval $(ssh-agent -s)</code> as the standard
+            pattern. Jenkins, CircleCI, Buildkite, Travis CI: all use the
+            agent protocol.</p>
+
+        <p>macOS integrated ssh-agent into the system keychain with Leopard
+            in 2007. <code>ssh-add --apple-use-keychain</code> stores
+            passphrases in Keychain, bridging the Unix tool with Apple's
+            credential infrastructure.
+            <a href="https://developer.1password.com/docs/ssh/agent/" target="_blank" rel="noopener">1Password</a>
+            and Bitwarden now implement the agent protocol natively. An API
+            designed by a Finnish researcher in 1995, communicating over a
+            Unix socket named by an environment variable, is the
+            authentication backbone of modern software delivery.</p>
+
+        <p>One does find this rather beautiful.</p>
+
+        <h2>The Principle</h2>
+
+        <p>ssh-agent is 2,624 lines of C. One file. One socket. One
+            environment variable. No configuration file. No YAML. No cloud
+            dependency. No subscription. The private key never leaves the
+            process, the process never outlives the session, and the session
+            never trusts more than it must.</p>
+
+        <p>Tatu Ylonen wrote it because typing passphrases was tedious.
+            The best Unix tools often begin this way: someone finds a task
+            annoying, writes a small programme to solve it, and designs it
+            with enough discipline that it still works thirty-one years
+            later. No rewrite. No framework migration. No breaking
+            changes.</p>
+
+        <p>Technical beauty emerges from reduction. ssh-agent reduced
+            authentication to five operations, one socket, and the
+            guarantee that the secret never leaves the room.</p>
+
+        <blockquote>
+            <p>2,624 lines of C. One file. One socket. One environment
+                variable. Five protocol operations. No configuration.
+                The private key never leaves the process. The process
+                never outlives the session. Born from impatience in 1995,
+                designed with discipline, still the authentication
+                backbone of every CI/CD system on earth.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>ssh-agent, itemised:</strong></p>
+            <ul>
+                <li><strong>Design:</strong> 2,624 LoC, one file, 31 years. 5 operations: list, sign, add, remove, lock</li>
+                <li><strong>Security:</strong> ptrace disabled. Memory zeroed before free. Socket owner-only. Key never leaves process</li>
+                <li><strong>Constraints:</strong> <code>-t</code> expiry, <code>-c</code> confirmation, locking with passphrase</li>
+                <li><strong>Adoption:</strong> GitHub Actions, GitLab, Jenkins, CircleCI. macOS Keychain. 1Password, Bitwarden</li>
+                <li><a href="https://man.openbsd.org/ssh-agent" target="_blank" rel="noopener">man ssh-agent</a> &#x25A0;
+                    <a href="https://github.com/openssh/openssh-portable" target="_blank" rel="noopener">OpenSSH source</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

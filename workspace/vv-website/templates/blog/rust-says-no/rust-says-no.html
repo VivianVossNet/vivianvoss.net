@@ -1,0 +1,396 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Rust Says No &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 2006, Graydon Hoare walked up twenty-one flights of stairs because his elevator had crashed. Memory bug. C code. He started writing Rust that evening. Named it after a fungus over-engineered for survival.">
+{( endslot )}
+
+{( slot canonical )}/blog/rust-says-no{( endslot )}
+
+{( slot og-title )}Rust Says No &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}No null. No exceptions. No garbage collector. No inheritance. Every feature a language grants is a failure mode it accepts. Rust's genius is the courage to refuse. The elevator stops crashing.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Rust Says No",
+    "datePublished": "2026-04-09",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/rust-says-no",
+    "description": "No null. No exceptions. No GC. No inheritance. Every no eliminates a category of bugs. Rust's genius is the courage to refuse.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-09">9 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Rust Says No</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">security</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>By Design</em> &#x25A0; Episode 3</p>
+
+        <p>You have written this bug. You have returned null from a function
+            because the real value was not available yet. You have caught an
+            exception three levels up and logged "something went wrong"
+            without knowing what. You have pushed to production, and at
+            3 AM the on-call phone rang because a pointer pointed to memory
+            that no longer existed.</p>
+
+        <p>Every language you have ever used let you compile that code.
+            Every single one said: "Looks fine to me."</p>
+
+        <p>In 2006,
+            <a href="https://www.technologyreview.com/2023/02/14/1067869/rust-worlds-fastest-growing-programming-language/" target="_blank" rel="noopener">Graydon Hoare walked up twenty-one flights of stairs</a>
+            to his apartment in Vancouver because his elevator had crashed.
+            The software, written in C, had a memory bug. The elevator ran
+            on code that could access freed memory, dereference null pointers,
+            and corrupt its own state. Hoare lived on the 21st floor. It was
+            not the first time the elevator had crashed. It was, however,
+            the last time he accepted it as normal.</p>
+
+        <p>He started writing a programming language that evening. He named
+            it after the rust fungus: an organism, as MIT Technology Review
+            later noted, "over-engineered for survival." Rather fitting.</p>
+
+        <h2>The Complaint</h2>
+
+        <p>"Rust is too hard. The borrow checker fights you. There is no
+            garbage collector. No null. No exceptions. No inheritance.
+            Everything is immutable by default. Why does this language say
+            no to everything?"</p>
+
+        <p>One does hear this. Usually from someone whose last production
+            outage was caused by one of those features.</p>
+
+        <h2>No Garbage Collector</h2>
+
+        <p>You know the garbage collector pause that spiked your latency?
+            The one you tuned, and tuned, and tuned, and then it spiked
+            again?</p>
+
+        <p>Memory in Rust is managed by ownership. Every value has exactly
+            one owner. When the owner goes out of scope, the value is freed.
+            No garbage collector runs in the background. No stop-the-world
+            pauses. No GC tuning. No memory leaked because a reference was
+            held somewhere you forgot about.</p>
+
+        <p><a href="https://discord.com/blog/why-discord-is-switching-from-go-to-rust" target="_blank" rel="noopener">Discord documented this</a>
+            in a now-famous blog post. Their Read States service, written in
+            Go, experienced latency spikes every two minutes. The Go garbage
+            collector paused to scan the entire LRU cache. The spikes were
+            not caused by garbage, but by the GC scanning live data. The
+            cache was mostly alive. The scan was mostly pointless. The
+            latency was entirely real.</p>
+
+        <p>They rewrote it in Rust. The latency dropped from milliseconds
+            to microseconds. The spikes disappeared. Not because the Rust
+            code was more clever. Because there was no garbage collector to
+            pause. One does rather appreciate a solution that works by
+            removing the problem.</p>
+
+        <h2>No Null</h2>
+
+        <p>You know the null check you forgot last Tuesday? The one that
+            worked fine in testing because the test data always had a value?</p>
+
+        <p>In 2009,
+            <a href="https://en.wikipedia.org/wiki/Null_pointer#History" target="_blank" rel="noopener">Tony Hoare</a>
+            (no relation to Graydon) stood before an audience at QCon London
+            and called null his "billion dollar mistake." He had invented it
+            in 1965 for ALGOL W, and he described it as the source of
+            "innumerable errors, vulnerabilities, and system crashes, which
+            have probably caused a billion dollars of pain and damage in the
+            last forty years." One does note that the estimate was
+            conservative even then.</p>
+
+        <p>Rust has no null. Instead, it has <code>Option&lt;T&gt;</code>:
+            a value is either <code>Some(value)</code> or <code>None</code>.
+            The compiler forces you to handle both cases. You cannot call a
+            method on a value that might not exist without first checking
+            whether it exists. The billion-dollar mistake is prevented by the
+            type system, at compile time, with zero runtime cost.</p>
+
+        <p>Every <code>NullPointerException</code> your Java code has ever
+            thrown, every segfault from dereferencing null in C, every
+            "undefined is not a function" in JavaScript: Rust's type system
+            makes them structurally impossible. Not unlikely. Not caught by
+            tests. Impossible.</p>
+
+        <h2>No Exceptions</h2>
+
+        <p>You know the try-catch that silently swallowed an error? The
+            one where the catch block logged a message nobody read, and
+            the application continued in an undefined state for forty
+            minutes before someone noticed?</p>
+
+        <p>Functions that can fail in Rust return
+            <code>Result&lt;T, E&gt;</code>: either <code>Ok(value)</code>
+            or <code>Err(error)</code>. The failure path is visible in the
+            function's type signature. Every caller knows that the function
+            can fail. Every caller must handle the failure or explicitly
+            propagate it with the <code>?</code> operator.</p>
+
+        <pre><code>fn read_config(path: &amp;str) -&gt; Result&lt;Config, Error&gt; {
+    let contents = fs::read_to_string(path)?;
+    let config: Config = toml::from_str(&amp;contents)?;
+    Ok(config)
+}</code></pre>
+
+        <p>Each <code>?</code> either unwraps the success or returns the
+            error to the caller. The code reads linearly. The error handling
+            is explicit. The types tell the truth. No hidden throws. No
+            <code>catch</code> blocks that swallow errors silently. No
+            "everything is fine" whilst the database connection has been
+            dead for forty minutes. Quite the novelty.</p>
+
+        <h2>No Inheritance</h2>
+
+        <p>You know the six-level class hierarchy where nobody remembers
+            what the grandparent overrides? The one where changing the
+            parent class broke seventeen subclasses in ways that only
+            appeared in integration testing?</p>
+
+        <p>Rust has no class inheritance. No <code>extends</code>. No
+            hierarchy where the behaviour of your object depends on
+            decisions made four levels above by someone who left the
+            company in 2019. Instead, Rust uses traits: shared behaviour
+            defined as interfaces, implemented by types. A struct can
+            implement as many traits as it needs. Traits compose. They do
+            not cascade. There is no diamond problem. No fragile base
+            class. One does rather miss problems one never has.</p>
+
+        <svg viewBox="0 0 560 280" aria-label="What Rust refuses and what it eliminates: no null eliminates NullPointerException, no exceptions eliminates silent failures, no GC eliminates latency spikes, no inheritance eliminates fragile hierarchies, no implicit mutability eliminates data races." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .rs-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .rs-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .rs-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .rs-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .rs-code { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .rs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .rs-arrow { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 14px; }
+            </style>
+            <text x="280" y="22" class="rs-title" text-anchor="middle">Every "No" Eliminates a Category of Bugs</text>
+            <!-- No null -->
+            <rect x="20" y="38" width="120" height="40" class="rs-box"/>
+            <text x="80" y="56" class="rs-head" text-anchor="middle">No null</text>
+            <text x="80" y="72" class="rs-code" text-anchor="middle">Option&lt;T&gt;</text>
+            <text x="155" y="63" class="rs-arrow">&#x2192;</text>
+            <rect x="170" y="38" width="185" height="40" class="rs-box"/>
+            <text x="262" y="56" class="rs-item" text-anchor="middle">NullPointerException</text>
+            <text x="262" y="72" class="rs-muted" text-anchor="middle">eliminated at compile time</text>
+            <!-- No exceptions -->
+            <rect x="20" y="88" width="120" height="40" class="rs-box"/>
+            <text x="80" y="106" class="rs-head" text-anchor="middle">No exceptions</text>
+            <text x="80" y="122" class="rs-code" text-anchor="middle">Result&lt;T, E&gt;</text>
+            <text x="155" y="113" class="rs-arrow">&#x2192;</text>
+            <rect x="170" y="88" width="185" height="40" class="rs-box"/>
+            <text x="262" y="106" class="rs-item" text-anchor="middle">Silent failures</text>
+            <text x="262" y="122" class="rs-muted" text-anchor="middle">errors in the type signature</text>
+            <!-- No GC -->
+            <rect x="20" y="138" width="120" height="40" class="rs-box"/>
+            <text x="80" y="156" class="rs-head" text-anchor="middle">No GC</text>
+            <text x="80" y="172" class="rs-code" text-anchor="middle">Ownership</text>
+            <text x="155" y="163" class="rs-arrow">&#x2192;</text>
+            <rect x="170" y="138" width="185" height="40" class="rs-box"/>
+            <text x="262" y="156" class="rs-item" text-anchor="middle">Latency spikes</text>
+            <text x="262" y="172" class="rs-muted" text-anchor="middle">Discord: ms to us</text>
+            <!-- No inheritance -->
+            <rect x="20" y="188" width="120" height="40" class="rs-box"/>
+            <text x="80" y="206" class="rs-head" text-anchor="middle">No inheritance</text>
+            <text x="80" y="222" class="rs-code" text-anchor="middle">Traits</text>
+            <text x="155" y="213" class="rs-arrow">&#x2192;</text>
+            <rect x="170" y="188" width="185" height="40" class="rs-box"/>
+            <text x="262" y="206" class="rs-item" text-anchor="middle">Diamond problem</text>
+            <text x="262" y="222" class="rs-muted" text-anchor="middle">composition, not hierarchy</text>
+            <!-- 70% stat -->
+            <rect x="380" y="88" width="160" height="90" class="rs-box"/>
+            <text x="460" y="112" class="rs-head" text-anchor="middle">70%</text>
+            <text x="460" y="130" class="rs-item" text-anchor="middle">of C/C++ security</text>
+            <text x="460" y="146" class="rs-item" text-anchor="middle">vulnerabilities are</text>
+            <text x="460" y="162" class="rs-item" text-anchor="middle">memory safety bugs</text>
+            <!-- Bottom -->
+            <text x="280" y="252" class="rs-muted" text-anchor="middle">Every feature a language grants is a failure mode it accepts.</text>
+            <text x="280" y="270" class="rs-muted" text-anchor="middle">Microsoft + Google Project Zero: 70% eliminated by Rust's design.</text>
+        </svg>
+
+        <h2>No Implicit Mutability</h2>
+
+        <p>In Rust, all variables are immutable by default. To make
+            something mutable, you write <code>let mut</code>. The act of
+            changing state becomes a conscious, visible decision in the
+            code. Not a default. A declaration.</p>
+
+        <p>Combined with the borrow checker's rule that you cannot have a
+            mutable reference and an immutable reference to the same data
+            at the same time, this eliminates data races at compile time.
+            Not by detecting them at runtime. Not by crashing when they
+            occur. By making them structurally impossible to express. Every
+            concurrent bug you have ever debugged, every race condition that
+            appeared once in ten thousand runs: Rust's type system prevents
+            them by refusing to compile code that could produce them. The
+            compiler does not trust you. It is, one must concede, entirely
+            justified.</p>
+
+        <h2>The Trade-Off</h2>
+
+        <p>Let us be honest. The learning curve is real.</p>
+
+        <p>The borrow checker will reject code that compiles without
+            complaint in every other language you know. It will reject code
+            that is, in fact, correct. It will reject code because it cannot
+            <em>prove</em> the code is correct, and Rust has decided that
+            "cannot prove safe" is the same as "unsafe."</p>
+
+        <p>This is frustrating. It feels adversarial. It feels like the
+            compiler is wrong and you are right and the code is fine and why
+            will it not just compile.</p>
+
+        <p>It is not wrong. It is conservative. And in the gap between
+            "probably correct" and "provably correct" lie the bugs you would
+            have shipped to production, discovered at 3 AM, and spent three
+            days debugging whilst questioning your career choices.</p>
+
+        <p>The first three months are painful. The compiler's error
+            messages are unusually good (it tells you what went wrong and
+            often suggests the fix), but the frequency of those messages
+            during learning is high. You will argue with the compiler.
+            You will lose. You will, eventually, realise that losing to the
+            compiler is considerably cheaper than losing to production.</p>
+
+        <h2>The Proof</h2>
+
+        <p>The
+            <a href="https://devclass.com/2025/12/15/rust-boosted-by-permanent-adoption-for-linux-kernel-code/" target="_blank" rel="noopener">Linux kernel accepted Rust</a>
+            as a supported language in December 2025. No longer experimental.
+            Dave Airlie, maintainer of the DRM subsystem, stated that the
+            DRM project was approximately one year away from requiring Rust
+            and disallowing C for new drivers. The kernel contains 34 million
+            lines of C and 25 thousand lines of Rust. The transition has
+            begun. One does note the ratio with a certain quiet patience.</p>
+
+        <svg viewBox="0 0 560 200" aria-label="Rust adoption: Linux kernel accepted Rust (Dec 2025). Microsoft: 188K lines Windows kernel. Discord: ms to us latency. 9 years most admired language. 45% of enterprises in production." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .rp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .rp-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 16px; font-weight: 700; }
+                .rp-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .rp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .rp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="rp-title" text-anchor="middle">The Proof</text>
+            <rect x="20" y="38" width="165" height="65" class="rp-box"/>
+            <text x="102" y="60" class="rp-num" text-anchor="middle">Linux kernel</text>
+            <text x="102" y="78" class="rp-item" text-anchor="middle">Rust accepted, Dec 2025</text>
+            <text x="102" y="94" class="rp-muted" text-anchor="middle">34M lines C, 25K Rust</text>
+
+            <rect x="197" y="38" width="165" height="65" class="rp-box"/>
+            <text x="280" y="60" class="rp-num" text-anchor="middle">188K lines</text>
+            <text x="280" y="78" class="rp-item" text-anchor="middle">Windows kernel in Rust</text>
+            <text x="280" y="94" class="rp-muted" text-anchor="middle">Microsoft, goal: 2030</text>
+
+            <rect x="375" y="38" width="165" height="65" class="rp-box"/>
+            <text x="457" y="60" class="rp-num" text-anchor="middle">ms &#x2192; &#x00B5;s</text>
+            <text x="457" y="78" class="rp-item" text-anchor="middle">Discord Go to Rust</text>
+            <text x="457" y="94" class="rp-muted" text-anchor="middle">GC spikes eliminated</text>
+
+            <rect x="20" y="117" width="250" height="40" class="rp-box"/>
+            <text x="145" y="137" class="rp-num" text-anchor="middle">9 years most admired</text>
+            <text x="145" y="153" class="rp-muted" text-anchor="middle">83% admiration rate (Stack Overflow 2024)</text>
+
+            <rect x="290" y="117" width="250" height="40" class="rp-box"/>
+            <text x="415" y="137" class="rp-num" text-anchor="middle">45% of enterprises</text>
+            <text x="415" y="153" class="rp-muted" text-anchor="middle">Rust in production workloads</text>
+
+            <text x="280" y="185" class="rp-muted" text-anchor="middle">Not because it is easy. Because the elevator stops crashing.</text>
+        </svg>
+
+        <p><a href="https://www.javacodegeeks.com/2026/02/rusts-enterprise-takeover-when-memory-safety-becomes-non-negotiable.html" target="_blank" rel="noopener">Microsoft has rewritten 188,000 lines</a>
+            of Windows kernel and DirectWrite code in Rust, with a stated
+            ambition to eliminate C and C++ from its entire codebase by
+            2030. <a href="https://www.zenrows.com/blog/rust-popularity" target="_blank" rel="noopener">Cloudflare built Infire</a>,
+            a custom LLM inference engine, in Rust, achieving 7 per cent
+            faster inference than vLLM. AWS, Google, and Meta all run Rust
+            in production at significant scale. Android 16 ships with
+            Rust-built components in the kernel.</p>
+
+        <p><a href="https://survey.stackoverflow.co/2024/" target="_blank" rel="noopener">45 per cent of enterprises</a>
+            now run Rust in non-trivial production workloads. The Stack
+            Overflow Developer Survey has named Rust the most admired
+            language for nine consecutive years, with an 83 per cent
+            admiration rate. Not because it is easy. Not because the
+            learning curve is gentle. Because the elevator stops
+            crashing.</p>
+
+        <h2>The Principle</h2>
+
+        <p>Every feature a language grants is a failure mode it accepts.
+            Every convenience added is a bug category normalised. Every
+            "yes" comes with a cost that compounds over decades, paid not
+            by the language designer but by every developer who inherits
+            the codebase.</p>
+
+        <p><a href="/blog/by-design-sqlite">Episode 1</a>: Hipp
+            sacrificed write concurrency and gained the most deployed
+            database in history. <a href="/blog/by-design-csv">Episode 2</a>:
+            CSV sacrificed everything and gained universality. Episode 3:
+            Rust sacrificed null, exceptions, garbage collection, and
+            inheritance, and gained a language that the Linux kernel, the
+            Windows kernel, and every major cloud provider now trusts with
+            their infrastructure.</p>
+
+        <p>The borrow checker is not a barrier. It is a boundary. And
+            boundaries, applied with discipline, are what separate systems
+            that survive from systems that merely ship.</p>
+
+        <p>Graydon Hoare's elevator still works. One rather suspects it is
+            no longer written in C.</p>
+
+        <p><em>Graydon Hoare stepped down from Rust in 2013. The language
+            he started in frustration on a stairwell is now in the Linux
+            kernel, the Windows kernel, and the infrastructure of every
+            major cloud provider. The fungus, it turns out, was indeed
+            over-engineered for survival.</em></p>
+
+        <blockquote>
+            <p>No null. No exceptions. No garbage collector. No
+                inheritance. No implicit mutability. Every "no" eliminates
+                a category of bugs. 70% of C/C++ security vulnerabilities
+                are memory safety bugs. Linux kernel: Rust accepted.
+                Microsoft: 188K lines rewritten. Discord: ms to us.
+                Nine years most admired. The borrow checker is not a
+                barrier. It is a boundary.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Every "no," accounted for:</strong></p>
+            <ul>
+                <li><strong>No GC:</strong> Ownership model. Discord Go to Rust: ms to us. No pauses, no tuning</li>
+                <li><strong>No null:</strong> <code>Option&lt;T&gt;</code>. Compiler-enforced. Tony Hoare's "billion dollar mistake" eliminated</li>
+                <li><strong>No exceptions:</strong> <code>Result&lt;T, E&gt;</code>. Failure in the type signature. <code>?</code> for ergonomic propagation</li>
+                <li><strong>No inheritance:</strong> Traits. Composition. No diamond problem, no fragile base class</li>
+                <li><strong>No implicit mutability:</strong> <code>let mut</code> explicit. Data races eliminated at compile time</li>
+                <li><a href="https://doc.rust-lang.org/book/" target="_blank" rel="noopener">The Rust Book</a> &#x25A0;
+                    <a href="https://discord.com/blog/why-discord-is-switching-from-go-to-rust" target="_blank" rel="noopener">Discord: Why Rust</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

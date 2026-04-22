@@ -62,12 +62,16 @@ input[type=date]{background:#fff;color:#2a2820;border:1px solid #d0cdc6;padding:
     <label>Date</label>
     <input type="date" id="date-in">
   </div>
+  <div class="cg">
+    <button id="now-btn" style="background:none;border:1px solid #d0cdc6;color:#6a6560;font-family:inherit;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;cursor:pointer">Now</button>
+  </div>
   <div class="leg">
     <span class="s">Sun</span>
     <span class="h">Shadow</span>
   </div>
   <span id="stats"></span>
   <div id="clock">12:00</div>
+  <div id="tz-info" style="font-size:10px;color:#6a6560;letter-spacing:.06em"></div>
 </div>
 
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
@@ -86,13 +90,12 @@ function doy(d) {
   return Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 864e5);
 }
 
-function sunPos(date, hour, lat, lon) {
+function sunPos(date, utcHour, lat, lon) {
   const n = doy(date), lr = lat * DEG;
   const B = (360 / 365) * (n - 81) * DEG;
   const decl = Math.asin(Math.sin(23.45 * DEG) * Math.sin(B));
   const eot = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
-  const stm = Math.round(lon / 15) * 15;
-  const st = hour + (lon - stm) / 15 + eot / 60;
+  const st = utcHour + lon / 15 + eot / 60;
   const ha = (st - 12) * 15 * DEG;
   const sinA = Math.sin(lr) * Math.sin(decl) + Math.cos(lr) * Math.cos(decl) * Math.cos(ha);
   const alt = Math.asin(sinA);
@@ -155,9 +158,21 @@ const now = new Date();
 const dateEl = document.getElementById('date-in');
 const hourEl = document.getElementById('hour');
 dateEl.value = now.toISOString().slice(0, 10);
-hourEl.value = now.getHours() + now.getMinutes() / 60;
+// Default to current local time at the initial map position (Berlin, UTC+1)
+const initTzOff = Math.round(13.4018 / 15);
+hourEl.value = (now.getUTCHours() + initTzOff + now.getUTCMinutes() / 60) % 24;
 
-let shadows = [], raf = 0;
+function jumpToNow() {
+  const c = map.getCenter();
+  const tz = Math.round(c.lng / 15);
+  const n = new Date();
+  dateEl.value = n.toISOString().slice(0, 10);
+  hourEl.value = ((n.getUTCHours() + tz + n.getUTCMinutes() / 60) % 24 + 24) % 24;
+  scheduleUpdate();
+}
+document.getElementById('now-btn').addEventListener('click', jumpToNow);
+
+let shadows = [], raf = 0, lastTzOff = Math.round(13.4018 / 15);
 
 function fc(f) { return { type: 'FeatureCollection', features: f }; }
 function timeFmt(h) { const hr = Math.floor(h), mn = Math.round((h - hr) * 60); return `${String(hr).padStart(2, '0')}:${String(mn).padStart(2, '0')}`; }
@@ -225,11 +240,22 @@ function scheduleUpdate() {
 function update() {
   if (!map.isStyleLoaded() || !map.getLayer('3d-bld')) return;
 
-  const hour = parseFloat(hourEl.value);
+  let localHour = parseFloat(hourEl.value);
   const date = new Date(dateEl.value + 'T12:00');
   const c = map.getCenter();
-  const sun = sunPos(date, hour, c.lat, c.lng);
-  const ts = timeFmt(hour);
+  const tzOff = Math.round(c.lng / 15);
+
+  // Timezone changed: shift slider to keep the same UTC moment
+  if (tzOff !== lastTzOff) {
+    const delta = tzOff - lastTzOff;
+    localHour = ((localHour + delta) % 24 + 24) % 24;
+    hourEl.value = localHour;
+    lastTzOff = tzOff;
+  }
+
+  const utcHour = ((localHour - tzOff) % 24 + 24) % 24;
+  const sun = sunPos(date, utcHour, c.lat, c.lng);
+  const ts = timeFmt(localHour);
 
   // UI
   document.getElementById('hour-lbl').textContent = ts;
@@ -239,6 +265,8 @@ function update() {
     : 'Below horizon';
   document.getElementById('coord-info').textContent =
     `${c.lat.toFixed(4)}\u00b0N  ${c.lng.toFixed(4)}\u00b0E`;
+  document.getElementById('tz-info').textContent =
+    `UTC${tzOff >= 0 ? '+' : ''}${tzOff}  ·  GMT ${timeFmt(utcHour)}`;
 
   // Shadows from visible 3D buildings
   shadows = [];

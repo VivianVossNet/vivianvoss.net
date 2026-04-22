@@ -1,0 +1,372 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Auth0 &#x2014; The Identity Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="$6.5B for $200M revenue. 300% MAU price hike in a single announcement. Two breaches, every Okta customer's data exfiltrated. Custom Rules and Actions lock you in. The password hash was always there.">
+{( endslot )}
+
+{( slot canonical )}/blog/auth0-identity-tax{( endslot )}
+
+{( slot og-title )}Auth0 &#x2014; The Identity Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Okta paid $6.5B for a $200M company. Five months later, the customers paid the difference. Two breaches, 300% price hike, full customer list exfiltrated. The verification was always something the database could do.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Auth0 — The Identity Tax",
+    "datePublished": "2026-04-17",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/auth0-identity-tax",
+    "description": "Okta paid $6.5B for a $200M company. 300% MAU price hike. Two breaches, every customer's name and email exfiltrated. The password hash was always there.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-17">17 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Auth0 &#x2014; The Identity Tax</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">saas</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> &#x25A0; Episode 18</p>
+
+        <p>"Authentication is hard. Don't roll your own. Use Auth0."</p>
+
+        <p>Splendid. Let us examine what one is actually paying for.</p>
+
+        <p><a href="https://fortune.com/2021/05/03/okta-auth0-deal-stock-login-acquisition/" target="_blank" rel="noopener">Auth0 was founded in 2013</a>
+            by Eugenio Pace and Matias Woloski. Five months later, Okta's
+            CEO Todd McKinnon made his first acquisition offer. It took
+            eight years of courtship. In May 2021, Okta
+            <a href="https://techcrunch.com/2021/03/03/okta-acquires-cloud-identity-startup-auth0-for-6-5b/" target="_blank" rel="noopener">closed the deal at $6.5 billion in stock</a>,
+            for a company doing
+            <a href="https://techcrunch.com/2021/03/04/making-sense-of-the-6-5b-okta-auth0-deal/" target="_blank" rel="noopener">roughly $200 million in annual revenue</a>.
+            The arithmetic, as one might politely observe, suggests the
+            customer would eventually pay for the difference. The customer,
+            as it turned out, was rather good about it.</p>
+
+        <h2>The Pricing Invoice</h2>
+
+        <p>The
+            <a href="https://auth0.com/pricing" target="_blank" rel="noopener">Auth0 pricing page</a>
+            reads like a staircase, and the staircase tilts. Free up to
+            7,500 monthly active users. Then Essentials at $35 per month
+            for 500 MAUs. Then Professional at $240 per month for 1,000
+            MAUs. Then Enterprise, a custom contract typically starting at
+            $30,000 per year, becomes mandatory once one exceeds 20,000
+            MAUs on the Professional tier. One may applaud the tiered
+            design, or one may notice that the gradient steepens
+            precisely at the point where leaving becomes expensive.</p>
+
+        <p>In late 2023, the per-MAU price on B2C Essentials
+            <a href="https://securityboulevard.com/2025/09/auth0-pricing-explained-and-why-startups-call-it-a-growth-penalty/" target="_blank" rel="noopener">rose by 300 per cent in a single announcement</a>.
+            The free tier was generously expanded at the same time,
+            presumably to soften the blow. The relationship between
+            "expanded free tier" and "growth penalty at the boundary" is,
+            by any measure, a rather elegant study in price discrimination.
+            One pays nothing to get started. One pays rather a lot once
+            one matters.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Auth0 B2C pricing staircase: Free up to 7,500 MAUs, Essentials $35 per month for 500 MAUs (300% per-MAU hike in late 2023), Professional $240 per month for 1,000 MAUs, Enterprise custom contract approximately $30,000 per year and mandatory above 20,000 MAUs." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pr-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .pr-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 13px; font-weight: 700; }
+                .pr-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .pr-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .pr-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .pr-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="pr-title" text-anchor="middle">The Growth Penalty</text>
+            <rect x="20" y="40" width="125" height="55" class="pr-box"/>
+            <text x="82" y="58" class="pr-head" text-anchor="middle">Free</text>
+            <text x="82" y="76" class="pr-num" text-anchor="middle">$0</text>
+            <text x="82" y="90" class="pr-muted" text-anchor="middle">up to 7,500 MAUs</text>
+
+            <rect x="157" y="40" width="125" height="55" class="pr-box"/>
+            <text x="219" y="58" class="pr-head" text-anchor="middle">Essentials</text>
+            <text x="219" y="76" class="pr-num" text-anchor="middle">$35/mo</text>
+            <text x="219" y="90" class="pr-muted" text-anchor="middle">500 MAUs (+300% in 2023)</text>
+
+            <rect x="294" y="40" width="125" height="55" class="pr-box"/>
+            <text x="356" y="58" class="pr-head" text-anchor="middle">Professional</text>
+            <text x="356" y="76" class="pr-num" text-anchor="middle">$240/mo</text>
+            <text x="356" y="90" class="pr-muted" text-anchor="middle">1,000 MAUs</text>
+
+            <rect x="431" y="40" width="109" height="55" class="pr-box-accent"/>
+            <text x="485" y="58" class="pr-head" text-anchor="middle">Enterprise</text>
+            <text x="485" y="76" class="pr-num" text-anchor="middle">~$30k/yr</text>
+            <text x="485" y="90" class="pr-muted" text-anchor="middle">mandatory &gt; 20k MAUs</text>
+
+            <path d="M 82 165 Q 219 162 356 140 T 485 115" fill="none" stroke="var(--accent)" stroke-width="2"/>
+            <circle cx="82" cy="165" r="3" fill="var(--accent)"/>
+            <circle cx="219" cy="160" r="3" fill="var(--accent)"/>
+            <circle cx="356" cy="140" r="3" fill="var(--accent)"/>
+            <circle cx="485" cy="115" r="3" fill="var(--accent)"/>
+
+            <text x="280" y="200" class="pr-muted" text-anchor="middle">The staircase tilts at the point where leaving becomes expensive.</text>
+            <text x="280" y="218" class="pr-muted" text-anchor="middle">Okta paid $6.5B for $200M of revenue. Someone had to pay for the arithmetic.</text>
+        </svg>
+
+        <h2>The Breach Invoice</h2>
+
+        <p>January 2022. Lapsus$ compromises a support engineer's laptop at
+            Sitel, an Okta sub-processor. The disclosure
+            <a href="https://www.nightfall.ai/blog/okta-data-breach-what-happened-impact-and-security-lessons-learned" target="_blank" rel="noopener">triggers an 11 per cent stock drop</a>.
+            Six billion dollars of market capitalisation, gone in a single
+            trading session. The securities class action was eventually
+            settled in July 2024 for $60 million. The incident is now a
+            textbook case in how supply-chain access through a sub-processor
+            can compromise an identity provider. One does admire the
+            geometry: the attacker chose the laptop nobody was watching.</p>
+
+        <p>October 2023. An Okta employee signs into a personal Google
+            profile on their work laptop and saves service account
+            credentials there. Attackers reach the personal account. They
+            access
+            <a href="https://sec.okta.com/articles/2023/11/unauthorized-access-oktas-support-case-management-system-root-cause/" target="_blank" rel="noopener">HAR files in the support case management system</a>.
+            The HAR files, submitted by customers for debugging purposes,
+            contain live session tokens. One does wonder what those customers
+            thought they were sending.</p>
+
+        <p>The attackers harvest the tokens, hijack five customer
+            environments. 1Password, Cloudflare, and BeyondTrust each
+            detect suspicious administrator login attempts and
+            <a href="https://www.bleepingcomputer.com/news/security/okta-breach-134-customers-exposed-in-october-support-system-hack/" target="_blank" rel="noopener">notify Okta</a>.
+            Not the other way round. The initial public disclosure said
+            134 customers were affected.</p>
+
+        <p>By November 2023, the number had risen. By March 2025, the scope
+            had been
+            <a href="https://www.csoonline.com/article/1249988/okta-confirms-recent-hack-affected-all-customers-within-the-affected-system.html" target="_blank" rel="noopener">quietly expanded</a>:
+            the threat actor had downloaded reports containing the full
+            names and email addresses of every Okta customer, across both
+            Workforce Identity and Customer Identity. "All of them"
+            replaced "less than one per cent". One does wonder how the
+            recalibration was decided, and over what length of meeting.</p>
+
+        <h2>The Single Point of Failure Invoice</h2>
+
+        <p>When Okta has a bad day, every Okta customer has a bad day. The
+            2023 incident ran roughly two weeks between initial compromise
+            on
+            <a href="https://www.breachsense.com/blog/okta-data-breach-case-study/" target="_blank" rel="noopener">28 September and detection on 13 October</a>,
+            with public disclosure following on 19 October. During that
+            window, every dependent application's authentication boundary
+            belonged, technically speaking, to the attacker.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Centralised identity topology: a single identity provider sits between attackers and five dependent applications (1Password, Cloudflare, BeyondTrust, and two others). When the provider is compromised, every downstream application inherits the compromise." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .sp-node { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .sp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .sp-accent { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .sp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .sp-box-accent { fill: none; stroke: var(--accent); stroke-width: 2; rx: 4; }
+                .sp-line { stroke: var(--border); stroke-width: 1; fill: none; }
+                .sp-line-accent { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+            </style>
+            <text x="280" y="22" class="sp-title" text-anchor="middle">The Architecture Is the Cost</text>
+
+            <rect x="20" y="105" width="90" height="40" class="sp-box-accent"/>
+            <text x="65" y="122" class="sp-accent" text-anchor="middle">Attacker</text>
+            <text x="65" y="138" class="sp-muted" text-anchor="middle">one laptop</text>
+
+            <path d="M 110 125 L 220 125" class="sp-line-accent" marker-end="url(#arrow)"/>
+            <defs>
+                <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <polygon points="0 0, 8 4, 0 8" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <rect x="220" y="95" width="120" height="60" class="sp-box-accent"/>
+            <text x="280" y="120" class="sp-accent" text-anchor="middle">Identity Provider</text>
+            <text x="280" y="138" class="sp-muted" text-anchor="middle">Okta / Auth0</text>
+
+            <path d="M 340 110 L 440 60" class="sp-line-accent" marker-end="url(#arrow)"/>
+            <path d="M 340 120 L 440 95" class="sp-line-accent" marker-end="url(#arrow)"/>
+            <path d="M 340 125 L 440 125" class="sp-line-accent" marker-end="url(#arrow)"/>
+            <path d="M 340 130 L 440 155" class="sp-line-accent" marker-end="url(#arrow)"/>
+            <path d="M 340 140 L 440 190" class="sp-line-accent" marker-end="url(#arrow)"/>
+
+            <rect x="440" y="45" width="100" height="28" class="sp-box"/>
+            <text x="490" y="63" class="sp-node" text-anchor="middle">1Password</text>
+
+            <rect x="440" y="80" width="100" height="28" class="sp-box"/>
+            <text x="490" y="98" class="sp-node" text-anchor="middle">Cloudflare</text>
+
+            <rect x="440" y="115" width="100" height="28" class="sp-box"/>
+            <text x="490" y="133" class="sp-node" text-anchor="middle">BeyondTrust</text>
+
+            <rect x="440" y="150" width="100" height="28" class="sp-box"/>
+            <text x="490" y="168" class="sp-node" text-anchor="middle">Customer 4</text>
+
+            <rect x="440" y="185" width="100" height="28" class="sp-box"/>
+            <text x="490" y="203" class="sp-node" text-anchor="middle">Customer 5</text>
+
+            <text x="280" y="222" class="sp-muted" text-anchor="middle">Centralising identity at a third party centralises risk at the same third party.</text>
+        </svg>
+
+        <p>Centralising identity at a third party centralises risk at the
+            same third party. This is not a bug in the deployment. It is
+            the architecture. The architecture is the cost.</p>
+
+        <h2>The Lock-In Invoice</h2>
+
+        <p>Auth0 Rules and Actions are custom JavaScript hooks. SAML and
+            OIDC are standards; the rest of the integration is not.
+            Migration off Auth0 means, in rough order of tears shed:</p>
+
+        <ul>
+            <li>Re-implementing every Rule and Action against whichever
+                identity layer one chooses next</li>
+            <li>Re-issuing tokens for every active user, which is to say
+                forcing everyone to log in again</li>
+            <li>Convincing one's customers that yes, the forced
+                re-authentication is intentional and not, in fact, a
+                phishing attack</li>
+            <li>Backporting the custom claims one's applications have
+                quietly come to depend on</li>
+        </ul>
+
+        <p>This is not insurmountable. It is, however, the cost of having
+            outsourced something that the database could have done. One
+            pays the bill in engineering hours, user trust, and
+            meetings titled "Re-authentication Rollout Communication
+            Plan". One does recover eventually. Rarely in the same
+            quarter.</p>
+
+        <h2>The Alternative</h2>
+
+        <p>Several mature self-hosted options exist, and one notes with
+            some relief that none of them have an acquisition pending:</p>
+
+        <ul>
+            <li><strong>Keycloak</strong> (Red Hat) &#x2014; full IAM, Java,
+                battle-tested across enterprise deployments for a decade</li>
+            <li><strong>Ory Kratos</strong> (Go) &#x2014; headless, REST
+                APIs, no UI shipped, which is either a feature or a
+                project in itself depending on one's taste</li>
+            <li><strong>Authentik</strong> &#x2014; a cleaner interface
+                than Keycloak, supports OIDC, SAML, and OAuth2</li>
+            <li><strong>FusionAuth</strong> &#x2014; single binary,
+                generous free tier, designed by developers who remember
+                what developers actually need</li>
+            <li><strong>Authelia</strong> &#x2014; lightweight forward auth
+                for reverse proxies, the right tool when the proxy is
+                already doing the work</li>
+            <li><strong>Lucia</strong> &#x2014; a Node library for
+                application-level auth, minimal and unopinionated</li>
+        </ul>
+
+        <p>And then there is the unfashionable option: a <code>users</code>
+            table with
+            <a href="https://en.wikipedia.org/wiki/Argon2" target="_blank" rel="noopener">argon2</a>
+            password hashes, a session token stored in a server-side store
+            such as Redis or Postgres, and one route handler per flow:
+            login, register, recover, MFA setup. This pattern has been
+            production-grade since approximately 1995. It remains so. One
+            notes that in thirty years it has neither been acquired by
+            private equity nor had its session tokens exfiltrated via
+            HAR files. The archive of its breaches is notably short.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>The identity tax operates on three consecutive invoices.</p>
+
+        <svg viewBox="0 0 560 200" aria-label="The three-step identity tax staircase: first invoice for validating users via a third party, second invoice when the third party is breached, third invoice to migrate when the pricing or vendor changes." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pt-step { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .pt-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .pt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .pt-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .pt-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+            </style>
+            <text x="280" y="22" class="pt-title" text-anchor="middle">The Three Invoices</text>
+
+            <rect x="20" y="55" width="160" height="75" class="pt-box"/>
+            <text x="100" y="76" class="pt-step" text-anchor="middle">1. Validate</text>
+            <text x="100" y="96" class="pt-text" text-anchor="middle">Pay a third party</text>
+            <text x="100" y="112" class="pt-text" text-anchor="middle">to verify users you</text>
+            <text x="100" y="124" class="pt-text" text-anchor="middle">already had.</text>
+
+            <path d="M 180 92 L 200 92" class="pt-arrow" marker-end="url(#arrow2)"/>
+
+            <rect x="200" y="55" width="160" height="75" class="pt-box"/>
+            <text x="280" y="76" class="pt-step" text-anchor="middle">2. Absorb</text>
+            <text x="280" y="96" class="pt-text" text-anchor="middle">Pay again when</text>
+            <text x="280" y="112" class="pt-text" text-anchor="middle">the third party</text>
+            <text x="280" y="124" class="pt-text" text-anchor="middle">is breached.</text>
+
+            <path d="M 360 92 L 380 92" class="pt-arrow" marker-end="url(#arrow2)"/>
+
+            <defs>
+                <marker id="arrow2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <polygon points="0 0, 8 4, 0 8" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <rect x="380" y="55" width="160" height="75" class="pt-box"/>
+            <text x="460" y="76" class="pt-step" text-anchor="middle">3. Migrate</text>
+            <text x="460" y="96" class="pt-text" text-anchor="middle">Pay once more when</text>
+            <text x="460" y="112" class="pt-text" text-anchor="middle">the pricing model</text>
+            <text x="460" y="124" class="pt-text" text-anchor="middle">changes.</text>
+
+            <text x="280" y="160" class="pt-muted" text-anchor="middle">The verification was always something the database could do.</text>
+            <text x="280" y="180" class="pt-muted" text-anchor="middle">The password hash was always there. One simply decided it wasn't fancy enough.</text>
+        </svg>
+
+        <p>One pays a third party to validate one's own users. Then one
+            pays more when the third party is breached. Then one pays
+            again to migrate when the pricing model changes. The
+            verification was always something the database could do.
+            Argon2 is a four-line dependency. A session token is a UUID.
+            A login form is one POST handler. The complexity that
+            justified outsourcing was, in many cases, complexity that
+            did not exist.</p>
+
+        <p>The password hash was always there. One simply decided it
+            wasn't fancy enough.</p>
+
+        <blockquote>
+            <p>$6.5B for $200M of revenue. 300% per-MAU hike in one
+                announcement. 2022: $6B market cap erased, $60M class
+                action. 2023: HAR files in support tickets contained
+                session tokens; five customer environments hijacked. By
+                March 2025: every Okta customer's name and email
+                exfiltrated. Rules and Actions lock you in. The boring
+                option has been production-grade since 1995.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The identity tax, itemised:</strong></p>
+            <ul>
+                <li><strong>The acquisition:</strong> Auth0 founded 2013, $200M revenue, acquired by Okta for $6.5B in May 2021</li>
+                <li><strong>The pricing escalator:</strong> Free up to 7,500 MAUs. Essentials $35/mo (300% hike in 2023). Professional $240/mo. Enterprise ~$30k/yr mandatory above 20k MAUs</li>
+                <li><strong>The breaches:</strong> Jan 2022 Lapsus$ (11% stock drop, $60M class action). Oct 2023 HAR file breach (5 environments hijacked). March 2025 update: every customer's data</li>
+                <li><strong>The lock-in:</strong> Rules and Actions are custom JavaScript hooks. Migration means re-auth for every active user</li>
+                <li><strong>The alternatives:</strong> Keycloak, Ory Kratos, Authentik, FusionAuth, Authelia, Lucia. Or a users table with argon2, production-grade since 1995</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
