@@ -1,0 +1,386 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}pf &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In May 2001 OpenBSD pulled IPFilter out of the source tree. Daniel Hartmeier, who had never written kernel code, replaced it in twenty-five days. Twenty-five years on, pf is the firewall in OpenBSD, FreeBSD, NetBSD, DragonFly, and macOS, and runs on roughly a billion Apple devices.">
+{( endslot )}
+
+{( slot canonical )}/blog/pf{( endslot )}
+
+{( slot og-title )}pf &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}A licensing dispute, a Swiss developer who had never touched the kernel, and four weeks of summer evenings. By December 2001, pf shipped in OpenBSD 3.0. Twenty-five years later, it is the firewall language of the BSD world and a substantial portion of the Apple device estate. Linux, in nftables, paid it the considerable compliment of imitation.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "pf",
+    "datePublished": "2026-04-28",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/pf",
+    "description": "Daniel Hartmeier wrote pf in twenty-five days after OpenBSD ripped IPFilter out of the source tree. Three lines of grammar, default-deny, last-match-wins. Now running on roughly a billion devices across BSD and Apple platforms.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-28">28 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>pf</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 33</p>
+
+        <p>You have written this rule, or you have written something near
+            enough to it:
+            <code>iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT</code>.
+            You have written it because the alternative is dropping every
+            packet that is the response to a packet you let through, which
+            is, on reflection, nearly all of them. You have also, at some
+            point, lost twenty minutes to the question of which chain a
+            packet enters first when it is being forwarded but also locally
+            addressed, and twenty more to whether <code>INPUT</code> runs
+            before or after <code>FORWARD</code> for a particular interface
+            bridge.</p>
+
+        <p>You are not a bad systems administrator. You are a systems
+            administrator reading a tool that does not want to be read.</p>
+
+        <h2>The Mid-Release Crisis</h2>
+
+        <p>In May 2001,
+            <a href="https://www.openbsd.org/" target="_blank" rel="noopener">OpenBSD</a>
+            did something most operating systems would not have the nerve
+            to do mid-release. It pulled its firewall out of the source
+            tree.</p>
+
+        <p>The firewall was
+            <a href="https://en.wikipedia.org/wiki/IPFilter" target="_blank" rel="noopener">IPFilter</a>,
+            written and maintained by Darren Reed since the mid-1990s. It
+            was the de-facto BSD-world packet filter, deeply integrated
+            into OpenBSD, and a fixture of the OpenBSD security story.
+            Reed informed the OpenBSD project that IPFilter's licence did
+            not in fact permit the kinds of modifications OpenBSD was
+            making. After some unproductive correspondence, Theo de Raadt
+            <a href="https://bsd.slashdot.org/story/01/06/25/1557213/openbsd-gets-brand-new-packet-filter" target="_blank" rel="noopener">removed
+            IPFilter</a> from the OpenBSD CVS tree on 30 May 2001. The
+            release was four months away.</p>
+
+        <p>This left OpenBSD without a packet filter. Nobody, internally,
+            was lined up to write one.</p>
+
+        <h2>The Wrong Person for the Job</h2>
+
+        <p><a href="https://www.benzedrine.ch/" target="_blank" rel="noopener">Daniel
+            Hartmeier</a> was a Swiss developer who had been contributing
+            peripherally to OpenBSD. He had never written kernel code. He
+            read about Drawbridge, an Ethernet-layer filter from Texas A&amp;M,
+            and noticed that the filter itself was essentially a single C
+            module with a small, comprehensible kernel interface. That, he
+            thought, looked like something he could learn.</p>
+
+        <p>In a
+            <a href="https://www.benzedrine.ch/kerneltrap.html" target="_blank" rel="noopener">later
+            interview</a> he was characteristically dry about the
+            experience: <em>"If I had known in advance how many nights I
+            would spend, I might have given up. But the progress kept me
+            motivated."</em></p>
+
+        <p>He committed the first version of pf to the OpenBSD CVS tree on
+            24 June 2001, twenty-five days after IPFilter was removed. By
+            the end of that month, his code was filtering packets and
+            performing network address translation. Five months later, on
+            1 December 2001, pf shipped as the default firewall in OpenBSD
+            3.0.</p>
+
+        <p>A man who had never touched the kernel wrote, in four weeks of
+            summer evenings and a few months of polish, a firewall that
+            would still be running, twenty-five years later, on roughly a
+            billion devices.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Timeline from May 2001 to December 2001: IPFilter removed from OpenBSD on 30 May 2001, Hartmeier's first pf commit on 24 June 2001, filtering and NAT both working by end of June, and pf shipping in OpenBSD 3.0 on 1 December 2001. The entire arc from crisis to default firewall fits in one summer." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pf-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pf-tl-year { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .pf-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .pf-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .pf-tl-line { stroke: var(--border); stroke-width: 1; fill: none; }
+            </style>
+            <text x="280" y="22" class="pf-tl-title" text-anchor="middle">From Crisis to Default Firewall in One Summer</text>
+
+            <line x1="40" y1="115" x2="520" y2="115" class="pf-tl-line"/>
+
+            <circle cx="80" cy="115" r="5" fill="var(--accent)"/>
+            <text x="80" y="84" class="pf-tl-year" text-anchor="middle">30 May 2001</text>
+            <text x="80" y="140" class="pf-tl-text" text-anchor="middle">IPFilter removed</text>
+            <text x="80" y="154" class="pf-tl-muted" text-anchor="middle">licence dispute</text>
+
+            <circle cx="220" cy="115" r="5" fill="var(--accent)"/>
+            <text x="220" y="84" class="pf-tl-year" text-anchor="middle">24 Jun 2001</text>
+            <text x="220" y="140" class="pf-tl-text" text-anchor="middle">first pf commit</text>
+            <text x="220" y="154" class="pf-tl-muted" text-anchor="middle">25 days later</text>
+
+            <circle cx="340" cy="115" r="5" fill="var(--accent)"/>
+            <text x="340" y="84" class="pf-tl-year" text-anchor="middle">end of Jun 2001</text>
+            <text x="340" y="140" class="pf-tl-text" text-anchor="middle">filtering + NAT</text>
+            <text x="340" y="154" class="pf-tl-muted" text-anchor="middle">both working</text>
+
+            <circle cx="480" cy="115" r="6" fill="var(--accent)"/>
+            <text x="480" y="84" class="pf-tl-year" text-anchor="middle">1 Dec 2001</text>
+            <text x="480" y="140" class="pf-tl-text" text-anchor="middle">OpenBSD 3.0</text>
+            <text x="480" y="154" class="pf-tl-muted" text-anchor="middle">pf ships default</text>
+
+            <text x="280" y="190" class="pf-tl-muted" text-anchor="middle">Hartmeier had never written kernel code in May. By December the firewall he wrote was the default.</text>
+            <text x="280" y="206" class="pf-tl-muted" text-anchor="middle">One does notice how short that interval is, compared to most rewrites.</text>
+        </svg>
+
+        <h2>The Design</h2>
+
+        <p>The point of pf is that the rules read like English. Here is a
+            working firewall:</p>
+
+        <pre><code>block in all
+pass in on em0 proto tcp to port 22 keep state
+pass out keep state</code></pre>
+
+        <p>Three lines. The first denies all inbound traffic by default.
+            The second allows inbound TCP to port 22 (SSH) on the external
+            interface, and tells pf to remember the connection in its
+            state table so the responses get back. The third allows all
+            outbound traffic, again with state.</p>
+
+        <p>That is the whole firewall. Not the introduction. Not the
+            simplified example. The whole firewall.</p>
+
+        <p>There are no chains. There are no separate tables for filter,
+            NAT, mangle, and raw. There is no
+            <a href="https://en.wikipedia.org/wiki/Netfilter#Connection_tracking" target="_blank" rel="noopener">conntrack</a>
+            module to load and configure. There is no question about which
+            hook a packet enters first under what bridging conditions.
+            Rules are read top to bottom. The last matching rule wins,
+            unless a rule is marked <code>quick</code>, in which case it
+            short-circuits. That is the entire evaluation model.</p>
+
+        <p>The grammar is small enough to fit on the back of a postcard,
+            but expressive enough that the same vocabulary handles
+            filtering, network address translation, traffic queueing,
+            packet scrubbing, anchors (named subgroups for hierarchical
+            configuration), tables (named lists of addresses, updatable at
+            runtime), and policy routing. New features extend the grammar.
+            They do not invent new tools and new flags.</p>
+
+        <h2>The Contrast</h2>
+
+        <p><a href="https://en.wikipedia.org/wiki/Iptables" target="_blank" rel="noopener">iptables</a>
+            was, as it happens, also released in 2001, also as a successor
+            to an older system (ipchains). Rusty Russell wrote it. It is,
+            by any reasonable engineering standard, a competent piece of
+            work. It is also, by any reasonable readability standard, the
+            wrong shape.</p>
+
+        <p>In iptables, a rule is a tuple of flags applied imperatively to
+            a table inside a chain inside a hook point. The user has to
+            know about chains (<code>INPUT</code>, <code>OUTPUT</code>,
+            <code>FORWARD</code>, <code>PREROUTING</code>,
+            <code>POSTROUTING</code>), tables (<code>filter</code>,
+            <code>nat</code>, <code>mangle</code>, <code>raw</code>,
+            <code>security</code>), targets (<code>ACCEPT</code>,
+            <code>DROP</code>, <code>REJECT</code>, <code>LOG</code>,
+            <code>MASQUERADE</code>, <code>SNAT</code>, <code>DNAT</code>),
+            and the order in which all of these interact for a packet
+            that is, say, locally generated and forwarded over a bridge to
+            a destination behind NAT. Connection tracking is a separate
+            kernel module with its own configuration. Quality of service
+            is a separate tool entirely (<code>tc</code>). The whole
+            apparatus rewards memorisation rather than reasoning.</p>
+
+        <svg viewBox="0 0 560 320" aria-label="A side-by-side comparison of pf and iptables. The pf side shows three short rules. The iptables side shows a sprawling diagram with five chains, five tables, multiple targets, and a separate conntrack module, all interacting through a hook ordering diagram that needs its own legend." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pf-cmp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pf-cmp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .pf-cmp-rule { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .pf-cmp-tag { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .pf-cmp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .pf-cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .pf-cmp-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="pf-cmp-title" text-anchor="middle">Same Job, Two Shapes</text>
+
+            <text x="140" y="48" class="pf-cmp-head" text-anchor="middle">pf</text>
+            <text x="420" y="48" class="pf-cmp-head" text-anchor="middle">iptables</text>
+
+            <line x1="280" y1="35" x2="280" y2="290" class="pf-cmp-box"/>
+
+            <rect x="20" y="60" width="240" height="120" class="pf-cmp-accent-box"/>
+            <text x="140" y="82" class="pf-cmp-rule" text-anchor="middle">block in all</text>
+            <text x="140" y="106" class="pf-cmp-rule" text-anchor="middle">pass in on em0 proto tcp</text>
+            <text x="140" y="120" class="pf-cmp-rule" text-anchor="middle">to port 22 keep state</text>
+            <text x="140" y="144" class="pf-cmp-rule" text-anchor="middle">pass out keep state</text>
+            <text x="140" y="170" class="pf-cmp-muted" text-anchor="middle">three lines, one grammar</text>
+
+            <rect x="300" y="60" width="240" height="120" class="pf-cmp-box"/>
+            <text x="420" y="78" class="pf-cmp-tag" text-anchor="middle">chains: INPUT OUTPUT FORWARD</text>
+            <text x="420" y="92" class="pf-cmp-tag" text-anchor="middle">PREROUTING POSTROUTING</text>
+            <text x="420" y="110" class="pf-cmp-tag" text-anchor="middle">tables: filter nat mangle raw security</text>
+            <text x="420" y="128" class="pf-cmp-tag" text-anchor="middle">targets: ACCEPT DROP REJECT LOG</text>
+            <text x="420" y="142" class="pf-cmp-tag" text-anchor="middle">MASQUERADE SNAT DNAT &#x2026;</text>
+            <text x="420" y="160" class="pf-cmp-tag" text-anchor="middle">+ conntrack module + tc for QoS</text>
+            <text x="420" y="174" class="pf-cmp-muted" text-anchor="middle">five vocabularies, five tools</text>
+
+            <text x="140" y="208" class="pf-cmp-tag" text-anchor="middle">filter, NAT, queue, scrub: same syntax</text>
+            <text x="140" y="222" class="pf-cmp-tag" text-anchor="middle">last match wins, <tspan font-weight="700">quick</tspan> overrides</text>
+            <text x="140" y="236" class="pf-cmp-tag" text-anchor="middle">state tracking built in</text>
+            <text x="140" y="250" class="pf-cmp-tag" text-anchor="middle">tables and anchors extend, do not fork</text>
+
+            <text x="420" y="208" class="pf-cmp-tag" text-anchor="middle">hook ordering matters, varies by path</text>
+            <text x="420" y="222" class="pf-cmp-tag" text-anchor="middle">first match in chain, then jump</text>
+            <text x="420" y="236" class="pf-cmp-tag" text-anchor="middle">--ctstate flag per rule, manually</text>
+            <text x="420" y="250" class="pf-cmp-tag" text-anchor="middle">new feature, often new tool</text>
+
+            <text x="280" y="290" class="pf-cmp-muted" text-anchor="middle">A rule in pf is a sentence. A rule in iptables is a tuple of flags applied to a table inside a chain.</text>
+            <text x="280" y="306" class="pf-cmp-muted" text-anchor="middle">Both work. Only one of them you can read on a Friday afternoon and still trust on a Monday morning.</text>
+        </svg>
+
+        <p>This is, as I understand it, why
+            <a href="https://en.wikipedia.org/wiki/Nftables" target="_blank" rel="noopener">nftables</a>
+            exists. The Linux netfilter team, in roughly the late 2000s,
+            took a long look at iptables, took a long look at pf, and
+            rather quietly concluded that the second one had the right
+            shape. nftables, released on 19 January 2014, borrows pf's
+            design philosophy without quite borrowing pf itself: one
+            consistent grammar, one tool, one configuration model. One
+            does admire the gesture, even as one notes that the conversion
+            is still ongoing more than a decade later.</p>
+
+        <h2>The Proof</h2>
+
+        <p>Twenty-five years on, pf is the firewall in OpenBSD,
+            <a href="https://docs.freebsd.org/en/books/handbook/firewalls/#firewalls-pf" target="_blank" rel="noopener">FreeBSD</a>,
+            NetBSD, DragonFly BSD, and macOS. It is what your iPhone and
+            iPad use to filter network traffic. It is what runs underneath
+            <a href="https://www.pfsense.org/" target="_blank" rel="noopener">pfSense</a>,
+            <a href="https://opnsense.org/" target="_blank" rel="noopener">OPNsense</a>,
+            and a substantial fraction of the commercial firewall
+            appliances sold to enterprises that have no idea their
+            security perimeter is configured in a Swiss developer's
+            grammar.</p>
+
+        <svg viewBox="0 0 560 250" aria-label="An adoption map placing pf at the centre, surrounded by the BSD family (OpenBSD 3.0 in 2001, FreeBSD 5.3 in 2004, NetBSD 3.0 in 2005, DragonFly BSD 1.1), the Apple platforms (macOS Lion in 2011, then iOS and iPadOS), and the commercial firewall ecosystem (pfSense and OPNsense). One small kernel module written in 2001 sits quietly at the centre of all of it." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pf-ad-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pf-ad-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .pf-ad-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .pf-ad-core { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 14px; font-weight: 700; }
+                .pf-ad-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .pf-ad-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .pf-ad-core-box { fill: none; stroke: var(--accent); stroke-width: 2; rx: 4; }
+            </style>
+            <text x="280" y="22" class="pf-ad-title" text-anchor="middle">Where pf Quietly Runs</text>
+
+            <rect x="230" y="100" width="100" height="50" class="pf-ad-core-box"/>
+            <text x="280" y="124" class="pf-ad-core" text-anchor="middle">pf</text>
+            <text x="280" y="142" class="pf-ad-muted" text-anchor="middle">Hartmeier, 2001</text>
+
+            <rect x="20" y="50" width="170" height="55" class="pf-ad-box"/>
+            <text x="105" y="70" class="pf-ad-head" text-anchor="middle">BSD family</text>
+            <text x="105" y="86" class="pf-ad-text" text-anchor="middle">OpenBSD 3.0 (2001),</text>
+            <text x="105" y="98" class="pf-ad-text" text-anchor="middle">FreeBSD 5.3, NetBSD, DragonFly</text>
+
+            <rect x="370" y="50" width="170" height="55" class="pf-ad-box"/>
+            <text x="455" y="70" class="pf-ad-head" text-anchor="middle">Apple platforms</text>
+            <text x="455" y="86" class="pf-ad-text" text-anchor="middle">macOS Lion (2011),</text>
+            <text x="455" y="98" class="pf-ad-text" text-anchor="middle">iOS, iPadOS</text>
+
+            <rect x="20" y="145" width="170" height="55" class="pf-ad-box"/>
+            <text x="105" y="165" class="pf-ad-head" text-anchor="middle">Commercial</text>
+            <text x="105" y="181" class="pf-ad-text" text-anchor="middle">pfSense, OPNsense,</text>
+            <text x="105" y="193" class="pf-ad-text" text-anchor="middle">enterprise appliances</text>
+
+            <rect x="370" y="145" width="170" height="55" class="pf-ad-box"/>
+            <text x="455" y="165" class="pf-ad-head" text-anchor="middle">The compliment</text>
+            <text x="455" y="181" class="pf-ad-text" text-anchor="middle">nftables (2014):</text>
+            <text x="455" y="193" class="pf-ad-text" text-anchor="middle">Linux's quiet imitation</text>
+
+            <line x1="190" y1="77" x2="230" y2="115" stroke="var(--accent)" stroke-width="1"/>
+            <line x1="370" y1="77" x2="330" y2="115" stroke="var(--accent)" stroke-width="1"/>
+            <line x1="190" y1="172" x2="230" y2="135" stroke="var(--accent)" stroke-width="1"/>
+            <line x1="370" y1="172" x2="330" y2="135" stroke="var(--accent)" stroke-width="1"/>
+
+            <text x="280" y="232" class="pf-ad-muted" text-anchor="middle">Roughly a billion devices, configured in a grammar that fits on a postcard.</text>
+        </svg>
+
+        <p>The current OpenBSD pf is not the same code as Hartmeier's 2001
+            commit. Henning Brauer and Ryan McBride, in particular, have
+            extended it considerably: redesigned the rule evaluation
+            engine, added sophisticated state-tracking options, integrated
+            with
+            <a href="https://man.openbsd.org/carp" target="_blank" rel="noopener">CARP</a>
+            for high availability, and rebuilt the queueing system. The
+            grammar, however, has remained backward-compatible to a
+            remarkable degree. A
+            <a href="https://man.openbsd.org/pf.conf" target="_blank" rel="noopener">pf.conf</a>
+            written in 2003 still mostly parses on a current OpenBSD
+            machine. The dialect has grown, but the language has not
+            changed.</p>
+
+        <p>This is one of the markers of a well-designed system: the
+            original creators no longer need to be there for the work to
+            continue, and the work that follows feels of a piece with the
+            work that began.</p>
+
+        <h2>The Point</h2>
+
+        <p>pf was not engineered to scale to a billion devices. It was
+            engineered to be readable. Hartmeier wrote it because the
+            alternative was unreadable, and because OpenBSD needed a
+            firewall in less time than was reasonable, and because he
+            wanted to learn the kernel. Twenty-five years later it is the
+            firewall language of the BSD world and a substantial portion
+            of the Apple device estate, and Linux has, in nftables, paid
+            it the considerable compliment of imitation.</p>
+
+        <p>Sometimes a system holds up because the original design knew
+            what was missing. pf is one of those systems.</p>
+
+        <blockquote>
+            <p>30 May 2001: IPFilter pulled from OpenBSD over a licence
+                dispute. 24 June 2001: Hartmeier's first pf commit. End of
+                June: filtering and NAT both working. 1 December 2001:
+                ships in OpenBSD 3.0. 2004: FreeBSD adopts. 2011: macOS
+                adopts. 2014: nftables ships, and rather noticeably looks
+                like pf. A grammar that fits on a postcard, running on
+                roughly a billion devices.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>pf, the short version:</strong></p>
+            <ul>
+                <li><strong>Origin:</strong> 24 June 2001. Daniel Hartmeier, Swiss developer, never written kernel code, replaces IPFilter in 25 days. Triggered by a licence dispute on 30 May 2001</li>
+                <li><strong>Design goal:</strong> rules that read as sentences. Default-deny, last-match-wins, <code>quick</code> short-circuits. One vocabulary for filter, NAT, scrub, queue, anchors, tables</li>
+                <li><strong>Three lines for a working firewall:</strong> <code>block in all</code>; <code>pass in on em0 proto tcp to port 22 keep state</code>; <code>pass out keep state</code></li>
+                <li><strong>Adoption:</strong> OpenBSD 3.0 (Dec 2001), FreeBSD 5.3 (2004), NetBSD 3.0 (2005), DragonFly 1.1, macOS Lion (2011), iOS/iPadOS thereafter. Underneath pfSense and OPNsense</li>
+                <li><strong>Continuity:</strong> Henning Brauer and Ryan McBride extended the engine, added CARP integration, redesigned queueing. A pf.conf from 2003 still mostly parses today</li>
+                <li><strong>The Linux compliment:</strong> nftables, January 2014, rather quietly admits pf had the right shape. Conversion still ongoing more than a decade later</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

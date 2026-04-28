@@ -14,6 +14,12 @@ local pages = {
     { loc = "/print",      priority = "0.6",  changefreq = "monthly" },
     { loc = "/print/integrated-by-design", priority = "0.7", changefreq = "monthly" },
     -- blog articles
+    { loc = "/blog/pf",                                priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/what-the-bootloader-knows",         priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/why-we-measure-tickets",            priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/dependency-avalanche",              priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/service-mesh-sidecar-tax",          priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/integrated-by-design-launch",       priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/css-scope",                         priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/markdown",                          priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-snapshot-that-travels",         priority = "0.7", changefreq = "yearly" },

@@ -1,0 +1,381 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}What the Bootloader Knows &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Between firmware that knows almost nothing and a kernel that must know everything sits a small program with a strange job. Three answers to the same question: FreeBSD's loader (Forth, ~600 KB, ZFS-aware), LILO (block lists, 1992-2015), GRUB 2 (an operating system before the operating system). Three theories of the OS.">
+{( endslot )}
+
+{( slot canonical )}/blog/what-the-bootloader-knows{( endslot )}
+
+{( slot og-title )}What the Bootloader Knows &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The bootloader is the one piece of software whose design quietly encodes what the operating system above believes itself to be. FreeBSD's loader assumes coherence. LILO assumed a slow, static world. GRUB 2 assumes fragmentation. Three loaders, three theories of the OS.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "What the Bootloader Knows",
+    "datePublished": "2026-04-27",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/what-the-bootloader-knows",
+    "description": "FreeBSD loader (Forth, ZFS-aware Boot Environments), LILO (block lists, 1992-2015), GRUB 2 (filesystem drivers for everything). Three loaders, three theories of the operating system.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-27">27 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>What the Bootloader Knows</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">zfs</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 14</p>
+
+        <p>Between the firmware that knows almost nothing and the kernel
+            that must know everything, there is a small program with a
+            rather strange job. The bootloader is the one piece of
+            software whose design quietly encodes what the operating
+            system above believes itself to be.</p>
+
+        <p>Three answers to the same question. Each tells a different
+            story.</p>
+
+        <h2>FreeBSD's Loader</h2>
+
+        <p>Three stages.
+            <a href="https://docs.freebsd.org/en/books/handbook/boot/" target="_blank" rel="noopener"><code>boot0</code></a>
+            is a 446-byte master boot record. <code>boot1</code> reads
+            the partition table and locates <code>loader</code>.
+            <a href="https://man.freebsd.org/cgi/man.cgi?loader(8)" target="_blank" rel="noopener"><code>loader(8)</code></a>
+            is a Forth interpreter, around 600 KB on amd64.</p>
+
+        <p>Forth, because in 1992 someone rather sensibly decided the
+            bootloader should be programmable without itself becoming
+            an operating system. Forth gives you a small, deterministic,
+            stack-based language with no runtime assumptions about
+            memory layout or operating system services. It is enough to
+            express <em>"look at this dataset, decide which kernel to
+            load, present a menu, hand off"</em>, and not enough to
+            tempt anybody into reinventing libc above it.</p>
+
+        <p>The loader understands UFS and ZFS natively. It can mount a
+            ZFS dataset as root. It knows what a Boot Environment is.
+            It presents the list of available Boot Environments as a
+            menu before the kernel starts. None of this is bolted on.
+            It is the design.</p>
+
+        <p>The pre-install bootloader for ZFS-on-root systems writes
+            the loader into a small partition outside the ZFS pool, but
+            the loader itself reads the pool metadata, walks the
+            dataset hierarchy, and offers the user the choice of which
+            root dataset to boot. This is the enabling primitive on
+            which the entire FreeBSD Boot Environment workflow stands.</p>
+
+        <svg viewBox="0 0 560 200" aria-label="The FreeBSD boot chain in three stages: boot0 is a 446-byte master boot record, boot1 reads the partition table and locates the loader, and loader(8) is a roughly 600 KB Forth interpreter that reads ZFS pool metadata, walks the dataset hierarchy, and presents the available Boot Environments as a menu before the kernel starts." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .bc-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .bc-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .bc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .bc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .bc-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .bc-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+            </style>
+            <text x="280" y="22" class="bc-title" text-anchor="middle">FreeBSD: Three Stages, One Coherent Chain</text>
+
+            <rect x="20" y="60" width="115" height="80" class="bc-box"/>
+            <text x="77" y="82" class="bc-head" text-anchor="middle">boot0</text>
+            <text x="77" y="106" class="bc-text" text-anchor="middle">446 bytes</text>
+            <text x="77" y="124" class="bc-muted" text-anchor="middle">MBR</text>
+
+            <path d="M 135 100 L 155 100" class="bc-arrow" marker-end="url(#bcarr)"/>
+            <defs>
+                <marker id="bcarr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <polygon points="0 0, 8 4, 0 8" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <rect x="155" y="60" width="115" height="80" class="bc-box"/>
+            <text x="212" y="82" class="bc-head" text-anchor="middle">boot1</text>
+            <text x="212" y="106" class="bc-text" text-anchor="middle">partition table</text>
+            <text x="212" y="124" class="bc-muted" text-anchor="middle">locates loader</text>
+
+            <path d="M 270 100 L 290 100" class="bc-arrow" marker-end="url(#bcarr)"/>
+
+            <rect x="290" y="60" width="125" height="80" class="bc-box-accent"/>
+            <text x="352" y="82" class="bc-head" text-anchor="middle">loader(8)</text>
+            <text x="352" y="106" class="bc-text" text-anchor="middle">~600 KB Forth</text>
+            <text x="352" y="124" class="bc-muted" text-anchor="middle">UFS + ZFS native</text>
+
+            <path d="M 415 100 L 435 100" class="bc-arrow" marker-end="url(#bcarr)"/>
+
+            <rect x="435" y="60" width="105" height="80" class="bc-box"/>
+            <text x="487" y="82" class="bc-head" text-anchor="middle">kernel</text>
+            <text x="487" y="106" class="bc-text" text-anchor="middle">chosen Boot</text>
+            <text x="487" y="124" class="bc-muted" text-anchor="middle">Environment</text>
+
+            <text x="280" y="172" class="bc-muted" text-anchor="middle">The loader walks ZFS pool metadata and presents Boot Environments as a menu. None of this is bolted on.</text>
+        </svg>
+
+        <h2>What the Userland Built</h2>
+
+        <p>The loader exposed Boot Environments as a first-class
+            concept. The userland question was: how does an admin
+            create, list, activate, destroy, and switch between them?</p>
+
+        <p>The first answer was a shell script called <code>manageBE</code>,
+            written in the early days of ZFS-on-FreeBSD. Functional,
+            but not pleasant to use.</p>
+
+        <p>In 2012, a Polish FreeBSD admin called
+            <a href="https://vermaden.wordpress.com/" target="_blank" rel="noopener">vermaden</a>
+            wrote
+            <a href="https://man.freebsd.org/cgi/man.cgi?beadm" target="_blank" rel="noopener"><code>beadm(8)</code></a>
+            in POSIX <code>sh(1)</code> and <code>awk(1)</code>,
+            deliberately mimicking the Solaris and Illumos
+            <code>beadm</code> interface so that anyone coming from
+            those systems would feel at home. The original announcement
+            and discussion lives on the FreeBSD Forums in the thread
+            <a href="https://forums.freebsd.org/threads/howto-freebsd-zfs-madness.31662/" target="_blank" rel="noopener">"HOWTO ZFS Madness"</a>
+            (number 31662, still readable today). The script was, and
+            remains, around fifteen hundred lines of POSIX shell and
+            awk: small, auditable, dependency-free, runnable on any
+            FreeBSD system since 9.x.</p>
+
+        <p>For six years, vermaden's <code>beadm</code> was the working
+            standard for managing Boot Environments on FreeBSD. It was
+            packaged in ports, recommended by the documentation, and
+            built into countless admin workflows.</p>
+
+        <p>In 2018,
+            <a href="https://www.freebsd.org/releases/12.0R/relnotes/" target="_blank" rel="noopener">FreeBSD 12.0 shipped <code>bectl(8)</code></a>,
+            a reimplementation in C that landed in base. The motivation
+            was straightforward: a tool used as universally as
+            <code>beadm</code> had become deserved to be in base, with
+            all the testing and consistency guarantees that base
+            implies. The C rewrite gave it tighter integration with
+            <code>libbe</code>, the FreeBSD library that already
+            encoded the Boot Environment data model, and direct ZFS
+            access without the cost of subprocess fan-out.</p>
+
+        <p>The transition was not entirely smooth. Early
+            <code>bectl</code> versions had bugs that <code>beadm</code>
+            did not, in part because <code>beadm</code> had been shaken
+            out by six years of production use across hundreds of
+            admins. There are documented cases from the 12.x era in
+            which running <code>beadm</code> against a
+            <code>bectl</code>-confused dataset state cleanly resolved
+            the inconsistency. The bugs have largely been fixed, and
+            <code>bectl</code> is now the recommended tool.</p>
+
+        <p><code>beadm</code> continues to be developed and continues
+            to ship features that <code>bectl</code> has not adopted.
+            The most interesting is the
+            <a href="https://vermaden.wordpress.com/2022/03/14/zfs-boot-environments-revolutions/" target="_blank" rel="noopener"><code>REROOT</code> option</a>:
+            after creating a Boot Environment, upgrading the running
+            system, and discovering that something is not right,
+            <code>REROOT</code> swaps userspace into the pre-upgrade
+            Boot Environment <em>without a full reboot</em>. The kernel
+            stays up; the userspace is reloaded from the chosen
+            dataset. The whole operation takes seconds rather than the
+            half-minute of a reboot. It is the kind of feature that
+            exists because someone was solving an actual operational
+            problem and writing the code that fixed it, rather than
+            waiting for the perfect abstraction.</p>
+
+        <p>That trajectory, from <code>manageBE</code> to
+            <code>beadm</code> to <code>bectl</code>, is a model of how
+            Unix tools mature. A clever script meets an unfilled need.
+            A wider community adopts it and shapes it. A reimplementation
+            in base preserves what worked and fixes what did not, while
+            the original keeps innovating in places where base cannot
+            move as quickly. Both tools coexist, and the choice between
+            them is technical rather than political.</p>
+
+        <h2>Linux: LILO (1992 to 2015)</h2>
+
+        <p><a href="https://en.wikipedia.org/wiki/LILO_(boot_loader)" target="_blank" rel="noopener">Werner Almesberger</a>
+            wrote LILO at ETH Zürich in 1992 and maintained it until
+            1998. John Coffman took over until 2007, when development
+            passed to Joachim Wiedorn. Active development ended in
+            December 2015 with version 24.2, and was never resumed.</p>
+
+        <p>The Linux Loader's design choice was a <em>blocklist</em>.
+            The position of the kernel image on disk was recorded as a
+            list of physical sectors at install time. Move the kernel,
+            the bootloader points at gibberish. Update the kernel, run
+            <code>/sbin/lilo</code> before rebooting or the machine
+            refuses to come back. One does, in retrospect, find this a
+            trifle hopeful.</p>
+
+        <p>This was reasonable in 1992. Disks were small, kernels were
+            rebuilt rarely, and the BIOS understood little beyond
+            INT 13h. The assumption was a slow, static world.</p>
+
+        <p>By 2010 the assumption had become a trap. GPT and UEFI made
+            blocklists structurally awkward. RAID and LVM moved blocks
+            behind the back of the bootloader. The Linux kernel started
+            shipping new versions every couple of months. The ritual
+            that LILO required after each change had become the leading
+            cause of unbootable systems for users who forgot it. The
+            world had moved on; the bootloader had not.</p>
+
+        <h2>Linux: GRUB (2005 to present)</h2>
+
+        <p>The other extreme.
+            <a href="https://en.wikipedia.org/wiki/GNU_GRUB" target="_blank" rel="noopener">GRUB</a>
+            began in 1995 as a research bootloader by Erich Boleyn, was
+            adopted by the GNU project in 1999, and was rewritten from
+            scratch as
+            <a href="https://www.gnu.org/software/grub/manual/grub/grub.html" target="_blank" rel="noopener">GRUB 2 in 2005</a>.
+            The result is a small operating system that runs before the
+            operating system.</p>
+
+        <p>GRUB 2 ships filesystem drivers for ext2, ext3, ext4, btrfs,
+            XFS, F2FS, JFS, ReiserFS, FAT, NTFS, ISO9660, AFFS, HFS,
+            UDF, ZFS (read-only, partial), and several others. It can
+            decompress kernels in zlib, lzma, lz4, and zstd. It runs
+            scripts in its own POSIX-shell-flavoured language. It
+            supports themes, fonts, gfxmode, network boot, UEFI Secure
+            Boot, multiboot, and chainloading. Its core is around 200 KB;
+            its loadable modules add several megabytes.</p>
+
+        <p>Cater a holiday camp where every child has a different diet
+            and you will need a vast kitchen, a vast larder, and rather
+            a lot of cooks; the food will feed everyone competently and
+            excel at none. Linux distributions disagree about filesystem
+            choice, kernel layout, root-on-everything, and boot
+            configuration. GRUB has to understand every variant because
+            the world above it does not converge.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Three bootloaders compared by core size and assumption: FreeBSD loader at roughly 600 KB on a coherent base system; LILO with a tiny block-list-based core trapped in a 1992 assumption of static kernels; GRUB 2 with a 200 KB core plus several megabytes of loadable filesystem drivers, decompressors, themes, fonts, and network-boot modules to cater for a fragmented Linux ecosystem." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cmp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cmp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .cmp-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 16px; font-weight: 700; }
+                .cmp-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .cmp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cmp-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="cmp-title" text-anchor="middle">Three Bootloaders, Three Assumptions</text>
+
+            <rect x="20" y="50" width="165" height="160" class="cmp-box-accent"/>
+            <text x="102" y="74" class="cmp-head" text-anchor="middle">FreeBSD loader</text>
+            <text x="102" y="100" class="cmp-num" text-anchor="middle">~600 KB</text>
+            <text x="102" y="116" class="cmp-text" text-anchor="middle">Forth interpreter</text>
+            <text x="102" y="138" class="cmp-text" text-anchor="middle">UFS + ZFS native</text>
+            <text x="102" y="156" class="cmp-text" text-anchor="middle">BE-aware menu</text>
+            <text x="102" y="180" class="cmp-muted" text-anchor="middle">assumes a coherent</text>
+            <text x="102" y="192" class="cmp-muted" text-anchor="middle">system above</text>
+            <text x="102" y="204" class="cmp-muted" text-anchor="middle">1992 to present</text>
+
+            <rect x="197" y="50" width="165" height="160" class="cmp-box"/>
+            <text x="280" y="74" class="cmp-head" text-anchor="middle">LILO</text>
+            <text x="280" y="100" class="cmp-num" text-anchor="middle">block lists</text>
+            <text x="280" y="116" class="cmp-text" text-anchor="middle">~one disk sector</text>
+            <text x="280" y="138" class="cmp-text" text-anchor="middle">re-run after every</text>
+            <text x="280" y="156" class="cmp-text" text-anchor="middle">kernel change</text>
+            <text x="280" y="180" class="cmp-muted" text-anchor="middle">assumed a slow,</text>
+            <text x="280" y="192" class="cmp-muted" text-anchor="middle">static world</text>
+            <text x="280" y="204" class="cmp-muted" text-anchor="middle">1992 to 2015 (24.2)</text>
+
+            <rect x="375" y="50" width="165" height="160" class="cmp-box"/>
+            <text x="457" y="74" class="cmp-head" text-anchor="middle">GRUB 2</text>
+            <text x="457" y="100" class="cmp-num" text-anchor="middle">200 KB + MBs</text>
+            <text x="457" y="116" class="cmp-text" text-anchor="middle">15+ filesystem drivers</text>
+            <text x="457" y="138" class="cmp-text" text-anchor="middle">scripting, themes,</text>
+            <text x="457" y="156" class="cmp-text" text-anchor="middle">UEFI, network boot</text>
+            <text x="457" y="180" class="cmp-muted" text-anchor="middle">assumes a fragmented</text>
+            <text x="457" y="192" class="cmp-muted" text-anchor="middle">world below</text>
+            <text x="457" y="204" class="cmp-muted" text-anchor="middle">2005 to present</text>
+
+            <text x="280" y="232" class="cmp-muted" text-anchor="middle">The cost of catering for everyone is everything complexity costs. The benefit is that GRUB boots almost anything.</text>
+        </svg>
+
+        <p>The cost of that assumption is everything complexity costs.
+            The benefit is that GRUB will boot almost anything you put
+            in front of it.</p>
+
+        <p>The omission is interesting. GRUB has read-only ZFS support,
+            sufficient to load a kernel from a ZFS dataset. It does not
+            have Boot Environment awareness, because the conversation
+            about ZFS-as-an-OS-management-layer never quite happened on
+            Linux.
+            <a href="https://docs.zfsbootmenu.org/" target="_blank" rel="noopener">ZFSBootMenu</a>
+            exists precisely to fill that gap, by replacing GRUB
+            entirely with a small kexec-loaded Linux kernel whose only
+            job is to present a Boot Environment menu and hand off to
+            the chosen one. Rather circular, that.</p>
+
+        <h2>The Point</h2>
+
+        <p>The question is not which bootloader is best. It is what the
+            bootloader assumes about the system above it.</p>
+
+        <p>FreeBSD's loader assumes the system above it is coherent
+            enough to be worth talking to: that the bootloader, the
+            filesystem, the kernel, and the userland are designed by
+            people who can sit in the same room. From that assumption,
+            things like Boot Environment selection at the loader become
+            possible, and tools like <code>beadm</code> and
+            <code>bectl</code> become natural.</p>
+
+        <p>LILO assumed a slow, static world in which the admin would
+            re-run the installer after each change. The world was no
+            longer that world by 2005, and the bootloader could not
+            move with it.</p>
+
+        <p>GRUB assumes a fragmented world in which the bootloader must
+            understand every variant of every filesystem because the
+            distributions above it do not converge. The cost is
+            permanent complexity, the benefit is that GRUB boots
+            anything.</p>
+
+        <p>Three loaders. Three theories of the operating system. Each
+            design is correct for the world it assumes. The interesting
+            work is choosing which world to live in.</p>
+
+        <blockquote>
+            <p>FreeBSD loader: ~600 KB Forth, UFS+ZFS native, Boot
+                Environment menu before kernel start. <code>beadm</code>
+                (vermaden, 2012, POSIX sh+awk) &#x2192; <code>bectl</code>
+                (FreeBSD 12, 2018, C in base); both coexist, choice is
+                technical. LILO (1992-2015): block lists, re-run
+                /sbin/lilo or the machine declines to boot. GRUB 2
+                (2005-): 15+ filesystem drivers, scripting, themes,
+                catering for a fragmented world. ZFSBootMenu fills the
+                BE gap by replacing GRUB entirely.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The bootloader inventory:</strong></p>
+            <ul>
+                <li><strong>FreeBSD chain:</strong> <code>boot0</code> (446 B MBR) &#x2192; <code>boot1</code> (partition table) &#x2192; <code>loader(8)</code> (~600 KB Forth, UFS+ZFS native, Boot Environment menu)</li>
+                <li><strong>FreeBSD userland:</strong> <code>manageBE</code> (early script) &#x2192; <code>beadm(8)</code> (vermaden, 2012, ~1500 lines POSIX sh+awk, Solaris/Illumos-compatible) &#x2192; <code>bectl(8)</code> (FreeBSD 12.0, 2018, C in base, libbe-integrated). Both coexist; <code>beadm</code> still has <code>REROOT</code> for userspace-swap without reboot</li>
+                <li><strong>LILO (1992-2015):</strong> Werner Almesberger at ETH Zürich. Block-list addressing; required <code>/sbin/lilo</code> after every kernel change. Last release 24.2, December 2015. Development never resumed</li>
+                <li><strong>GRUB 2 (2005-):</strong> Erich Boleyn 1995 origin, GNU 1999, GRUB 2 rewrite 2005. ~200 KB core plus MBs of modules: ext/btrfs/XFS/F2FS/JFS/ReiserFS/FAT/NTFS/ISO9660/HFS/UDF/ZFS-RO drivers, scripting, themes, UEFI, network boot</li>
+                <li><strong>ZFSBootMenu:</strong> replaces GRUB entirely with a small kexec-loaded Linux kernel whose only job is the Boot Environment menu. The Linux-side admission that GRUB never absorbed the BE concept</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

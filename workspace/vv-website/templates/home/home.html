@@ -7,32 +7,77 @@
 {( endslot )}
 
 {( slot content )}
-<section class="vv-hero" aria-labelledby="hero-title">
-    <h1 id="hero-title">Vivian <span class="accent">Voss</span></h1>
-    <div class="vv-hero-intro">
-        <div class="vv-avatar-frame">
-            <img class="vv-avatar" src="/assets/images/vivian-voss.webp" alt="Vivian Voss" width="75" height="75">
-        </div>
-        <div>
-            <p class="tagline">System Architect & Software Developer.
-                37 years in the game. 26 professionally.</p>
-            <p class="lead">Building minimal tools that earn every byte.
-                Inspired by the demoscene. Guided by Unix philosophy.
-                Using AI to engineer, educate and validate, not to replicate the bloat faster.</p>
-        </div>
-    </div>
-</section>
+<style>
+    .vv-top-grid { display:grid;gap:calc(var(--unit)*4) }
+    .vv-top-left,
+    .vv-top-right { display:grid;gap:calc(var(--unit)*4);align-content:start }
+    .vv-top-left > .vv-hero { padding:0 }
+    .vv-book-ad { display:grid;grid-template-columns:auto 1fr;gap:calc(var(--unit)*4);align-items:start;padding:calc(var(--unit)*4);border:1px solid var(--border);border-radius:6px;text-decoration:none;color:inherit;transition:border-color .15s }
+    .vv-book-ad:hover { border-color:var(--accent) }
+    .vv-book-ad img { border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.15);display:block;max-width:200px;height:auto }
+    .vv-book-ad-tag { color:var(--accent);font-weight:700;font-size:.85em;letter-spacing:.08em;text-transform:uppercase;margin:0 0 calc(var(--unit)*2) }
+    .vv-book-ad-title { font-family:var(--font-heading);font-size:1.4em;margin:0 0 calc(var(--unit)*1.5) }
+    .vv-book-ad-sub { color:var(--muted);font-style:italic;margin:0 0 calc(var(--unit)*3);font-size:1em }
+    .vv-book-ad-desc { margin:0 0 calc(var(--unit)*3);font-size:.95em;line-height:1.55 }
+    .vv-book-ad-cta { color:var(--accent);font-weight:700;margin:0 }
+    @media (min-width:960px) {
+        .vv-top-grid { grid-template-columns:1fr 1fr;gap:calc(var(--unit)*6);align-items:start }
+        .vv-top-right { padding-top:calc(var(--unit)*6) }
+    }
+    @media (max-width:640px) {
+        .vv-book-ad { grid-template-columns:1fr;text-align:left }
+        .vv-book-ad img { max-width:180px }
+    }
+</style>
 
-<section class="vv-section" aria-labelledby="what-title">
-    <h2 id="what-title">What I Do</h2>
-    <p>I design systems where reduction is the method, not the compromise.
-        Small binaries. Semantic markup. Honest interfaces.
-        Every abstraction must justify its weight.</p>
-    <p>Currently Senior Developer at a German DIY wholesale giant,
-        working with React, TypeScript, and Spryker. Privately building
-        <a href="/ecosystem">min2max</a>, ultralight web tools
-        rooted in demoscene constraints.</p>
-</section>
+<div class="vv-top-grid">
+    <div class="vv-top-left">
+        <section class="vv-hero" aria-labelledby="hero-title">
+            <h1 id="hero-title">Vivian <span class="accent">Voss</span></h1>
+            <div class="vv-hero-intro">
+                <div class="vv-avatar-frame">
+                    <img class="vv-avatar" src="/assets/images/vivian-voss.webp" alt="Vivian Voss" width="75" height="75">
+                </div>
+                <div>
+                    <p class="tagline">System Architect & Software Developer.
+                        37 years in the game. 26 professionally.</p>
+                    <p class="lead">Building minimal tools that earn every byte.
+                        Inspired by the demoscene. Guided by Unix philosophy.
+                        Using AI to engineer, educate and validate, not to replicate the bloat faster.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="vv-section" aria-labelledby="what-title">
+            <h2 id="what-title">What I Do</h2>
+            <p>I design systems where reduction is the method, not the compromise.
+                Small binaries. Semantic markup. Honest interfaces.
+                Every abstraction must justify its weight.</p>
+            <p>Currently Senior Developer at a German DIY wholesale giant,
+                working with React, TypeScript, and Spryker. Privately building
+                <a href="/ecosystem">min2max</a>, ultralight web tools
+                rooted in demoscene constraints.</p>
+        </section>
+    </div>
+
+    <div class="vv-top-right">
+        <a class="vv-book-ad" href="/print/integrated-by-design" aria-label="Integrated by Design &#x2014; book page">
+            <img src="/assets/images/integrated-by-design-cover.gif"
+                 alt="Integrated by Design book cover"
+                 width="200" height="300">
+            <div>
+                <p class="vv-book-ad-tag">New book &#x25A0; April 2026</p>
+                <h2 class="vv-book-ad-title">Integrated by Design</h2>
+                <p class="vv-book-ad-sub">Why the Best Systems Are the Ones You Don't Notice</p>
+                <p class="vv-book-ad-desc">My first book. 370 pages on FreeBSD,
+                    from philosophy to practice. Published on UNESCO World Book
+                    Day, 23 April 2026, by Voss'scher Verlag. Hardcover,
+                    paperback, and Kindle all shipping now.</p>
+                <p class="vv-book-ad-cta">View the book &#x2192;</p>
+            </div>
+        </a>
+    </div>
+</div>
 
 <section class="vv-section" aria-labelledby="timeline-title">
     <h2 id="timeline-title">The Hardware Trail</h2>
@@ -97,83 +142,86 @@
     <h2 id="writing-title">Latest Writing</h2>
     <div class="vv-series">
         <article class="vv-series-item">
-            <span class="day">22 Apr 2026</span>
-            <div class="vv-pills">
-                <span class="vv-pill">css</span>
-                <span class="vv-pill">web</span>
-                <span class="vv-pill">html</span>
-            </div>
-            <h3><a href="/blog/css-scope">The CSS Scope You Never Had to Compile</a></h3>
-            <p>.card h3 { font-weight: 600 } and the third-party
-                widget has its own .card with an h3. You reach for
-                BEM, CSS Modules, 80 KB of styled-components. @scope
-                is the native answer: zero specificity, a new cascade
-                tier called scoping proximity, cross-browser stable
-                since December 2025. The cascade, after twenty-five
-                years, is finally finished.</p>
-        </article>
-        <article class="vv-series-item">
-            <span class="day">21 Apr 2026</span>
-            <div class="vv-pills">
-                <span class="vv-pill">tooling</span>
-                <span class="vv-pill">html</span>
-                <span class="vv-pill">web</span>
-            </div>
-            <h3><a href="/blog/markdown">Markdown</a></h3>
-            <p>On 15 March 2004, John Gruber posted a blog entry and a
-                1,400-line Perl script. Aaron Swartz was the sole
-                beta-tester. No lexer, no parser, no AST. Twenty-one
-                years later, GitHub, GitLab, Reddit, Discord, Notion,
-                and every major LLM speak Markdown. Third year running
-                as the most admired documentation format. Plain text
-                won.</p>
-        </article>
-        <article class="vv-series-item">
-            <span class="day">20 Apr 2026</span>
+            <span class="day">28 Apr 2026</span>
             <div class="vv-pills">
                 <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">unix</span>
+                <span class="vv-pill">tooling</span>
+            </div>
+            <h3><a href="/blog/pf">pf</a></h3>
+            <p>In May 2001 OpenBSD pulled IPFilter out of the source tree
+                over a licence dispute. Daniel Hartmeier, who had never
+                written kernel code, replaced it in twenty-five days. By
+                December it shipped in OpenBSD 3.0. Twenty-five years on,
+                pf is the firewall in OpenBSD, FreeBSD, NetBSD, DragonFly
+                and macOS, runs on roughly a billion Apple devices, and
+                Linux's nftables (2014) is rather quietly an admission
+                that pf had the right shape all along.</p>
+        </article>
+        <article class="vv-series-item">
+            <span class="day">27 Apr 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">linux</span>
                 <span class="vv-pill">zfs</span>
                 <span class="vv-pill">unix</span>
-                <span class="vv-pill">devops</span>
             </div>
-            <h3><a href="/blog/the-snapshot-that-travels">The Snapshot That Travels</a></h3>
-            <p>At 3 AM on a production cluster measured in terabytes,
-                the question is whether any of your backup tools will
-                finish before breakfast. ZFS snapshot, send, clone:
-                atomic in milliseconds, 40 TB delta in seconds,
-                copy-on-write branches at zero cost until divergence.
-                Backup, replication, and branching are three uses of
-                the same primitive.</p>
+            <h3><a href="/blog/what-the-bootloader-knows">What the Bootloader Knows</a></h3>
+            <p>Between firmware that knows almost nothing and a kernel
+                that must know everything sits a small program with a
+                strange job. FreeBSD's loader: ~600 KB Forth, ZFS-aware
+                Boot Environment menu. LILO (1992-2015): block lists,
+                run /sbin/lilo or the machine declines to boot. GRUB 2:
+                an operating system before the operating system. Three
+                theories of the OS.</p>
         </article>
         <article class="vv-series-item">
-            <span class="day">19 Apr 2026</span>
+            <span class="day">26 Apr 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">tooling</span>
+            </div>
+            <h3><a href="/blog/why-we-measure-tickets">Why We Measure Tickets, Not Problems Prevented</a></h3>
+            <p>The dashboard is green. Production has been quietly
+                fragile for eleven weeks. Taylor 1911, Goodhart 1975,
+                Strathern 1997, Jeffries 2019: we were warned by name,
+                twice in one century. The engineer who prevents three
+                outages closes zero tickets and is invisible. The one
+                who closes forty-seven is promoted.</p>
+        </article>
+        <article class="vv-series-item">
+            <span class="day">25 Apr 2026</span>
             <div class="vv-pills">
                 <span class="vv-pill">security</span>
-                <span class="vv-pill">web</span>
-                <span class="vv-pill">law</span>
+                <span class="vv-pill">node</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">tooling</span>
             </div>
-            <h3><a href="/blog/why-we-accepted-surveillance">Why We Accepted Surveillance as Default</a></h3>
-            <p>In January 1996, two men in New York founded DoubleClick.
-                Nobody voted on this. Today: 7 third-party trackers per
-                page, 600 billion real-time bid requests per day, 90%
-                accept when "Reject all" is hidden. Apple ATT, 2021:
-                one OS-level prompt cost Meta $10 billion in a single
-                year. The technology was always there.</p>
+            <h3><a href="/blog/dependency-avalanche">The Dependency Avalanche</a></h3>
+            <p>A blank Express server resolves 65 packages. A blank
+                Next.js app resolves 644. Six hundred and forty-four
+                pieces of someone else's work to render eighteen
+                characters of text. Then there is XZ: two and a half
+                years of patient social engineering, caught by one
+                engineer noticing 500 ms of SSH latency he did not
+                expect.</p>
         </article>
         <article class="vv-series-item">
-            <span class="day">18 Apr 2026</span>
+            <span class="day">24 Apr 2026</span>
             <div class="vv-pills">
-                <span class="vv-pill">performance</span>
+                <span class="vv-pill">kubernetes</span>
                 <span class="vv-pill">architecture</span>
-                <span class="vv-pill">cloud</span>
+                <span class="vv-pill">performance</span>
             </div>
-            <h3><a href="/blog/compute-is-cheap-decade">The Compute-Is-Cheap Decade</a></h3>
-            <p>Knuth's quote was 97%/3%. Only the 97% survived. Discord
-                rewrote Go in Rust: memory down 40%, latency 160x. Twitter
-                decommissioned 148,000 servers and continued to function.
-                WhatsApp 2015: fifty engineers for 900 million users. Data
-                centres: 415 TWh in 2024, 945 TWh projected by 2030. The
-                bill was always there.</p>
+            <h3><a href="/blog/service-mesh-sidecar-tax">Service Mesh: The Sidecar Tax</a></h3>
+            <p>mTLS, observability, zero-code retries. Splendid. CNCF
+                2024 Survey: mesh adoption 42%, down from 50%. 2025
+                peer-reviewed benchmark: Istio sidecar +166% mTLS
+                latency, Linkerd +33%, Istio Ambient +8%. 60 MB RAM
+                per pod, 60 GB across a 1,000-pod cluster before code
+                runs. Ambient mode is Istio's own admission that
+                sidecars were a problem.</p>
         </article>
     </div>
     <p><a href="/blog">All articles &#x2192;</a></p>

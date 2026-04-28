@@ -1,0 +1,405 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Why We Measure Tickets, Not Problems Prevented &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="The dashboard is green. Velocity is up. Production has been quietly fragile for eleven weeks, and nobody notices because fragility does not have a column. Taylor 1911. Goodhart 1975. Strathern 1997. Jeffries 2019. We were warned by name, twice in one century, and kept the stopwatch under a procession of new names.">
+{( endslot )}
+
+{( slot canonical )}/blog/why-we-measure-tickets{( endslot )}
+
+{( slot og-title )}Why We Measure Tickets, Not Problems Prevented &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Productivity is what one can count. The decision not to deploy on Friday afternoon does not log. The engineer who prevents three outages closes no tickets that quarter. The one who ships forty-seven is promoted. The dashboard goes up. The system goes down. The chair, somewhere, is not being built.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Why We Measure Tickets, Not Problems Prevented",
+    "datePublished": "2026-04-26",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/why-we-measure-tickets",
+    "description": "The dashboard is green. The system is fragile. Taylor 1911, Goodhart 1975, Strathern 1997, Jeffries 2019: we were warned by name and kept the stopwatch under a procession of new names.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-26">26 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Why We Measure Tickets, Not Problems Prevented</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>On Second Thought</em> &#x25A0; Episode 05</p>
+
+        <p>The dashboard is green. Velocity is up. Burndown is on
+            track. The demo on Friday will be smooth. Production has
+            been quietly fragile for eleven weeks, and nobody notices,
+            because fragility does not have a column.</p>
+
+        <p>This is the post about that column.</p>
+
+        <h2>The Axiom</h2>
+
+        <p>Productivity, for the purposes of any reporting line above
+            the work itself, is what one can count. Tickets closed,
+            story points completed, lines shipped, deploys per week,
+            sprints reported as "successful", incident-mean-time-to-
+            resolution charted in a quarterly review.</p>
+
+        <p>The work that does not produce a number does not exist. The
+            thinking that prevented the incident in the first place
+            does not appear. The decision not to deploy on Friday
+            afternoon does not log. The conversation in which a senior
+            engineer talked the team out of a doomed approach is not in
+            any system of record.</p>
+
+        <p>This is not because the people running the dashboards are
+            foolish. It is because the dashboard is the only thing they
+            were given to look at, and over time, the thing one looks
+            at becomes the thing one believes is real.</p>
+
+        <h2>The Origin</h2>
+
+        <p><a href="https://en.wikipedia.org/wiki/Scientific_management" target="_blank" rel="noopener">Frederick Winslow Taylor</a>
+            published <em>The Principles of Scientific Management</em>
+            in 1911 with rather industrious enthusiasm. The stopwatch,
+            the time study, the one-best-way. Taylor's intent was to
+            bring rigour to factory work; his unintended legacy was to
+            make the act of <em>being measured</em> the new floor of
+            working life.</p>
+
+        <p>Workers struck. The Watertown Arsenal foundry walked out in
+            the summer of 1911 over the introduction of the stopwatch.
+            The US Congress investigated and banned time studies and
+            pay premiums tied to them on US Government work. Taylor's
+            specific instrument was, briefly, defeated.</p>
+
+        <p>The instinct survived under a procession of new names:
+            scientific management, then efficiency, then
+            management-by-objectives, then Six Sigma, then Lean, then
+            agile, now velocity. The vocabulary moves on every fifteen
+            years; the underlying premise (that what cannot be counted
+            does not count) moves not at all. One does notice the
+            pattern.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="A 110-year arc of the same unsolved problem under different vocabulary: Scientific Management 1911, Efficiency 1920s onward, Management by Objectives 1954, Six Sigma 1986, Lean 1988, Agile 2001, Velocity 2010s, OKRs 2018. The instinct survives every relabel." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .lb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .lb-year { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .lb-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .lb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .lb-line { stroke: var(--border); stroke-width: 1; fill: none; }
+            </style>
+            <text x="280" y="22" class="lb-title" text-anchor="middle">Same Instinct, New Vocabulary</text>
+
+            <line x1="30" y1="120" x2="530" y2="120" class="lb-line"/>
+
+            <circle cx="50" cy="120" r="4" fill="var(--accent)"/>
+            <text x="50" y="92" class="lb-year" text-anchor="middle">1911</text>
+            <text x="50" y="142" class="lb-text" text-anchor="middle">Scientific</text>
+            <text x="50" y="156" class="lb-text" text-anchor="middle">Management</text>
+
+            <circle cx="135" cy="120" r="4" fill="var(--accent)"/>
+            <text x="135" y="92" class="lb-year" text-anchor="middle">1954</text>
+            <text x="135" y="142" class="lb-text" text-anchor="middle">Management</text>
+            <text x="135" y="156" class="lb-text" text-anchor="middle">by Objectives</text>
+
+            <circle cx="220" cy="120" r="4" fill="var(--accent)"/>
+            <text x="220" y="92" class="lb-year" text-anchor="middle">1986</text>
+            <text x="220" y="142" class="lb-text" text-anchor="middle">Six Sigma</text>
+
+            <circle cx="290" cy="120" r="4" fill="var(--accent)"/>
+            <text x="290" y="92" class="lb-year" text-anchor="middle">1988</text>
+            <text x="290" y="142" class="lb-text" text-anchor="middle">Lean</text>
+
+            <circle cx="370" cy="120" r="4" fill="var(--accent)"/>
+            <text x="370" y="92" class="lb-year" text-anchor="middle">2001</text>
+            <text x="370" y="142" class="lb-text" text-anchor="middle">Agile</text>
+
+            <circle cx="450" cy="120" r="4" fill="var(--accent)"/>
+            <text x="450" y="92" class="lb-year" text-anchor="middle">2010s</text>
+            <text x="450" y="142" class="lb-text" text-anchor="middle">Velocity</text>
+            <text x="450" y="156" class="lb-text" text-anchor="middle">Story Points</text>
+
+            <circle cx="520" cy="120" r="4" fill="var(--accent)"/>
+            <text x="520" y="92" class="lb-year" text-anchor="middle">2018</text>
+            <text x="520" y="142" class="lb-text" text-anchor="middle">OKRs</text>
+
+            <text x="280" y="195" class="lb-muted" text-anchor="middle">"What cannot be counted does not count" survives every relabel. The vocabulary changes; the dashboard does not.</text>
+        </svg>
+
+        <p>In 1975, the British economist
+            <a href="https://en.wikipedia.org/wiki/Goodhart%27s_law" target="_blank" rel="noopener">Charles Goodhart</a>
+            wrote, in a footnote of a paper on UK monetary policy:
+            <em>"Any observed statistical regularity will tend to
+            collapse once pressure is placed upon it for control
+            purposes."</em> Twenty-two years later, the anthropologist
+            Marilyn Strathern, observing British university assessment
+            regimes, condensed it into the version everyone now quotes:
+            <em>when a measure becomes a target, it ceases to be a good
+            measure.</em></p>
+
+        <p>We were warned by name, twice in one century, by people
+            whose entire professional life had been spent watching the
+            phenomenon. The industry that calls itself data-driven
+            did not, in this case, read the data.</p>
+
+        <p>In 2019,
+            <a href="https://ronjeffries.com/articles/019-01ff/story-points/" target="_blank" rel="noopener">Ron Jeffries</a>,
+            one of the original signatories of the Agile Manifesto and
+            the man widely credited with promoting the story point,
+            published a public reconsideration:</p>
+
+        <blockquote>
+            <p>"I may have made the name-changing suggestion. If I did,
+                I'm sorry now."</p>
+        </blockquote>
+
+        <p>He went on to recommend abandoning story-point estimation
+            entirely. The industry, having found story points terribly
+            useful for promotion decisions, performance reviews, and
+            quarterly board reports, kept them. The dashboard, rather
+            firmly, demands them.</p>
+
+        <h2>The Cost</h2>
+
+        <p>Consider two engineers in the same team for the same
+            quarter.</p>
+
+        <p>The first engineer prevents three outages. She does this by
+            refusing to deploy on Friday afternoon when the staging
+            environment is showing intermittent failures; by patiently
+            explaining to a junior why the proposed cache invalidation
+            strategy will produce a thundering herd; by spotting, in a
+            routine code review, the off-by-one in the rate limiter
+            that would have melted production under the next traffic
+            spike. None of this work produces a ticket. None of it
+            closes a backlog item. None of it is visible to her
+            manager's manager.</p>
+
+        <p>The second engineer cheerfully closes forty-seven tickets
+            that quarter. He is praised in the sprint review. He ships
+            the architecture that produces the outages the first
+            engineer prevented. The outages are then opened as new
+            tickets, which the team will close in subsequent sprints,
+            generating velocity and a sense of forward motion.</p>
+
+        <p>The first engineer is invisible to every metric in the
+            building. The second is promoted.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Side-by-side comparison of two engineers over one quarter. Engineer A prevents three outages by refusing a Friday deploy, catching a thundering herd in design, and spotting an off-by-one in code review; her ticket count is zero and she is invisible. Engineer B closes forty-seven tickets and ships the architecture that produces the outages she prevented; he is promoted." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .as-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .as-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .as-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 22px; font-weight: 700; }
+                .as-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .as-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .as-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .as-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="as-title" text-anchor="middle">The Promotion Asymmetry</text>
+
+            <rect x="20" y="45" width="250" height="170" class="as-box"/>
+            <text x="145" y="68" class="as-head" text-anchor="middle">Engineer A</text>
+            <text x="145" y="100" class="as-num" text-anchor="middle">0</text>
+            <text x="145" y="118" class="as-text" text-anchor="middle">tickets closed this quarter</text>
+            <text x="145" y="142" class="as-muted" text-anchor="middle">refused a Friday deploy (3 outages averted)</text>
+            <text x="145" y="156" class="as-muted" text-anchor="middle">caught a thundering herd in design</text>
+            <text x="145" y="170" class="as-muted" text-anchor="middle">spotted an off-by-one in code review</text>
+            <text x="145" y="200" class="as-text" text-anchor="middle" font-weight="700">Invisible.</text>
+
+            <rect x="290" y="45" width="250" height="170" class="as-box-accent"/>
+            <text x="415" y="68" class="as-head" text-anchor="middle">Engineer B</text>
+            <text x="415" y="100" class="as-num" text-anchor="middle">47</text>
+            <text x="415" y="118" class="as-text" text-anchor="middle">tickets closed this quarter</text>
+            <text x="415" y="142" class="as-muted" text-anchor="middle">shipped the architecture that</text>
+            <text x="415" y="156" class="as-muted" text-anchor="middle">produced the outages A prevented</text>
+            <text x="415" y="170" class="as-muted" text-anchor="middle">outages logged as new tickets</text>
+            <text x="415" y="200" class="as-text" text-anchor="middle" font-weight="700">Promoted.</text>
+
+            <text x="280" y="234" class="as-muted" text-anchor="middle">The dashboard goes up. The system goes down. The dashboard goes up again.</text>
+        </svg>
+
+        <p>This is not a hypothetical. It is the architecture of the
+            modern software organisation, applied with the consistency
+            of a religious practice. The dashboard goes up. The system
+            goes down. The dashboard goes up again, because the new
+            outages are recorded as feature requests in next quarter's
+            backlog, and closing them counts as work.</p>
+
+        <p>The cost is not only the outages. The cost is that the first
+            engineer, finding her judgement systematically unrewarded,
+            eventually leaves. The second engineer, finding his
+            ticket-throughput systematically rewarded, eventually
+            becomes director of engineering. The system optimises the
+            people the way one would optimise a queue, and the queue
+            knows nothing about the building it is keeping standing.</p>
+
+        <h2>The Made-in-Germany Inversion</h2>
+
+        <p>A short historical detour, because the contrast is precise
+            and the contrast is the point.</p>
+
+        <p><a href="https://en.wikipedia.org/wiki/Made_in_Germany" target="_blank" rel="noopener">"Made in Germany"</a>
+            was an insult before it was a compliment. The British
+            Merchandise Marks Act of 1887 was passed by Parliament
+            after British manufacturers (Sheffield cutlery in
+            particular) complained that German imitations were entering
+            the country with British-style markings. The Act required
+            all foreign goods to be plainly marked with their country
+            of origin, the practical purpose being to allow British
+            consumers to recognise and refuse the inferior German
+            imports.</p>
+
+        <p>The plan worked exactly as designed for about a decade. Then
+            it inverted.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="The Made-in-Germany inversion: in 1887 the British Merchandise Marks Act stamped Made in Germany onto exports as a stigma to warn buyers of inferior wares; within roughly thirty years the label had become a guarantee of quality, because German firms used the mark not to perform productivity but to ship goods that lasted (Solingen blades, Carl Zeiss optics, Steinway pianos, Leica cameras)." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .mg-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .mg-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .mg-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .mg-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .mg-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .mg-box-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .mg-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+            </style>
+            <text x="280" y="22" class="mg-title" text-anchor="middle">The Label That Inverted Itself</text>
+
+            <rect x="20" y="55" width="200" height="120" class="mg-box"/>
+            <text x="120" y="78" class="mg-head" text-anchor="middle">1887: Stigma</text>
+            <text x="120" y="104" class="mg-text" text-anchor="middle">British Merchandise</text>
+            <text x="120" y="118" class="mg-text" text-anchor="middle">Marks Act</text>
+            <text x="120" y="142" class="mg-muted" text-anchor="middle">"Made in Germany" stamped</text>
+            <text x="120" y="156" class="mg-muted" text-anchor="middle">on inferior imports as warning</text>
+
+            <path d="M 220 115 L 340 115" class="mg-arrow" marker-end="url(#mgarr)"/>
+            <defs>
+                <marker id="mgarr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <polygon points="0 0, 8 4, 0 8" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="108" class="mg-muted" text-anchor="middle">~30 years</text>
+
+            <rect x="340" y="55" width="200" height="120" class="mg-box-accent"/>
+            <text x="440" y="78" class="mg-head" text-anchor="middle">~1917: Guarantee</text>
+            <text x="440" y="104" class="mg-text" text-anchor="middle">Solingen, Carl Zeiss,</text>
+            <text x="440" y="118" class="mg-text" text-anchor="middle">Steinway, Leica</text>
+            <text x="440" y="142" class="mg-muted" text-anchor="middle">The label became a guarantee</text>
+            <text x="440" y="156" class="mg-muted" text-anchor="middle">because the work was a guarantee</text>
+
+            <text x="280" y="200" class="mg-muted" text-anchor="middle">A culture that measured the chair, not the hours.</text>
+        </svg>
+
+        <p>Within thirty years, "Made in Germany" had become a guarantee
+            of value. German firms had used the label not to
+            <em>perform</em> productivity but to ship goods that did
+            not need replacing. Solingen blades that lasted decades.
+            Carl Zeiss optics that astronomers in Britain quietly
+            preferred to anything domestic. Steinway pianos. Leica
+            cameras. The label became a guarantee because the work
+            was a guarantee.</p>
+
+        <p>The inversion was not a marketing campaign. It was a
+            consequence of a culture that measured the chair, not the
+            hours.</p>
+
+        <p>We have, rather industriously, built the inverse industry.
+            The label is impeccable. The dashboards are green. The
+            retros are constructive. The substance, increasingly, is
+            not. A modern enterprise software product carries a
+            thousand certifications, three SOC-2 audits, an ISO-27001
+            stamp, an SBOM, an OpenSSF Scorecard, and falls over when
+            a region drains. The label does the work the work used to
+            do.</p>
+
+        <p>This is not specifically a German point. It is a
+            craftsmanship point that happens to have a useful German
+            example. The craftsmen of Sheffield, who triggered the
+            1887 Act, would have understood it perfectly well had the
+            inversion gone the other way.</p>
+
+        <h2>The Question</h2>
+
+        <p>If a craftsman built a chair to last fifty years, the metric
+            was the chair, not the hours. If a Bell Labs engineer in
+            1955 designed a
+            <a href="https://en.wikipedia.org/wiki/Number_5_Crossbar_Switching_System" target="_blank" rel="noopener">Number 5 Crossbar switch</a>
+            that ran in the field for thirty years, the metric was the
+            switch, not the patches. If the engineers at Volvo who
+            <a href="https://www.volvocars.com/en-th/news/safety/the-history-of-the-three-point-safety-belt/" target="_blank" rel="noopener">designed the three-point seatbelt in 1959</a>
+            had been measured on patents-filed-per-quarter, they would
+            not have given it away to every other manufacturer in the
+            world, and the next sixty years of road safety would have
+            run rather differently.</p>
+
+        <p>What would happen to a software organisation that measured
+            problems prevented rather than tickets closed? That
+            measured quality held rather than features shipped? That
+            measured judgement applied rather than activity logged?</p>
+
+        <p>The honest answer is that nobody knows, because nobody has
+            been allowed to try long enough for the chair to last fifty
+            years. Software organisations rarely outlive their last
+            quarterly review by more than two or three of them. The
+            promotion cycle is faster than the chair.</p>
+
+        <p>There is a quieter question underneath, which is the one
+            this episode is really about. It is not "what metric should
+            we use instead?" It is: <em>why have we agreed, as an
+            industry of nominally clever people, to organise our
+            working lives around an instrument we know to be wrong, in
+            a way that has been documented for fifty years and
+            apologised for by its inventors?</em></p>
+
+        <p>One does suspect the answer is uncomfortable. It is much
+            easier to ship a number than to ship a thing that lasts.
+            It is much easier to manage a number than to manage a
+            person who is doing something difficult. It is much easier
+            to write a quarterly review of a number than of a
+            judgement.</p>
+
+        <p>The dashboard is green. The chair, somewhere, is not being
+            built.</p>
+
+        <blockquote>
+            <p>Taylor 1911: stopwatch and time study. Workers struck;
+                Congress banned it on US Government work. Goodhart
+                1975 and Strathern 1997: when a measure becomes a
+                target, it ceases to be a good measure. Ron Jeffries
+                2019, on the story point he popularised: "I'm sorry
+                now." The industry kept it. The dashboard, rather
+                firmly, demands it.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The hundred-and-ten-year arc:</strong></p>
+            <ul>
+                <li><strong>1911:</strong> Frederick Winslow Taylor publishes <em>The Principles of Scientific Management</em>. Watertown Arsenal foundry strikes; US Congress bans time studies on government work</li>
+                <li><strong>1975:</strong> Charles Goodhart, footnote in a UK monetary policy paper: any statistical regularity collapses once pressure is placed on it for control purposes</li>
+                <li><strong>1997:</strong> Marilyn Strathern's restatement (the version everyone quotes): when a measure becomes a target, it ceases to be a good measure</li>
+                <li><strong>2019:</strong> Ron Jeffries publishes <em>Story Points Revisited</em> apologising for the term he popularised; recommends abandoning it. Industry keeps it</li>
+                <li><strong>The Made-in-Germany inversion:</strong> 1887 Merchandise Marks Act stamped the label on as a stigma; within ~30 years it inverted into a guarantee. Solingen, Carl Zeiss, Steinway, Leica. Measured the chair, not the hours</li>
+                <li><strong>The cost:</strong> the engineer who prevents three outages closes zero tickets and is invisible. The engineer who closes forty-seven and ships the architecture causing the outages is promoted</li>
+                <li><strong>The question:</strong> not "what metric instead?", but why we organise around an instrument documented as wrong for fifty years and apologised for by its inventors</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

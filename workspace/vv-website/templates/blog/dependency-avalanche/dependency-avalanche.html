@@ -1,0 +1,393 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Dependency Avalanche &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A blank Express server resolves 65 packages. A blank Next.js app resolves 644. Six hundred and forty-four pieces of someone else's work to render eighteen characters of text. Then there is XZ: two and a half years of patient social engineering, caught by one engineer noticing 500 milliseconds of latency.">
+{( endslot )}
+
+{( slot canonical )}/blog/dependency-avalanche{( endslot )}
+
+{( slot og-title )}The Dependency Avalanche &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}644 strangers in your package.json. The XZ backdoor was caught by one engineer noticing half a second of latency. Next time it might be 50 milliseconds. Next time it might be no perceptible drift at all.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Dependency Avalanche",
+    "datePublished": "2026-04-25",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/dependency-avalanche",
+    "description": "Express 65 packages. Next.js 644. XZ 2.5 years of social engineering, caught by 500 ms of SSH latency. The audit duty has been outsourced so many times that nobody is holding it.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-25">25 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Dependency Avalanche</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">node</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Beta Stories</em> &#x25A0; Episode 09</p>
+
+        <p>The promise of the modern package ecosystem was a kind one:
+            you do not have to write everything yourself. Stand on the
+            shoulders of giants. Reuse, do not reinvent. Anyone, somewhere,
+            maintains it.</p>
+
+        <p>The reality, measured this morning on a fresh laptop, is the
+            avalanche this episode is named for.</p>
+
+        <h2>The Reality, in Two Numbers</h2>
+
+        <p><code>npm install express</code> on a clean directory pulls
+            <a href="https://expressjs.com/" target="_blank" rel="noopener">Express 5.2.1</a>,
+            declares 28 direct dependencies, resolves a total of 65
+            packages across the dependency tree, and produces a
+            <code>node_modules</code> of 3.6 MB. That is the smaller end
+            of the modern web.</p>
+
+        <p><code>npx create-next-app@latest</code> with the recommended
+            defaults (TypeScript, Tailwind CSS, ESLint, App Router)
+            creates a project whose <code>package.json</code> declares
+            11 packages, resolves a transitive tree of <strong>644
+            packages</strong>, and writes a <code>node_modules</code> of
+            463 MB. The application, at this stage, renders a single
+            page that says <em>"Welcome to Next.js"</em>.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Comparison of dependency counts and install size for a fresh HTTP responder: Express resolves 65 packages and 3.6 MB on disk, Next.js (create-next-app defaults) resolves 644 packages and 463 MB, Rust hyper or axum a small handful of explicit crates, Go net/http zero external dependencies, FreeBSD base ships its own httpd with zero third-party packages." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .da-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .da-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .da-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 13px; font-weight: 700; }
+                .da-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .da-bar { fill: var(--border); rx: 2; }
+                .da-bar-accent { fill: var(--accent); rx: 2; }
+            </style>
+            <text x="280" y="22" class="da-title" text-anchor="middle">Packages Resolved for a Blank HTTP Responder</text>
+
+            <text x="20" y="62" class="da-label">Next.js (defaults)</text>
+            <rect x="180" y="50" width="320" height="18" class="da-bar-accent"/>
+            <text x="505" y="62" class="da-num">644</text>
+            <text x="500" y="80" class="da-muted" text-anchor="end">463 MB on disk</text>
+
+            <text x="20" y="106" class="da-label">Express</text>
+            <rect x="180" y="94" width="32" height="18" class="da-bar"/>
+            <text x="217" y="106" class="da-num">65</text>
+            <text x="500" y="124" class="da-muted" text-anchor="end">3.6 MB on disk</text>
+
+            <text x="20" y="150" class="da-label">Rust hyper / axum</text>
+            <rect x="180" y="138" width="6" height="18" class="da-bar"/>
+            <text x="191" y="150" class="da-num">~5</text>
+            <text x="500" y="168" class="da-muted" text-anchor="end">explicit Cargo.toml, signed off in writing</text>
+
+            <text x="20" y="194" class="da-label">Go net/http</text>
+            <text x="180" y="194" class="da-num">0</text>
+            <text x="500" y="212" class="da-muted" text-anchor="end">stdlib, 7 MB static binary</text>
+
+            <text x="280" y="232" class="da-muted" text-anchor="middle">Six hundred and forty-four pieces of someone else's work to render the words "Welcome to Next.js".</text>
+        </svg>
+
+        <p>Six hundred and forty-four pieces of someone else's work to
+            render eighteen characters of text. Each package authored,
+            in principle, by a stranger; in practice, sometimes by a
+            small group of strangers; in a handful of unpleasant cases,
+            by an account that has been waiting to be useful.</p>
+
+        <p>For comparison: the same minimal HTTP responder in Rust uses
+            <a href="https://hyper.rs/" target="_blank" rel="noopener"><code>hyper</code></a>
+            (the lower-level HTTP foundation) or
+            <a href="https://github.com/tokio-rs/axum" target="_blank" rel="noopener"><code>axum</code></a>
+            on top of it, and keeps its dependency tree small and
+            explicit in <code>Cargo.toml</code>, where every crate is
+            signed off in writing before it lands. The Go equivalent
+            uses the standard library's
+            <a href="https://pkg.go.dev/net/http" target="_blank" rel="noopener"><code>net/http</code></a>,
+            pulls zero external dependencies, and builds, statically
+            linked, to a single 7 MB binary. FreeBSD ships a base
+            userland audited as one source tree, plus a ports collection
+            where every port has a named maintainer and a fully declared
+            dependency graph. All three have existed for years. None of
+            them asks the team to import a stranger's recursion.</p>
+
+        <h2>The Mechanism</h2>
+
+        <p>The phrase that does the damage, repeated almost reflexively,
+            is <em>"we do not maintain it; the upstream maintainer
+            does"</em>.</p>
+
+        <p>Which means, when one reads it carefully: nobody on the team
+            has read the code. Nobody has reviewed the commit history.
+            Nobody has audited the build script. Nobody has checked who
+            has commit access. Nobody has asked what the package was
+            last week, or what it will be next week. The entire audit
+            duty has been outsourced, in writing, to a name on an npm
+            registry page.</p>
+
+        <p>A 644-package install is 644 outsourced audits. The team that
+            ships it has, in good faith, agreed that some other unnamed
+            group will do the reading on their behalf. The other unnamed
+            group, when one goes to look, is mostly volunteers who
+            themselves have not been paid to read the code below them
+            either. The audit duty has been outsourced so many times
+            that nobody, by the end of the chain, is holding it.</p>
+
+        <p>This is the Beta Stories mechanism: software gets worse not
+            by mistakes, but by accumulation. The decay is in the count.
+            Every package added is a piece of code that the team has
+            decided not to read.</p>
+
+        <h2>The Audit That (Barely) Happened</h2>
+
+        <p>In January 2021, an account named "Jia Tan" was created on
+            GitHub. It submitted small, useful patches to
+            <a href="https://en.wikipedia.org/wiki/XZ_Utils" target="_blank" rel="noopener">xz-utils</a>,
+            the compression library that ships in essentially every
+            major Linux distribution and underlies a great many
+            compressed-archive operations across the Unix world. The
+            patches were good. The maintainer at the time, Lasse Collin,
+            accepted them, as one accepts good patches.</p>
+
+        <p>By the summer of 2022, three accounts (Jia Tan, Dennis Ens,
+            and Jigar Kumar) were active in the xz-utils mailing lists
+            and issue tracker, applying coordinated pressure on Lasse
+            Collin to add an additional maintainer with commit rights.
+            Lasse, by his own admission, was burnt out, unpaid, and had
+            been carrying the project alone for years. Jia Tan was
+            eventually granted those rights. The
+            <a href="https://research.swtch.com/xz-timeline" target="_blank" rel="noopener">timeline compiled by Russ Cox</a>
+            of Google reads, in retrospect, like a textbook.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="XZ Utils backdoor timeline. January 2021: Jia Tan account created on GitHub. October 2021: first patches accepted. Summer 2022: sock-puppet pressure from Jia Tan, Dennis Ens, and Jigar Kumar grants maintainer rights. February-March 2024: backdoor inserted in xz-utils 5.6.0 and 5.6.1. 29 March 2024: Andres Freund discloses after noticing 500 milliseconds of SSH login latency." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .xz-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .xz-year { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .xz-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .xz-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .xz-line { stroke: var(--border); stroke-width: 1; fill: none; }
+            </style>
+            <text x="280" y="22" class="xz-title" text-anchor="middle">Two and a Half Years of Patience</text>
+
+            <line x1="30" y1="120" x2="530" y2="120" class="xz-line"/>
+
+            <circle cx="60" cy="120" r="4" fill="var(--accent)"/>
+            <text x="60" y="92" class="xz-year" text-anchor="middle">Jan 2021</text>
+            <text x="60" y="142" class="xz-text" text-anchor="middle">Jia Tan</text>
+            <text x="60" y="156" class="xz-text" text-anchor="middle">account created</text>
+
+            <circle cx="160" cy="120" r="4" fill="var(--accent)"/>
+            <text x="160" y="92" class="xz-year" text-anchor="middle">Oct 2021</text>
+            <text x="160" y="142" class="xz-text" text-anchor="middle">first patches</text>
+            <text x="160" y="156" class="xz-text" text-anchor="middle">to xz-utils</text>
+
+            <circle cx="270" cy="120" r="4" fill="var(--accent)"/>
+            <text x="270" y="92" class="xz-year" text-anchor="middle">Summer 2022</text>
+            <text x="270" y="142" class="xz-text" text-anchor="middle">sock-puppet pressure</text>
+            <text x="270" y="156" class="xz-muted" text-anchor="middle">commit rights granted</text>
+
+            <circle cx="400" cy="120" r="5" fill="var(--accent)"/>
+            <text x="400" y="92" class="xz-year" text-anchor="middle">Feb-Mar 2024</text>
+            <text x="400" y="142" class="xz-text" text-anchor="middle">backdoor in</text>
+            <text x="400" y="156" class="xz-text" text-anchor="middle">5.6.0 and 5.6.1</text>
+
+            <circle cx="510" cy="120" r="6" fill="var(--accent)"/>
+            <text x="510" y="92" class="xz-year" text-anchor="middle">29 Mar 2024</text>
+            <text x="510" y="142" class="xz-text" text-anchor="middle">Andres Freund</text>
+            <text x="510" y="156" class="xz-text" text-anchor="middle">discloses</text>
+
+            <text x="280" y="200" class="xz-muted" text-anchor="middle">CVSS 10.0. Backdoor reached Debian unstable, Fedora rawhide, openSUSE Tumbleweed, Ubuntu testing, Kali rolling.</text>
+            <text x="280" y="216" class="xz-muted" text-anchor="middle">Days, in some cases hours, away from stable releases on hundreds of millions of servers.</text>
+        </svg>
+
+        <p>In February and March 2024, Jia Tan committed the backdoor.
+            The payload was inserted into xz-utils 5.6.0 (released
+            24 February) and 5.6.1 (released 9 March), hidden inside
+            test fixtures and triggered through the autotools build
+            system in a way that left the source tarball pristine to a
+            casual reader. The build, when invoked in the particular way
+            that distribution maintainers happened to invoke it, linked
+            malicious object code into <code>liblzma</code>.
+            <code>liblzma</code> was, in turn, linked into <code>sshd</code>
+            on systemd-based distributions via the
+            <code>systemd-notify</code> integration. The result was a
+            remote-code-execution backdoor in OpenSSH, triggerable by
+            any client with the right key.
+            <a href="https://nvd.nist.gov/vuln/detail/CVE-2024-3094" target="_blank" rel="noopener">CVSS 10.0</a>.
+            One does not, very often, get to say CVSS 10.0 with a
+            straight face.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="The XZ build chain: a malicious payload was hidden in test fixtures inside xz-utils 5.6.0, linked at build time into liblzma, then linked into sshd via the systemd-notify integration, exposing a remote code execution path on OpenSSH for any client with the right key." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ch-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ch-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .ch-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .ch-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .ch-box { fill: none; stroke: var(--border); stroke-width: 1.5; rx: 4; }
+                .ch-box-accent { fill: none; stroke: var(--accent); stroke-width: 2; rx: 4; }
+                .ch-line { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+            </style>
+            <text x="280" y="22" class="ch-title" text-anchor="middle">The Build Chain to sshd</text>
+
+            <rect x="20" y="65" width="105" height="50" class="ch-box"/>
+            <text x="72" y="86" class="ch-head" text-anchor="middle">test fixtures</text>
+            <text x="72" y="104" class="ch-muted" text-anchor="middle">in xz-utils 5.6.0</text>
+
+            <path d="M 125 90 L 145 90" class="ch-line" marker-end="url(#charr)"/>
+            <defs>
+                <marker id="charr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <polygon points="0 0, 8 4, 0 8" fill="var(--accent)"/>
+                </marker>
+            </defs>
+
+            <rect x="145" y="65" width="105" height="50" class="ch-box"/>
+            <text x="197" y="86" class="ch-head" text-anchor="middle">autotools</text>
+            <text x="197" y="104" class="ch-muted" text-anchor="middle">build trigger</text>
+
+            <path d="M 250 90 L 270 90" class="ch-line" marker-end="url(#charr)"/>
+
+            <rect x="270" y="65" width="105" height="50" class="ch-box"/>
+            <text x="322" y="86" class="ch-text" text-anchor="middle">liblzma</text>
+            <text x="322" y="104" class="ch-muted" text-anchor="middle">malicious object</text>
+
+            <path d="M 375 90 L 395 90" class="ch-line" marker-end="url(#charr)"/>
+
+            <rect x="395" y="65" width="120" height="50" class="ch-box"/>
+            <text x="455" y="86" class="ch-head" text-anchor="middle">systemd-notify</text>
+            <text x="455" y="104" class="ch-muted" text-anchor="middle">links liblzma into sshd</text>
+
+            <rect x="220" y="145" width="120" height="50" class="ch-box-accent"/>
+            <text x="280" y="166" class="ch-head" text-anchor="middle">OpenSSH (sshd)</text>
+            <text x="280" y="184" class="ch-muted" text-anchor="middle">RCE for any client with the key</text>
+
+            <path d="M 455 115 C 455 130, 340 145, 340 160" class="ch-line" marker-end="url(#charr)"/>
+        </svg>
+
+        <p>By 29 March 2024, the backdoored versions had already reached
+            Debian unstable, Fedora 40 rawhide, openSUSE Tumbleweed,
+            Ubuntu testing, and Kali Linux. They were days, in some
+            cases hours, away from rolling into stable releases that
+            would have been on hundreds of millions of servers.</p>
+
+        <p>On 28 March 2024 (the public posting was on the 29th),
+            <a href="https://en.wikipedia.org/wiki/XZ_Utils_backdoor" target="_blank" rel="noopener">Andres Freund, a PostgreSQL maintainer at Microsoft</a>,
+            noticed that his SSH login on a Debian unstable system was
+            taking approximately 500 milliseconds longer than usual. He
+            had recently been benchmarking Postgres builds and was
+            attentive to small latency drifts. He ran the login under
+            <code>valgrind</code>, found memory-access errors pointing
+            at <code>liblzma</code>, traced the chain back through the
+            autotools build, found the obfuscated payload in the test
+            fixtures, and posted the disclosure to the
+            <a href="https://www.openwall.com/lists/oss-security/2024/03/29/4" target="_blank" rel="noopener">oss-security mailing list</a>
+            that night.</p>
+
+        <p>The internet was saved by one engineer noticing half a second
+            of latency he did not expect.</p>
+
+        <h2>The Signal</h2>
+
+        <p>Two and a half years of patient social engineering against an
+            unpaid maintainer. A chain of distribution maintainers
+            signing off on routine version bumps. CI pipelines, test
+            suites, code-review tools, all returning green. SBOM
+            generators producing clean reports. The audit duty had been
+            outsourced so many times that nobody, by the end of the
+            chain, was holding it.</p>
+
+        <p>The signal one watches for, after XZ, is not <em>"is there
+            malicious code in your dependencies"</em>. That signal is
+            impossible to read directly. The signal is <em>who is doing
+            the reading</em>. If the answer is "the upstream maintainer",
+            ask: who is the maintainer, what is their funding, what is
+            their burnout level, who has commit access, what has changed
+            in the past six months. If those questions cannot be
+            answered for a package one ships to production, one is in
+            the avalanche zone.</p>
+
+        <h2>The Boring Counter-Move</h2>
+
+        <p>The counter to the dependency avalanche is not "audit every
+            package", which is plainly impossible at 644 packages. It is
+            <strong>fewer packages</strong>. Each one read, each one
+            chosen, each one with a known maintenance posture.</p>
+
+        <p>The Go standard library is one approach: a curated, audited,
+            batteries-included foundation that removes 80 per cent of
+            the reasons one would reach for a third-party package in the
+            first place. Rust takes the opposite end of the same idea: a
+            deliberately small standard library plus a
+            <code>Cargo.toml</code> that any reviewer can read in a
+            single sitting, with every dependency declared in writing
+            and every transitive crate visible in
+            <code>Cargo.lock</code>. The FreeBSD base system is a third:
+            a coherent userland built and audited as one project, where
+            what ships in <code>/usr/sbin/sshd</code> is the same source
+            tree as what ships in <code>/usr/bin/find</code> and
+            <code>/usr/bin/awk</code>, maintained by the same project,
+            released together. The Python standard library, before the
+            wheel-and-PyPI culture took over, was something similar. So
+            was the venerable Unix toolkit.</p>
+
+        <p>None of this scales to "build any product, in any language,
+            in any week". It scales to "build a sustainable system, with
+            a known maintenance posture, over decades". The Beta Stories
+            question is whether one has been paying for the first while
+            quietly pretending it is the second.</p>
+
+        <h2>The Closer</h2>
+
+        <p>XZ is the post-mortem the industry will keep referencing
+            because it nearly worked. The patient, careful, well-funded
+            version of the same attack will work, and one will not
+            notice in time. The reason is not that the security tools
+            have failed. The reason is that nobody is reading the code,
+            and nobody has been for some time.</p>
+
+        <p>Next time it might not be 500 milliseconds. Next time it
+            might be 50. Next time it might be no perceptible drift at
+            all, until the breach notification arrives in the inbox.</p>
+
+        <blockquote>
+            <p>Express: 65 packages, 3.6 MB. Next.js (defaults):
+                <strong>644 packages, 463 MB</strong>. Rust hyper/axum:
+                a small explicit Cargo.toml. Go net/http: zero deps,
+                7 MB static binary. FreeBSD base: zero third-party. XZ
+                CVE-2024-3094: 2.5 years of social engineering, CVSS
+                10.0, caught by 500 ms of SSH latency one engineer did
+                not expect.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The avalanche, itemised:</strong></p>
+            <ul>
+                <li><strong>Express 5.2.1:</strong> 28 direct, 65 transitive, 3.6 MB <code>node_modules</code></li>
+                <li><strong>Next.js 16.2.4 (defaults):</strong> 11 declared, <strong>644 transitive</strong>, 463 MB</li>
+                <li><strong>Rust hyper/axum:</strong> small, explicit <code>Cargo.toml</code>; <code>Cargo.lock</code> visible to every reviewer</li>
+                <li><strong>Go net/http:</strong> zero external deps, single static binary &#x2248; 7 MB</li>
+                <li><strong>FreeBSD base:</strong> userland audited as one source tree, ports collection with named maintainers and declared dependencies</li>
+                <li><strong>XZ timeline:</strong> Jan 2021 account, Oct 2021 first patches, summer 2022 maintainer rights via sock-puppet pressure (Jia Tan, Dennis Ens, Jigar Kumar), Feb-Mar 2024 backdoor in 5.6.0 / 5.6.1, 29 Mar 2024 Andres Freund discloses after 500 ms SSH slowdown</li>
+                <li><strong>Counter-move:</strong> fewer packages, each one read. Curated foundation (Go stdlib, Rust core + small Cargo, FreeBSD base) instead of "the upstream maintainer does it"</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

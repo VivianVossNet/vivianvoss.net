@@ -56,7 +56,8 @@ No framework. No build step. Four perfect Google Lighthouse scores.
 
 - Site: https://vivianvoss.net
 - LinkedIn: https://www.linkedin.com/in/vvoss/
-- GitHub: https://github.com/nicoseven
+- GitHub (code): https://github.com/VivianVossNet
+- GitHub (publisher): https://github.com/Vossscher-Verlag
 
 ## Contact
 

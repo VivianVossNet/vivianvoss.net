@@ -1,0 +1,386 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Service Mesh &#x2014; The Sidecar Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Istio launched in 2017, graduated CNCF July 2023, adopted by a shrinking 42% of CNCF respondents in 2024. 2025 peer-reviewed benchmark: +166% mTLS overhead (sidecar), +8% (ambient). 60 MB RAM per pod before code runs. The mesh was always a political solution to a technical problem.">
+{( endslot )}
+
+{( slot canonical )}/blog/service-mesh-sidecar-tax{( endslot )}
+
+{( slot og-title )}Service Mesh &#x2014; The Sidecar Tax &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}mTLS, observability, zero-code retries. Splendid. Two proxies of latency, a platform team of overhead, and a debugger's worth of new moving parts. The retry logic sold as "zero code changes" is three lines of configuration in any mature HTTP client.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Service Mesh — The Sidecar Tax",
+    "datePublished": "2026-04-24",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/service-mesh-sidecar-tax",
+    "description": "Istio adoption falling to 42%. +166% mTLS latency on sidecars. 60 MB RAM per pod. Ambient mode is Istio's own admission that sidecars were a problem. The retry library was always there.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-24">24 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Service Mesh &#x2014; The Sidecar Tax</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">kubernetes</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Invoice</em> &#x25A0; Episode 19</p>
+
+        <p>"mTLS, observability, traffic management, zero-code retries.
+            You need a service mesh."</p>
+
+        <p>Splendid. Let us examine what one is actually paying for.</p>
+
+        <p>A service mesh moves cross-cutting concerns (mTLS, retries,
+            timeouts, traffic shifting, observability) out of application
+            code and into a proxy that sits beside each pod.
+            <a href="https://en.wikipedia.org/wiki/Istio" target="_blank" rel="noopener">Istio</a>,
+            the archetype, launched in 2017 as a joint project of
+            Google, IBM, and Lyft. It
+            <a href="https://www.cncf.io/announcements/2023/07/12/cloud-native-computing-foundation-reaffirms-istio-maturity-with-project-graduation/" target="_blank" rel="noopener">graduated within the CNCF in July 2023</a>.
+            In the
+            <a href="https://www.cncf.io/reports/cncf-annual-survey-2024/" target="_blank" rel="noopener">2024 CNCF Annual Survey</a>,
+            service-mesh adoption across respondents fell to 42 per
+            cent, down from 50 per cent the year before. That is not a
+            catastrophe. It is, however, the first full-year decline the
+            category has ever posted. The industry is quietly
+            reconsidering the deal.</p>
+
+        <h2>The Complexity Invoice</h2>
+
+        <p>Istio ships over a dozen primary
+            <a href="https://istio.io/latest/docs/reference/config/" target="_blank" rel="noopener">custom resource definitions</a>
+            across three categories (traffic management, security,
+            telemetry) and dozens more through its operator, telemetry
+            plugins, Wasm extensions, and Gateway APIs. A minimally
+            useful installation comprises:</p>
+
+        <ul>
+            <li><strong>A control plane</strong> (<code>istiod</code>) responsible for configuration distribution, certificate issuance, and xDS API serving to every sidecar</li>
+            <li><strong>A per-pod sidecar</strong> (Envoy) injected into every workload, running a second container alongside the application</li>
+            <li><strong>An ingress gateway</strong> at the cluster edge, usually another Envoy in a standalone pod</li>
+            <li><strong>mTLS certificates</strong> rotated by <code>istiod</code>, distributed via SDS to each sidecar</li>
+            <li><strong>Policy resources</strong>: PeerAuthentication, RequestAuthentication, AuthorizationPolicy</li>
+            <li><strong>Telemetry bindings</strong> to send traces and metrics to external collectors</li>
+            <li><strong>A platform team</strong> that knows what each of those does, how they interact, and how to debug any given failure mode</li>
+        </ul>
+
+        <p>The CNCF's own reports describe Istio as mature, powerful, and
+            "operationally demanding". The second adjective is the one
+            to watch. Installing Istio in a fresh cluster takes a senior
+            SRE about two days. Operating it for six months takes
+            roughly 0.5 to 1.0 FTE, scaling upwards with cluster size.
+            Debugging it at three in the morning is a skill one acquires
+            by losing two nights of sleep and one customer.</p>
+
+        <h2>The Latency Invoice</h2>
+
+        <p>Every inter-service HTTP or gRPC call now traverses two
+            Envoy proxies: the caller's sidecar, then the callee's
+            sidecar. Adding two proxies to every request path means
+            adding latency. How much is now, happily for the debate,
+            well-measured.</p>
+
+        <svg viewBox="0 0 560 230" aria-label="Request path comparison: direct HTTP or gRPC call between services A and B traverses zero proxies, whereas a sidecar service mesh sends every call through the caller's sidecar and the callee's sidecar, doubling the proxy hops on every internal request." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .rp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .rp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .rp-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .rp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .rp-svc { fill: none; stroke: var(--border); stroke-width: 1.5; rx: 4; }
+                .rp-proxy { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .rp-line { stroke: var(--accent); stroke-width: 1.3; fill: none; }
+            </style>
+            <text x="280" y="22" class="rp-title" text-anchor="middle">The Request Path Doubles</text>
+
+            <text x="40" y="56" class="rp-head">Without mesh</text>
+            <rect x="40" y="64" width="100" height="40" class="rp-svc"/>
+            <text x="90" y="88" class="rp-text" text-anchor="middle">Service A</text>
+            <path d="M 140 84 L 410 84" class="rp-line" marker-end="url(#rparr)"/>
+            <defs>
+                <marker id="rparr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <polygon points="0 0, 8 4, 0 8" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <rect x="410" y="64" width="100" height="40" class="rp-svc"/>
+            <text x="460" y="88" class="rp-text" text-anchor="middle">Service B</text>
+            <text x="275" y="78" class="rp-muted" text-anchor="middle">direct call, 0 proxies</text>
+
+            <text x="40" y="140" class="rp-head">With sidecar mesh</text>
+            <rect x="20" y="148" width="75" height="40" class="rp-svc"/>
+            <text x="57" y="172" class="rp-text" text-anchor="middle">Service A</text>
+            <path d="M 95 168 L 110 168" class="rp-line" marker-end="url(#rparr)"/>
+            <rect x="110" y="148" width="75" height="40" class="rp-proxy"/>
+            <text x="147" y="168" class="rp-text" text-anchor="middle">Envoy</text>
+            <text x="147" y="180" class="rp-muted" text-anchor="middle">sidecar</text>
+            <path d="M 185 168 L 370 168" class="rp-line" marker-end="url(#rparr)"/>
+            <rect x="370" y="148" width="75" height="40" class="rp-proxy"/>
+            <text x="407" y="168" class="rp-text" text-anchor="middle">Envoy</text>
+            <text x="407" y="180" class="rp-muted" text-anchor="middle">sidecar</text>
+            <path d="M 445 168 L 460 168" class="rp-line" marker-end="url(#rparr)"/>
+            <rect x="460" y="148" width="75" height="40" class="rp-svc"/>
+            <text x="497" y="172" class="rp-text" text-anchor="middle">Service B</text>
+
+            <text x="280" y="212" class="rp-muted" text-anchor="middle">Every internal call now traverses two proxies instead of none. Debugging doubles with it.</text>
+        </svg>
+
+        <p>A 2025 peer-reviewed performance comparison from the
+            <a href="https://deepness-lab.org/wp-content/uploads/2025/05/Performance_Comparison_of_Service_Mesh_Frameworks__the_MTLS_Test_Case_camera_ready-1.pdf" target="_blank" rel="noopener">DeepNess Lab</a>
+            (<em>Performance Comparison of Service Mesh Frameworks: the
+            mTLS Test Case</em>) measured the overhead with mTLS
+            enforced on otherwise identical workloads. The table below
+            is, one regrets to say, unambiguous.</p>
+
+        <svg viewBox="0 0 560 230" aria-label="Peer-reviewed 2025 mTLS overhead measurements: Istio sidecar mode adds 166 per cent latency, Cilium adds 99 per cent, Linkerd adds 33 per cent, and Istio ambient mode adds 8 per cent. Ambient, released in Istio 1.23 in August 2024, is Istio's own admission that the sidecar model had a problem." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .mt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .mt-label { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .mt-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 13px; font-weight: 700; }
+                .mt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .mt-bar { fill: var(--border); rx: 2; }
+                .mt-bar-accent { fill: var(--accent); rx: 2; }
+            </style>
+            <text x="280" y="22" class="mt-title" text-anchor="middle">mTLS Latency Overhead vs Baseline &#x2014; DeepNess Lab, 2025</text>
+
+            <text x="20" y="62" class="mt-label">Istio sidecar</text>
+            <rect x="160" y="50" width="320" height="18" class="mt-bar-accent"/>
+            <text x="485" y="62" class="mt-num">+166%</text>
+
+            <text x="20" y="96" class="mt-label">Cilium</text>
+            <rect x="160" y="84" width="191" height="18" class="mt-bar"/>
+            <text x="356" y="96" class="mt-num">+99%</text>
+
+            <text x="20" y="130" class="mt-label">Linkerd</text>
+            <rect x="160" y="118" width="64" height="18" class="mt-bar"/>
+            <text x="229" y="130" class="mt-num">+33%</text>
+
+            <text x="20" y="164" class="mt-label">Istio ambient</text>
+            <rect x="160" y="152" width="15" height="18" class="mt-bar"/>
+            <text x="180" y="164" class="mt-num">+8%</text>
+
+            <text x="280" y="198" class="mt-muted" text-anchor="middle">Ambient mode shipped in Istio 1.23, August 2024, as a node-level ztunnel replacing per-pod sidecars.</text>
+            <text x="280" y="214" class="mt-muted" text-anchor="middle">Which is, in effect, Istio's own public admission that sidecars had a problem optimisation alone could not solve.</text>
+        </svg>
+
+        <p>The headline number (plus 166 per cent for Istio sidecar with
+            mTLS) is surprising only to people who have never read the
+            benchmark. Envoy is fast; two Envoys in the path plus TLS
+            handshakes and certificate validation are not free.
+            Linkerd's Rust-based <code>linkerd2-proxy</code> is
+            measurably lighter because it was built for the job, not
+            adapted to it. Ambient mode, introduced in
+            <a href="https://thenewstack.io/istio-1-23-drops-the-sidecars-for-a-simpler-ambient-mesh/" target="_blank" rel="noopener">Istio 1.23 in August 2024</a>,
+            replaces per-pod sidecars with a shared node-level
+            <code>ztunnel</code> and produces dramatically less overhead.
+            Ambient is, in polite summary, Istio's own public admission
+            that the sidecar model had a problem it could not solve by
+            optimisation alone.</p>
+
+        <p>A sidecar also costs memory. The
+            <a href="https://istio.io/latest/docs/ops/deployment/performance-and-scalability/" target="_blank" rel="noopener">Istio 1.24 performance documentation</a>
+            reports approximately 60 MB of RAM and 0.20 vCPU per Envoy
+            sidecar at 1,000 HTTP RPS with 1 KB payloads. A cluster
+            with 1,000 pods is therefore paying roughly 60 GB of RAM
+            and 200 vCPU for the mesh before a single byte of
+            application code has executed. Ambient <code>ztunnel</code>s
+            are smaller (approximately 12 MB RAM, 0.06 vCPU each) but
+            one now also pays for waypoint proxies where L7 features are
+            enabled. Either way, the total is non-zero. "Free" is a
+            marketing word.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Mesh memory cost before application code runs: per pod, 60 MB for an Istio sidecar or 12 MB per node for an ambient ztunnel. Across a 1000-pod cluster, that is 60 gigabytes for the sidecar mesh before application memory is counted." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .mm-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .mm-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .mm-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 18px; font-weight: 700; }
+                .mm-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .mm-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .mm-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .mm-box-accent { fill: none; stroke: var(--accent); stroke-width: 2; rx: 4; }
+            </style>
+            <text x="280" y="22" class="mm-title" text-anchor="middle">The Mesh Bill Before Your Code Runs</text>
+
+            <rect x="20" y="50" width="165" height="120" class="mm-box"/>
+            <text x="102" y="72" class="mm-head" text-anchor="middle">Istio sidecar</text>
+            <text x="102" y="104" class="mm-num" text-anchor="middle">60 MB</text>
+            <text x="102" y="120" class="mm-text" text-anchor="middle">RAM per pod</text>
+            <text x="102" y="142" class="mm-muted" text-anchor="middle">0.20 vCPU</text>
+            <text x="102" y="156" class="mm-muted" text-anchor="middle">at 1,000 HTTP RPS</text>
+
+            <rect x="197" y="50" width="165" height="120" class="mm-box"/>
+            <text x="280" y="72" class="mm-head" text-anchor="middle">Ambient ztunnel</text>
+            <text x="280" y="104" class="mm-num" text-anchor="middle">12 MB</text>
+            <text x="280" y="120" class="mm-text" text-anchor="middle">RAM per node</text>
+            <text x="280" y="142" class="mm-muted" text-anchor="middle">0.06 vCPU</text>
+            <text x="280" y="156" class="mm-muted" text-anchor="middle">plus waypoint proxies for L7</text>
+
+            <rect x="375" y="50" width="165" height="120" class="mm-box-accent"/>
+            <text x="457" y="72" class="mm-head" text-anchor="middle">1,000-pod cluster</text>
+            <text x="457" y="104" class="mm-num" text-anchor="middle">60 GB</text>
+            <text x="457" y="120" class="mm-text" text-anchor="middle">RAM for the mesh</text>
+            <text x="457" y="142" class="mm-muted" text-anchor="middle">200 vCPU</text>
+            <text x="457" y="156" class="mm-muted" text-anchor="middle">before application code</text>
+
+            <text x="280" y="200" class="mm-muted" text-anchor="middle">Source: Istio 1.24 performance &amp; scalability documentation.</text>
+        </svg>
+
+        <h2>The Debugging Invoice</h2>
+
+        <p>When the mesh works, it is invisible. When it does not, the
+            request path has doubled and so has the attack surface for
+            bugs. A 500 that arrives at the client might originate in:</p>
+
+        <ul>
+            <li>The application code itself</li>
+            <li>The caller's Envoy (wrong upstream cluster, circuit breaker tripped)</li>
+            <li>The destination's Envoy (connection limits, bad cert rotation)</li>
+            <li>A mis-parsed VirtualService or DestinationRule</li>
+            <li>The mTLS trust chain (expired intermediate, wrong trust domain)</li>
+            <li><code>istiod</code> failing to push updated configuration within the retry window</li>
+            <li>A Wasm plugin throwing an exception</li>
+            <li>A Kubernetes NetworkPolicy quietly dropping the packet</li>
+        </ul>
+
+        <p>The distributed tracing one installed to understand the mesh
+            is now required to understand the mesh. Troubleshooting
+            skills become mesh-specific skills, which means they do not
+            transfer and do not scale with engineer headcount in the
+            obvious way.</p>
+
+        <h2>The Honest Case For</h2>
+
+        <p>In the interests of not selling a one-sided story: service
+            meshes solve a real problem for a real set of operators. If
+            one:</p>
+
+        <ul>
+            <li>Runs more than roughly 100 microservices with cross-team ownership</li>
+            <li>Has strict compliance that mandates mTLS between every internal service</li>
+            <li>Operates across multiple clusters or multiple clouds with incompatible primitives</li>
+            <li>Needs uniform observability across polyglot services that cannot all ship an OpenTelemetry library</li>
+        </ul>
+
+        <p>then the tax starts to pay for itself. Everyone else, which is
+            most readers, is paying Google's architecture to solve
+            problems a single load balancer and a sensible VPC already
+            solved.</p>
+
+        <h2>The Alternative</h2>
+
+        <p>Direct HTTP or gRPC calls between services, over a network
+            one already trusts. This is how the internet worked for
+            three decades before sidecars existed. It was, one should
+            note, a perfectly functional three decades.</p>
+
+        <p>mTLS terminated at a single ingress gateway (HAProxy, nginx,
+            Envoy on its own, or whatever load balancer is already in
+            the stack), because the VPC was a trust boundary before
+            sidecars were a marketing category. Internal traffic over
+            plaintext inside the VPC is fine for the vast majority of
+            workloads, and mTLS between services is a compliance
+            requirement for a minority of them, not an architectural
+            necessity for all of them.</p>
+
+        <p>Tracing and metrics via an
+            <a href="https://opentelemetry.io/docs/" target="_blank" rel="noopener">OpenTelemetry</a>
+            library linked into each service. OTel is language-agnostic,
+            vendor-neutral, and roughly five lines of initialisation in
+            most runtimes. It sends traces and metrics via OTLP to any
+            collector. No proxy required.</p>
+
+        <p>Retries and timeouts in the client library. Go's
+            <code>http.Client</code>, Rust's <code>reqwest</code>,
+            Java's <code>RestTemplate</code> or OkHttp, Python's
+            <code>httpx</code>, Node's <code>undici</code>: all of them
+            ship configurable retries, timeouts, connection pools, and
+            circuit breakers. The retry logic that a service mesh
+            claims to provide "without code changes" is three lines of
+            configuration in any mature client, and has been so since
+            approximately 1995.</p>
+
+        <p>Authorisation at the application layer, because only the
+            application knows what "this user may read this document"
+            means. Delegating authorisation to a proxy is delegating it
+            to a component that does not, on any reasonable reading,
+            understand the data.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>Service mesh is sold as "zero code changes". One gets that by
+            paying:</p>
+
+        <ol>
+            <li><strong>Two proxies of latency</strong> on every internal call, measurably more under mTLS</li>
+            <li><strong>A platform team of overhead</strong> to run istiod, gateways, policies, and upgrades</li>
+            <li><strong>A debugger's worth of new moving parts</strong>: VirtualService, DestinationRule, PeerAuthentication, Envoy configuration, trust chains, Wasm plugins</li>
+        </ol>
+
+        <p>All to avoid writing retry logic that any mature HTTP client
+            already provides in three lines of configuration.</p>
+
+        <p>The mesh was always, architecturally, a political solution to
+            a technical problem. It existed because microservice teams
+            did not trust each other's code, and a proxy in the middle
+            was a way of enforcing cross-cutting concerns without
+            convincing any one team to adopt them. The proxy became the
+            architecture. The architecture became the operational cost
+            centre. The cost centre produced Ambient Mode, which is the
+            industry's second try at making sidecars not cost what
+            sidecars cost.</p>
+
+        <p>Meanwhile, the original alternative (a library in each
+            service, a trusted network below, and a single ingress
+            gateway at the edge) has remained exactly what it has been
+            since approximately 1995.</p>
+
+        <p>The side call was always there. One simply decided it wasn't
+            enterprise enough.</p>
+
+        <blockquote>
+            <p>Istio graduated CNCF July 2023. CNCF 2024 Survey: mesh
+                adoption 42%, down from 50%. 2025 peer-reviewed
+                benchmark: Istio sidecar +166% mTLS latency, Cilium
+                +99%, Linkerd +33%, Istio Ambient +8%. 60 MB RAM per
+                sidecar = 60 GB across 1,000 pods before code runs.
+                Ambient is Istio's own admission that sidecars were a
+                problem. The client retry library has shipped retries
+                since the 1980s.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The sidecar tax, itemised:</strong></p>
+            <ul>
+                <li><strong>Adoption:</strong> Istio launched 2017, CNCF graduation July 2023. CNCF 2024 Survey: service-mesh adoption 42% (down from 50% in 2023). First full-year decline</li>
+                <li><strong>Latency (DeepNess Lab, 2025, mTLS enforced):</strong> Istio sidecar +166%, Cilium +99%, Linkerd +33%, Istio Ambient +8%</li>
+                <li><strong>Memory (Istio 1.24 docs):</strong> sidecar ~60 MB RAM + 0.20 vCPU per pod at 1,000 RPS. Ambient ztunnel ~12 MB RAM + 0.06 vCPU per node</li>
+                <li><strong>Complexity:</strong> a dozen-plus primary CRDs + Wasm extensions + Gateway APIs. Install: 2 days. Operate: 0.5-1.0 FTE. Debug at 3am: a career</li>
+                <li><strong>Ambient (Istio 1.23, Aug 2024):</strong> node-level ztunnel + waypoint proxies, replacing per-pod sidecars. Second attempt at the same problem</li>
+                <li><strong>Alternatives:</strong> direct HTTP/gRPC over a trusted VPC; mTLS at one ingress gateway; OpenTelemetry library; retries in any modern HTTP client (Go http.Client, Rust reqwest, Java OkHttp, Python httpx, Node undici)</li>
+                <li><strong>Series context:</strong> Invoice <a href="/blog/the-microservices-tax">Ep01 (Microservices)</a> demanded the mesh; <a href="/blog/the-kubernetes-tax">Ep02 (Kubernetes)</a> demanded the platform team that runs it</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
