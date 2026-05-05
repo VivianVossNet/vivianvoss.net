@@ -1,0 +1,434 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Browser That Brought Its Own AI &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Open chrome://on-device-internals. If your machine qualifies, Chrome has quietly downloaded a multi-gigabyte language model called Gemini Nano. Any website can call it through an API in JavaScript. There is no permission prompt. The browser used to ask about the camera. It does not ask about the model. The line moved; the dialog did not. Not in the Brief opens.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-browser-brought-its-own-ai{( endslot )}
+
+{( slot og-title )}The Browser That Brought Its Own AI &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Chrome ships seven on-device AI APIs backed by Gemini Nano. Generally available for extensions since Chrome 138 (May 2025). Origin Trial for web pages. Capability probe LanguageModel.availability() returns hardware class without a prompt, in a browser whose Privacy Sandbox was retired in April 2025 and whose ad policy has explicitly permitted fingerprinting since February 2025. Three tabs reveal it; one Enterprise registry value disables it. The architecture, plainly told.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Browser That Brought Its Own AI",
+    "datePublished": "2026-05-02",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-browser-brought-its-own-ai",
+    "description": "Chrome has quietly downloaded a multi-gigabyte Gemini Nano language model on every machine that qualifies (>4 GB VRAM, 16 GB RAM, 22 GB free disk). Seven APIs (LanguageModel, Summarizer, Translator, Writer, Rewriter, Proofreader, LanguageDetector) are exposed without a permission prompt. The geolocation dialog still exists. The model dialog never did. Not in the Brief opens with the documented mechanics, the awareness path, and where the same pattern lives in Edge, Brave, Firefox, Arc and Safari.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-02">2 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Browser That Brought Its Own AI</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Not in the Brief</em> &#x25A0; Episode 01</p>
+
+        <p>Open <code>chrome://on-device-internals</code> in a new tab.
+            If your machine qualifies, you will see a multi-gigabyte
+            language model that Chrome has downloaded onto your disk,
+            listed with a version number and a file size. Any website
+            you visit can call this model through an API in JavaScript.
+            There is no permission prompt. There never was.</p>
+
+        <p>This is the first episode of <em>Not in the Brief</em>: a
+            series on the documented mechanics of software that has
+            been added to your machine without you being asked. We
+            start with the largest target available, because the
+            change is hidden in plain sight, and because almost
+            everyone is affected.</p>
+
+        <h2>What Is Built In</h2>
+
+        <p>Chrome ships seven on-device AI APIs, all backed by a
+            foundation model called
+            <a href="https://developer.chrome.com/docs/ai/built-in" target="_blank" rel="noopener">Gemini
+            Nano</a>. Gemini Nano runs locally; the inference does not
+            leave the machine. The APIs, in order of relevance, are:</p>
+
+        <ul>
+            <li><strong>LanguageModel</strong>: the Prompt API. Free-form text in, text out.</li>
+            <li><strong>Summarizer</strong>: text summarisation.</li>
+            <li><strong>Translator</strong>: language translation between supported pairs.</li>
+            <li><strong>Writer</strong>: short-form generative writing.</li>
+            <li><strong>Rewriter</strong>: text rewriting and tone change.</li>
+            <li><strong>Proofreader</strong>: grammar and style correction.</li>
+            <li><strong>LanguageDetector</strong>: language identification.</li>
+        </ul>
+
+        <p>Generally available for extensions since
+            <a href="https://developer.chrome.com/docs/ai/prompt-api" target="_blank" rel="noopener">Chrome
+            138 (May 2025)</a>. For ordinary web pages, the APIs are
+            in Origin Trial and behind a feature flag for end users;
+            in practice, this means a website needs an Origin Trial
+            token, and the browser must have the model loaded. The
+            trial route does not require user consent at the page
+            level either.</p>
+
+        <h2>How It Got On Your Machine</h2>
+
+        <p>Announced at Google I/O in May 2024. The decision logic
+            Chrome applies today, as documented by
+            <a href="https://developer.chrome.com/docs/ai/get-started" target="_blank" rel="noopener">Google's
+            own developer pages</a>, is the following.</p>
+
+        <p>When the user starts Chrome on a qualifying device, the
+            browser checks four things in the background: more than
+            4 GB of VRAM available, at least 16 GB of system RAM, at
+            least 22 GB of free space on the volume holding the Chrome
+            profile, and a supported operating system (Windows 10 or
+            11, macOS 13 or later, Linux, or ChromeOS on a Plus
+            device). On mobile Chrome the entire feature is
+            unavailable, so phones are out. Desktops, laptops and
+            Chromebook Plus devices are in.</p>
+
+        <p>When all four conditions hold and any local activity (a
+            relevant page, an extension, an Origin Trial token)
+            triggers the API, Chrome downloads Gemini Nano in the
+            background, on an unmetered connection. There is no
+            installation prompt. No "Chrome would like to download a
+            2 GB model" dialog. The model arrives, lives on disk, and
+            updates itself.</p>
+
+        <p>If the free disk space later drops below 10 GB,
+            <a href="https://developer.chrome.com/docs/ai/understand-built-in-model-management" target="_blank" rel="noopener">Chrome
+            removes the model</a>. If the eligibility criteria are not
+            met for 30 days, the model is purged. Both removals happen
+            without user interaction; both reinstall when the
+            conditions return.</p>
+
+        <svg viewBox="0 0 560 250" aria-label="Decision flow for the Gemini Nano on-device model. Chrome checks four hardware and OS conditions on every start: more than 4 GB of VRAM, at least 16 GB of RAM, at least 22 GB of free disk on the profile volume, and a supported operating system (Windows 10 or later, macOS 13 or later, Linux, or ChromeOS Plus). If all four hold, the model downloads silently in the background on an unmetered connection. If free disk later drops under 10 GB, or if eligibility is unmet for 30 days, the model is removed automatically." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-fl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .nitb-fl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .nitb-fl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .nitb-fl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .nitb-fl-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nitb-fl-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .nitb-fl-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#nitb-arrow); }
+            </style>
+            <defs>
+                <marker id="nitb-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="nitb-fl-title" text-anchor="middle">The Decision Logic, Without the Dialog</text>
+
+            <rect x="20" y="50" width="170" height="140" class="nitb-fl-box"/>
+            <text x="105" y="68" class="nitb-fl-head" text-anchor="middle">Four checks, every start</text>
+            <text x="105" y="92" class="nitb-fl-text" text-anchor="middle">&gt; 4 GB VRAM</text>
+            <text x="105" y="110" class="nitb-fl-text" text-anchor="middle">&#x2265; 16 GB RAM</text>
+            <text x="105" y="128" class="nitb-fl-text" text-anchor="middle">&#x2265; 22 GB free disk</text>
+            <text x="105" y="146" class="nitb-fl-text" text-anchor="middle">supported OS</text>
+            <text x="105" y="172" class="nitb-fl-muted" text-anchor="middle">Win 10+ &#x2022; macOS 13+</text>
+            <text x="105" y="184" class="nitb-fl-muted" text-anchor="middle">Linux &#x2022; ChromeOS Plus</text>
+
+            <rect x="220" y="80" width="120" height="40" class="nitb-fl-accent-box"/>
+            <text x="280" y="104" class="nitb-fl-head" text-anchor="middle">all four hold</text>
+
+            <rect x="370" y="50" width="170" height="60" class="nitb-fl-accent-box"/>
+            <text x="455" y="70" class="nitb-fl-head" text-anchor="middle">silent download</text>
+            <text x="455" y="86" class="nitb-fl-text" text-anchor="middle">background, unmetered</text>
+            <text x="455" y="100" class="nitb-fl-muted" text-anchor="middle">no dialog, no prompt</text>
+
+            <rect x="370" y="130" width="170" height="60" class="nitb-fl-box"/>
+            <text x="455" y="150" class="nitb-fl-head" text-anchor="middle">silent removal</text>
+            <text x="455" y="166" class="nitb-fl-text" text-anchor="middle">disk &lt; 10 GB or 30 d unmet</text>
+            <text x="455" y="180" class="nitb-fl-muted" text-anchor="middle">re-installs when met</text>
+
+            <line x1="190" y1="100" x2="220" y2="100" class="nitb-fl-arr"/>
+            <line x1="340" y1="92" x2="370" y2="80" class="nitb-fl-arr"/>
+            <line x1="340" y1="108" x2="370" y2="160" class="nitb-fl-arr"/>
+
+            <text x="280" y="220" class="nitb-fl-muted" text-anchor="middle">Mobile Chrome is excluded entirely. Desktops, laptops and Chromebook Plus devices are the field.</text>
+            <text x="280" y="234" class="nitb-fl-muted" text-anchor="middle">No installation prompt. No "Chrome would like to download a 2 GB model" dialog.</text>
+        </svg>
+
+        <h2>How A Website Talks To The Model</h2>
+
+        <p>The API surface is straightforward. A web page in
+            JavaScript writes:</p>
+
+        <pre><code>const session = await LanguageModel.create();
+const reply   = await session.prompt("Summarise this page.");</code></pre>
+
+        <p>If the model is available, a session is returned and the
+            page can call <code>session.prompt("...")</code> to get
+            text back. There is no permission dialog at any point in
+            this exchange. The same code, in 2018, would have produced
+            a <code>navigator.mediaDevices.getUserMedia()</code> call
+            for the microphone or camera, and would have triggered a
+            browser-level prompt asking the user. The Prompt API does
+            not.</p>
+
+        <p>The cross-origin story is partial. A top-level page on
+            <code>example.com</code> can call the API. A same-origin
+            iframe can call it. A cross-origin iframe (an embedded ad,
+            an embedded widget) needs the parent page to set the
+            <code>allow="language-model"</code> attribute on the
+            iframe. This is the only permission boundary in the
+            architecture, and it lives between iframes, not between
+            site and user.</p>
+
+        <p>The capability probe
+            <code>LanguageModel.availability()</code> returns one of
+            three values: <code>'available'</code>,
+            <code>'downloading'</code>, or <code>'unavailable'</code>.
+            Any page that calls this method learns whether the visitor
+            is on a model-capable device. This is a hardware-class
+            probe without a permission prompt, in a browser whose
+            <a href="https://www.theregister.com/2026/04/16/google_chrome_lacks_browser_fingerprinting/" target="_blank" rel="noopener">Privacy
+            Sandbox was discontinued in April 2025</a> and whose own
+            <a href="https://www.webpronews.com/device-fingerprinting-beyond-cookies-googles-2025-shift-sparks-privacy-debate/" target="_blank" rel="noopener">advertising
+            policy explicitly permits digital fingerprinting since
+            February 2025</a>. It is one further entry in a list of
+            more than thirty active fingerprinting vectors active in
+            production Chrome today.</p>
+
+        <p>There is no rate limit on the website's calls. There is no
+            per-origin token quota. The compute cost is paid by the
+            user's CPU, GPU and battery; the website pays nothing.</p>
+
+        <h2>Why The Permission Prompt Is The Story</h2>
+
+        <p>Browsers express their security policy through their
+            dialogs. Geolocation needs one. Microphone, camera, screen
+            capture, notifications, clipboard, USB, MIDI, Bluetooth:
+            all need them. Local language-model inference does not.
+            That is not a small detail. It is an architectural
+            statement: this feature is classified, by Chrome, as
+            belonging to the standard platform, not to the privileged
+            plate. It sits next to the JavaScript engine, not next to
+            the camera.</p>
+
+        <svg viewBox="0 0 560 270" aria-label="Permission-prompt asymmetry across browser capabilities. Geolocation, microphone, camera, screen capture, notifications, clipboard, USB, MIDI and Bluetooth all require an explicit user permission prompt before a website can use them. Local language-model inference, in the form of LanguageModel.create() and the six related APIs, does not. The line that separates standard platform capabilities from privileged ones has been drawn with the model on the standard side." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-pa-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .nitb-pa-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .nitb-pa-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .nitb-pa-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .nitb-pa-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nitb-pa-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="nitb-pa-title" text-anchor="middle">Permission Asymmetry &#x2014; Where the Line Was Drawn</text>
+
+            <text x="140" y="50" class="nitb-pa-head" text-anchor="middle">Asks the user</text>
+            <text x="420" y="50" class="nitb-pa-head" text-anchor="middle">Does not ask</text>
+
+            <rect x="20" y="60" width="240" height="190" class="nitb-pa-box"/>
+            <text x="140" y="82" class="nitb-pa-text" text-anchor="middle">Geolocation</text>
+            <text x="140" y="100" class="nitb-pa-text" text-anchor="middle">Microphone</text>
+            <text x="140" y="118" class="nitb-pa-text" text-anchor="middle">Camera</text>
+            <text x="140" y="136" class="nitb-pa-text" text-anchor="middle">Screen capture</text>
+            <text x="140" y="154" class="nitb-pa-text" text-anchor="middle">Notifications</text>
+            <text x="140" y="172" class="nitb-pa-text" text-anchor="middle">Clipboard</text>
+            <text x="140" y="190" class="nitb-pa-text" text-anchor="middle">USB &#x2022; MIDI &#x2022; Bluetooth</text>
+            <text x="140" y="222" class="nitb-pa-muted" text-anchor="middle">privileged surface</text>
+            <text x="140" y="236" class="nitb-pa-muted" text-anchor="middle">explicit user prompt</text>
+
+            <rect x="300" y="60" width="240" height="190" class="nitb-pa-accent-box"/>
+            <text x="420" y="82" class="nitb-pa-text" text-anchor="middle">LanguageModel</text>
+            <text x="420" y="100" class="nitb-pa-text" text-anchor="middle">Summarizer</text>
+            <text x="420" y="118" class="nitb-pa-text" text-anchor="middle">Translator</text>
+            <text x="420" y="136" class="nitb-pa-text" text-anchor="middle">Writer</text>
+            <text x="420" y="154" class="nitb-pa-text" text-anchor="middle">Rewriter</text>
+            <text x="420" y="172" class="nitb-pa-text" text-anchor="middle">Proofreader</text>
+            <text x="420" y="190" class="nitb-pa-text" text-anchor="middle">LanguageDetector</text>
+            <text x="420" y="222" class="nitb-pa-muted" text-anchor="middle">standard platform</text>
+            <text x="420" y="236" class="nitb-pa-muted" text-anchor="middle">no prompt at any point</text>
+        </svg>
+
+        <p>A reasonable user reading the brief would expect to be
+            asked about a feature that uses several gigabytes of disk,
+            runs on the user's GPU, and consumes battery whenever a
+            website calls it. The user is not asked. The brief did not
+            specify this, the user accepted it by accepting Chrome.</p>
+
+        <h2>What This Means For Risk</h2>
+
+        <p>Three risk lines are real, and they should be named without
+            panic.</p>
+
+        <p><strong>Fingerprinting and tracking.</strong>
+            <code>LanguageModel.availability()</code> is a
+            fingerprinting input. Combined with the canvas, font,
+            audio, language, GPU and timing vectors that are
+            <a href="https://www.techrepublic.com/article/news-chrome-browser-fingerprinting-privacy-concerns/" target="_blank" rel="noopener">already
+            in production use across roughly thirteen per cent of the
+            top 20,000 websites</a> (per a 2025 ACM study), the
+            addition of a model-availability probe contributes to a
+            higher-entropy fingerprint. In a browser without Privacy
+            Sandbox and with explicit policy permission for
+            fingerprinting, this is a measurable degradation.</p>
+
+        <p><strong>Indirect prompt injection.</strong> Web content
+            goes into the model. Model output goes back into web UIs.
+            A page that includes a hidden instruction in user-readable
+            text can attempt to coerce the model into producing
+            output that influences subsequent actions.
+            <a href="https://www.computerworld.com/article/4103343/gemini-for-chrome-gets-a-second-ai-agent-to-watch-over-it.html" target="_blank" rel="noopener">OWASP
+            found indirect prompt injection in 73 per cent of
+            production AI deployments it audited in 2024</a>. Google
+            has responded with a
+            <a href="https://www.bleepingcomputer.com/news/security/google-chrome-adds-new-security-layer-for-gemini-ai-agentic-browsing/" target="_blank" rel="noopener">five-layer
+            defence and a separate "User Alignment Critic" model</a>
+            that watches the agentic Gemini sidebar; that response is
+            itself a recognition that the threat class is severe. The
+            on-device Prompt API does not face the agentic-action
+            surface, but a website that uses it to summarise web
+            content for the user is one prompt-injection layer away
+            from inserting whatever the attacker has inserted into the
+            displayed result.</p>
+
+        <p><strong>Hijack and privilege boundaries.</strong>
+            <a href="https://unit42.paloaltonetworks.com/gemini-live-in-chrome-hijacking/" target="_blank" rel="noopener">CVE-2026-0628</a>,
+            disclosed in early January 2026 and fixed by Google in
+            mid-January, allowed Chrome extensions with basic
+            permissions to hijack the Gemini Live panel and inherit
+            camera, microphone and file-access privileges through the
+            panel's surface. The panel is not the same component as
+            the Prompt API, but the disclosure shows that the
+            boundary between the AI surfaces in Chrome and the rest
+            of the browser's privilege system has been crossed at
+            least once.</p>
+
+        <p>These are not theoretical risks. They are documented in
+            Chrome's own security advisories, in OWASP's annual
+            report, and in disclosures by Palo Alto's Unit 42,
+            Malwarebytes and SecurityWeek.</p>
+
+        <h2>How To See It On Your Own Machine</h2>
+
+        <p>Three tabs, one policy. Five minutes.</p>
+
+        <p><strong><code>chrome://on-device-internals</code>.</strong>
+            The model status, version, file size and update history.
+            If the page shows a Gemini Nano entry with a version
+            number and a size, the model is on your disk and ready to
+            be called.</p>
+
+        <p><strong><code>chrome://flags/#optimization-guide-on-device-model</code>.</strong>
+            Set this to Disabled. Relaunch Chrome. The model will
+            not be downloaded; if it has already been downloaded, it
+            will be removed.</p>
+
+        <p><strong><code>chrome://flags/#prompt-api-for-gemini-nano</code>.</strong>
+            Set this to Disabled. Relaunch. The web-page API surface
+            is gone; pages calling <code>LanguageModel.create()</code>
+            will fail with <code>'unavailable'</code>.</p>
+
+        <p><strong>Enterprise policy.</strong> On Windows, set the
+            registry value
+            <a href="https://maketecheasier.com/stop-chrome-auto-download-gemini-nano-windows/" target="_blank" rel="noopener"><code>HKLM\SOFTWARE\Policies\Google\Chrome\GenAILocalFoundationalModelSettings = 1</code></a>
+            (DWORD). On macOS and Linux there are equivalent profile
+            keys. Chrome will respect this and the model will not
+            return through future updates.</p>
+
+        <p><strong>DevTools.</strong> Open a tab on any site, open
+            DevTools, switch to the Network panel, and filter for
+            <code>optimizationguide-pa.googleapis.com</code>. This is
+            the model and configuration update server. You will see
+            traffic when Chrome checks for or pulls model updates.</p>
+
+        <h2>The Pattern Is Not Chrome-Only</h2>
+
+        <p>This is a series, and Chrome is the first episode because
+            it is the largest. The same pattern is in other browsers,
+            each in its own form.</p>
+
+        <ul>
+            <li><strong>Microsoft Edge</strong> ships a <a href="https://learn.microsoft.com/en-us/copilot/edge/" target="_blank" rel="noopener">Copilot Sidebar</a> that is enabled by default for many users; the toggle lives at <code>edge://settings/copilot</code>.</li>
+            <li><strong>Brave Browser</strong> ships <a href="https://support.brave.com/hc/en-us/articles/19479589350925" target="_blank" rel="noopener">Leo AI</a> built in, with a cloud-mode toggle in Settings &#x2192; Leo.</li>
+            <li><strong>Firefox</strong> added an <a href="https://support.mozilla.org/en-US/kb/ai-chatbot" target="_blank" rel="noopener">AI Chat sidebar</a> with a configurable provider in <code>about:preferences#general</code> &#x2192; AI Chatbot.</li>
+            <li><strong>Arc</strong> ships AI features in Settings &#x2192; AI; the project is now under The Browser Company.</li>
+            <li><strong>Apple Safari</strong> integrates <a href="https://www.apple.com/apple-intelligence/" target="_blank" rel="noopener">Apple Intelligence</a> on supported macOS and iOS versions, configured under System Settings &#x2192; Apple Intelligence.</li>
+        </ul>
+
+        <p>The architecture varies. The pattern is the same: an AI
+            feature added by default, exposed to web pages or to the
+            user, with the awareness path tucked into a Settings page
+            that few users will visit unprompted. We will take each of
+            these in turn over the coming episodes, and the awareness
+            path for each.</p>
+
+        <h2>What To Take Home</h2>
+
+        <p>If your browser ships an API without a permission prompt,
+            the browser has stated where that API stands. It is
+            treating the feature like part of the standard platform:
+            not a privileged surface that needs explicit user consent,
+            but a default capability of the runtime.</p>
+
+        <p>That is not an argument against Chrome's built-in AI. It
+            is an argument for knowing it is there. The feature is
+            real. The performance is genuinely good. The local-model
+            architecture is, in some respects, more privacy-respecting
+            than a cloud round-trip would have been. The quarrel is
+            not with the existence of the feature. It is with the
+            silence of its arrival, and with the dialog that the
+            browser used to show and now does not.</p>
+
+        <p>The browser used to ask about the camera. It does not ask
+            about the model. The line moved. The dialog did not.</p>
+
+        <p>If you have not looked, you do not know what is on. The
+            looking is not difficult. It just has to start.</p>
+
+        <blockquote>
+            <p>Chrome ships seven on-device AI APIs (LanguageModel,
+                Summarizer, Translator, Writer, Rewriter, Proofreader,
+                LanguageDetector) backed by Gemini Nano. Generally
+                available for extensions since Chrome 138 (May 2025);
+                Origin Trial for web pages. Hardware bar: &gt;4 GB
+                VRAM, 16 GB RAM, 22 GB free disk, supported OS. No
+                permission prompt at any point. Capability probe
+                <code>LanguageModel.availability()</code> exposes
+                hardware class to any caller. Privacy Sandbox retired
+                April 2025; Google ad policy permits fingerprinting
+                since February 2025; CVE-2026-0628 fixed January 2026.
+                Three tabs reveal the model; one Enterprise registry
+                value disables it. Same pattern in Edge, Brave,
+                Firefox, Arc, Safari.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The awareness path, the short version:</strong></p>
+            <ul>
+                <li><strong>The feature:</strong> seven on-device AI APIs (LanguageModel, Summarizer, Translator, Writer, Rewriter, Proofreader, LanguageDetector), all backed by Gemini Nano running locally. GA for extensions since Chrome 138 (May 2025); Origin Trial for web pages</li>
+                <li><strong>The bar:</strong> &gt;4 GB VRAM, &#x2265;16 GB RAM, &#x2265;22 GB free disk, Windows 10+ / macOS 13+ / Linux / ChromeOS Plus. Mobile excluded. Disk under 10 GB or 30 days unmet purges the model; conditions returning re-installs it</li>
+                <li><strong>The asymmetry:</strong> geolocation, microphone, camera, screen capture, notifications, clipboard, USB, MIDI, Bluetooth all prompt. <code>LanguageModel.create()</code> does not. The feature sits next to the JavaScript engine, not next to the camera</li>
+                <li><strong>Three tabs to see it:</strong> <code>chrome://on-device-internals</code> (model status), <code>chrome://flags/#optimization-guide-on-device-model</code> (toggle download), <code>chrome://flags/#prompt-api-for-gemini-nano</code> (toggle web-page API)</li>
+                <li><strong>Enterprise off-switch:</strong> Windows registry DWORD <code>GenAILocalFoundationalModelSettings = 1</code>. macOS/Linux equivalents exist</li>
+                <li><strong>DevTools observability:</strong> Network panel filtered to <code>optimizationguide-pa.googleapis.com</code> shows model and config-update traffic</li>
+                <li><strong>Risk lines:</strong> fingerprinting (Privacy Sandbox retired April 2025, ad policy permits fingerprinting since February 2025), indirect prompt injection (OWASP 73 per cent in 2024 audited deployments), privilege-boundary crossings (CVE-2026-0628 fixed January 2026)</li>
+                <li><strong>Pattern, not Chrome-only:</strong> Edge Copilot Sidebar, Brave Leo, Firefox AI Chat, Arc AI, Apple Intelligence in Safari. Each with its own awareness path; coming episodes will work them in turn</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

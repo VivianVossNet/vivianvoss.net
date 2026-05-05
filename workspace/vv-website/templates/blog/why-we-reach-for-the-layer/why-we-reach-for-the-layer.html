@@ -1,0 +1,430 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Why We Reach for the Layer &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="The ORM hides the SQL. The cache hides the ORM. The service mesh hides the services. The operator hides the YAML, which hides the kubelet, which hides the container, which hides the process. Layered architecture began with Dijkstra in 1968 to contain complexity. Somewhere between Parnas and the cloud generation, containing became postponing. The vocabulary survived; the discipline did not.">
+{( endslot )}
+
+{( slot canonical )}/blog/why-we-reach-for-the-layer{( endslot )}
+
+{( slot og-title )}Why We Reach for the Layer &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}On Second Thought Episode 06. Dijkstra 1968 introduced disciplined layering to contain complexity. Parnas 1972 named it Information Hiding. Lehman 1974 warned that complexity rises unless explicit work is done to reduce it. Karlton observed that there are two hard things in computer science, and we made one of them our default architectural pattern. SQLite, awk and pf are the proof that reduction is possible. The plaster is cheap. The wound is not.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Why We Reach for the Layer",
+    "datePublished": "2026-05-03",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/why-we-reach-for-the-layer",
+    "description": "On Second Thought Episode 06. Layered architecture began with Dijkstra in 1968 and Parnas in 1972 as a discipline to contain complexity. Somewhere between Parnas and the cloud generation, containing became postponing. Lehman's second law named the cost; Karlton named the diagnostic. SQLite (156k LOC, 92M-line test suite), awk (1977, unchanged), pf (one syntax since 2001) are the proof that reduction is achievable. The deeper question: what kind of organisation could allow reduction to be a fundable activity rather than a private virtue.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-03">3 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Why We Reach for the Layer</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>On Second Thought</em> &#x25A0; Episode 06</p>
+
+        <p>The ORM hides the SQL. The cache hides the ORM. The service
+            mesh hides the services. The operator hides the YAML, which
+            already hid the kubelet, which already hid the container,
+            which already hid the process. By Tuesday, nobody quite
+            remembers what the original problem was. They are too busy
+            configuring its sixth wrapper.</p>
+
+        <p>And inside the container, where one might reasonably hope to
+            find the process the whole edifice was built for, the same
+            reflex begins again, one floor lower: an init system, a log
+            forwarder, a config sidecar, a service-mesh proxy, a
+            metrics agent, and somewhere in the middle the application
+            that started the whole arrangement. The pattern is fractal,
+            and rather inconveniently so. (A thin jail, one notes in
+            passing, would have done all of this in a single floor.)</p>
+
+        <p>This is the post about that wrapper.</p>
+
+        <h2>The Axiom</h2>
+
+        <p>When something does not work as wished, one adds a layer on
+            top. The pattern is invisible because it is universal. We do
+            it in code, in infrastructure, in process, in organisation.
+            We wrap APIs in clients, clients in adapters, adapters in
+            service objects, service objects in factories. We wrap
+            deploys in pipelines, pipelines in operators, operators in
+            platforms, platforms in portals. We wrap teams in tribes,
+            tribes in chapters, chapters in centres of excellence. The
+            plaster is the one tool that fits every wound, and the
+            wound, rather conveniently, is never the one that gets
+            examined.</p>
+
+        <p>The reflex is so deeply trained that the alternative does
+            not occur as an option. The question "could we remove the
+            underlying thing instead of wrapping it?" is rarely asked
+            because the team that built the underlying thing is in the
+            next room, the project that delivered it is in the previous
+            quarter's review, and the engineer who would have to do the
+            removal has thirteen tickets that close more cleanly with
+            a wrapper. So the wrapper goes in, and a year later, the
+            wrapper has its own wrapper.</p>
+
+        <svg viewBox="0 0 560 320" aria-label="A vertical stack of seven labelled boxes representing the modern application stack, growing taller upward. From bottom to top: PROCESS, CONTAINER, KUBELET, YAML, OPERATOR, MESH, API. The lowest box is small and stable; each subsequent box is wider and more elaborate. To the right, a small annotation reads 'the original problem' pointing at the bottom box, and another annotation reads 'sixth wrapper' pointing at the top." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-st-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ost-st-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .ost-st-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-style: italic; }
+                .ost-st-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .ost-st-base { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .ost-st-arr { stroke: var(--accent); stroke-width: 1; fill: none; marker-end: url(#ost-arr); }
+            </style>
+            <defs>
+                <marker id="ost-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="ost-st-title" text-anchor="middle">The Stack, in Order of Wrappers</text>
+
+            <rect x="190" y="50" width="180" height="32" class="ost-st-box"/>
+            <text x="280" y="71" class="ost-st-text" text-anchor="middle">API</text>
+
+            <rect x="180" y="88" width="200" height="32" class="ost-st-box"/>
+            <text x="280" y="109" class="ost-st-text" text-anchor="middle">MESH</text>
+
+            <rect x="170" y="126" width="220" height="32" class="ost-st-box"/>
+            <text x="280" y="147" class="ost-st-text" text-anchor="middle">OPERATOR</text>
+
+            <rect x="160" y="164" width="240" height="32" class="ost-st-box"/>
+            <text x="280" y="185" class="ost-st-text" text-anchor="middle">YAML</text>
+
+            <rect x="150" y="202" width="260" height="32" class="ost-st-box"/>
+            <text x="280" y="223" class="ost-st-text" text-anchor="middle">KUBELET</text>
+
+            <rect x="140" y="240" width="280" height="32" class="ost-st-box"/>
+            <text x="280" y="261" class="ost-st-text" text-anchor="middle">CONTAINER</text>
+
+            <rect x="220" y="278" width="120" height="28" class="ost-st-base"/>
+            <text x="280" y="297" class="ost-st-text" text-anchor="middle">PROCESS</text>
+
+            <text x="430" y="69" class="ost-st-muted">sixth wrapper</text>
+            <line x1="425" y1="64" x2="380" y2="64" class="ost-st-arr"/>
+
+            <text x="50" y="297" class="ost-st-muted">the original problem</text>
+            <line x1="155" y1="293" x2="220" y2="293" class="ost-st-arr"/>
+        </svg>
+
+        <h2>The Origin</h2>
+
+        <p>Layered architecture has a perfectly respectable origin.
+            <a href="https://dl.acm.org/doi/10.1145/363095.363143" target="_blank" rel="noopener">Edsger
+            Dijkstra published "The Structure of the THE-Multiprogramming
+            System" in CACM in May 1968</a>, introducing disciplined
+            layering as a means of bounding complexity. Each layer
+            presented a strictly defined interface to the layer above
+            it; an engineer could reason about one layer without holding
+            the entire stack in their head. It was a brilliant move and
+            remains one.</p>
+
+        <p>David Parnas, four years later, gave the underlying principle
+            its enduring name. His
+            <a href="https://dl.acm.org/doi/10.1145/361598.361623" target="_blank" rel="noopener">1972
+            paper, "On the Criteria To Be Used in Decomposing Systems
+            into Modules"</a>, introduced
+            <a href="https://en.wikipedia.org/wiki/Information_hiding" target="_blank" rel="noopener">Information
+            Hiding</a>: a module should hide what is likely to change
+            behind a stable interface, so that change in one place does
+            not propagate to all the others. Layers were one application
+            of the principle. The intent was to contain complexity, not
+            to defer it.</p>
+
+        <p>Somewhere between Parnas's paper and the third generation of
+            cloud abstractions, the verb shifted. Containing became
+            postponing. The layer that once prevented the lower one
+            from leaking now exists primarily to defer the moment in
+            which one would have to look at it. The Kubernetes operator
+            does not hide a stable abstraction; it hides a YAML format
+            that nobody wishes to read. The retry decorator does not
+            bound a clean interface; it papers over an upstream service
+            that has never been made reliable. The ORM does not
+            abstract the database; it postpones the conversation about
+            what the queries should actually be.</p>
+
+        <p>The vocabulary survived. The discipline did not. One does
+            notice the inversion.</p>
+
+        <svg viewBox="0 0 560 230" aria-label="A two-state diagram. On the left, the original Parnas-Dijkstra discipline: each layer contains the one beneath it, with a stable interface. The label is 'CONTAINING'. On the right, the modern reflex: each layer postpones the moment of looking at the one beneath it. The label is 'POSTPONING'. An arrow with the year range 1972 to today connects the two. The vocabulary, drawn between them, persists across both halves." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-vs-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ost-vs-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .ost-vs-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .ost-vs-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ost-vs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-vs-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ost-vs-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ost-vs-arrow); }
+            </style>
+            <defs>
+                <marker id="ost-vs-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="ost-vs-title" text-anchor="middle">A Verb-Shift, Sometime Around the Cloud Generation</text>
+
+            <rect x="20" y="60" width="200" height="120" class="ost-vs-box"/>
+            <text x="120" y="84" class="ost-vs-head" text-anchor="middle">CONTAINING</text>
+            <text x="120" y="106" class="ost-vs-text" text-anchor="middle">Dijkstra 1968, Parnas 1972</text>
+            <text x="120" y="128" class="ost-vs-muted" text-anchor="middle">layer hides what changes</text>
+            <text x="120" y="142" class="ost-vs-muted" text-anchor="middle">interface is stable by design</text>
+            <text x="120" y="160" class="ost-vs-muted" text-anchor="middle">complexity is bounded,</text>
+            <text x="120" y="172" class="ost-vs-muted" text-anchor="middle">reasoning is local</text>
+
+            <rect x="340" y="60" width="200" height="120" class="ost-vs-accent-box"/>
+            <text x="440" y="84" class="ost-vs-head" text-anchor="middle">POSTPONING</text>
+            <text x="440" y="106" class="ost-vs-text" text-anchor="middle">cloud generation onward</text>
+            <text x="440" y="128" class="ost-vs-muted" text-anchor="middle">layer hides what hurts to look at</text>
+            <text x="440" y="142" class="ost-vs-muted" text-anchor="middle">interface defers the conversation</text>
+            <text x="440" y="160" class="ost-vs-muted" text-anchor="middle">complexity accumulates,</text>
+            <text x="440" y="172" class="ost-vs-muted" text-anchor="middle">reasoning becomes archaeology</text>
+
+            <line x1="220" y1="120" x2="340" y2="120" class="ost-vs-arr"/>
+
+            <text x="280" y="208" class="ost-vs-muted" text-anchor="middle">The vocabulary survived. The discipline did not.</text>
+        </svg>
+
+        <h2>The Cost</h2>
+
+        <p>Manny Lehman, working at IBM in the early 1970s, formulated
+            what came to be called the
+            <a href="https://en.wikipedia.org/wiki/Lehman%27s_laws_of_software_evolution" target="_blank" rel="noopener">laws
+            of software evolution</a>. The second law, in its mature
+            form: the complexity of an evolving system increases unless
+            explicit work is done to maintain or reduce it. Few sentences
+            in computer science have aged this well. Lehman compared it,
+            half-seriously, to the second law of thermodynamics: entropy
+            is the default; order requires energy. The work to maintain
+            or reduce, in practice, is the work that nobody is funded to
+            do, because it produces no new feature, ships no new ticket,
+            and leaves no diagram for the architecture review.</p>
+
+        <p>Defensive code-paths multiply as a consequence. Every API
+            call gets wrapped in retries. Every value gets wrapped in
+            null-checks. Every cache gets wrapped in invalidation logic.
+            <a href="https://www.karlton.org/2017/12/naming-things-hard/" target="_blank" rel="noopener">Phil
+            Karlton</a>, working at Carnegie Mellon and later at
+            Netscape, is widely credited with the observation, somewhere
+            around 1970, that there are two hard things in computer
+            science: cache invalidation and naming things. The line was
+            popularised by Tim Bray around 1996. We have, with rather
+            industrious enthusiasm, made the first one our default
+            architectural pattern, and we still cannot agree on the
+            name of the variable that holds the result.</p>
+
+        <p>The cost is not only the cache. The cost is what happens to
+            the people inside the system. The Senior Engineer's day
+            shifts from building to understanding. She spends the
+            morning tracing why a request that should take six
+            milliseconds is taking eight hundred, walks through three
+            retry decorators, two adapter classes, a service mesh
+            sidecar, and a fallback strategy that has not been
+            triggered since 2023, and finds at the bottom of all of it
+            a database query that wants for an index. The index goes
+            in; the eight hundred milliseconds become six. The retry
+            decorator stays. The adapter stays. The sidecar stays.
+            Removing them would be another quarter of work, and the
+            quarter has other plans.</p>
+
+        <p>The Junior Engineer never gets to building, because the
+            layers between her and the system have grown taller than
+            the system itself. She is taught the operator before the
+            syscall, the framework before the language, the platform
+            before the protocol. When the abstraction breaks (and it
+            always does), there is no layer beneath to fall back to.
+            The foundation was never taught. It was skipped.</p>
+
+        <p>This was the substance of
+            <a href="/blog/why-we-teach-tools">Episode 02</a>. It is
+            also the substance of this one. The two are linked because
+            the layer-reaching reflex and the foundation-skipping
+            curriculum are two halves of the same economy: an industry
+            that compounds abstractions because compounding abstractions
+            can be hired for, certified for, conferenced about, and
+            sold. Reduction cannot be hired for. There is no
+            certification.</p>
+
+        <h2>The Question</h2>
+
+        <p>Reduction is the hardest discipline in software. It looks
+            easy from the outside because the result is, by definition,
+            small. The result is small because someone has spent twenty
+            years making it small.</p>
+
+        <p><a href="https://sqlite.org/testing.html" target="_blank" rel="noopener">SQLite</a>,
+            the most widely deployed database engine on earth, carries
+            roughly 156,000 lines of mature C code (the canonical figure
+            published by the project for version 3.42, May 2023). It has
+            stayed one library because, every time a feature was
+            proposed, the maintainers asked whether the existing surface
+            could be made to do the work instead. The test suite is 92
+            million lines. The library is 156,000. That ratio is not an
+            accident. It is the operational definition of reduction as
+            a discipline.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="A bar comparison of SQLite source code at 156,000 lines versus its test suite at approximately 92 million lines. The test bar is roughly 590 times longer than the source bar and is shown truncated with an ellipsis to fit. The proportion is the operational definition of reduction as a discipline." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-sq-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ost-sq-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ost-sq-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .ost-sq-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ost-sq-bar-src { fill: var(--accent); opacity: 0.85; }
+                .ost-sq-bar-test { fill: var(--muted); opacity: 0.45; }
+            </style>
+            <text x="280" y="22" class="ost-sq-title" text-anchor="middle">SQLite, in Its Own Proportions</text>
+
+            <text x="40" y="64" class="ost-sq-head">Source</text>
+            <rect x="40" y="72" width="40" height="28" class="ost-sq-bar-src"/>
+            <text x="92" y="91" class="ost-sq-text">156,000 LOC</text>
+            <text x="92" y="104" class="ost-sq-muted">156k lines of mature C, one library, no plugin system</text>
+
+            <text x="40" y="138" class="ost-sq-head">Tests</text>
+            <rect x="40" y="146" width="450" height="28" class="ost-sq-bar-test"/>
+            <text x="500" y="165" class="ost-sq-text">~92,000,000 lines</text>
+            <text x="40" y="192" class="ost-sq-muted">Roughly 590&#x00D7; the source. Bar truncated for display; the actual ratio is wider.</text>
+            <text x="40" y="206" class="ost-sq-muted">A small product, by patience, kept honest by a very large test fence.</text>
+        </svg>
+
+        <p><a href="https://en.wikipedia.org/wiki/AWK" target="_blank" rel="noopener">awk</a>
+            has run essentially unchanged since
+            <a href="https://www.cs.princeton.edu/~bwk/btl.mirror/" target="_blank" rel="noopener">Aho,
+            Weinberger, and Kernighan</a> published it at Bell Labs in
+            1977. Forty-nine years on, the language is the same
+            language. Engineers who learned it in the 1980s can read
+            code written this morning. The design was small enough to
+            be finished, and the maintainers had the discipline to
+            recognise that "finished" is a category that exists.</p>
+
+        <p><a href="/blog/pf">pf</a>, the OpenBSD packet filter, has
+            been one configuration file with one syntax since OpenBSD
+            3.0 in December 2001. Daniel Hartmeier began writing it in
+            June 2001, after IPFilter was removed for licensing reasons.
+            The syntax has been refined; the model has not been
+            replaced. Twenty-five years later, an administrator who
+            learned pf in 2003 can read a pf.conf written this week.
+            There is no v2. There is no successor. There is no parallel
+            implementation that one is encouraged to migrate to. There
+            is one tool that does the work it was built to do.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Three exemplars of reduction as a sustained discipline. SQLite: roughly 156,000 lines of C, twenty-five years of iteration, no plugin system. awk: 1977 to today, essentially unchanged language. pf: one configuration file with one syntax since OpenBSD 3.0 in December 2001, refined but not replaced. Each is annotated with what was refused: features, replacement, parallel implementations." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-tr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ost-tr-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .ost-tr-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .ost-tr-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .ost-tr-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-tr-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="ost-tr-title" text-anchor="middle">Three Proofs That Reduction Is a Discipline</text>
+
+            <rect x="20" y="50" width="170" height="160" class="ost-tr-accent-box"/>
+            <text x="105" y="74" class="ost-tr-head" text-anchor="middle">SQLite</text>
+            <text x="105" y="100" class="ost-tr-text" text-anchor="middle">~156k LOC, 25 years</text>
+            <text x="105" y="120" class="ost-tr-muted" text-anchor="middle">one library, one binary</text>
+            <text x="105" y="134" class="ost-tr-muted" text-anchor="middle">no plugin system</text>
+            <text x="105" y="148" class="ost-tr-muted" text-anchor="middle">~92M-line test suite</text>
+            <text x="105" y="180" class="ost-tr-muted" text-anchor="middle">refused: features that</text>
+            <text x="105" y="192" class="ost-tr-muted" text-anchor="middle">existing surface could carry</text>
+
+            <rect x="200" y="50" width="170" height="160" class="ost-tr-accent-box"/>
+            <text x="285" y="74" class="ost-tr-head" text-anchor="middle">awk</text>
+            <text x="285" y="100" class="ost-tr-text" text-anchor="middle">1977 &#x2014; today</text>
+            <text x="285" y="120" class="ost-tr-muted" text-anchor="middle">Aho, Weinberger,</text>
+            <text x="285" y="134" class="ost-tr-muted" text-anchor="middle">Kernighan, Bell Labs</text>
+            <text x="285" y="148" class="ost-tr-muted" text-anchor="middle">essentially unchanged</text>
+            <text x="285" y="180" class="ost-tr-muted" text-anchor="middle">refused: a v2 that would</text>
+            <text x="285" y="192" class="ost-tr-muted" text-anchor="middle">break old scripts</text>
+
+            <rect x="380" y="50" width="170" height="160" class="ost-tr-accent-box"/>
+            <text x="465" y="74" class="ost-tr-head" text-anchor="middle">pf</text>
+            <text x="465" y="100" class="ost-tr-text" text-anchor="middle">2001 &#x2014; today</text>
+            <text x="465" y="120" class="ost-tr-muted" text-anchor="middle">one config, one syntax</text>
+            <text x="465" y="134" class="ost-tr-muted" text-anchor="middle">refined, never replaced</text>
+            <text x="465" y="148" class="ost-tr-muted" text-anchor="middle">no parallel impl, no v2</text>
+            <text x="465" y="180" class="ost-tr-muted" text-anchor="middle">refused: a successor</text>
+            <text x="465" y="192" class="ost-tr-muted" text-anchor="middle">to migrate towards</text>
+
+            <text x="280" y="232" class="ost-tr-muted" text-anchor="middle">Each kept small by patience, which sprint cycles do not allocate.</text>
+        </svg>
+
+        <p>None of these were elegant by accident. They were elegant by
+            patience, which is the one resource the sprint cycle does
+            not allocate. Each of them required a maintainer or a small
+            team to refuse, repeatedly, the temptation to add. Refusing
+            is not a quarterly metric. It is not a ticket category. It
+            is not a Slack reaction. It is the silent work that holds
+            the small body of software that the rest of the industry
+            quietly stands on without thanking.</p>
+
+        <p>The deeper question is not whether we should layer less. The
+            deeper question is what kind of organisation, what kind of
+            contract, what kind of incentive structure could allow
+            reduction to be a fundable activity rather than a private
+            virtue practised by the few. Today it is funded only by
+            accident: by maintainers who are paid for something else,
+            by retired engineers donating evenings, by small
+            institutions that never grew into the structures that would
+            have stopped them from doing it.</p>
+
+        <p>What would happen if a team were given one sprint, just one,
+            not to add a layer but to remove one? Who has the authority
+            to ask the question? Who would carry the cost of the answer
+            being yes?</p>
+
+        <p>The plaster is cheap. The wound is not.</p>
+
+        <blockquote>
+            <p>Dijkstra 1968 and Parnas 1972 introduced layers as a
+                discipline to contain complexity. Lehman 1974 warned
+                that complexity rises unless explicit work is done to
+                reduce it. Karlton observed that there are two hard
+                things in computer science, and we made one of them
+                our default architectural pattern. SQLite (~156k LOC,
+                ~92M-line test suite), awk (1977, unchanged), pf (one
+                syntax since OpenBSD 3.0, December 2001) are the
+                proof that reduction is achievable. None were elegant
+                by accident. They were elegant by patience, which
+                sprint cycles do not allocate.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The pedigree, the short version:</strong></p>
+            <ul>
+                <li><strong>The respectable origin:</strong> Dijkstra (1968) "The Structure of the THE-Multiprogramming System" introduced disciplined layering. Parnas (1972) "On the Criteria To Be Used in Decomposing Systems into Modules" named Information Hiding</li>
+                <li><strong>The verb-shift:</strong> sometime between Parnas and the cloud generation, containing became postponing. The Kubernetes operator hides a YAML format nobody wishes to read; the retry decorator papers over an upstream service that has never been made reliable; the ORM postpones the conversation about what the queries should actually be</li>
+                <li><strong>The cost:</strong> Lehman's second law (1974) &#x2014; complexity rises unless explicit work is done to reduce it. The work to reduce produces no new feature, ships no new ticket, leaves no diagram for the architecture review</li>
+                <li><strong>The diagnostic:</strong> Karlton (~1970, popularised by Tim Bray ~1996) &#x2014; "two hard things in computer science: cache invalidation and naming things". We have made the first our default architectural pattern</li>
+                <li><strong>The proof of the alternative:</strong> SQLite (~156k LOC, ~92M-line test suite); awk (1977, essentially unchanged); pf (one syntax since OpenBSD 3.0, December 2001, refined but not replaced)</li>
+                <li><strong>The closing question:</strong> what kind of organisation, contract, or incentive structure could allow reduction to be a fundable activity rather than a private virtue practised by the few?</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

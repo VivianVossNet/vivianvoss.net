@@ -1,0 +1,408 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}One Clock, One Tool, Three Distros &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Ask a Linux admin which time daemon their server runs. Pause for the silence. Then watch them check three different places to find out. On FreeBSD the question does not arise: ntpd in base since 2000, one config file, one diagnostic. On Linux: ntpd, chrony or systemd-timesyncd, depending on the distribution and the year. The Unix Way Episode 15.">
+{( endslot )}
+
+{( slot canonical )}/blog/one-clock-one-tool-three-distros{( endslot )}
+
+{( slot og-title )}One Clock, One Tool, Three Distros &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}NTP since 1985 by David L. Mills. ntpd was the standard for thirty years. Then chrony arrived in 1997 (now Red Hat-maintained, default on Fedora/RHEL/CentOS/Arch), and systemd-timesyncd arrived in 2014 (default on Ubuntu since 18.04, SNTP only, ignores /etc/ntp.conf). Three answers on Linux because three groups disagreed and the distribution committees could not converge. FreeBSD did not have that argument; the base team picked one and kept it.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "One Clock, One Tool, Three Distros",
+    "datePublished": "2026-05-04",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/one-clock-one-tool-three-distros",
+    "description": "The Unix Way Episode 15. Ask a Linux admin which time daemon their server runs and watch them check three places to find out. ntpd (1985, David L. Mills, the reference), chrony (1997, Richard Curnow, now Red Hat-maintained, default on Fedora/RHEL/Arch) and systemd-timesyncd (2014, SNTP-only, default on Ubuntu) coexist on Linux because the distribution committees could not converge. FreeBSD has had ntpd in base since 4.x in 2000, one config file, one answer. The cost of three answers is paid every time an admin inherits a server.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-04">4 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>One Clock, One Tool, Three Distros</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">devops</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25A0; Episode 15</p>
+
+        <p>Ask a Linux admin which time daemon their server runs. Pause
+            for the silence. Then watch them check three different
+            places to find out. On FreeBSD the question does not arise.</p>
+
+        <p>This is not a story about clocks. It is a story about how a
+            basic system service ended up with three implementations,
+            three default behaviours, three configuration files, and
+            zero agreement, and what it costs the people who have to
+            administer the result.</p>
+
+        <h2>A Short History of NTP</h2>
+
+        <p>The
+            <a href="https://en.wikipedia.org/wiki/Network_Time_Protocol" target="_blank" rel="noopener">Network
+            Time Protocol</a> was designed by
+            <a href="https://www.eecis.udel.edu/~mills/" target="_blank" rel="noopener">David
+            L. Mills</a> at the University of Delaware in 1985. RFC 958
+            standardised the original protocol; RFC 1305 codified
+            version 3 in 1992;
+            <a href="https://www.rfc-editor.org/rfc/rfc5905" target="_blank" rel="noopener">RFC 5905</a>
+            finalised version 4 in 2010. The reference implementation,
+            called <code>ntpd</code>, was written by Mills and his
+            students alongside the protocol itself. For most of the
+            next thirty years, <code>ntpd</code> was the only serious
+            option for synchronising the clock on a Unix machine. The
+            University of Delaware NTP code became the reference, the
+            documentation, and the default.</p>
+
+        <p>The protocol matters because it is harder than it looks. A
+            client cannot simply ask a server "what time is it" and
+            accept the answer; the round-trip introduces latency, the
+            network jitters, the local clock drifts at a rate that
+            depends on temperature and load, and the only way to
+            compute a useful offset is to query several servers, weigh
+            their replies against each other, and apply a
+            clock-discipline algorithm that gradually steers the local
+            oscillator without abrupt jumps. The full NTP protocol
+            embeds this into the daemon. The Simple Network Time
+            Protocol, SNTP, is the same wire format used naively:
+            query one server, accept one answer, set the clock.</p>
+
+        <h2>FreeBSD: One Tool, In Base</h2>
+
+        <p><a href="https://man.freebsd.org/cgi/man.cgi?ntpd(8)" target="_blank" rel="noopener"><code>ntpd(8)</code></a>
+            has been part of the FreeBSD base system since 4.x in
+            2000. To enable it, an administrator adds a single line to
+            <code>/etc/rc.conf</code>:</p>
+
+        <pre><code>ntpd_enable="YES"</code></pre>
+
+        <p>The configuration file <code>/etc/ntp.conf</code> is shipped
+            with sensible defaults pointing at the FreeBSD pool
+            servers; non-default servers can be added by editing it.
+            The service is started with <code>service ntpd start</code>.
+            The diagnostic command is <code>ntpq -p</code>, which
+            prints the list of configured peers, their measured
+            offsets, and the daemon's current opinion about which it is
+            using.</p>
+
+        <p>For the rare case where the in-base <code>ntpd</code> does
+            not fit, OpenNTPD is available in ports under
+            <a href="https://www.freshports.org/net/openntpd/" target="_blank" rel="noopener"><code>net/openntpd</code></a>.
+            The most common reason to reach for it is jails: the
+            OpenBSD-derived OpenNTPD is more comfortable binding to
+            specific addresses, which matters when a jail wants its own
+            NTP daemon listening on its own IP. For ninety-nine servers
+            out of a hundred, the in-base <code>ntpd</code> is the
+            answer, and the answer has not changed in over twenty
+            years.</p>
+
+        <p>The reason this is unremarkable on FreeBSD is the reason
+            most things on FreeBSD are unremarkable: a single team
+            makes the decisions and maintains the result. The base
+            system includes <code>ntpd</code>. The base system
+            documents <code>ntpd</code>. The base system upgrades
+            <code>ntpd</code>. There is no second opinion, because
+            there is no second team.</p>
+
+        <h2>Linux: ntpd, the Original</h2>
+
+        <p>The same <code>ntpd</code> from David L. Mills was, for
+            most of Linux's existence, the standard time daemon on
+            Linux too. Distributions packaged it under names like
+            <code>ntp</code> (Debian, Ubuntu) or <code>ntp</code>
+            (RHEL, Fedora). The configuration file was
+            <code>/etc/ntp.conf</code>, the service was
+            <code>ntpd</code>, the diagnostic was
+            <code>ntpq -p</code>. The world worked.</p>
+
+        <p>By the late 2010s, the consensus had begun to shift. The
+            <code>ntpd</code> codebase had a complicated history of
+            maintenance, several serious CVEs, and a configuration
+            syntax that newer admins found rather opaque. The Linux
+            Foundation funded a separate "Network Time Foundation"
+            maintenance effort which kept the lights on but did not
+            modernise the daemon in ways that distributions wanted. By
+            2026, every major distribution has moved on.
+            <code>ntpd</code> is still installable, still works, and
+            is still a perfectly reasonable choice for an
+            administrator who knows it. It is no longer what new
+            servers ship with.</p>
+
+        <h2>Linux: chrony, the Modern Replacement</h2>
+
+        <p><a href="https://chrony-project.org/" target="_blank" rel="noopener">Richard
+            Curnow began work on <code>chrony</code> in 1997</a>,
+            originally as a personal project for synchronising laptops
+            with intermittent network connectivity. After Curnow
+            stepped back from active development, Miroslav Lichvar at
+            <a href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/configuring_time_synchronization/using-chrony" target="_blank" rel="noopener">Red
+            Hat picked it up</a>, and <code>chrony</code> is now
+            developed under Red Hat sponsorship. By 2026 it is the
+            default time daemon on Fedora, RHEL, CentOS Stream, Rocky,
+            Alma, openSUSE, and Arch.</p>
+
+        <p><code>chrony</code> is a complete NTP implementation. It
+            can act as a client, a server, or both. It supports
+            <a href="https://www.rfc-editor.org/rfc/rfc8915" target="_blank" rel="noopener">NTS
+            (Network Time Security, RFC 8915)</a> for authenticated
+            time without the operational burden of NTP autokey. It
+            converges faster than <code>ntpd</code> on first start,
+            handles long network outages without drifting badly, and
+            behaves better on virtual machines whose hardware clock
+            cannot be trusted. The configuration file is
+            <code>/etc/chrony.conf</code> on RHEL-family systems and
+            <code>/etc/chrony/chrony.conf</code> on Debian-family
+            systems, because packagers disagreed on the right path.
+            The daemon is <code>chronyd</code>. The diagnostic is
+            <code>chronyc tracking</code> (current sync state) and
+            <code>chronyc sources</code> (list of upstream servers).
+            The service unit is sometimes <code>chronyd</code>,
+            sometimes <code>chrony</code>, depending on which
+            packaging tradition the distribution inherited.</p>
+
+        <p>If a Linux admin is asked to set up time synchronisation on
+            a server in 2026 and given a free hand, the answer is
+            almost always <code>chrony</code>. The accuracy is better,
+            the codebase is healthier, the maintainer is responsive,
+            and the documentation is current.</p>
+
+        <h2>Linux: systemd-timesyncd, the Minimalist</h2>
+
+        <p>The third answer was added by systemd in version 213
+            (December 2014).
+            <a href="https://www.freedesktop.org/software/systemd/man/systemd-timesyncd.service.html" target="_blank" rel="noopener"><code>systemd-timesyncd</code></a>
+            is not a full NTP implementation; it is an SNTP client. It
+            queries one server at a time, accepts the answer, and sets
+            the clock. It does not triangulate from multiple sources,
+            it does not weight peers against each other, it does not
+            detect a single misconfigured upstream lying about the
+            time. It is also small, simple, and adequate for the case
+            it was built for: a desktop or a container that just needs
+            the clock to be roughly right.</p>
+
+        <p>Ubuntu adopted <code>systemd-timesyncd</code> as the
+            default in 18.04 (2018) and has kept it as the desktop
+            default ever since; Ubuntu Server installs
+            <code>chrony</code> by default in newer releases but
+            <code>systemd-timesyncd</code> was the documented standard
+            for several LTS cycles. Many container images use
+            <code>systemd-timesyncd</code> because it has fewer
+            dependencies than <code>chrony</code>. The configuration
+            file is <code>/etc/systemd/timesyncd.conf</code>, the
+            status command is <code>timedatectl status</code>, and the
+            daemon is part of systemd itself rather than a separate
+            package.</p>
+
+        <p>The trap with <code>systemd-timesyncd</code> is that it
+            ignores <code>/etc/ntp.conf</code>. An administrator who
+            inherits a server, sees <code>/etc/ntp.conf</code> with
+            carefully tuned upstream servers, and assumes those servers
+            are being used, may well be wrong: if
+            <code>systemd-timesyncd</code> is the active daemon, it is
+            reading <code>/etc/systemd/timesyncd.conf</code>, and
+            <code>/etc/ntp.conf</code> is decoration. The diagnostic
+            for "which daemon is actually running" on a Linux box is
+            to enumerate the candidates: <code>systemctl status
+            chronyd</code>, <code>systemctl status ntpd</code>,
+            <code>systemctl status systemd-timesyncd</code>, until one
+            of them returns "active". Two of them sometimes do. That
+            conversation is its own kind of fun.</p>
+
+        <svg viewBox="0 0 560 320" aria-label="A side-by-side comparison of how each daemon differs across implementation, scope, configuration path, and diagnostic command. ntpd: 1985, full NTP, /etc/ntp.conf, ntpq -p. chrony: 1997, full NTP plus NTS, /etc/chrony.conf or /etc/chrony/chrony.conf, chronyc tracking. systemd-timesyncd: 2014, SNTP only, /etc/systemd/timesyncd.conf, timedatectl status. The path is different on each, the diagnostic is different on each, and the operational shape is different on each." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nt-cmp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .nt-cmp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .nt-cmp-row { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .nt-cmp-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .nt-cmp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .nt-cmp-line { stroke: var(--border); stroke-width: 1; fill: none; }
+                .nt-cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="nt-cmp-title" text-anchor="middle">Three Daemons, Three Defaults, Three Diagnostics</text>
+
+            <text x="60" y="60" class="nt-cmp-row">since</text>
+            <text x="60" y="100" class="nt-cmp-row">scope</text>
+            <text x="60" y="140" class="nt-cmp-row">config</text>
+            <text x="60" y="180" class="nt-cmp-row">daemon</text>
+            <text x="60" y="220" class="nt-cmp-row">diagnostic</text>
+            <text x="60" y="260" class="nt-cmp-row">default on</text>
+
+            <line x1="20" y1="36" x2="540" y2="36" class="nt-cmp-line"/>
+            <line x1="20" y1="280" x2="540" y2="280" class="nt-cmp-line"/>
+
+            <text x="200" y="50" class="nt-cmp-head" text-anchor="middle">ntpd</text>
+            <text x="200" y="62" class="nt-cmp-muted" text-anchor="middle">David L. Mills</text>
+
+            <text x="200" y="80" class="nt-cmp-text" text-anchor="middle">1985</text>
+            <text x="200" y="100" class="nt-cmp-text" text-anchor="middle">full NTP</text>
+            <text x="200" y="140" class="nt-cmp-text" text-anchor="middle">/etc/ntp.conf</text>
+            <text x="200" y="180" class="nt-cmp-text" text-anchor="middle">ntpd</text>
+            <text x="200" y="220" class="nt-cmp-text" text-anchor="middle">ntpq -p</text>
+            <text x="200" y="260" class="nt-cmp-text" text-anchor="middle">FreeBSD base</text>
+            <text x="200" y="272" class="nt-cmp-muted" text-anchor="middle">since 2000</text>
+
+            <text x="340" y="50" class="nt-cmp-head" text-anchor="middle">chrony</text>
+            <text x="340" y="62" class="nt-cmp-muted" text-anchor="middle">Curnow / Red Hat</text>
+
+            <text x="340" y="80" class="nt-cmp-text" text-anchor="middle">1997</text>
+            <text x="340" y="100" class="nt-cmp-text" text-anchor="middle">full NTP + NTS</text>
+            <text x="340" y="135" class="nt-cmp-text" text-anchor="middle">/etc/chrony.conf</text>
+            <text x="340" y="148" class="nt-cmp-muted" text-anchor="middle">or /etc/chrony/chrony.conf</text>
+            <text x="340" y="180" class="nt-cmp-text" text-anchor="middle">chronyd</text>
+            <text x="340" y="215" class="nt-cmp-text" text-anchor="middle">chronyc tracking</text>
+            <text x="340" y="227" class="nt-cmp-muted" text-anchor="middle">chronyc sources</text>
+            <text x="340" y="260" class="nt-cmp-text" text-anchor="middle">RHEL, Fedora,</text>
+            <text x="340" y="272" class="nt-cmp-muted" text-anchor="middle">Arch, openSUSE</text>
+
+            <text x="480" y="50" class="nt-cmp-head" text-anchor="middle">timesyncd</text>
+            <text x="480" y="62" class="nt-cmp-muted" text-anchor="middle">systemd</text>
+
+            <text x="480" y="80" class="nt-cmp-text" text-anchor="middle">2014</text>
+            <text x="480" y="100" class="nt-cmp-text" text-anchor="middle">SNTP only</text>
+            <text x="480" y="115" class="nt-cmp-muted" text-anchor="middle">no triangulation</text>
+            <text x="480" y="135" class="nt-cmp-text" text-anchor="middle">/etc/systemd/</text>
+            <text x="480" y="148" class="nt-cmp-muted" text-anchor="middle">timesyncd.conf</text>
+            <text x="480" y="180" class="nt-cmp-text" text-anchor="middle">systemd-timesyncd</text>
+            <text x="480" y="220" class="nt-cmp-text" text-anchor="middle">timedatectl status</text>
+            <text x="480" y="260" class="nt-cmp-text" text-anchor="middle">Ubuntu desktop</text>
+            <text x="480" y="272" class="nt-cmp-muted" text-anchor="middle">since 18.04</text>
+
+            <text x="280" y="304" class="nt-cmp-muted" text-anchor="middle">Same problem on Linux, three answers. On FreeBSD: one row of the table covers the case.</text>
+        </svg>
+
+        <h2>OpenNTPD, the Quiet One</h2>
+
+        <p>A footnote, but worth one.
+            <a href="https://en.wikipedia.org/wiki/OpenNTPD" target="_blank" rel="noopener">OpenNTPD</a>
+            was written by Henning Brauer for OpenBSD in 2003,
+            motivated by the same complaints about the reference
+            <code>ntpd</code> that eventually drove Linux distributions
+            toward <code>chrony</code>: complicated configuration, a
+            hard-to-audit codebase, and licensing that did not fit
+            OpenBSD's standards. OpenNTPD is included in OpenBSD base,
+            and is available on FreeBSD via the
+            <code>net/openntpd</code> port. It is a deliberately small
+            full-NTP implementation, with a configuration file the
+            size of a postcard. For administrators who want a simple
+            time daemon without the size of <code>ntpd</code> and
+            without depending on <code>chrony</code>, OpenNTPD is the
+            quiet third option that has worked steadily for over
+            twenty years.</p>
+
+        <h2>The Point</h2>
+
+        <p>The same problem (the clock drifts, set it from a network
+            source) has three answers on Linux because three different
+            communities, working on overlapping but not identical use
+            cases, arrived at three different daemons, and the
+            distributions that integrate them could not converge on a
+            single recommendation. Fedora chose <code>chrony</code>.
+            Ubuntu chose <code>systemd-timesyncd</code> for the desktop
+            and <code>chrony</code> for the server. Debian sat on
+            <code>ntpd</code> for years before transitioning. Arch let
+            the user decide.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="A two-column comparison. The left column is FreeBSD: one team, one decision, one tool, one config file, one diagnostic. The right column is Linux: three communities, three default behaviours, three configuration files, three diagnostics, and a packaging layer that disagreed on names and paths. The cost of three answers is the cost of inheriting a server and discovering which one is currently running." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nt-pt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .nt-pt-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .nt-pt-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .nt-pt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .nt-pt-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nt-pt-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="nt-pt-title" text-anchor="middle">The Cost of Three Answers</text>
+
+            <rect x="20" y="50" width="240" height="150" class="nt-pt-accent-box"/>
+            <text x="140" y="74" class="nt-pt-head" text-anchor="middle">FreeBSD</text>
+            <text x="140" y="100" class="nt-pt-text" text-anchor="middle">one team</text>
+            <text x="140" y="118" class="nt-pt-text" text-anchor="middle">one decision</text>
+            <text x="140" y="136" class="nt-pt-text" text-anchor="middle">one config file</text>
+            <text x="140" y="154" class="nt-pt-text" text-anchor="middle">one diagnostic</text>
+            <text x="140" y="184" class="nt-pt-muted" text-anchor="middle">unchanged since 2000</text>
+
+            <rect x="300" y="50" width="240" height="150" class="nt-pt-box"/>
+            <text x="420" y="74" class="nt-pt-head" text-anchor="middle">Linux</text>
+            <text x="420" y="100" class="nt-pt-text" text-anchor="middle">three communities</text>
+            <text x="420" y="118" class="nt-pt-text" text-anchor="middle">three defaults by distribution</text>
+            <text x="420" y="136" class="nt-pt-text" text-anchor="middle">three config paths</text>
+            <text x="420" y="154" class="nt-pt-text" text-anchor="middle">three diagnostics</text>
+            <text x="420" y="184" class="nt-pt-muted" text-anchor="middle">paid every time an admin inherits a server</text>
+        </svg>
+
+        <p>FreeBSD did not have that argument. The base team picked
+            <code>ntpd</code>, kept it for two decades, and the rest
+            of the system was built around the choice. When OpenNTPD
+            became available, it went into ports as a clearly-labelled
+            alternative; it did not displace the in-base default.</p>
+
+        <p>The cost of three answers is paid every time a new admin
+            inherits a Linux server and has to discover which daemon
+            is currently running, which config file it is reading, and
+            which it ought to be reading. The cost of one answer is a
+            config file you have already seen, on a system you have
+            already learned.</p>
+
+        <p>This is not a question of which daemon is best.
+            <code>chrony</code> is, by most measures, the best of the
+            four. The question is what it costs to need to know that,
+            every time, on every system, in a way that varies by
+            distribution and by year. On FreeBSD the answer to "what
+            time daemon does this server run" is in
+            <code>/etc/rc.conf</code>, has been since 2000, and is the
+            same on the next server too.</p>
+
+        <blockquote>
+            <p>NTP since 1985 by David L. Mills. <code>ntpd</code> in
+                FreeBSD base since 4.x in 2000, one line in
+                <code>/etc/rc.conf</code>, diagnostic
+                <code>ntpq -p</code>, unchanged for twenty-five years.
+                On Linux: <code>ntpd</code> the original (legacy by
+                2026), <code>chrony</code> by Curnow and Red Hat
+                (default on Fedora/RHEL/Arch), and
+                <code>systemd-timesyncd</code> the SNTP minimalist
+                (default on Ubuntu since 18.04, ignores
+                <code>/etc/ntp.conf</code>). Three answers because
+                three groups disagreed and the distribution committees
+                could not converge. The cost of three answers is paid
+                every time an admin inherits a server.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The clock daemons, the short version:</strong></p>
+            <ul>
+                <li><strong>The protocols:</strong> NTP (full, time-stamped multi-source triangulation, can serve) vs SNTP (simple, single-source query, client-only)</li>
+                <li><strong>ntpd</strong> (1985, David L. Mills): full NTP, the reference. In FreeBSD base since 4.x in 2000. Legacy on Linux by 2026 but still installable</li>
+                <li><strong>chrony</strong> (1997, Richard Curnow, now Red Hat-maintained): full NTP, NTS support (RFC 8915), faster convergence, better on virtual machines and intermittent links. Default on RHEL, Fedora, CentOS, Rocky, Alma, openSUSE, Arch. Diagnostic <code>chronyc tracking</code></li>
+                <li><strong>systemd-timesyncd</strong> (2014, systemd 213): SNTP only, single source, no triangulation, no serving. Default on Ubuntu desktop since 18.04. Ignores <code>/etc/ntp.conf</code>; reads <code>/etc/systemd/timesyncd.conf</code>. Diagnostic <code>timedatectl status</code></li>
+                <li><strong>OpenNTPD</strong> (2003, Henning Brauer for OpenBSD): small full-NTP implementation with a postcard-sized config. In FreeBSD ports as <code>net/openntpd</code></li>
+                <li><strong>FreeBSD answer</strong> in one line: <code>ntpd_enable="YES"</code> in <code>/etc/rc.conf</code>. Same answer since 2000</li>
+                <li><strong>Linux answer</strong>: enumerate <code>systemctl status chronyd</code>, <code>systemctl status ntpd</code>, <code>systemctl status systemd-timesyncd</code>, until one of them returns active. Two of them sometimes do</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

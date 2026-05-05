@@ -1,0 +1,534 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Subscription You Did Not Ask For &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 2012 a studio bought Adobe CS6 Master Collection once for around 2,500 EUR per seat. Today it leases Creative Cloud All Apps for around 743 EUR per seat per year. The tools have not got better; the architecture under the licence rather has. In the Net opens with the textbook case: file-format binding, cloud-library binding, cancellation-fee architecture, and the eighty-per-cent market share that makes the lock-in industry-wide.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-subscription-you-did-not-ask-for{( endslot )}
+
+{( slot og-title )}The Subscription You Did Not Ask For &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Adobe CS6 in 2012 cost roughly 2,500 EUR once. Adobe Creative Cloud in 2026 costs roughly 743 EUR a year, every year, in perpetuity. The promise was real for thirty years. The architecture under the subscription is a separate story: PSD, AI and INDD as proprietary anchors, Cloud Libraries that decay on cancellation, an Early Termination Fee that the US DOJ has gone to court over, and an industry where eighty per cent of files speak Adobe natively. Even the alternatives have changed hands twice in eighteen months. Attention is the only price that scales.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Subscription You Did Not Ask For",
+    "datePublished": "2026-05-01",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-subscription-you-did-not-ask-for",
+    "description": "Adobe Creative Suite 6 in 2012: ~2,500 EUR once, perpetual. Creative Cloud All Apps in 2026: ~743 EUR per seat per year, in perpetuity. The series In the Net opens with the textbook lock-in: PSD/AI/INDD as proprietary anchors, Cloud Libraries that decay on cancellation, Early Termination Fees the US DOJ took to court in June 2024, and an industry where eighty per cent of files speak Adobe natively. The alternatives are real and professional; two of them changed hands in eighteen months.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-01">1 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Subscription You Did Not Ask For</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">licensing</span>
+            <span class="vv-pill">law</span>
+            <span class="vv-pill">saas</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>In the Net</em> &#x25A0; Episode 01</p>
+
+        <p>In 2012, Adobe shipped
+            <a href="https://en.wikipedia.org/wiki/Adobe_Creative_Suite" target="_blank" rel="noopener">Creative Suite 6</a>.
+            A studio could buy the Master Collection once, for around
+            two thousand five hundred euros per seat (US list price
+            2,599 dollars), and run it for years. Thirteen years later,
+            the same studio leases
+            <a href="https://www.adobe.com/creativecloud/plans.html" target="_blank" rel="noopener">Adobe
+            Creative Cloud All Apps</a> for around 743 euros per seat
+            per year (Adobe Germany list, May 2026). The tools have not
+            got dramatically better. The architecture under the licence
+            rather has.</p>
+
+        <p>This is the first episode of <em>In the Net</em>, a series on
+            the documented mechanics of vendor lock-in. The premise is
+            simple. Every platform tells you how to come in. The
+            architecture tells you whether you can leave. We will look
+            at how each major platform's promise was built, what the
+            lock-in mechanisms actually are, why the documented exit
+            does not work as advertised, and what the realistic escape
+            routes look like.</p>
+
+        <p>We start with Adobe because the pattern is at its clearest.
+            The promise was good. The promise was kept for thirty years.
+            The architecture under the subscription, however, is a
+            separate story.</p>
+
+        <h2>The Promise, Honestly</h2>
+
+        <p>Adobe Creative Suite was, for three decades, the most
+            defensibly chosen tool stack in design and publishing.
+            <a href="https://www.adobe.com/about-adobe/company/history.html" target="_blank" rel="noopener">Photoshop
+            appeared in 1988. Illustrator in 1987. InDesign in 1999.
+            Premiere in 1991.</a> The applications were excellent, kept
+            in active development, and produced the file formats that
+            the entire commercial design industry settled on.</p>
+
+        <p>A studio buying CS6 in 2012 made a rational decision. Pay
+            once, run forever. Major upgrade cycle every few years.
+            Predictable cost, predictable workflow, the same key
+            bindings their staff had learned over a decade. Nothing
+            about that was a trap.</p>
+
+        <p>This matters. Lock-in stories are most useful when they begin
+            with the promise that was real. Adobe's promise was real.
+            The mechanism that came after did not undo the original
+            promise. It changed the architecture under it.</p>
+
+        <h2>The Day the Architecture Changed</h2>
+
+        <p>In May 2013,
+            <a href="https://news.adobe.com/news/news-details/2013/Adobe-Unveils-Creative-Cloud-Membership-and-New-Creative-Cloud-Apps/default.aspx" target="_blank" rel="noopener">Adobe
+            announced</a> that CS6 was the last perpetual-licence
+            release of Creative Suite. Going forward, the only way to
+            use Photoshop, Illustrator, InDesign and the rest would be
+            Creative Cloud, a monthly subscription. The applications
+            continued to ship. The licence did not.</p>
+
+        <p>The transition was managed elegantly. Existing CS6 owners
+            could keep using their software. New customers and upgrades,
+            however, were on the subscription path. Within two years,
+            the perpetual market was effectively closed.</p>
+
+        <p>Three lock-in mechanisms were wired into the new
+            architecture.</p>
+
+        <svg viewBox="0 0 560 250" aria-label="Three hooks of the Adobe lock-in architecture, drawn as a triangle around the seat of the user. First hook: file-format binding (PSD, AI, INDD as proprietary anchors). Second hook: cloud-library binding (fonts, brushes, asset libraries that decay on cancellation). Third hook: cancellation-fee architecture (Early Termination Fee at fifty per cent of remaining months on annual plans). Each hook is independent of the other two; together they enclose the studio." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-hk-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .itn-hk-name { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .itn-hk-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .itn-hk-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .itn-hk-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .itn-hk-core { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .itn-hk-line { stroke: var(--accent); stroke-width: 1; fill: none; }
+            </style>
+            <text x="280" y="22" class="itn-hk-title" text-anchor="middle">Three Independent Hooks, One Enclosure</text>
+
+            <rect x="220" y="100" width="120" height="50" class="itn-hk-core"/>
+            <text x="280" y="124" class="itn-hk-name" text-anchor="middle">the studio</text>
+            <text x="280" y="140" class="itn-hk-muted" text-anchor="middle">tools, files, contract</text>
+
+            <rect x="20" y="50" width="170" height="55" class="itn-hk-box"/>
+            <text x="105" y="70" class="itn-hk-name" text-anchor="middle">File formats</text>
+            <text x="105" y="86" class="itn-hk-text" text-anchor="middle">PSD &#x2022; AI &#x2022; INDD</text>
+            <text x="105" y="98" class="itn-hk-muted" text-anchor="middle">proprietary, rich, archived</text>
+
+            <rect x="370" y="50" width="170" height="55" class="itn-hk-box"/>
+            <text x="455" y="70" class="itn-hk-name" text-anchor="middle">Cloud Libraries</text>
+            <text x="455" y="86" class="itn-hk-text" text-anchor="middle">fonts, brushes, assets</text>
+            <text x="455" y="98" class="itn-hk-muted" text-anchor="middle">decay on cancellation</text>
+
+            <rect x="195" y="170" width="170" height="55" class="itn-hk-box"/>
+            <text x="280" y="190" class="itn-hk-name" text-anchor="middle">Cancellation fee</text>
+            <text x="280" y="206" class="itn-hk-text" text-anchor="middle">50 per cent of remaining</text>
+            <text x="280" y="218" class="itn-hk-muted" text-anchor="middle">annual-plan ETF</text>
+
+            <line x1="190" y1="80" x2="220" y2="115" class="itn-hk-line"/>
+            <line x1="370" y1="80" x2="340" y2="115" class="itn-hk-line"/>
+            <line x1="280" y1="170" x2="280" y2="150" class="itn-hk-line"/>
+        </svg>
+
+        <h2>The First Hook: File-Format Binding</h2>
+
+        <p>Adobe's file formats are proprietary and rich.
+            <a href="https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/" target="_blank" rel="noopener">PSD</a>
+            carries Smart Objects, Layer Effects, Adjustment Layers, and
+            a depth of state that no open format mirrors completely. AI
+            carries Illustrator's specific path semantics. INDD, more
+            than the others, has effectively no portable equivalent:
+            <a href="https://www.adobe.com/devnet/indesign/sdk/cs6/idml/idml-specification.pdf" target="_blank" rel="noopener">IDML</a>
+            exists as an interchange format, but loses live links,
+            master-page state, and complex layout work.</p>
+
+        <p>The judgement is not that Adobe should publish their file
+            formats. The judgement is that the file format <em>is</em>
+            the lock. A studio that has spent a decade building PSDs is
+            not just buying software; it is paying rent on its own back
+            catalogue.</p>
+
+        <h2>The Second Hook: Cloud-Library Binding</h2>
+
+        <p>Creative Cloud syncs fonts, brushes, asset libraries, colour
+            palettes, and shared resources between the applications and
+            across teams. Cancel the subscription, and the synchronised
+            assets become unavailable. Some assets remain locally;
+            others depend on the licence. The working environment is
+            not portable.</p>
+
+        <p>This is a more recent hook than the file format. It came in
+            over the years between 2014 and 2020, with Creative Cloud
+            Libraries, Adobe Fonts (formerly Typekit), and the deeper
+            integration between Photoshop and Lightroom Cloud. Each
+            individual feature was a real productivity gain. The
+            cumulative effect was that the user's working environment
+            lived inside Adobe's account, not on their own machines.</p>
+
+        <h2>The Third Hook: Cancellation Architecture</h2>
+
+        <p>Adobe's Annual Plan, billed monthly, carries an
+            <a href="https://helpx.adobe.com/manage-account/using/cancel-subscription.html" target="_blank" rel="noopener">Early
+            Termination Fee</a> equal to 50 per cent of the remaining
+            months on the contract. A user three months into a
+            twelve-month plan who cancels owes nine months at half
+            rate.</p>
+
+        <p>In June 2024, the
+            <a href="https://www.justice.gov/opa/pr/justice-department-sues-adobe-hiding-fees-and-inhibiting-consumers-cancelling-subscription" target="_blank" rel="noopener">US
+            Department of Justice, on behalf of the Federal Trade
+            Commission, filed suit</a> against Adobe alleging that this
+            fee was hidden behind layered cancellation flows and that
+            the company had violated the Restore Online Shoppers'
+            Confidence Act. The case (FTC v. Adobe) is, as of this
+            writing in 2026 and to my knowledge, still in motion.
+            Whatever the eventual outcome, the architecture itself is
+            documented in the agreements.</p>
+
+        <p>A subscription that costs more to leave than to keep is not,
+            by any honest reading, a subscription one can leave at
+            will. The architecture says what the marketing copy does
+            not.</p>
+
+        <h2>The Standing: Market Power and How the User Is Treated</h2>
+
+        <p>Two further dimensions matter, and neither is reducible to
+            price. The first is market power. The second is how the
+            user is treated in the contracts the user has signed.</p>
+
+        <p><strong>Market position.</strong> Adobe holds, by industry
+            aggregator estimates, more than eighty per cent of the
+            creative-software market. Photoshop alone accounts for
+            around forty-two per cent of the graphic-design segment,
+            InDesign for around twenty-six per cent, Illustrator for
+            around twelve per cent
+            (<a href="https://electroiq.com/stats/adobe-creative-cloud-statistics/" target="_blank" rel="noopener">multiple
+            market-research aggregators</a> citing 2024 figures). The
+            consequence is that Adobe's three core file formats, PSD,
+            AI and INDD, are the de-facto industry standard. A studio
+            that has migrated to Affinity, Krita or any other
+            alternative still receives PSDs from clients, suppliers and
+            partners. The lock-in is not only at the studio level. It
+            is at the level of the entire industry's file-exchange
+            protocol. An agency that holds out alone has not actually
+            escaped; it has only insulated its own machines, while
+            still negotiating in someone else's format.</p>
+
+        <p>This is the difference between a Lock-in and a
+            Quasi-Monopoly. The Lock-in keeps the individual customer.
+            The Quasi-Monopoly keeps the customer's customers, and
+            through them, the customer.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Market share of the creative-software industry. Adobe's stack accounts for over eighty per cent: Photoshop forty-two per cent, InDesign twenty-six per cent, Illustrator twelve per cent. The remaining sliver, under twenty per cent, is shared by Affinity, Pixelmator, DaVinci Resolve, Krita, GIMP, Inkscape, Capture One and the rest. The bar shows why migration on the studio level does not change the industry's exchange protocol." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-mk-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .itn-mk-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .itn-mk-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .itn-mk-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .itn-mk-bar-adobe { fill: var(--accent); opacity: 0.85; }
+                .itn-mk-bar-rest { fill: var(--muted); opacity: 0.45; }
+                .itn-mk-line { stroke: var(--border); stroke-width: 1; fill: none; }
+            </style>
+            <text x="280" y="22" class="itn-mk-title" text-anchor="middle">The Quasi-Monopoly: Adobe vs Everyone Else</text>
+
+            <text x="40" y="54" class="itn-mk-head">Photoshop</text>
+            <rect x="40" y="60" width="235" height="22" class="itn-mk-bar-adobe"/>
+            <text x="282" y="76" class="itn-mk-muted">~42%</text>
+
+            <text x="40" y="98" class="itn-mk-head">InDesign</text>
+            <rect x="40" y="104" width="146" height="22" class="itn-mk-bar-adobe"/>
+            <text x="193" y="120" class="itn-mk-muted">~26%</text>
+
+            <text x="40" y="142" class="itn-mk-head">Illustrator</text>
+            <rect x="40" y="148" width="67" height="22" class="itn-mk-bar-adobe"/>
+            <text x="114" y="164" class="itn-mk-muted">~12%</text>
+
+            <line x1="40" y1="186" x2="520" y2="186" class="itn-mk-line"/>
+
+            <text x="40" y="204" class="itn-mk-text">Adobe stack &gt; 80 per cent</text>
+            <text x="520" y="204" class="itn-mk-muted" text-anchor="end">Affinity, Pixelmator, Resolve, Krita, GIMP, Inkscape, Capture One: the rest</text>
+        </svg>
+
+        <p><strong>How the user is treated.</strong> In February 2024,
+            Adobe quietly updated its Terms of Service to include
+            language that, in many readings, granted Adobe broad rights
+            to access user content, including to train generative AI
+            models. The change went largely unnoticed for months. In
+            June 2024, Adobe pushed a routine re-acceptance pop-up to
+            Creative Cloud and Document Cloud users, and many users
+            encountered the new language for the first time as a forced
+            confirmation: accept, or lose access to your tools. The
+            artist community responded with a sustained backlash. Adobe
+            issued
+            <a href="https://blog.adobe.com/en/publish/2024/06/10/updating-adobes-terms-of-use" target="_blank" rel="noopener">clarifications
+            on its own blog</a> on 10 June 2024, and on 24 June 2024
+            published revised Terms that explicitly state Adobe does
+            <a href="https://www.adobe.com/legal/licenses-terms/adobe-gen-ai-user-guidelines.html" target="_blank" rel="noopener">not
+            train generative AI on customer content</a> (with the
+            exception of submissions to the Adobe Stock marketplace),
+            and that the company never has.</p>
+
+        <p>The clarification is, as far as one can verify, accurate.
+            The clarified Terms are clearer than the prior wording. The
+            question that remains is what was being granted before the
+            backlash, and why a company with this market position
+            needed to be told by its own users that this is not the
+            language a creative tool's licence ought to contain. The
+            original wording was not a slip. It was the architecture of
+            the contract a corporation believed it could propose to its
+            captive user base. That belief, and not the words
+            themselves, is the part of this story that does not get
+            corrected.</p>
+
+        <p>These two dimensions, market position and contractual
+            stance, change the reading of the price. The price is not
+            only what the studio pays in money. The price is also what
+            it accepts, by signing the contract, about the rights it
+            retains over its own work, and about the position from
+            which the contract is offered. A subscription is the
+            lower-cost end of the price. The other end is harder to put
+            a number on.</p>
+
+        <h2>The Exit That Isn't</h2>
+
+        <p>Adobe will tell you the exits exist. They are correct,
+            technically. They are wrong, operationally.</p>
+
+        <p>Export your PSD to a portable format. Smart Objects flatten.
+            <a href="https://affinity.help/photo2/English.lproj/pages/PSDImportExport/about-photoshop-files.html" target="_blank" rel="noopener">Layer
+            Effects sometimes lose their parameters. Adjustment Layers
+            may bake into the underlying pixels.</a> The file opens
+            elsewhere; it is no longer the file you built. Anyone who
+            has tried to recover an old PSD in another tool has met
+            this in person.</p>
+
+        <p>Cancel your subscription. The Early Termination Fee
+            triggers. The flow is layered. Customers report that the
+            cancellation requires multiple confirmations, optional
+            retention offers, and live-chat negotiation. The exit is
+            documented. It is also a fence.</p>
+
+        <p>This is a Lock-in by design. Not in the sense that someone
+            in a boardroom said "let us trap our users". In the sense
+            that the architecture, taken as a whole, produces the
+            outcome that users do not leave even when they would
+            prefer to. That is what an architecture is: the outcome
+            the structure makes likely, regardless of intent.</p>
+
+        <h2>The Price</h2>
+
+        <p>For a studio of ten seats on Creative Cloud All Apps, the
+            recurring cost is in the order of seven thousand four
+            hundred euros a year, every year, with no terminating
+            event. Compare to the perpetual model: ten CS6 Master
+            Collection licences in 2012 would have cost around
+            twenty-five thousand euros and remained usable for the
+            years the team chose to run them. The subscription model
+            has been more profitable for Adobe and more expensive for
+            studios across any horizon longer than a few years.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Cumulative cost over thirteen years for ten seats. The perpetual CS6 Master Collection model in 2012 cost approximately twenty-five thousand euros, and the line stays flat across the thirteen years. The Creative Cloud subscription model accumulates approximately seven thousand four hundred euros per year, and the line crosses the perpetual line within four years and then continues upward without limit." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-pr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .itn-pr-axis { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .itn-pr-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .itn-pr-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .itn-pr-grid { stroke: var(--border); stroke-width: 1; fill: none; }
+                .itn-pr-line-perp { stroke: var(--muted); stroke-width: 2; fill: none; }
+                .itn-pr-line-sub { stroke: var(--accent); stroke-width: 2.2; fill: none; }
+            </style>
+            <text x="280" y="22" class="itn-pr-title" text-anchor="middle">Ten Seats, Thirteen Years &#x2014; Perpetual vs Subscription</text>
+
+            <line x1="60" y1="200" x2="540" y2="200" class="itn-pr-grid"/>
+            <line x1="60" y1="60" x2="60" y2="200" class="itn-pr-grid"/>
+
+            <text x="55" y="64" class="itn-pr-muted" text-anchor="end">100k EUR</text>
+            <text x="55" y="200" class="itn-pr-muted" text-anchor="end">0</text>
+            <text x="60" y="220" class="itn-pr-muted" text-anchor="middle">2012</text>
+            <text x="540" y="220" class="itn-pr-muted" text-anchor="middle">2026</text>
+            <text x="300" y="234" class="itn-pr-axis" text-anchor="middle">years</text>
+
+            <line x1="60" y1="165" x2="540" y2="165" class="itn-pr-line-perp"/>
+            <text x="540" y="158" class="itn-pr-axis" text-anchor="end">CS6 perpetual: ~25k EUR, flat</text>
+
+            <line x1="60" y1="200" x2="540" y2="80" class="itn-pr-line-sub"/>
+            <text x="540" y="76" class="itn-pr-axis" text-anchor="end">CC subscription: ~7.4k EUR / year, cumulative</text>
+
+            <circle cx="195" cy="165" r="3" fill="var(--accent)"/>
+            <text x="195" y="153" class="itn-pr-muted" text-anchor="middle">break-even ~year 4</text>
+        </svg>
+
+        <p>For a studio that wants to leave, the cost is migration.
+            Months of file conversion, weeks of retraining, and a tail
+            of legacy work that will, rather inevitably, not transfer
+            cleanly. This is not a fee Adobe charges; it is a cost the
+            architecture imposes.</p>
+
+        <h2>The Escape Route</h2>
+
+        <p>The alternatives are real and professional, but the
+            landscape has shifted in 2024 and 2025. Two of the
+            strongest names have changed owners. The migration paths
+            are still good. They simply require attention.</p>
+
+        <p><strong>Affinity, by Serif (now Canva).</strong> In March
+            2024,
+            <a href="https://www.canva.com/newsroom/news/canva-acquires-affinity/" target="_blank" rel="noopener">Canva
+            acquired Serif</a> for approximately three hundred million
+            pounds. In October 2025, the three Affinity applications
+            (Photo, Designer, Publisher) were
+            <a href="https://www.canva.com/newsroom/news/all-new-affinity/" target="_blank" rel="noopener">consolidated
+            into a single application called Affinity by Canva</a>,
+            version 3.0. The new model is free with a Canva account.
+            AI features are locked behind a Canva Pro subscription,
+            around one hundred and ten euros a year. The original
+            Pledge given at acquisition included a commitment to
+            perpetual licences; that commitment was, by the publisher's
+            own communication at the version 3.0 launch, replaced when
+            the new model launched. Affinity remains a strong
+            one-to-one replacement for the Adobe core, with direct PSD
+            and AI import. It is also itself an example of the pattern
+            this series tracks.</p>
+
+        <p><strong>Pixelmator Pro, by Pixelmator (now Apple).</strong>
+            <a href="https://techcrunch.com/2024/11/01/apple-is-buying-photo-editing-app-pixelmator/" target="_blank" rel="noopener">Apple
+            announced its acquisition of the Pixelmator team in November
+            2024</a> and
+            <a href="https://www.macrumors.com/2025/02/11/apple-completes-pixelmator-acquisition/" target="_blank" rel="noopener">completed
+            it in February 2025</a>. The standalone perpetual licence
+            is still listed on the Mac App Store at around fifty euros.
+            Newer features, such as the Warp tool added with the iPad
+            release in January 2026, are exclusive to Apple Creator
+            Studio: a subscription bundle priced at 12.99 dollars per
+            month or 129 dollars per year, which ships Pixelmator Pro
+            alongside Final Cut Pro, Logic Pro and the iWork suite. The
+            standalone path remains, but the rate of new feature
+            development sits inside the bundle.</p>
+
+        <p><strong>DaVinci Resolve, by Blackmagic Design.</strong>
+            <a href="https://www.blackmagicdesign.com/products/davinciresolve/" target="_blank" rel="noopener">Free
+            for video editing, with a Studio version available as a
+            one-time purchase.</a> The free version includes colour
+            grading that has, afaik, been used on theatrical
+            productions; Blackmagic Design lists notable feature-film
+            credits on its own product pages. The most stable of the
+            alternatives in this list, with a perpetual non-subscription
+            model that has held since 2009.</p>
+
+        <p><strong>Krita.</strong> Free and open source, professional
+            digital painting application maintained by the
+            <a href="https://krita.org/" target="_blank" rel="noopener">KDE
+            community</a>. Strong brush engine, deep tablet support,
+            scriptable. Stable.</p>
+
+        <p><strong>GIMP and Inkscape.</strong>
+            <a href="https://www.gimp.org/" target="_blank" rel="noopener">Free,
+            photo and vector.</a> Robust and feature-complete for most
+            workflows. The user experience is, honestly, dated, and
+            migration cost from Adobe is real work because the muscle
+            memory does not transfer cleanly. They are the right choice
+            for budget-constrained teams or FOSS-aligned organisations
+            that can absorb the UX cost.</p>
+
+        <p><strong>Capture One.</strong> A direct Lightroom alternative.
+            <a href="https://www.captureone.com/en/pricing/capture-one-pro" target="_blank" rel="noopener">Individual
+            perpetual licences are still offered</a> (US list 299
+            dollars). Multi-user studios, however, were
+            <a href="https://petapixel.com/2024/05/15/capture-one-increased-the-price-of-multi-user-plans-by-344/" target="_blank" rel="noopener">moved
+            to subscription-only in 2024</a> (PetaPixel reported a 344
+            per cent multi-user pricing change). This is the same
+            pattern as Adobe: perpetual quietly retained for
+            individuals, removed for the larger commercial users.</p>
+
+        <p>The maths still works. Adobe Photoshop and Lightroom Photo
+            plan in Germany is around 17.99 euros per month (annual
+            commitment, billed monthly) or about 142 euros per year
+            prepaid; Photoshop Single App and Creative Cloud All Apps
+            cost more. Affinity is free with an account. Pixelmator Pro
+            standalone is around fifty euros, perpetual. DaVinci Resolve
+            is free. The break-even against any Adobe subscription
+            happens within months, not years.</p>
+
+        <p>The harder question is which of the alternatives stays an
+            alternative. Two of the largest names have changed owners
+            in eighteen months, and the change has, in both cases,
+            moved the architecture in directions worth watching. This
+            is not an argument against the alternatives. It is an
+            argument for the only sustainable strategy in this
+            landscape: attention.</p>
+
+        <h2>What to Take Home</h2>
+
+        <p>If your tools come with a recurring bill, your back
+            catalogue lives in someone else's licence. If your tools
+            come from a vendor that holds eighty per cent of the
+            market, the industry's standard formats are theirs as
+            well, and your migration is incomplete even when your
+            studio has finished it. If your tools come with Terms of
+            Service that granted broad rights over your content until
+            your community noticed, the architecture of the contract
+            is a separate question from the price tag.</p>
+
+        <p>The pattern repeats. The market holds the lock-in. The
+            contract holds the user. Even the alternatives need
+            watching, because two of the largest names have changed
+            owners in eighteen months. The subscription you did not
+            ask for is the architecture you signed up for: the rent
+            has gone up, the formats have stayed standard, and the
+            wording in the agreement has, for at least one entire
+            spring, said something the publisher later had to take
+            back.</p>
+
+        <p>The tools have not got better. The rent has, the standing
+            has not, and attention is the only price that scales.</p>
+
+        <blockquote>
+            <p>Adobe CS6 Master Collection in 2012: ~2,500 EUR per
+                seat, perpetual. Adobe Creative Cloud All Apps in 2026:
+                ~743 EUR per seat per year, in perpetuity. Three hooks:
+                proprietary file formats (PSD, AI, INDD), cloud-library
+                binding, 50 per cent Early Termination Fee on annual
+                plans. US DOJ filed in June 2024 over hidden ETFs; case
+                still in motion. Eighty per cent market share makes the
+                lock-in industry-wide. Affinity (Canva, March 2024),
+                Pixelmator (Apple, February 2025), Capture One Multi-User
+                (subscription-only, 2024) all changed shape in eighteen
+                months. Attention is the only price that scales.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The lock, the short version:</strong></p>
+            <ul>
+                <li><strong>The promise that was real:</strong> CS6 in 2012, ~2,500 EUR once, perpetual. Photoshop since 1988, Illustrator since 1987, InDesign since 1999, Premiere since 1991. Three decades of defensible choice</li>
+                <li><strong>The day it changed:</strong> May 2013, Adobe ends perpetual licences. Creative Cloud is the only path forward. Within two years, the perpetual market is closed</li>
+                <li><strong>Three hooks:</strong> file-format binding (PSD, AI, INDD as proprietary anchors); cloud-library binding (fonts, brushes, asset libraries decay on cancellation); cancellation architecture (50 per cent Early Termination Fee on annual plans)</li>
+                <li><strong>The standing &#x2014; market:</strong> Adobe holds &gt;80 per cent of the creative-software market; Photoshop alone ~42 per cent of graphic design. The lock-in is industry-wide; a studio that migrates still receives PSDs from clients</li>
+                <li><strong>The standing &#x2014; contract:</strong> February 2024 silent TOS update with broad content rights; June 2024 forced re-acceptance pop-up; backlash; 24 June 2024 revised TOS rules out AI-training (except Adobe Stock). The correction came; the prior wording was the architecture of a contract proposed to a captive user base</li>
+                <li><strong>FTC v. Adobe:</strong> US DOJ filed June 2024, alleging hidden ETFs and ROSCA violations. Still in motion, May 2026</li>
+                <li><strong>Alternatives in 2026:</strong> Affinity (Canva, March 2024) consolidated to one app v3.0 in October 2025, free with a Canva account, AI behind Canva Pro; Pixelmator Pro (Apple, February 2025) standalone ~50 EUR perpetual but new features in Apple Creator Studio bundle; DaVinci Resolve free, Studio one-time, the most stable; Krita free, professional painting; GIMP/Inkscape robust but dated UX; Capture One Multi-User subscription-only since 2024</li>
+                <li><strong>The pattern:</strong> the market holds the lock-in. Even the alternatives need watching. Attention is the only price that scales</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

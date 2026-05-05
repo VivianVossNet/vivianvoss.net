@@ -1,0 +1,488 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Backup That Wasn't &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="At 23:30 UTC on 31 January 2017, an engineer at GitLab typed rm -rf on what they believed was the secondary database. Three hundred gigabytes were gone in two seconds. The hard part was discovering, one by one, that none of their five backup mechanisms had been working. Tales from the Bare Metal, Episode 01.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-backup-that-wasnt{( endslot )}
+
+{( slot og-title )}The Backup That Wasn't &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}A Tuesday at half past eleven, two visually identical terminals, one rm -rf, three hundred gigabytes. Then eighteen hours of discovering, mechanism by mechanism, that none of the five backups had ever been working: pg_dump silently broken since an upgrade, alert emails rejected by DMARC, LVM snapshots scoped for staging, Azure snapshots never enabled, WAL archiving never configured. The principle is older than every database: backups are not backups until they have been restored.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Backup That Wasn't",
+    "datePublished": "2026-04-30",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-backup-that-wasnt",
+    "description": "GitLab, 31 January 2017, 23:30 UTC. Three hundred gigabytes deleted in two seconds. Eighteen hours later, the team had discovered that all five backup mechanisms were broken in different ways. Tales from the Bare Metal, Episode 01: a forensic walk through the most-cited operational postmortem in software engineering, and the principle the unixoid tradition has held all along.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-30">30 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Backup That Wasn't</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">postgresql</span>
+            <span class="vv-pill">devops</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Tales from the Bare Metal</em> &#x25A0; Episode 01</p>
+
+        <blockquote>
+            <p>&laquo; Thou shalt not trust a backup thou hast not restored! &raquo;</p>
+        </blockquote>
+
+        <p>At half past eleven on the night of Tuesday, 31 January 2017,
+            an engineer at
+            <a href="https://about.gitlab.com/" target="_blank" rel="noopener">GitLab.com</a>
+            typed <code>rm -rf</code> on what they believed was the
+            secondary PostgreSQL database. The terminals on their screen
+            were visually identical, save for the hostname in the prompt.
+            Two seconds later, when they realised the prompt did not say
+            what they thought it said, they killed the command. By that
+            point, three hundred gigabytes of production data had been
+            removed.</p>
+
+        <p>That was the easy part. The hard part came over the next
+            eighteen hours, as the team discovered, in a sequence that
+            has since become teaching material, that none of their five
+            backup mechanisms had been working.</p>
+
+        <p>This is a long-documented incident. GitLab's response, by
+            industry standards, was extraordinary. They live-streamed
+            the recovery on YouTube. They published their internal chat
+            logs. They wrote a
+            <a href="https://about.gitlab.com/blog/postmortem-of-database-outage-of-january-31/" target="_blank" rel="noopener">postmortem</a>
+            so detailed and so honest that it remains, nearly a decade
+            later, one of the most widely cited operational documents in
+            software engineering. The point of revisiting it now is not
+            the story; the story is well-known. The point is the
+            pattern.</p>
+
+        <h2>What Happened, in Sequence</h2>
+
+        <p>The day had not been routine. From around 19:00 UTC, GitLab's
+            primary database had been under unusual load, suspected at
+            the time to be coordinated spam-account creation. The on-call
+            engineers had been working through the load issue for hours.
+            By 23:00 UTC, replication between the primary and the
+            secondary had stalled: the secondary's
+            <a href="https://www.postgresql.org/docs/current/wal-intro.html" target="_blank" rel="noopener">WAL receiver</a>
+            could not keep up, and the secondary fell sufficiently far
+            behind that recovery would require re-seeding it.</p>
+
+        <p>The engineer in question had earlier that day created an LVM
+            snapshot of the production database, intending to use it to
+            set up a staging instance for testing pgpool-II. That
+            snapshot, taken around 17:20 UTC, was a side effect of
+            unrelated work; it had nothing to do with backups, and was
+            scoped for staging.</p>
+
+        <p>At around 23:30 UTC, while attempting to clean up the
+            secondary's data directory in preparation for re-seeding,
+            the engineer ran the cleanup command on the wrong host. The
+            terminals were visually identical. The prompt difference was
+            a hostname they had been working in for several hours. They
+            killed the command within seconds. Approximately 300 GB had
+            been removed from the primary. Affected: roughly 5,000
+            projects, 5,000 comments, and 700 newly created user
+            accounts created between 17:20 and 23:30 UTC.</p>
+
+        <p>Service was taken offline at 23:30. Recovery began
+            immediately. The team turned to their backups in sequence.
+            Each one, in turn, did not work.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Timeline of the GitLab incident on 31 January 2017. From 19:00 UTC the primary database is under load. At 17:20 UTC the engineer takes an LVM staging snapshot for unrelated pgpool work. At 23:00 UTC replication stalls. At 23:30 UTC the cleanup is run on the wrong host and 300 GB is removed in two seconds. The service then goes offline for eighteen hours, until 17:00 UTC the next day, while the staging snapshot is copied back at 60 Mbps." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ttbm-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ttbm-tl-event { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ttbm-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .ttbm-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .ttbm-tl-line { stroke: var(--border); stroke-width: 1; fill: none; }
+                .ttbm-tl-window { fill: var(--muted); opacity: 0.18; }
+            </style>
+            <text x="280" y="22" class="ttbm-tl-title" text-anchor="middle">Eighteen Hours, in Order</text>
+
+            <rect x="290" y="100" width="220" height="40" class="ttbm-tl-window"/>
+            <line x1="40" y1="120" x2="520" y2="120" class="ttbm-tl-line"/>
+
+            <circle cx="80" cy="120" r="4" fill="var(--accent)"/>
+            <text x="80" y="92" class="ttbm-tl-event" text-anchor="middle">17:20 UTC</text>
+            <text x="80" y="148" class="ttbm-tl-text" text-anchor="middle">staging LVM snapshot</text>
+            <text x="80" y="162" class="ttbm-tl-muted" text-anchor="middle">unrelated pgpool work</text>
+
+            <circle cx="170" cy="120" r="4" fill="var(--accent)"/>
+            <text x="170" y="92" class="ttbm-tl-event" text-anchor="middle">19:00 UTC</text>
+            <text x="170" y="148" class="ttbm-tl-text" text-anchor="middle">unusual load</text>
+            <text x="170" y="162" class="ttbm-tl-muted" text-anchor="middle">spam-account stress</text>
+
+            <circle cx="245" cy="120" r="4" fill="var(--accent)"/>
+            <text x="245" y="92" class="ttbm-tl-event" text-anchor="middle">23:00 UTC</text>
+            <text x="245" y="148" class="ttbm-tl-text" text-anchor="middle">replication stalls</text>
+            <text x="245" y="162" class="ttbm-tl-muted" text-anchor="middle">re-seed needed</text>
+
+            <circle cx="305" cy="120" r="6" fill="var(--accent)"/>
+            <text x="305" y="92" class="ttbm-tl-event" text-anchor="middle">23:30 UTC</text>
+            <text x="305" y="148" class="ttbm-tl-text" text-anchor="middle">rm -rf on primary</text>
+            <text x="305" y="162" class="ttbm-tl-muted" text-anchor="middle">300 GB in 2 seconds</text>
+
+            <circle cx="500" cy="120" r="5" fill="var(--accent)"/>
+            <text x="500" y="92" class="ttbm-tl-event" text-anchor="middle">17:00 UTC +1d</text>
+            <text x="500" y="148" class="ttbm-tl-text" text-anchor="middle">service restored</text>
+            <text x="500" y="162" class="ttbm-tl-muted" text-anchor="middle">live on YouTube</text>
+
+            <text x="400" y="190" class="ttbm-tl-muted" text-anchor="middle">staging snapshot copied at ~60 Mbps for eighteen hours</text>
+            <text x="280" y="220" class="ttbm-tl-muted" text-anchor="middle">A six-hour window of unrecoverable user data, and a public restoration broadcast.</text>
+        </svg>
+
+        <h2>The Five Mechanisms, in Order</h2>
+
+        <p><strong>pg_dump backups to S3.</strong> GitLab's primary
+            off-site backup mechanism was a wrapper script that took
+            daily
+            <a href="https://www.postgresql.org/docs/current/app-pgdump.html" target="_blank" rel="noopener"><code>pg_dump</code></a>
+            exports and uploaded them to Amazon S3. The script had been
+            working for a long time. It stopped working silently after a
+            PostgreSQL upgrade: the wrapper script invoked an older
+            <code>pg_dump</code> binary which produced an error against
+            the upgraded server, but the script swallowed the error and
+            produced empty output files. The S3 bucket was full of
+            zero-byte files going back several months.</p>
+
+        <p><strong>Email alerts for backup failures.</strong> The
+            <code>pg_dump</code> script sent failure-notification emails
+            when something went wrong. Those emails would have caught
+            the upgrade-mismatch problem on day one. They did not
+            arrive. A change to the email infrastructure
+            (<a href="https://dmarc.org/" target="_blank" rel="noopener">DMARC</a>)
+            elsewhere in the organisation, made for unrelated reasons,
+            caused the alert emails to be silently rejected at the
+            receiving end. They had been rejected for months. No one
+            noticed because the absence of failure emails was the same
+            signal as success.</p>
+
+        <p><strong>LVM snapshots.</strong> GitLab had no scheduled
+            <a href="https://en.wikipedia.org/wiki/Logical_Volume_Manager_(Linux)" target="_blank" rel="noopener">LVM</a>
+            snapshot strategy for production databases. The single
+            snapshot that existed on 31 January was the one the engineer
+            had taken six hours earlier for the unrelated staging-pgpool
+            work. By coincidence, this snapshot was the most recent
+            operational backup of the database that existed anywhere in
+            the organisation.</p>
+
+        <p><strong>Azure disk snapshots.</strong> The cloud platform on
+            which GitLab.com was hosted at the time offered automated
+            disk snapshots. They had not been enabled for the database
+            servers. The decision was deliberate: cost considerations,
+            plus a stated intention to rely on PostgreSQL replication
+            and pg_dump. Restoring from Azure snapshot, when investigated
+            during recovery, was estimated to take days rather than
+            hours.</p>
+
+        <p><strong>WAL archiving.</strong> PostgreSQL supports
+            <a href="https://www.postgresql.org/docs/current/continuous-archiving.html" target="_blank" rel="noopener">continuous
+            archiving of write-ahead log segments</a>, which would have
+            allowed point-in-time recovery to any moment within the
+            archive window. WAL archiving had never been configured.</p>
+
+        <p>Recovery used the LVM snapshot. Copying the data from the
+            staging host back to production took roughly eighteen hours,
+            bottlenecked by the network storage's 60 Mbps throughput. By
+            17:00 UTC on 1 February, GitLab.com was back online, missing
+            the data that had changed between 17:20 and 23:30 UTC the
+            previous day.</p>
+
+        <svg viewBox="0 0 560 290" aria-label="Five backup mechanisms in two columns, each with a one-line failure mode. pg_dump to S3: silent fail after a PostgreSQL upgrade, the wrapper produced zero-byte files for months. Email failure alerts: rejected by DMARC after an unrelated email-infrastructure change. LVM snapshots: scoped for staging only, present on 31 January by coincidence. Azure disk snapshots: never enabled on database hosts as a deliberate cost trade-off. WAL archiving: never configured. The redundancy of mechanisms is not the redundancy of recovery." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ttbm-bk-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ttbm-bk-name { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ttbm-bk-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .ttbm-bk-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .ttbm-bk-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ttbm-bk-x { stroke: var(--accent); stroke-width: 2; fill: none; }
+            </style>
+            <text x="280" y="22" class="ttbm-bk-title" text-anchor="middle">Five Mechanisms, Five Different Silent Failures</text>
+
+            <rect x="20" y="50" width="260" height="60" class="ttbm-bk-box"/>
+            <line x1="32" y1="62" x2="46" y2="76" class="ttbm-bk-x"/>
+            <line x1="46" y1="62" x2="32" y2="76" class="ttbm-bk-x"/>
+            <text x="60" y="74" class="ttbm-bk-name">pg_dump &#x2192; S3</text>
+            <text x="60" y="90" class="ttbm-bk-text">wrapper used old pg_dump after upgrade</text>
+            <text x="60" y="102" class="ttbm-bk-muted">months of zero-byte files, no error caught</text>
+
+            <rect x="290" y="50" width="260" height="60" class="ttbm-bk-box"/>
+            <line x1="302" y1="62" x2="316" y2="76" class="ttbm-bk-x"/>
+            <line x1="316" y1="62" x2="302" y2="76" class="ttbm-bk-x"/>
+            <text x="330" y="74" class="ttbm-bk-name">Email failure alerts</text>
+            <text x="330" y="90" class="ttbm-bk-text">DMARC change rejected the alerts</text>
+            <text x="330" y="102" class="ttbm-bk-muted">silence misread as success for months</text>
+
+            <rect x="20" y="120" width="260" height="60" class="ttbm-bk-box"/>
+            <line x1="32" y1="132" x2="46" y2="146" class="ttbm-bk-x"/>
+            <line x1="46" y1="132" x2="32" y2="146" class="ttbm-bk-x"/>
+            <text x="60" y="144" class="ttbm-bk-name">LVM snapshots</text>
+            <text x="60" y="160" class="ttbm-bk-text">no schedule for production</text>
+            <text x="60" y="172" class="ttbm-bk-muted">a single one existed by coincidence</text>
+
+            <rect x="290" y="120" width="260" height="60" class="ttbm-bk-box"/>
+            <line x1="302" y1="132" x2="316" y2="146" class="ttbm-bk-x"/>
+            <line x1="316" y1="132" x2="302" y2="146" class="ttbm-bk-x"/>
+            <text x="330" y="144" class="ttbm-bk-name">Azure disk snapshots</text>
+            <text x="330" y="160" class="ttbm-bk-text">never enabled on database hosts</text>
+            <text x="330" y="172" class="ttbm-bk-muted">cost-trade decision, deliberate</text>
+
+            <rect x="155" y="190" width="260" height="60" class="ttbm-bk-box"/>
+            <line x1="167" y1="202" x2="181" y2="216" class="ttbm-bk-x"/>
+            <line x1="181" y1="202" x2="167" y2="216" class="ttbm-bk-x"/>
+            <text x="195" y="214" class="ttbm-bk-name">WAL archiving</text>
+            <text x="195" y="230" class="ttbm-bk-text">never configured</text>
+            <text x="195" y="242" class="ttbm-bk-muted">point-in-time recovery unavailable</text>
+
+            <text x="280" y="278" class="ttbm-bk-muted" text-anchor="middle">Five mechanisms felt like resilience. None had been exercised end-to-end against the same restore scenario.</text>
+        </svg>
+
+        <h2>The Context, in Fairness to the Build</h2>
+
+        <p>Each of these five mechanisms had been a reasonable design at
+            the time it was built. <code>pg_dump</code>-to-S3 worked
+            correctly the day it was deployed. LVM snapshots had a
+            clear scope (staging) that was honoured. Azure snapshots
+            were a deliberate cost-trade decision with documented
+            reasoning. WAL archiving was on the long roadmap. The DMARC
+            change, which silently severed the alerting chain, was made
+            by another team, in another part of the organisation, for a
+            reason that had nothing to do with PostgreSQL.</p>
+
+        <p>Three systemic conditions made the outcome likely.</p>
+
+        <p><strong>First: redundancy of mechanism is not redundancy of
+            recovery.</strong> Five backup mechanisms feel like
+            resilience. In practice, none of them had ever been
+            exercised end-to-end against the specific scenario "the
+            primary is gone; restore from the most recent good source
+            within an hour". The drills that would have surfaced each
+            mechanism's silent failure were not part of routine
+            operations.</p>
+
+        <p><strong>Second: the absence of a failure signal is not the
+            same as success.</strong> The team's confidence in
+            <code>pg_dump</code> rested on the steady absence of failure
+            emails. That signal had been broken for months. Monitoring
+            that depends on negative signals (silence as good news) is a
+            class of monitoring that fails open. The fix is positive
+            monitoring: a periodic heartbeat that says "this thing ran
+            today, here is its output, here is its size, here is its
+            checksum".</p>
+
+        <p><strong>Third: the path between backup and restore had no
+            single owner.</strong> Backup configuration sat with one
+            team; restore procedures sat with another; the email
+            infrastructure sat with a third. No one team owned the
+            integration test that would have walked through the entire
+            path on a regular cadence. The handoffs were the gap.</p>
+
+        <p>These are not excuses. The wrong directory was deleted, by
+            an engineer who knew which directory they intended to delete,
+            on a host whose hostname they could read. The error
+            happened. But the consequences of the error (six hours of
+            unrecoverable data, eighteen hours of downtime, public
+            restoration on YouTube) were architectural, not behavioural.
+            A different architecture would have absorbed the same error
+            in minutes.</p>
+
+        <h2>The Principle</h2>
+
+        <p>Backups are not backups until they have been restored.</p>
+
+        <p>This is older than every database. The unixoid expression of
+            it is small enough to fit in a few lines of shell:</p>
+
+        <pre><code># /etc/cron.weekly/restore-test
+set -euo pipefail
+
+backup=$(latest_backup)                       # find the most recent
+restore_to_sandbox "$backup"                  # restore to a throwaway env
+verify_checksum "$backup" sandbox_env         # compare row counts or checksums
+report_success "restore-test passed: $backup" # broadcast success on slack/email/wiki
+
+# anything failing aborts via set -e and triggers an oncall page.</code></pre>
+
+        <p>The shape is what matters. The signal is positive: the cron
+            job is required to broadcast success, every week. If a week
+            passes with no success message, on-call is paged. Silence is
+            treated as failure, not as the absence of failure.</p>
+
+        <p>The further structural change is to put backup configuration
+            and restore verification under one team's ownership. The
+            path from "backup runs nightly" to "we just restored last
+            week's backup and it worked" has to belong to one group of
+            humans who own the whole sequence.</p>
+
+        <svg viewBox="0 0 560 230" aria-label="A signal-direction comparison. On the left, the failure-mode pattern: backup runs, no error email arrives, the team interprets silence as success, the chain breaks silently. On the right, the positive-heartbeat pattern: restore-test runs weekly, broadcasts a success message, an on-call alert fires when the success message is missing. Silence is treated as failure, not as the absence of failure." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ttbm-sg-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ttbm-sg-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ttbm-sg-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .ttbm-sg-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .ttbm-sg-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ttbm-sg-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ttbm-arrow); }
+                .ttbm-sg-bad { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+            </style>
+            <defs>
+                <marker id="ttbm-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="ttbm-sg-title" text-anchor="middle">Negative Silence vs Positive Heartbeat</text>
+
+            <text x="140" y="50" class="ttbm-sg-head" text-anchor="middle">Failure-mode (GitLab, 2017)</text>
+            <text x="420" y="50" class="ttbm-sg-head" text-anchor="middle">Heartbeat (the unixoid fix)</text>
+
+            <rect x="40" y="65" width="200" height="30" class="ttbm-sg-box"/>
+            <text x="140" y="85" class="ttbm-sg-text" text-anchor="middle">backup script runs</text>
+
+            <line x1="140" y1="98" x2="140" y2="118" class="ttbm-sg-bad"/>
+
+            <rect x="40" y="120" width="200" height="30" class="ttbm-sg-box"/>
+            <text x="140" y="140" class="ttbm-sg-text" text-anchor="middle">no error email arrives</text>
+
+            <line x1="140" y1="153" x2="140" y2="173" class="ttbm-sg-bad"/>
+
+            <rect x="40" y="175" width="200" height="30" class="ttbm-sg-box"/>
+            <text x="140" y="190" class="ttbm-sg-text" text-anchor="middle">silence read as success</text>
+            <text x="140" y="200" class="ttbm-sg-muted" text-anchor="middle">chain broken for months</text>
+
+            <rect x="320" y="65" width="200" height="30" class="ttbm-sg-box"/>
+            <text x="420" y="85" class="ttbm-sg-text" text-anchor="middle">restore-test runs weekly</text>
+
+            <line x1="420" y1="98" x2="420" y2="118" class="ttbm-sg-arr"/>
+
+            <rect x="320" y="120" width="200" height="30" class="ttbm-sg-box"/>
+            <text x="420" y="140" class="ttbm-sg-text" text-anchor="middle">success heartbeat broadcast</text>
+
+            <line x1="420" y1="153" x2="420" y2="173" class="ttbm-sg-arr"/>
+
+            <rect x="320" y="175" width="200" height="30" class="ttbm-sg-box"/>
+            <text x="420" y="190" class="ttbm-sg-text" text-anchor="middle">missing heartbeat &#x2192; page</text>
+            <text x="420" y="200" class="ttbm-sg-muted" text-anchor="middle">silence is failure, not success</text>
+        </svg>
+
+        <h2>Where the Pattern Travels</h2>
+
+        <p>The principle does not depend on PostgreSQL. It does not
+            depend on Unix. It applies anywhere data is being protected
+            against loss.</p>
+
+        <p><strong>Cloud-managed databases.</strong>
+            <a href="https://aws.amazon.com/rds/" target="_blank" rel="noopener">AWS RDS</a>,
+            <a href="https://cloud.google.com/sql" target="_blank" rel="noopener">Google Cloud SQL</a>,
+            Azure Database for PostgreSQL all offer automated snapshots.
+            The snapshot is taken; the question is whether one has ever
+            restored one to a sandbox database and confirmed that the
+            application can connect to it and read every table. If one
+            has not, one is guessing.</p>
+
+        <p><strong>Kubernetes StatefulSets with PVC snapshots.</strong>
+            PVC snapshots are convenient. They are also untested by
+            default. The drill is identical: weekly, restore the
+            snapshot to a sandbox cluster, run the application's
+            startup health checks against it.</p>
+
+        <p><strong>Object storage.</strong> S3 versioning, Backblaze B2,
+            Cloudflare R2. These are good systems. They protect against
+            accidental deletion if and only if one has, at some point,
+            recovered an object from them by version, with the
+            production-side application code, and verified it was
+            correct. Otherwise it is faith.</p>
+
+        <p><strong>Git-LFS, large media stores, vendored binary
+            archives.</strong> The same logic. The cost of weekly
+            verification is small. The cost of discovering, mid-incident,
+            that the chain has been broken for six months is everything.</p>
+
+        <p><strong>Filesystem and host backups.</strong> The classic
+            case. Backup tapes that have been rotated for years, never
+            read. The drill is to read one back, mount it, diff against
+            a recent snapshot, and confirm the bytes are present.</p>
+
+        <p>In every case, the same shape: the backup is provisional
+            until proven by restore. The cost of the proof is hours.
+            The cost of relying on faith is the whole company.</p>
+
+        <h2>What to Take Home</h2>
+
+        <p>If your operational situation reminds you of any of the
+            following, treat it as a thing to investigate this week:</p>
+
+        <ul>
+            <li>You have multiple backup mechanisms and trust their combination.</li>
+            <li>Your backup-status monitoring relies on the absence of failure messages.</li>
+            <li>Backup configuration and restore responsibility live with different teams.</li>
+            <li>You have not actually restored a production-grade backup to a clean environment in the last quarter.</li>
+        </ul>
+
+        <p>Each of these was true at GitLab on 30 January 2017. Each of
+            them is true at many organisations now.</p>
+
+        <p>The fix is not a new tool. The fix is a one-shell-script
+            weekly drill, a positive heartbeat, and a single person
+            whose job description includes "the backup chain works
+            end-to-end". The cost is small. The alternative is
+            broadcasting your recovery on YouTube to a peak audience of
+            five thousand strangers, which GitLab handled with grace,
+            and which most organisations would not.</p>
+
+        <p>Do not push this into a maintenance ticket; the ticket will
+            be deferred each sprint until the next outage promotes it
+            for you. Listen to the critics in your own ranks before you
+            listen to the velocity-celebrants.</p>
+
+        <blockquote>
+            <p>31 January 2017, 23:30 UTC: <code>rm -rf</code> on the
+                wrong host, 300 GB removed in two seconds. Five backups,
+                each broken differently: pg_dump silent after a
+                PostgreSQL upgrade, alert emails rejected by DMARC,
+                LVM snapshots scoped for staging, Azure snapshots never
+                enabled, WAL archiving never configured. Recovery from
+                a six-hour-old staging snapshot, eighteen hours at 60
+                Mbps, broadcast on YouTube. The principle is older than
+                every database: backups are not backups until they have
+                been restored.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The forensic, the short version:</strong></p>
+            <ul>
+                <li><strong>The trigger:</strong> 31 January 2017, 23:30 UTC. Visually identical terminals, cleanup intended for the secondary, executed on the primary. 300 GB removed in two seconds. Killed within seconds, but already done.</li>
+                <li><strong>Affected:</strong> ~5,000 projects, ~5,000 comments, ~700 user accounts created between 17:20 and 23:30 UTC; eighteen hours of downtime; data loss in that six-hour window.</li>
+                <li><strong>Five backup mechanisms, five different failures:</strong> pg_dump wrapper invoked an outdated binary after a PostgreSQL upgrade and produced zero-byte files for months; failure-alert emails rejected by DMARC after an unrelated email change; LVM snapshots scoped for staging only; Azure disk snapshots never enabled (deliberate cost trade); WAL archiving never configured.</li>
+                <li><strong>Recovery:</strong> the engineer's six-hour-old LVM staging snapshot, copied at ~60 Mbps over network storage for eighteen hours. Live-streamed on YouTube, peak ~5,000 viewers, briefly the platform's number-two broadcast.</li>
+                <li><strong>Three systemic conditions:</strong> redundancy of mechanism is not redundancy of recovery; absence of failure signals is not success; backup and restore ownership lived in different teams.</li>
+                <li><strong>The fix:</strong> a weekly cron-driven restore-test that pulls the latest backup into a sandbox, verifies, and broadcasts a positive heartbeat. Missing heartbeats page on-call. One team owns the whole chain.</li>
+                <li><strong>Source:</strong> GitLab's published <a href="https://about.gitlab.com/blog/postmortem-of-database-outage-of-january-31/" target="_blank" rel="noopener">postmortem of the database outage of January 31</a> remains, nearly a decade later, one of the most cited operational documents in the field.</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

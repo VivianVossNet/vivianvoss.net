@@ -1,0 +1,455 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}doas &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In July 2015, Ted Unangst grew tired of negotiating with sudo on OpenBSD and wrote his own. Around 1,100 lines of C plus a small yacc grammar. Default in OpenBSD 5.8 since October 2015. The configuration fits on a postcard. The CHANGELOG, by the empirical record, is rather quieter than the alternative. A tool that does less has less to break.">
+{( endslot )}
+
+{( slot canonical )}/blog/doas{( endslot )}
+
+{( slot og-title )}doas &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Technical Beauty Episode 34. doas: ~1,100 lines of C and yacc, default in OpenBSD 5.8 since October 2015, by Ted Unangst. No PAM, no LDAP, no plugin loader, no /etc/doas.d/ fragments, no Defaults block. One file, one grammar, one rule per line. The sudo CHANGELOG carries Baron Samedit, Pwfeedback, sudoedit arbitrary file write, host-option and chroot CVEs. The upstream OpenBSD doas, in the same period, has carried no comparable critical CVE. The CHANGELOGs are the empirical case.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "doas",
+    "datePublished": "2026-05-05",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/doas",
+    "description": "Ted Unangst wrote doas in July 2015 because the sudo configuration on OpenBSD had become tiresome. Roughly 1,100 lines of C plus a small yacc grammar; default in OpenBSD 5.8 since October 2015. The grammar fits on a postcard, the rule-matching is a linear scan, and the runtime environment is wiped to a small explicit allowlist. Sudo's CHANGELOG carries Baron Samedit (CVE-2021-3156), Pwfeedback (CVE-2019-18634), sudoedit arbitrary file write (CVE-2023-22809), and the host-option and chroot vulnerabilities of June 2025. The upstream OpenBSD doas, in the same period, has carried no comparable critical CVE. A tool that does less has less to break.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-05">5 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>doas</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x25A0; Episode 34</p>
+
+        <p>Open the
+            <a href="https://www.sudo.ws/security/advisories/" target="_blank" rel="noopener">sudo
+            CHANGELOG</a> and search for the word "security". Make a
+            cup of tea first. The list is rather long for a tool whose
+            entire job is to ask three questions: who are you, what
+            would you like to run, and may you.</p>
+
+        <p>In July 2015, Ted Unangst grew tired of negotiating with
+            the sudo configuration on OpenBSD and wrote his own. He
+            called it doas: dedicated OpenBSD application subexecutor.
+            It was
+            <a href="https://undeadly.org/cgi?action=article;sid=20150716215757" target="_blank" rel="noopener">imported
+            into the OpenBSD CVS tree on 16 July 2015</a> and shipped
+            as the default privilege-escalation tool in
+            <a href="https://www.openbsd.org/58.html" target="_blank" rel="noopener">OpenBSD 5.8</a>
+            in October 2015, replacing the sudo package that had been
+            the standard until then. The codebase today is roughly
+            1,100 lines of C plus a small yacc grammar.</p>
+
+        <h2>A Short Origin Story</h2>
+
+        <p>Ted Unangst's
+            <a href="https://flak.tedunangst.com/post/doas" target="_blank" rel="noopener">stated
+            reason</a> was personal. The default sudo configuration on
+            OpenBSD had a "safe environment" rule that decided which
+            shell variables were safe to forward to the elevated
+            process. The rule kept being revised in response to new
+            attack classes, and Unangst found himself unable to run
+            <code>pkg_add</code> or build a flavoured port because some
+            variable he depended on had been excised from the
+            environment that month. He wrote doas not as a research
+            project but as a private remedy. It was small enough that
+            the OpenBSD project accepted it as a base-system replacement
+            when he proposed it.</p>
+
+        <p>The name is a deliberately small joke: "do as", in the sense
+            of "do as user". The expansion ("dedicated OpenBSD
+            application subexecutor") was reverse-engineered after the
+            fact.</p>
+
+        <h2>The Code, in Numbers</h2>
+
+        <p>Pulled from the
+            <a href="https://github.com/openbsd/src/tree/master/usr.bin/doas" target="_blank" rel="noopener">OpenBSD
+            master tree at openbsd/src/usr.bin/doas</a>:</p>
+
+        <ul>
+            <li><code>doas.c</code> (the main program): 498 lines</li>
+            <li><code>parse.y</code> (yacc grammar for the configuration file): 354 lines</li>
+            <li><code>env.c</code> (environment-variable handling): 235 lines</li>
+            <li><code>doas.h</code> (header): a few dozen lines</li>
+            <li>Two manual pages, one Makefile</li>
+        </ul>
+
+        <p>Roughly 1,100 lines of C and yacc, total. The whole thing
+            fits on the screen of a modern editor without scrolling
+            much.</p>
+
+        <p>The
+            <a href="https://www.sudo.ws/" target="_blank" rel="noopener">sudo
+            project</a>, by contrast, is a multi-package codebase in
+            the high tens of thousands of lines, including its own
+            logging, plugin loader, policy engines, environment
+            management, audit hooks, LDAP back-end, SSSD integration,
+            and a yacc grammar for <code>sudoers</code> that has its
+            own override semantics. Each line was reasonable when added.
+            Each line is also part of the surface that has to be
+            defended.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="A bar comparison of source-code size. doas: roughly 1,100 lines of C and yacc, drawn as a small bar. sudo: tens of thousands of lines, drawn as a much longer bar that overflows the visible area, truncated with an ellipsis. The proportional difference is roughly two orders of magnitude. The annotation reads: a tool that does less has less to break." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ds-cd-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ds-cd-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ds-cd-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .ds-cd-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ds-cd-bar-doas { fill: var(--accent); opacity: 0.85; }
+                .ds-cd-bar-sudo { fill: var(--muted); opacity: 0.45; }
+            </style>
+            <text x="280" y="22" class="ds-cd-title" text-anchor="middle">Two Tools, Same Job, Two Orders of Magnitude</text>
+
+            <text x="40" y="64" class="ds-cd-head">doas</text>
+            <rect x="40" y="72" width="20" height="28" class="ds-cd-bar-doas"/>
+            <text x="72" y="91" class="ds-cd-text">~1,100 LOC</text>
+            <text x="72" y="104" class="ds-cd-muted">doas.c 498 + parse.y 354 + env.c 235 + small header</text>
+
+            <text x="40" y="138" class="ds-cd-head">sudo</text>
+            <rect x="40" y="146" width="450" height="28" class="ds-cd-bar-sudo"/>
+            <text x="500" y="165" class="ds-cd-text">~100,000+</text>
+            <text x="40" y="192" class="ds-cd-muted">Plugin loader, policy engines, LDAP, SSSD, audit hooks, sudoers grammar.</text>
+            <text x="40" y="206" class="ds-cd-muted">Bar truncated for display; the actual ratio is wider. Each line was reasonable when added.</text>
+        </svg>
+
+        <h2>The Design</h2>
+
+        <p>The configuration file is <code>/etc/doas.conf</code>. There
+            is no <code>/etc/doas.d/</code> directory of fragments.
+            There is no Include directive. There is one file, with one
+            rule per line. The grammar in
+            <a href="https://man.openbsd.org/doas.conf" target="_blank" rel="noopener">Backus-Naur form</a>
+            fits on a single page of the manual:</p>
+
+        <pre><code>permit | deny [nopass] [keepenv] [setenv {variable=value, ...}] identity [as user] [cmd command [args [...]]]</code></pre>
+
+        <p>A typical OpenBSD machine has three or four lines:</p>
+
+        <pre><code>permit nopass keepenv :wheel
+permit nopass keepenv root as backup cmd /usr/bin/rsync
+deny :backup</code></pre>
+
+        <p>That is enough to express: members of the <code>wheel</code>
+            group may do anything; the <code>backup</code> user may
+            run <code>rsync</code> only, and only as the
+            <code>root</code> user; nobody else has privilege at all.
+            The default behaviour, with an empty or absent config, is
+            that nobody can run anything as anyone. The privilege does
+            not appear by accident, and the absence of a rule is the
+            safest possible state.</p>
+
+        <p>The whole grammar has perhaps fifteen distinct keywords.
+            There is no concept of <code>Defaults</code>, no concept of
+            plugins, no concept of policy back-ends. The configuration
+            says what is permitted and what is denied, and that is the
+            whole vocabulary.</p>
+
+        <h2>The Elegance</h2>
+
+        <p>Doas does not load PAM modules. It does not query LDAP. It
+            does not call out to a plugin system that may or may not be
+            installed. It does not parse a config file with five
+            conditional contexts and override semantics. It reads
+            <code>doas.conf</code> top to bottom, applies the first
+            matching rule, and exits.</p>
+
+        <p>The runtime environment is similarly direct. By default doas
+            creates a fresh environment: <code>HOME</code>,
+            <code>LOGNAME</code>, <code>PATH</code>, <code>SHELL</code>,
+            and <code>USER</code> are set from the target user's
+            account; <code>DISPLAY</code> and <code>TERM</code> are
+            inherited from the caller; <code>DOAS_USER</code> is set to
+            the name of the user invoking doas. Everything else is
+            wiped. The <code>keepenv</code> keyword keeps the caller's
+            environment minus a small denylist. The <code>setenv</code>
+            keyword sets specific variables explicitly. There is no
+            clever heuristic to exploit, because there is no clever
+            heuristic.</p>
+
+        <svg viewBox="0 0 560 250" aria-label="Architecture comparison. On the left, doas: configuration file, parser, rule matcher, environment scrub, exec. On the right, sudo: configuration file, plugin loader, sudoers grammar, policy engine, LDAP back-end, SSSD integration, environment manager, audit hooks, exec. Each box on the right is a place where the design surface can fail; the doas side has fewer of them by construction." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ds-ar-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ds-ar-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .ds-ar-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .ds-ar-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .ds-ar-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ds-ar-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="ds-ar-title" text-anchor="middle">Where The Surface Lives</text>
+
+            <text x="140" y="50" class="ds-ar-head" text-anchor="middle">doas</text>
+
+            <rect x="60" y="60" width="160" height="22" class="ds-ar-accent-box"/>
+            <text x="140" y="76" class="ds-ar-text" text-anchor="middle">/etc/doas.conf</text>
+
+            <rect x="60" y="88" width="160" height="22" class="ds-ar-accent-box"/>
+            <text x="140" y="104" class="ds-ar-text" text-anchor="middle">yacc parser (parse.y)</text>
+
+            <rect x="60" y="116" width="160" height="22" class="ds-ar-accent-box"/>
+            <text x="140" y="132" class="ds-ar-text" text-anchor="middle">linear rule scan</text>
+
+            <rect x="60" y="144" width="160" height="22" class="ds-ar-accent-box"/>
+            <text x="140" y="160" class="ds-ar-text" text-anchor="middle">env scrub (allowlist)</text>
+
+            <rect x="60" y="172" width="160" height="22" class="ds-ar-accent-box"/>
+            <text x="140" y="188" class="ds-ar-text" text-anchor="middle">credential drop + exec</text>
+
+            <text x="140" y="220" class="ds-ar-muted" text-anchor="middle">Five places. ~1,100 lines.</text>
+            <text x="140" y="232" class="ds-ar-muted" text-anchor="middle">No plugin, no LDAP, no PAM.</text>
+
+            <text x="420" y="50" class="ds-ar-head" text-anchor="middle">sudo</text>
+
+            <rect x="340" y="60" width="160" height="18" class="ds-ar-box"/>
+            <text x="420" y="73" class="ds-ar-text" text-anchor="middle">sudoers + sudoers.d/</text>
+
+            <rect x="340" y="80" width="160" height="18" class="ds-ar-box"/>
+            <text x="420" y="93" class="ds-ar-text" text-anchor="middle">plugin loader</text>
+
+            <rect x="340" y="100" width="160" height="18" class="ds-ar-box"/>
+            <text x="420" y="113" class="ds-ar-text" text-anchor="middle">sudoers yacc + Defaults</text>
+
+            <rect x="340" y="120" width="160" height="18" class="ds-ar-box"/>
+            <text x="420" y="133" class="ds-ar-text" text-anchor="middle">policy engine</text>
+
+            <rect x="340" y="140" width="160" height="18" class="ds-ar-box"/>
+            <text x="420" y="153" class="ds-ar-text" text-anchor="middle">LDAP / SSSD back-ends</text>
+
+            <rect x="340" y="160" width="160" height="18" class="ds-ar-box"/>
+            <text x="420" y="173" class="ds-ar-text" text-anchor="middle">PAM stack</text>
+
+            <rect x="340" y="180" width="160" height="18" class="ds-ar-box"/>
+            <text x="420" y="193" class="ds-ar-text" text-anchor="middle">env mgmt + audit hooks</text>
+
+            <rect x="340" y="200" width="160" height="18" class="ds-ar-box"/>
+            <text x="420" y="213" class="ds-ar-text" text-anchor="middle">credential drop + exec</text>
+
+            <text x="420" y="232" class="ds-ar-muted" text-anchor="middle">Each box is a place where defence happens.</text>
+        </svg>
+
+        <p>The implementation in <code>usr.bin/doas/</code> is similarly
+            direct. The configuration is parsed by a yacc grammar of
+            around three hundred lines (<code>parse.y</code>). The
+            rule-matching is a linear scan. The credential drop and
+            the exec are textbook. There is no function in the codebase
+            whose behaviour depends on three different runtime flags.
+            There is, in particular, no string-parsing function that
+            has to handle escape sequences across nested quoting
+            contexts. The class of bug that produced Baron Samedit in
+            sudo would have to be grown from scratch in doas, and there
+            is nowhere obvious to grow it.</p>
+
+        <h2>The Sudo CHANGELOG</h2>
+
+        <p>The proof of the design is empirical. Sudo, despite being
+            maintained by careful engineers under active scrutiny, has
+            accumulated a respectable list of high-severity CVEs over
+            its lifetime. Several were exploitable in the default
+            configuration:</p>
+
+        <ul>
+            <li><strong><a href="https://blog.qualys.com/vulnerabilities-threat-research/2021/01/26/cve-2021-3156-heap-based-buffer-overflow-in-sudo-baron-samedit" target="_blank" rel="noopener">CVE-2021-3156 (Baron Samedit, January 2021)</a></strong>: a heap-based buffer overflow in the de-escape loop of <code>sudoedit -s</code>. The bug had been quietly present since commit 8255ed69 in July 2011. Any unprivileged local user could obtain root on a default sudo installation across all major Linux distributions, BSDs, AIX, Solaris and macOS. Disclosed by Qualys.</li>
+            <li><strong><a href="https://www.sudo.ws/security/advisories/pwfeedback/" target="_blank" rel="noopener">CVE-2019-18634 (Pwfeedback, October 2019)</a></strong>: a heap overflow triggered by long input when the <code>pwfeedback</code> option was enabled. Several distributions enabled it by default for cosmetic reasons.</li>
+            <li><strong><a href="https://www.sudo.ws/security/advisories/sudoedit_any/" target="_blank" rel="noopener">CVE-2023-22809 (sudoedit, January 2023)</a></strong>: arbitrary file write via crafted <code>EDITOR</code> or <code>VISUAL</code> environment variables when sudoedit was invoked.</li>
+            <li><strong><a href="https://www.memorysafety.org/blog/sudo-rs-headed-to-ubuntu/" target="_blank" rel="noopener">CVE-2025-32462 and CVE-2025-32463 (June 2025)</a></strong>: vulnerabilities in sudo's host-option handling and chroot support, both of which are features that doas does not implement at all.</li>
+        </ul>
+
+        <p>In the same period, the upstream OpenBSD doas in base has
+            carried no comparable critical CVE. There has been no
+            Baron-Samedit-equivalent in doas, because there is no
+            equivalent code path. There has been no pwfeedback CVE in
+            doas, because there is no pwfeedback. There has been no
+            plugin-loading CVE in doas, because there are no plugins.
+            The CHANGELOG is short because the surface is small.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="Timeline of sudo CVEs from 2019 to 2025. CVE-2019-18634 Pwfeedback in October 2019. CVE-2021-3156 Baron Samedit in January 2021, present in the code since July 2011. CVE-2023-22809 sudoedit arbitrary file write in January 2023. CVE-2025-32462 and CVE-2025-32463 host-option and chroot in June 2025. A second line below shows the OpenBSD doas in-base CVE list across the same period: empty. The CHANGELOG is the empirical case." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ds-cv-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ds-cv-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ds-cv-event { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .ds-cv-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .ds-cv-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .ds-cv-line { stroke: var(--border); stroke-width: 1; fill: none; }
+            </style>
+            <text x="280" y="22" class="ds-cv-title" text-anchor="middle">Same Job, Two CHANGELOGs</text>
+
+            <text x="30" y="70" class="ds-cv-head">sudo</text>
+            <line x1="80" y1="80" x2="540" y2="80" class="ds-cv-line"/>
+
+            <circle cx="120" cy="80" r="4" fill="var(--accent)"/>
+            <text x="120" y="60" class="ds-cv-event" text-anchor="middle">Oct 2019</text>
+            <text x="120" y="100" class="ds-cv-text" text-anchor="middle">Pwfeedback</text>
+            <text x="120" y="112" class="ds-cv-muted" text-anchor="middle">CVE-2019-18634</text>
+
+            <circle cx="240" cy="80" r="5" fill="var(--accent)"/>
+            <text x="240" y="60" class="ds-cv-event" text-anchor="middle">Jan 2021</text>
+            <text x="240" y="100" class="ds-cv-text" text-anchor="middle">Baron Samedit</text>
+            <text x="240" y="112" class="ds-cv-muted" text-anchor="middle">CVE-2021-3156, since 2011</text>
+
+            <circle cx="360" cy="80" r="4" fill="var(--accent)"/>
+            <text x="360" y="60" class="ds-cv-event" text-anchor="middle">Jan 2023</text>
+            <text x="360" y="100" class="ds-cv-text" text-anchor="middle">sudoedit / EDITOR</text>
+            <text x="360" y="112" class="ds-cv-muted" text-anchor="middle">CVE-2023-22809</text>
+
+            <circle cx="500" cy="80" r="4" fill="var(--accent)"/>
+            <text x="500" y="60" class="ds-cv-event" text-anchor="middle">Jun 2025</text>
+            <text x="500" y="100" class="ds-cv-text" text-anchor="middle">host-option, chroot</text>
+            <text x="500" y="112" class="ds-cv-muted" text-anchor="middle">CVE-2025-32462/32463</text>
+
+            <text x="30" y="170" class="ds-cv-head">doas</text>
+            <line x1="80" y1="180" x2="540" y2="180" class="ds-cv-line"/>
+            <text x="310" y="170" class="ds-cv-muted" text-anchor="middle">in-base, OpenBSD</text>
+            <text x="310" y="200" class="ds-cv-text" text-anchor="middle">no comparable critical CVE in the same period</text>
+
+            <text x="280" y="228" class="ds-cv-muted" text-anchor="middle">A tool that does less has less to break.</text>
+        </svg>
+
+        <p>This is not because the doas authors are smarter. It is
+            because doas has fewer places to be wrong. A tool that does
+            less has less to break.</p>
+
+        <h2>On FreeBSD</h2>
+
+        <p>A FreeBSD administrator gets doas as a port.
+            <code>pkg install doas</code> pulls in
+            <a href="https://www.freshports.org/security/doas/" target="_blank" rel="noopener"><code>security/doas</code></a>,
+            a portable fork maintained by slicer69 that tracks the
+            OpenBSD upstream and runs on FreeBSD, Linux, NetBSD and
+            illumos from the same source tree. The configuration file
+            lives at <code>/usr/local/etc/doas.conf</code> rather than
+            <code>/etc/doas.conf</code>, following the FreeBSD ports
+            convention of keeping third-party configuration outside the
+            base-system <code>/etc</code>. The grammar is identical to
+            the OpenBSD original.</p>
+
+        <p>A FreeBSD host that would otherwise install sudo from
+            <code>security/sudo</code> can install doas instead and pay
+            a tenth of the binary size, a hundredth of the source
+            surface, and none of the historical CVE list. The two ports
+            coexist; the choice is the admin's. For new builds where
+            the question is open, doas is the calmer answer.</p>
+
+        <h2>On Linux</h2>
+
+        <p>Linux distributions do not ship doas in base. A portable
+            fork called
+            <a href="https://github.com/Duncaen/OpenDoas" target="_blank" rel="noopener">OpenDoas</a>,
+            originally maintained by Duncaen, is packaged as
+            <code>doas</code> on Debian, Ubuntu, Arch, Alpine, Void, and
+            others. The configuration file syntax is identical to
+            OpenBSD's. An administrator who has used doas on OpenBSD
+            for a decade can install OpenDoas on Linux and edit the
+            same <code>/etc/doas.conf</code> lines.</p>
+
+        <p>OpenDoas has had its own modest CVE list, smaller in
+            severity than the sudo equivalents but worth naming for
+            accuracy:</p>
+
+        <ul>
+            <li><strong><a href="https://security.gentoo.org/glsa/202107-11" target="_blank" rel="noopener">CVE-2019-25017</a></strong> (also referenced as CVE-2019-25016): rules permitting any command inherited the caller's <code>PATH</code> rather than resetting to a default, allowing PATH-poisoning escalation. Patched in OpenDoas 6.8.1.</li>
+            <li><strong>CVE-2023-28339</strong>: a TIOCSTI ioctl issue allowing command injection into a privileged user's terminal under specific conditions. Patched.</li>
+        </ul>
+
+        <p>The OpenDoas maintenance cadence is slower than upstream
+            OpenBSD, but the design surface is small enough that audits
+            remain tractable.</p>
+
+        <p>The Linux ecosystem also has a memory-safe alternative:
+            <a href="https://trifectatech.org/projects/sudo-rs/" target="_blank" rel="noopener"><code>sudo-rs</code></a>,
+            written in Rust, originally funded by the Internet Security
+            Research Group's Prossimo project, jointly developed by
+            Tweede Golf and Ferrous Systems from December 2022, with
+            first stable release in August 2023. The project graduated
+            to its long-term home at the Trifecta Tech Foundation in
+            June 2024. In October 2025 it became the default sudo in
+            <a href="https://www.memorysafety.org/blog/sudo-rs-headed-to-ubuntu/" target="_blank" rel="noopener">Ubuntu 25.10</a>.
+            Two of the 2025 sudo CVEs (CVE-2025-32462 and
+            CVE-2025-32463) affected features sudo-rs does not
+            implement, and sudo-rs was therefore not vulnerable: a
+            different demonstration of the same point doas was making
+            in 2015, with a different language and a different author.</p>
+
+        <h2>The Point</h2>
+
+        <p>The reason this episode is doas, and not sudo, is not that
+            sudo is poorly written.
+            <a href="https://www.sudo.ws/about/history/" target="_blank" rel="noopener">Todd
+            Miller</a> has maintained sudo with care since 1994; the
+            codebase is comprehensible, the tests are real, the CVE
+            responses are timely. But sudo carries the accumulated
+            weight of three decades of feature requests,
+            distribution-specific patches, plugin systems,
+            environment-variable rules, LDAP back-ends, audit logging
+            integrations, and policy-language extensions. Each was
+            reasonable when added. Each is now part of the surface that
+            has to be defended.</p>
+
+        <p>Doas chose a different starting point. The starting point
+            was: <em>what is the smallest tool that lets a wheel-group
+            member run a command as root?</em> From that starting
+            point, the answer is around 1,100 lines, and it has held
+            its ground for over a decade.</p>
+
+        <p>A tool that does less has less to break. The CHANGELOGs are
+            the empirical case.</p>
+
+        <blockquote>
+            <p>Ted Unangst wrote doas in July 2015 because the sudo
+                configuration on OpenBSD had become tiresome. Imported
+                16 July 2015; default in OpenBSD 5.8 in October 2015.
+                Around 1,100 lines of C plus a small yacc grammar; one
+                file <code>/etc/doas.conf</code>, one rule per line, a
+                grammar that fits on a postcard, no PAM, no LDAP, no
+                plugin loader, no <code>/etc/doas.d/</code>. Sudo's
+                CHANGELOG carries Baron Samedit (CVE-2021-3156, hidden
+                since 2011), Pwfeedback (CVE-2019-18634), sudoedit
+                arbitrary file write (CVE-2023-22809), host-option and
+                chroot (CVE-2025-32462/32463). The upstream OpenBSD
+                doas, in the same period, has carried no comparable
+                critical CVE. The CHANGELOGs are the empirical case.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The numbers, the short version:</strong></p>
+            <ul>
+                <li><strong>Origin:</strong> Ted Unangst, OpenBSD; first import 16 July 2015; default in OpenBSD 5.8 in October 2015. Name "do as", expansion "dedicated OpenBSD application subexecutor" reverse-engineered after the fact</li>
+                <li><strong>Code (OpenBSD master, 2026):</strong> <code>doas.c</code> 498 lines, <code>parse.y</code> 354, <code>env.c</code> 235, small header. Roughly 1,100 lines total. Sudo: tens of thousands across multiple subsystems</li>
+                <li><strong>Grammar:</strong> <code>permit | deny [nopass] [keepenv] [setenv {...}] identity [as user] [cmd command]</code>. One rule per line, first match wins, default deny</li>
+                <li><strong>Environment by default:</strong> HOME / LOGNAME / PATH / SHELL / USER from target; DISPLAY / TERM inherited; DOAS_USER set explicitly; everything else wiped. <code>keepenv</code> keeps caller env minus a denylist; <code>setenv</code> sets variables explicitly</li>
+                <li><strong>Selected sudo CVEs:</strong> CVE-2021-3156 Baron Samedit (heap, hidden since 2011); CVE-2019-18634 Pwfeedback (heap); CVE-2023-22809 sudoedit (EDITOR write); CVE-2025-32462/32463 (host-option, chroot &#x2014; features doas does not implement)</li>
+                <li><strong>OpenDoas (Linux) CVEs:</strong> CVE-2019-25017 (PATH inheritance, patched 6.8.1); CVE-2023-28339 (TIOCSTI). Smaller list than sudo, smaller surface than sudo</li>
+                <li><strong>Ports:</strong> FreeBSD <code>security/doas</code> (slicer69 fork) at <code>/usr/local/etc/doas.conf</code>; Linux OpenDoas (Duncaen) on Debian, Ubuntu, Arch, Alpine, Void</li>
+                <li><strong>Memory-safe alternative:</strong> sudo-rs (Trifecta Tech Foundation, ISRG-funded), default in Ubuntu 25.10. Two 2025 sudo CVEs did not apply</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

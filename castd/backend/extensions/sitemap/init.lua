@@ -14,6 +14,13 @@ local pages = {
     { loc = "/print",      priority = "0.6",  changefreq = "monthly" },
     { loc = "/print/integrated-by-design", priority = "0.7", changefreq = "monthly" },
     -- blog articles
+    { loc = "/blog/doas",                              priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/one-clock-one-tool-three-distros",  priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/why-we-reach-for-the-layer",        priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-browser-brought-its-own-ai",    priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-subscription-you-did-not-ask-for", priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-backup-that-wasnt",             priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/the-width-you-never-had-to-measure", priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/publisher-shop-launch",             priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/pf",                                priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/what-the-bootloader-knows",         priority = "0.7", changefreq = "yearly" },

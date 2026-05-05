@@ -1,0 +1,459 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Width You Never Had to Measure &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A card lives in a 280-pixel sidebar and a 1100-pixel dashboard. You wrote a ResizeObserver. The cascade was capable all along. Container queries: two declarations, no observer, cross-browser stable since February 2023, global coverage just over 94 per cent. Writing element-width hooks in JavaScript expired three years ago.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-width-you-never-had-to-measure{( endslot )}
+
+{( slot og-title )}The Width You Never Had to Measure &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Every front-end team has written a ResizeObserver to give a component its own width hook. The cascade was capable all along. @container plus inline-size, two declarations, no observer, no double class. Cross-browser stable since Firefox 110 in February 2023. Global coverage 94 per cent. The fourth in a quiet series of native answers.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Width You Never Had to Measure",
+    "datePublished": "2026-04-29",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-width-you-never-had-to-measure",
+    "description": "A card lives in a 280-pixel sidebar and a 1100-pixel dashboard. The team wrote a ResizeObserver, doubled the CSS, and accepted the occasional flash of unstyled content. Container queries collapsed the whole apparatus into two declarations. Cross-browser stable since Firefox 110 in February 2023. Global coverage just over 94 per cent.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-04-29">29 April 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Width You Never Had to Measure</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">css</span>
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Stack Patterns</em> &#x25A0; Episode 14</p>
+
+        <p>Every web developer has written this hack. A card component
+            lives in a sidebar at 280 pixels on one page and on a
+            dashboard at 1100 on another. You want the badges to
+            disappear in the narrow case and the layout to switch from
+            horizontal to vertical. You reach, rather inevitably, for
+            JavaScript:</p>
+
+        <pre><code>const observer = new ResizeObserver(entries =&gt; {
+  for (const entry of entries) {
+    entry.target.classList.toggle('narrow', entry.contentRect.width &lt; 400);
+  }
+});
+
+observer.observe(card);</code></pre>
+
+        <p>You then write the CSS twice, once for the parent class and
+            once again for the <code>.narrow</code> case. You hope the
+            observer fires before the first paint, and most of the time
+            it does, sometimes only after a flash of unstyled content.
+            You move on, because the alternative is to wrap the
+            component in a width-aware higher-order component, install a
+            layout library, or accept the inevitable hydration mismatch
+            in your server-side rendering pipeline.</p>
+
+        <p>Container queries make all of that go away. Rather quietly.</p>
+
+        <h2>A Brief, Slightly Embarrassing History</h2>
+
+        <p>The idea is older than most reading this article. The early
+            2010s saw a steady stream of <em>element queries</em>
+            discussions in the front-end community, with polyfills like
+            <a href="https://elementqueries.com/" target="_blank" rel="noopener">EQCSS</a>
+            and a long mailing-list debate about what the missing tool
+            should look like. The proposals all stumbled on the same
+            architectural problem: querying an element's own size while
+            inside the layout pass that produces that size invites
+            circular layout, which is roughly the equivalent of asking a
+            function for its own return value before it has finished
+            returning. The browser engineers, sensibly, declined to
+            offer one.</p>
+
+        <p>The fix took the better part of a decade and required a quiet
+            redefinition of the problem. The element under styling
+            cannot query its own size; that path leads to circularity.
+            But the element's <em>containing context</em> can. The work
+            that became Container Queries, originally drafted in
+            <a href="https://www.w3.org/TR/css-contain-3/" target="_blank" rel="noopener">CSS
+            Containment Module Level 3</a> and now living in
+            <a href="https://www.w3.org/TR/css-conditional-5/" target="_blank" rel="noopener">CSS
+            Conditional Rules Module Level 5</a>, was championed by
+            <a href="https://www.miriamsuzanne.com/" target="_blank" rel="noopener">Miriam
+            Suzanne</a> (Invited Expert at the CSS Working Group) with
+            contributions from many others. An element marks itself as a
+            container and provides a stable size context to its
+            descendants. The descendants then query that context. No
+            circularity, no observer, no JavaScript.</p>
+
+        <p>Implementations followed quickly. Chrome 106 and Safari 16
+            shipped in September 2022; Firefox 110 followed on 14
+            February 2023. According to
+            <a href="https://caniuse.com/css-container-queries" target="_blank" rel="noopener">caniuse</a>,
+            global usage is just over 94 per cent as of March 2026. The
+            feature has been cross-browser stable for more than three
+            years.</p>
+
+        <svg viewBox="0 0 560 230" aria-label="Timeline of container query browser support. Early 2010s: element queries discussed, EQCSS polyfill, mailing-list debate. September 2022: Chrome 106 and Safari 16 ship container queries. 14 February 2023: Firefox 110 follows. March 2026: global usage just over 94 per cent." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cq-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cq-tl-year { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .cq-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .cq-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .cq-tl-line { stroke: var(--border); stroke-width: 1; fill: none; }
+            </style>
+            <text x="280" y="22" class="cq-tl-title" text-anchor="middle">Twelve Years of Quiet Patience</text>
+
+            <line x1="40" y1="120" x2="520" y2="120" class="cq-tl-line"/>
+
+            <circle cx="80" cy="120" r="4" fill="var(--accent)"/>
+            <text x="80" y="92" class="cq-tl-year" text-anchor="middle">early 2010s</text>
+            <text x="80" y="148" class="cq-tl-text" text-anchor="middle">element queries</text>
+            <text x="80" y="162" class="cq-tl-muted" text-anchor="middle">EQCSS polyfill, debate</text>
+
+            <circle cx="240" cy="120" r="5" fill="var(--accent)"/>
+            <text x="240" y="92" class="cq-tl-year" text-anchor="middle">Sep 2022</text>
+            <text x="240" y="148" class="cq-tl-text" text-anchor="middle">Chrome 106, Safari 16</text>
+            <text x="240" y="162" class="cq-tl-muted" text-anchor="middle">first cross-engine ship</text>
+
+            <circle cx="360" cy="120" r="5" fill="var(--accent)"/>
+            <text x="360" y="92" class="cq-tl-year" text-anchor="middle">14 Feb 2023</text>
+            <text x="360" y="148" class="cq-tl-text" text-anchor="middle">Firefox 110</text>
+            <text x="360" y="162" class="cq-tl-muted" text-anchor="middle">all three engines</text>
+
+            <circle cx="500" cy="120" r="6" fill="var(--accent)"/>
+            <text x="500" y="92" class="cq-tl-year" text-anchor="middle">Mar 2026</text>
+            <text x="500" y="148" class="cq-tl-text" text-anchor="middle">94 per cent</text>
+            <text x="500" y="162" class="cq-tl-muted" text-anchor="middle">global usage</text>
+
+            <text x="280" y="200" class="cq-tl-muted" text-anchor="middle">A decade of polyfills, then three years of cross-browser stability.</text>
+            <text x="280" y="214" class="cq-tl-muted" text-anchor="middle">The ResizeObserver workaround was the world we were living in. It is not the world we live in now.</text>
+        </svg>
+
+        <h2>The Pattern</h2>
+
+        <p>The simplest case takes two declarations:</p>
+
+        <pre><code>.card {
+  container-type: inline-size;
+}
+
+@container (max-width: 400px) {
+  .card h3   { font-size: 1rem; }
+  .card .badge { display: none; }
+}</code></pre>
+
+        <p><code>container-type: inline-size</code> tells the browser to
+            watch the inline dimension (the writing-mode-aware horizontal
+            axis in Latin scripts). The
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@container" target="_blank" rel="noopener"><code>@container</code></a>
+            rule then matches when that dimension drops below 400 pixels.
+            Rules inside the block apply to descendants of
+            <code>.card</code>, never to <code>.card</code> itself.</p>
+
+        <p>There is also <code>container-type: size</code>, which watches
+            both axes. Use it sparingly: <code>size</code> containment
+            forces the container's block size to be intrinsic, which can
+            collapse otherwise auto-height layouts in surprising ways.
+            The <code>inline-size</code> form is the safe default for
+            component-level responsiveness, and the form most CSS
+            examples reach for.</p>
+
+        <p>When components nest, the closest matching ancestor wins. A
+            query without a <code>container-name</code> matches the
+            nearest ancestor with <code>container-type</code> set. To
+            target a specific level, name your containers:</p>
+
+        <pre><code>.sidebar { container-name: side; container-type: inline-size; }
+.card    { container-name: card; container-type: inline-size; }
+
+@container card (max-width: 400px) {
+  /* only the card matters here, not the sidebar */
+}</code></pre>
+
+        <svg viewBox="0 0 560 280" aria-label="The same card component shown twice. On the left, embedded in a 280-pixel sidebar: vertical layout, no badges, smaller heading. On the right, embedded in a 1100-pixel dashboard: horizontal layout, badges visible, larger heading. A dotted line between them, labelled @container, indicates that the difference is configured by a single container query, not by JavaScript or by a duplicate class." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cq-th-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cq-th-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .cq-th-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; font-weight: 700; }
+                .cq-th-mini { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 8px; }
+                .cq-th-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .cq-th-frame { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cq-th-card { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .cq-th-badge { fill: var(--accent); opacity: 0.65; rx: 2; }
+                .cq-th-conn { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+            </style>
+            <text x="280" y="22" class="cq-th-title" text-anchor="middle">One Component, Two Homes</text>
+
+            <text x="100" y="50" class="cq-th-head" text-anchor="middle">Sidebar (280 px)</text>
+            <text x="430" y="50" class="cq-th-head" text-anchor="middle">Dashboard (1100 px)</text>
+
+            <rect x="40" y="65" width="120" height="180" class="cq-th-frame"/>
+            <rect x="55" y="80" width="90" height="150" class="cq-th-card"/>
+            <rect x="65" y="92" width="70" height="36" rx="2" fill="var(--muted)" opacity="0.25"/>
+            <text x="100" y="146" class="cq-th-text" text-anchor="middle">Title</text>
+            <text x="100" y="160" class="cq-th-mini" text-anchor="middle">short subtitle</text>
+            <text x="100" y="190" class="cq-th-mini" text-anchor="middle">body text wraps</text>
+            <text x="100" y="202" class="cq-th-mini" text-anchor="middle">in two short lines</text>
+            <text x="100" y="222" class="cq-th-muted" text-anchor="middle">no badges</text>
+
+            <rect x="220" y="65" width="320" height="180" class="cq-th-frame"/>
+            <rect x="235" y="95" width="290" height="100" class="cq-th-card"/>
+            <rect x="245" y="110" width="80" height="50" rx="2" fill="var(--muted)" opacity="0.25"/>
+            <text x="345" y="125" class="cq-th-text">Title in larger weight</text>
+            <text x="345" y="142" class="cq-th-mini">subtitle continues</text>
+            <text x="345" y="158" class="cq-th-mini">body text fits in one wide line for clarity</text>
+            <rect x="345" y="170" width="34" height="14" class="cq-th-badge"/>
+            <text x="362" y="180" class="cq-th-mini" text-anchor="middle" fill="#fff">new</text>
+            <rect x="385" y="170" width="50" height="14" class="cq-th-badge"/>
+            <text x="410" y="180" class="cq-th-mini" text-anchor="middle" fill="#fff">featured</text>
+
+            <line x1="160" y1="155" x2="220" y2="155" class="cq-th-conn"/>
+            <text x="190" y="148" class="cq-th-muted" text-anchor="middle">@container</text>
+
+            <text x="280" y="270" class="cq-th-muted" text-anchor="middle">Same component, same markup. The cascade chooses the layout based on the container's inline size.</text>
+        </svg>
+
+        <h2>The Length Units That Travel With the Container</h2>
+
+        <p>Container queries also bring four new length units that
+            resolve against the container rather than the viewport:</p>
+
+        <ul>
+            <li><code>cqw</code>: 1 per cent of the container's width</li>
+            <li><code>cqh</code>: 1 per cent of the container's height</li>
+            <li><code>cqi</code>: 1 per cent of the container's inline size (writing-mode-aware width)</li>
+            <li><code>cqb</code>: 1 per cent of the container's block size (writing-mode-aware height)</li>
+            <li><code>cqmin</code> and <code>cqmax</code> are also defined, taking the smaller or larger of <code>cqi</code> and <code>cqb</code></li>
+        </ul>
+
+        <p>Combined with <code>clamp()</code>, these allow typography
+            that scales with the component, not the viewport:</p>
+
+        <pre><code>h3 { font-size: clamp(1rem, 4cqi, 1.5rem); }</code></pre>
+
+        <p>Drop the same component into a 280-pixel sidebar and a
+            1100-pixel main column, and its heading scales appropriately
+            in both, without writing any breakpoints. The vocabulary
+            that responsive design has wanted for fifteen years has
+            finally arrived on the right axis.</p>
+
+        <h2>Why It Works</h2>
+
+        <p>The cleverness, as with <code>@scope</code> in the previous
+            episode, is what container queries deliberately do not do.
+            They do not query the element being styled; they query the
+            size of an ancestor. The cycle that broke every previous
+            attempt at element queries simply does not arise.</p>
+
+        <p>A second piece of cleverness: the <code>container-type</code>
+            declaration triggers
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment" target="_blank" rel="noopener">CSS
+            containment</a> for the chosen axes. The browser knows that
+            nothing outside the container can affect what is inside it,
+            and vice versa, for the purpose of size calculations. That
+            makes the cost of container queries predictable: each
+            container is a self-contained layout unit, evaluated once.</p>
+
+        <p>The performance question, which used to dominate discussions
+            of element queries, has therefore become a much smaller
+            question. Each container has a cost (a containment scope),
+            but it is a known cost. One does not pay for queries one
+            does not write.</p>
+
+        <h2>Combined with <code>:has()</code></h2>
+
+        <p>Container queries become properly powerful in combination
+            with
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" target="_blank" rel="noopener"><code>:has()</code></a>,
+            the parent-aware selector covered in episode 5 of this
+            series. A component now reacts to two independent axes at
+            once: its own size, via <code>@container</code>, and its own
+            content, via <code>:has()</code>.</p>
+
+        <p>A common pattern: cards switch to a vertical layout when
+            narrow, but only if they actually contain an image. A
+            text-only card at the same width keeps its inline form.</p>
+
+        <pre><code>.card {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+
+@container (max-width: 400px) {
+  .card:has(img) {
+    grid-template-columns: 1fr;
+  }
+}</code></pre>
+
+        <p>The same approach scales: badges that disappear only when the
+            container is narrow <em>and</em> there are more than two of
+            them; a sidebar widget that switches layout only when it
+            contains a form; a section heading that changes weight when
+            it is followed by a long article. None of these require
+            JavaScript, a class toggle, or a render hook.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="A two-axis diagram. The horizontal axis is container size, ranging from narrow at the left to wide at the right. The vertical axis is component content, ranging from text-only at the bottom to image-rich at the top. Four cells map to four CSS outcomes: text-only narrow, text-only wide, image narrow becomes vertical, image wide stays inline. The diagram shows that container queries and the :has selector together give a component two independent axes of style decisions." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cq-2a-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cq-2a-axis { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .cq-2a-cell { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .cq-2a-mini { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .cq-2a-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cq-2a-arr { stroke: var(--accent); stroke-width: 1; fill: none; marker-end: url(#cq2a-arrow); }
+            </style>
+            <defs>
+                <marker id="cq2a-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="cq-2a-title" text-anchor="middle">Two Axes, Four Cells, No JavaScript</text>
+
+            <line x1="80" y1="200" x2="520" y2="200" class="cq-2a-arr"/>
+            <text x="80" y="218" class="cq-2a-axis">narrow</text>
+            <text x="520" y="218" class="cq-2a-axis" text-anchor="end">wide</text>
+            <text x="300" y="234" class="cq-2a-mini" text-anchor="middle">container size &#x2014; <tspan font-style="italic">@container</tspan></text>
+
+            <line x1="80" y1="200" x2="80" y2="50" class="cq-2a-arr"/>
+            <text x="68" y="58" class="cq-2a-axis" text-anchor="end">image</text>
+            <text x="68" y="200" class="cq-2a-axis" text-anchor="end">text</text>
+
+            <rect x="100" y="60" width="180" height="55" class="cq-2a-box"/>
+            <text x="190" y="84" class="cq-2a-cell" text-anchor="middle">image, narrow</text>
+            <text x="190" y="100" class="cq-2a-mini" text-anchor="middle">grid-template-columns: 1fr</text>
+
+            <rect x="320" y="60" width="180" height="55" class="cq-2a-box"/>
+            <text x="410" y="84" class="cq-2a-cell" text-anchor="middle">image, wide</text>
+            <text x="410" y="100" class="cq-2a-mini" text-anchor="middle">inline, two columns</text>
+
+            <rect x="100" y="125" width="180" height="55" class="cq-2a-box"/>
+            <text x="190" y="149" class="cq-2a-cell" text-anchor="middle">text, narrow</text>
+            <text x="190" y="165" class="cq-2a-mini" text-anchor="middle">badges hidden, smaller h3</text>
+
+            <rect x="320" y="125" width="180" height="55" class="cq-2a-box"/>
+            <text x="410" y="149" class="cq-2a-cell" text-anchor="middle">text, wide</text>
+            <text x="410" y="165" class="cq-2a-mini" text-anchor="middle">badges visible, larger h3</text>
+        </svg>
+
+        <p>The composability is the broader point. Each modern CSS
+            feature (container queries, <code>:has()</code>,
+            <code>@scope</code>, <code>@layer</code>, view transitions)
+            is independently useful, but combinations multiply their
+            value. The platform has spent a decade quietly assembling a
+            vocabulary in which most former JavaScript responsibilities
+            for layout and conditional styling become CSS again.</p>
+
+        <h2>Honest Limitations</h2>
+
+        <p>Three things to know before one ships container queries to
+            production.</p>
+
+        <p>First, <code>container-type: size</code> disables auto-height.
+            If one wants a container to react to changes in its own
+            height (rare, but possible), the container must have a
+            defined height rather than letting its content determine it.
+            For most components, one only cares about width, and
+            <code>inline-size</code> is the correct choice. Reach for
+            <code>size</code> only when one genuinely needs both axes.</p>
+
+        <p>Second, <em>style queries</em> (the form
+            <code>@container style(--theme: dark) { ... }</code>) are a
+            separate, newer feature. As of 2026 they are
+            <a href="https://caniuse.com/css-container-queries-style" target="_blank" rel="noopener">supported
+            in Chrome 111+ and Edge 111+ only</a>; Firefox and Safari
+            are still developing support. They allow a component to
+            query the value of a custom property on its container,
+            rather than its size, and are powerful for theming and
+            design tokens. Until cross-browser parity arrives, treat
+            them as progressive enhancement rather than a default tool.</p>
+
+        <p>Third, container queries do not propagate across iframe
+            boundaries or shadow root boundaries. A widget embedded in
+            an iframe queries its own document's containers, not the
+            parent page's. This is generally what one wants; it is
+            worth knowing if one builds embedded components that span
+            those boundaries.</p>
+
+        <h2>When to Use</h2>
+
+        <p>Anywhere a component lives at more than one width. Cards in a
+            sidebar and a main grid. Article previews in a related-articles
+            strip and a featured slot. Dashboard widgets that the user
+            can resize. Embedded widgets where one does not control the
+            host layout. Anywhere your team currently maintains two or
+            three classes (<code>.card</code>, <code>.card--narrow</code>,
+            <code>.card--wide</code>) coordinated by JavaScript.</p>
+
+        <p>For a new design system, build it in containers from the
+            start. Each component sets a <code>container-type</code> on
+            its outer element and queries it from within. Page-level
+            media queries become a layer above, handling viewport-scoped
+            concerns: navigation collapse, hero sizing, things that
+            genuinely depend on the device. Component-level concerns
+            drop a level and stay there.</p>
+
+        <h2>The Layout, Civilised</h2>
+
+        <p>Episode 11 of this series gave native page transitions;
+            episode 12 gave a built-in deep clone; episode 13 gave
+            native CSS scoping. Each replaced a stack of build-time
+            tooling and runtime libraries with a few lines of standard
+            CSS or JavaScript. Container queries belong to the same
+            lineage: a feature the platform has been quietly building
+            for a decade, while the framework ecosystem invented and
+            reinvented increasingly elaborate workarounds.</p>
+
+        <p>Three years on from cross-browser support, the workaround
+            code is still in production codebases everywhere, and the
+            platform feature still has under-used potential. If your
+            team is still measuring component widths in JavaScript, the
+            cascade has been waiting.</p>
+
+        <blockquote>
+            <p>Container queries: cross-browser stable since Firefox 110
+                on 14 February 2023, global usage 94 per cent in March
+                2026. Two declarations: <code>container-type</code> on
+                the parent, <code>@container</code> rules on the
+                descendants. No JavaScript, no observer, no double
+                class. <code>cqi</code>, <code>cqb</code>, <code>cqw</code>,
+                <code>cqh</code> for typography that travels with the
+                component. <code>:has()</code> for content-aware variants
+                on the same axis. The cascade was capable all along.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The pattern, the short version:</strong></p>
+            <ul>
+                <li><strong>Two declarations:</strong> <code>.parent { container-type: inline-size }</code> on the container, <code>@container (max-width: 400px) { ... }</code> on its descendants. No JavaScript. No double class. No observer race against first paint</li>
+                <li><strong>Container types:</strong> <code>inline-size</code> watches width only and is the safe default; <code>size</code> watches both axes but disables auto-height, so reach for it only when both dimensions genuinely matter</li>
+                <li><strong>Length units:</strong> <code>cqw</code>, <code>cqh</code>, <code>cqi</code>, <code>cqb</code> resolve against the container; combined with <code>clamp()</code>, typography scales with the component, not the viewport</li>
+                <li><strong>Named containers:</strong> <code>container-name: card</code> targets a specific level when components nest, so a query against a card does not accidentally match its enclosing sidebar</li>
+                <li><strong>Combined with <code>:has()</code>:</strong> two independent axes at once &#x2014; size from <code>@container</code>, content from <code>:has()</code>. Vertical layout when narrow <em>and</em> contains an image, inline otherwise</li>
+                <li><strong>Browser support:</strong> Chrome 106 + Safari 16 in September 2022, Firefox 110 on 14 February 2023, global usage just over 94 per cent (caniuse, March 2026). Three years cross-browser stable</li>
+                <li><strong>Limitations:</strong> <code>size</code> disables auto-height; style queries (<code>@container style(--var: value)</code>) are Chrome and Edge only as of 2026; queries do not cross iframe or shadow-root boundaries</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
