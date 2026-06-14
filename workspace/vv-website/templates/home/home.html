@@ -142,93 +142,157 @@
     <h2 id="writing-title">Latest Writing</h2>
     <div class="vv-series">
         <article class="vv-series-item">
-            <span class="day">05 May 2026</span>
+            <span class="day">14 June 2026</span>
             <div class="vv-pills">
+                <span class="vv-pill">sovereignty</span>
                 <span class="vv-pill">freebsd</span>
-                <span class="vv-pill">security</span>
-                <span class="vv-pill">unix</span>
-                <span class="vv-pill">tooling</span>
-            </div>
-            <h3><a href="/blog/doas">doas</a></h3>
-            <p>Open the sudo CHANGELOG and search for "security". Make
-                a cup of tea first. In July 2015 Ted Unangst wrote his
-                own privilege-escalation tool: roughly 1,100 lines of C
-                plus a small yacc grammar, default in OpenBSD 5.8 by
-                October 2015. The sudo CHANGELOG carries Baron Samedit,
-                Pwfeedback, sudoedit and the 2025 host-option and
-                chroot CVEs. The upstream OpenBSD doas, in the same
-                period, has carried no comparable critical CVE. A tool
-                that does less has less to break.</p>
-        </article>
-        <article class="vv-series-item">
-            <span class="day">04 May 2026</span>
-            <div class="vv-pills">
-                <span class="vv-pill">freebsd</span>
-                <span class="vv-pill">linux</span>
-                <span class="vv-pill">unix</span>
-                <span class="vv-pill">devops</span>
-            </div>
-            <h3><a href="/blog/one-clock-one-tool-three-distros">One Clock, One Tool, Three Distros</a></h3>
-            <p>Ask a Linux admin which time daemon their server runs.
-                Pause for the silence. On FreeBSD <code>ntpd</code> in
-                base since 2000, one line in <code>/etc/rc.conf</code>,
-                same answer for twenty-five years. On Linux:
-                <code>ntpd</code>, <code>chrony</code> or
-                <code>systemd-timesyncd</code>, by distribution and by
-                year. The cost of three answers is paid every time an
-                admin inherits a server.</p>
-        </article>
-        <article class="vv-series-item">
-            <span class="day">03 May 2026</span>
-            <div class="vv-pills">
                 <span class="vv-pill">architecture</span>
-                <span class="vv-pill">tooling</span>
+                <span class="vv-pill">licensing</span>
+            </div>
+            <h3><a href="/blog/the-single-tree">The Single Tree</a></h3>
+            <p>You can fork the source. You cannot fork the
+                jurisdiction. Three properties hide under one banner:
+                permission, forkability, jurisdiction. Open source
+                answers only the first. A base system like FreeBSD is
+                forkable where a Linux distribution is not, and only a
+                permissive licence lets you become the institution. The
+                October 2024 Linux maintainer removals and the June 2026
+                Anthropic directive are the same lever, free and paid
+                alike. IT Philosophy &#x22A3; European Software
+                Sovereignty, 2 of 3.</p>
+        </article>
+        <article class="vv-series-item">
+            <span class="day">12 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">linux</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">architecture</span>
+            </div>
+            <h3><a href="/blog/nine-years-in-the-page-cache">Nine Years in the Page Cache</a></h3>
+            <p>On 29 April 2026 a researcher at Theori disclosed
+                CVE-2026-31431, named <em>Copy Fail</em>: a Linux
+                kernel flaw that lets an unprivileged local user
+                become root in 732 bytes of Python, on every
+                distribution shipping a kernel from the last nine
+                years. It does not race. It does not crash. Three
+                correct decisions, three different teams, fifteen
+                years apart, meeting in the page cache: AF_ALG
+                (2010), authencesn (2011), AEAD splice (2015),
+                in-place optimisation (2017). The composition gives
+                a deterministic four-byte primitive against the
+                in-memory copy of any file the user can read. The
+                classical target is <code>/usr/bin/su</code>; the
+                disk is unchanged; the page is never marked dirty;
+                Tripwire, AIDE and EDR host-integrity tools see
+                nothing. The page cache is shared between
+                containers and the host, so the corridor crosses
+                container boundaries. On FreeBSD the equivalent
+                does not arise in the same form: crypto via
+                <code>/dev/crypto</code>; Capsicum (FreeBSD 9,
+                2012) narrows the corridor structurally; jails are
+                a kernel-native primitive. The recommendation is
+                not "patch and move on"; it is <strong>check the
+                seams</strong>. Security Review &#x22A3; A
+                four-byte write, three optimisations, and a kernel
+                that forgot the layer beneath.</p>
+        </article>
+        <article class="vv-series-item">
+            <span class="day">10 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">javascript</span>
+                <span class="vv-pill">node</span>
+                <span class="vv-pill">architecture</span>
                 <span class="vv-pill">performance</span>
             </div>
-            <h3><a href="/blog/why-we-reach-for-the-layer">Why We Reach for the Layer</a></h3>
-            <p>The ORM hides the SQL. The cache hides the ORM. The
-                service mesh hides the services. Dijkstra (1968) and
-                Parnas (1972) introduced layers as a discipline to
-                contain complexity; somewhere between Parnas and the
-                cloud generation, containing became postponing. SQLite,
-                awk and pf are the proof that reduction is achievable.
-                The plaster is cheap. The wound is not.</p>
+            <h3><a href="/blog/the-unauditable-ones">The Unauditable Ones</a></h3>
+            <p>Open a fresh terminal.
+                <code>npm create vite@latest my-app</code>, three
+                minutes later <code>npm install</code> settles. On
+                disk: 250 to 400 MB for the lean choice, 700 MB to
+                a gigabyte for Next.js, 100,000 to 220,000 files,
+                1,200 to 1,800 transitively pulled packages, a
+                maintainer count in the hundreds, often four-figure.
+                You have not written a line. Four things broke at
+                the same time: the count was never justified
+                (HTMX is 14 KB, MediaWiki runs Wikipedia, Pingora
+                runs Cloudflare with 70 per cent less CPU at one
+                trillion requests per day); the boundary was never
+                drawn (<code>node_modules</code> has no
+                responsibility line; libc has one); the workaround
+                became architecture (Node's single-threaded loop
+                became "one container per core"; Prime Video,
+                Segment and Istio are walking back); the layers
+                hide what they should bound (ORM hides SQL, mesh
+                hides services; containing became postponing).
+                Lean Software &#x22A3; How We Got Here, 1 of 18.</p>
         </article>
         <article class="vv-series-item">
-            <span class="day">02 May 2026</span>
+            <span class="day">8 June 2026</span>
             <div class="vv-pills">
-                <span class="vv-pill">web</span>
-                <span class="vv-pill">security</span>
-                <span class="vv-pill">javascript</span>
+                <span class="vv-pill">unix</span>
+                <span class="vv-pill">freebsd</span>
                 <span class="vv-pill">architecture</span>
+                <span class="vv-pill">linux</span>
             </div>
-            <h3><a href="/blog/the-browser-brought-its-own-ai">The Browser That Brought Its Own AI</a></h3>
-            <p>Open <code>chrome://on-device-internals</code> and, if
-                your machine qualifies, you will see a multi-gigabyte
-                Gemini Nano model that Chrome has quietly downloaded.
-                Any website can call it through an API in JavaScript.
-                There is no permission prompt. The browser used to ask
-                about the camera. It does not ask about the model. Same
-                pattern in Edge, Brave, Firefox, Arc and Safari. Not in
-                the Brief opens.</p>
+            <h3><a href="/blog/where-unix-runs-today">Where Unix Runs Today</a></h3>
+            <p>Open the laptop in front of you. If it is a Mac, you
+                are on certified Unix; every version of macOS from
+                10.5 Leopard (2007) through 15 Sequoia (2024) is
+                certified UNIX 03. The phone in your pocket is
+                Darwin underneath. The Netflix stream you watched
+                on Friday came off a FreeBSD Open Connect appliance
+                pushing around 375 Gbps with TLS offload (a
+                FreeBSD-13 feature by Drew Gallatin and Chelsio);
+                the fleet pushes over 100 Tbps at peak. PlayStation
+                4 and 5 boot Sony-customised FreeBSD 9 and 11; over
+                200 million units have shipped. Juniper Junos has
+                been FreeBSD-based since July 1998; Junos OS
+                Evolved (2018) is the parallel Linux-kernel line.
+                AIX 7 is the only UNIX V7 in production, Solaris is
+                in sustaining support, HP-UX is fading, z/OS runs a
+                substantial part of world banking. Linux is not on
+                this list, not because it does not matter but
+                because Linux is <em>Unix-like</em>, not Unix
+                &#x2014; written from scratch in 1991, GNU userland,
+                never certified. You have been holding Unix all
+                morning. Unix Universe &#x22A3; What Unix Is, 1 of
+                3.</p>
         </article>
         <article class="vv-series-item">
-            <span class="day">01 May 2026</span>
+            <span class="day">7 June 2026</span>
             <div class="vv-pills">
                 <span class="vv-pill">licensing</span>
                 <span class="vv-pill">law</span>
-                <span class="vv-pill">saas</span>
+                <span class="vv-pill">freebsd</span>
                 <span class="vv-pill">architecture</span>
             </div>
-            <h3><a href="/blog/the-subscription-you-did-not-ask-for">The Subscription You Did Not Ask For</a></h3>
-            <p>In 2012 a studio bought Adobe CS6 once for around 2,500
-                EUR per seat. In 2026 it leases Creative Cloud for
-                around 743 EUR per seat per year. Three hooks: file
-                formats, cloud libraries, a 50 per cent Early
-                Termination Fee the US DOJ took to court in June 2024.
-                Eighty per cent market share makes the lock-in
-                industry-wide. Even the alternatives have changed
-                hands twice in eighteen months. In the Net opens.</p>
+            <h3><a href="/blog/open-is-not-owned">Open Is Not Owned</a></h3>
+            <p>A great deal of procurement language at the moment
+                treats <em>open source</em> as a sovereignty
+                answer. <em>Open</em> and <em>owned</em> are not
+                the same word. A licence is not a deed of
+                ownership; it is a statement of conditions. Three
+                shelves rather than two: permissive (BSD, MIT,
+                Apache 2.0) moves ownership cleanly; copyleft (GPL,
+                LGPL, EUPL-1.2) keeps the code open but absorbs
+                surrounding code; network copyleft (AGPLv3) closes
+                the SaaS loophole on the program itself. SSPL is
+                not OSI-recognised. FreeBSD 10.0 (January 2014)
+                rebuilt its base on Clang because GPLv3 did not
+                allow a uniformly permissive base. The xz backdoor
+                (CVE-2024-3094) discovered by Andres Freund in
+                March 2024 reminds us that <em>open</em> and
+                <em>audited</em> are different words. The October
+                2024 Linux maintainer adjustment is the lever the
+                Linux Foundation's US registration makes possible.
+                The CLOUD Act (2018) and Schrems II (2020) codify
+                the European stake; the same reasoning runs in
+                Beijing, New Delhi, Moscow, Brasilia. A licence is
+                a permission slip; sovereignty is reproducible
+                local build, audit and signing, and continuous
+                re-receipt. IT Philosophy &#x22A3; European
+                Software Sovereignty, 1 of 3.</p>
         </article>
     </div>
     <p><a href="/blog">All articles &#x2192;</a></p>

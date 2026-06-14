@@ -47,11 +47,1203 @@
         <button class="vv-tag-btn" data-filter="beta-stories">Beta Stories</button>
         <button class="vv-tag-btn" data-filter="on-second-thought">On Second Thought</button>
         <button class="vv-tag-btn" data-filter="by-design">By Design</button>
+        <button class="vv-tag-btn" data-filter="wire-fire">Wire Fire</button>
     </div>
 
     <nav class="vv-pager" id="pager-top" aria-label="Page navigation"></nav>
 
     <div class="vv-series" id="blog-list">
+        <article class="vv-series-item" data-tags="it-philosophy">
+            <span class="day">14 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">sovereignty</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">licensing</span>
+            </div>
+            <h3><a href="/blog/the-single-tree">The Single Tree</a></h3>
+            <p>You can fork the source. You cannot fork the
+                jurisdiction. Three properties travel under the single
+                banner of <em>open source</em> and are not the same:
+                permission (may I read, modify, fork this, answered by
+                the licence), forkability (can I hold a local tree at a
+                cost I can bear, answered by the architecture), and
+                jurisdiction (who governs the upstream and under whose
+                law, answered by the institution). Linux is a kernel;
+                what boots is a distribution assembled from several
+                hundred independently-governed projects. FreeBSD is one
+                tree &#x2014; kernel, libc, userland, documentation,
+                toolchain, release engineering &#x2014; released as one
+                snapshot by one team: the <em>base system</em>. Only
+                permissive licensing truly lets go: fork FreeBSD and you
+                import the code and nothing else; fork a GPL tree and the
+                licence travels with every line, an unrepealable
+                co-governor, because the kernel is GPLv2. The Linux
+                Foundation 2024/2025 report puts 84,3% of kernel commits
+                with paid corporate developers; the kernel travels where
+                the salaries point. In October 2024 about eleven
+                maintainers were removed under <em>compliance
+                requirements</em>; the Foundation is US-registered.
+                Forking the source does not fork the governance. On 13
+                June 2026 the US Commerce Department directed Anthropic to
+                suspend its two most capable models for all foreign
+                nationals, three days after launch; the paying customer
+                had no more leverage than the unpaid contributor. A
+                subscription is not a sovereignty; the lever is orthogonal
+                to the licence. The only complete answer is to
+                <strong>become the institution</strong> and govern the
+                tree under your own law, which the permissive FreeBSD
+                model allows and the GPL variations Linux is built from do
+                not. Schleswig-Holstein and France are migrating off
+                Microsoft onto open source and calling it sovereignty; it
+                is a real first step, and only the first. IT Philosophy
+                &#x22A3; European Software Sovereignty, 2 of 3.</p>
+        </article>
+        <article class="vv-series-item" data-tags="security-review">
+            <span class="day">12 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">linux</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">architecture</span>
+            </div>
+            <h3><a href="/blog/nine-years-in-the-page-cache">Nine Years in the Page Cache</a></h3>
+            <p>On 29 April 2026 a researcher at Theori disclosed
+                CVE-2026-31431, named <em>Copy Fail</em>: a Linux
+                kernel flaw that lets an unprivileged local user
+                become root in 732 bytes of Python, on every
+                distribution shipping a kernel from the last nine
+                years. It does not race. It does not crash. The
+                Linux kernel security team patched it in eight
+                days. This is not the story of a single bug; it is
+                three correct decisions, three different teams,
+                fifteen years apart, meeting in the page cache:
+                AF_ALG (2010), authencesn (2011), AEAD splice
+                (2015), in-place optimisation (2017, changeset
+                <code>72548b093ee3</code>). The composition gives a
+                deterministic four-byte primitive against the
+                in-memory copy of any file the user can read. The
+                classical target is <code>/usr/bin/su</code>; the
+                disk is unchanged; the page is never marked dirty;
+                Tripwire, AIDE and EDR host-integrity tools see
+                nothing. The page cache is shared between
+                containers and the host, so the corridor crosses
+                container boundaries. On FreeBSD the equivalent
+                does not arise in the same form: kernel crypto via
+                <code>/dev/crypto</code> rather than AF_ALG;
+                Capsicum (FreeBSD 9, 2012) narrows the corridor
+                structurally; jails are a kernel-native primitive,
+                not a daemon-mediated arrangement of namespaces.
+                The recommendation is not "patch and move on"; it
+                is <strong>check the seams</strong>. Security
+                Review &#x22A3; A four-byte write, three
+                optimisations, and a kernel that forgot the layer
+                beneath.</p>
+        </article>
+        <article class="vv-series-item" data-tags="lean-software">
+            <span class="day">10 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">javascript</span>
+                <span class="vv-pill">node</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">performance</span>
+            </div>
+            <h3><a href="/blog/the-unauditable-ones">The Unauditable Ones</a></h3>
+            <p>Open a fresh terminal.
+                <code>npm create vite@latest my-app</code>, three
+                minutes later <code>npm install</code> settles. On
+                disk: 250 to 400 MB for the lean choice, 700 MB to
+                a gigabyte for Next.js, 100,000 to 220,000 files,
+                1,200 to 1,800 transitively pulled packages, a
+                maintainer count in the hundreds, often four-figure.
+                You have not written a line. Four things broke at
+                the same time. <strong>One:</strong> the count was
+                never justified &#x2014; HTMX is 14 KB, MediaWiki
+                runs Wikipedia, GOV.UK is HTML-first, Cloudflare's
+                Pingora replaced nginx+Lua with 70 per cent less
+                CPU at one trillion requests per day.
+                <strong>Two:</strong> the boundary was never drawn
+                &#x2014; <code>node_modules</code> has no
+                responsibility line; libc has. <strong>Three:</strong>
+                the workaround became architecture &#x2014; Node's
+                single-threaded loop became "one container per
+                core", and the container became the unit of
+                thought; Prime Video, Segment and Istio are
+                walking back. <strong>Four:</strong> the layers
+                hide what they should bound &#x2014; ORM hides
+                SQL, mesh hides services, operator hides YAML;
+                containing became postponing. The first of
+                eighteen Wednesdays on how we got here. Lean
+                Software &#x22A3; How We Got Here, 1 of 18.</p>
+        </article>
+        <article class="vv-series-item" data-tags="unix-universe">
+            <span class="day">8 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">unix</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">linux</span>
+            </div>
+            <h3><a href="/blog/where-unix-runs-today">Where Unix Runs Today</a></h3>
+            <p>Open the laptop in front of you. If it is a Mac, you
+                are on certified Unix; every version of macOS from
+                10.5 Leopard (2007) through 15 Sequoia (2024) is
+                certified UNIX 03 by The Open Group. The phone in
+                your pocket is Darwin underneath, the same family.
+                The Netflix stream you watched on Friday came off
+                an Open Connect appliance running FreeBSD &#x2014;
+                one box pushes around 375 Gbps with TLS offload, a
+                FreeBSD-13 feature by Drew Gallatin and Chelsio,
+                and the fleet pushes over 100 Tbps at peak. The
+                PlayStation 4 and 5 boot Sony-customised FreeBSD 9
+                and 11; over 200 million units have shipped.
+                Juniper Junos has been FreeBSD-based since July
+                1998 and runs a substantial part of the internet's
+                backbone routing equipment (Junos OS Evolved, from
+                R18.3 in 2018, is the Linux-kernel cousin in
+                parallel). AIX 7 is the only UNIX V7 in production
+                today, Solaris is in sustaining support, HP-UX is
+                fading, z/OS runs a substantial part of world
+                banking. Linux is not on the list, not because it
+                does not matter but because Linux is not Unix; it
+                is <em>Unix-like</em>, written from scratch in 1991
+                with GNU userland, never on the trademark register.
+                You have been holding Unix all morning. Unix
+                Universe &#x22A3; What Unix Is, 1 of 3.</p>
+        </article>
+        <article class="vv-series-item" data-tags="it-philosophy">
+            <span class="day">7 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">licensing</span>
+                <span class="vv-pill">law</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">architecture</span>
+            </div>
+            <h3><a href="/blog/open-is-not-owned">Open Is Not Owned</a></h3>
+            <p>A great deal of procurement language at the moment
+                treats <em>open source</em> as a sovereignty
+                answer. <em>Open</em> and <em>owned</em> are not the
+                same word. A licence is not a deed of ownership; it
+                is a statement of conditions. Three shelves rather
+                than two: permissive (BSD, MIT, Apache 2.0) moves
+                ownership cleanly to the receiver; copyleft (GPL,
+                LGPL, EUPL-1.2) keeps the code open but absorbs the
+                surrounding code; network copyleft (AGPLv3) closes
+                the SaaS loophole on the program itself. SSPL
+                (MongoDB 2018, Elastic 2021) extends the
+                requirement to the surrounding management stack
+                and is not OSI-recognised. FreeBSD 10.0 (January
+                2014) migrated its base from GCC to Clang because
+                GPLv3 did not allow a uniformly permissive base.
+                The xz backdoor (CVE-2024-3094, CVSS 10.0)
+                discovered by Andres Freund in March 2024 reminds
+                us that <em>open</em> and <em>audited</em> are
+                different words. The October 2024 Linux maintainer
+                adjustment is the lever the Linux Foundation's US
+                registration makes possible. The CLOUD Act (2018)
+                and Schrems II (2020) codify the European stake; the
+                same reasoning runs in Beijing, New Delhi, Moscow,
+                Brasilia. A licence is a permission slip; sovereignty
+                is reproducible local build, audit and signing, and
+                continuous re-receipt. IT Philosophy &#x22A3;
+                European Software Sovereignty, 1 of 3.</p>
+        </article>
+        <article class="vv-series-item" data-tags="editorial">
+            <span class="day">6 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">web</span>
+            </div>
+            <h3><a href="/blog/a-change-of-shape">A Change of Shape</a></h3>
+            <p>After almost two hundred posts written under nine
+                series labels, the labels are coming off. From
+                tomorrow, this feed runs as a small editorial week
+                instead. Four days, four ressorts, no series hooks,
+                no episode counters, no content-marketing furniture.
+                The series-brand format, after some hundreds of
+                posts, becomes a procrustean bed: each post arrives
+                pre-shaped by the masthead it is assigned to, by the
+                hook symbol that needs to be there because the hook
+                symbol has always been there. None of the old work
+                goes away; the archive stands, but no new pieces
+                are written under the old mastheads. Monday: Unix
+                Universe. Wednesday: Lean Software. Friday: Security
+                Review, replacing the interruptive Wire Fire sitrep
+                with a scheduled weekly column at a calmer cadence.
+                Sunday: IT Philosophy. The voice stays: the British
+                editorial tone, the FreeBSD anchor wherever it earns
+                its place, the honest disclaimers, the Sunday
+                long-form discipline. Tomorrow opens the first bow
+                on Sunday: the first of three pieces on European
+                software sovereignty, under the title <em>Open Is
+                Not Owned</em>. A small editorial week begins. Same
+                writer, four angles, sharper form. The hooks come
+                off; the work does not.</p>
+        </article>
+        <article class="vv-series-item" data-tags="in-the-net">
+            <span class="day">5 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">licensing</span>
+                <span class="vv-pill">law</span>
+                <span class="vv-pill">devops</span>
+                <span class="vv-pill">architecture</span>
+            </div>
+            <h3><a href="/blog/the-terms-you-did-not-sign">The Terms You Did Not Sign</a></h3>
+            <p>You wrote your first Terraform configuration in 2014
+                or 2017, on a licence you understood. In August
+                2023 HashiCorp quietly changed it. Terraform, Vault,
+                Consul, Nomad, Packer and Boundary went from MPL
+                2.0 to the Business Source License 1.1. In April
+                2024 IBM announced a $6.4 billion acquisition; it
+                closed on 27 February 2025. The .tf files in your
+                repository are not, today, the licence they were
+                when you wrote them. BSL 1.1 is not OSI Open Source;
+                the Additional Use Grant forbids "production use
+                that competes with HashiCorp's commercial
+                offering", ambiguous by design. Each release reverts
+                to MPL 2.0 four years after publication. OpenTofu
+                was forked fifteen days after the announcement,
+                accepted into the Linux Foundation on 20 September
+                2023 with founding sponsors Spacelift, Harness,
+                Gruntwork, env0 and Scalr; OpenTofu 1.6 shipped
+                in January 2024 as a drop-in, with state files
+                forward-compatible. OpenBao followed in December
+                2024 for Vault. Beyond BSL: Pulumi (Apache 2.0)
+                and Crossplane (Apache 2.0). This is the sixth
+                distinct lock-in genus: lock-in by retroactive
+                adoption, the hooks retrofitted onto a tool already
+                in production. You wrote infrastructure as code so
+                the next engineer could read it. You did not
+                promise the next licence-holder would let them. In
+                the Net Episode 06.</p>
+        </article>
+        <article class="vv-series-item" data-tags="by-design">
+            <span class="day">4 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">unix</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">linux</span>
+            </div>
+            <h3><a href="/blog/unix-everything-is-a-file">Unix, Everything Is a File</a></h3>
+            <p>In the summer of 1969 Ken Thompson had three weeks
+                of uninterrupted time at Bell Labs while his
+                family was visiting California. He wrote the first
+                version of Unix on a PDP-7 with four kilobytes of
+                memory. With Dennis Ritchie and Rudd Canaday the
+                team built a hierarchical filesystem, processes,
+                pipes, and one architectural idea that has carried
+                half a century without much fading: the file as the
+                universal interface. A device, a pipe, a socket, a
+                process listing, all opened, read, written and
+                closed through the same system calls. ioctl is the
+                honest escape hatch for what does not fit. Ritchie
+                and Thompson's 1974 CACM paper codified what had
+                been on the PDP-7 since 1969; Plan 9 (Pike,
+                Thompson, Presotto, Winterbottom, 1992) pushed the
+                idea to its logical end, with even the window
+                system as a file system. On FreeBSD the discipline
+                is intact: <code>devfs</code> since 5.0 (2003),
+                GELI as <code>/dev/&lt;name&gt;.eli</code>, ZFS
+                volumes under <code>/dev/zvol/</code>, bhyve under
+                <code>/dev/vmm/</code>. Linux has, in some corners,
+                drifted: D-Bus (2002), systemd (2010), Netlink,
+                eBPF. None are wrong; the cumulative effect is that
+                the file is now one of several interfaces rather
+                than the interface. Ritchie's verdict on Plan 9
+                that Unix did not follow through has, read against
+                2026 Linux, rotated by 180 degrees. One interface,
+                infinite implementations. A Unix one-liner reads
+                almost like a sentence because every noun in it is
+                a file. By Design Episode 07.</p>
+        </article>
+        <article class="vv-series-item" data-tags="tales-from-the-bare-metal">
+            <span class="day">3 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">devops</span>
+                <span class="vv-pill">kubernetes</span>
+                <span class="vv-pill">cloud</span>
+            </div>
+            <h3><a href="/blog/the-eighth-server">The Eighth Server</a></h3>
+            <p>At 09:30 on 1 August 2012 the New York Stock
+                Exchange opened the Retail Liquidity Program. By
+                10:15 Knight Capital had ceased to be a going
+                concern. Forty-five minutes had cost the firm
+                roughly $440 million. The culprit was one server
+                out of eight, running code from 2003 that should
+                have been gone for years. Knight's SMARS routing
+                system ran on eight servers; new code reached
+                seven; the eighth kept a 2003 module called Power
+                Peg, disabled after 2005 by a flag, never deleted.
+                In 2012 the same flag bit was repurposed for RLP
+                eligibility. On seven servers the bit meant RLP. On
+                the eighth, in code from 2003, it still meant start
+                Power Peg. Each eligible order woke a nine-year-old
+                corpse; Power Peg had no concept of "order
+                filled". Three drifts compounded, none foolish at
+                the time: dead code disabled by a flag rather than
+                deleted, a deploy script that treated files-copied
+                as success, a release note that recorded a new use
+                of the flag without auditing every prior one. Two
+                disciplines would have stopped it. Delete dead code,
+                do not gate it. Verify after deploy: every target
+                reports the new build hash. On FreeBSD, <code>rc.d</code>
+                plus a shell loop hitting <code>/version</code> on
+                each host. The same shape travels: Kubernetes
+                cached images, feature flags with shifted semantics,
+                stale AMIs, Helm manifests from older caches. A
+                deploy that succeeds on seven of eight is one that
+                failed quietly on one. Production does not give
+                partial credit; the market gives none at all. Tales
+                from the Bare Metal Episode 06.</p>
+        </article>
+        <article class="vv-series-item" data-tags="technical-beauty">
+            <span class="day">2 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">unix</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">tooling</span>
+                <span class="vv-pill">devops</span>
+            </div>
+            <h3><a href="/blog/patch">patch</a></h3>
+            <p>A maintainer sends you a fix. Not a branch, not a
+                pull request, not an invitation to fetch from a
+                remote. A text file with plus signs and minus signs
+                and a few lines of context around them. You type one
+                command, and your tree is current. A patch is a
+                recipe, not a snapshot: it does not contain the new
+                file, it contains the change that turns the old
+                file into the new one, which is why a fix to a
+                million-line codebase can travel as twenty lines of
+                email. The vocabulary is small: a header, hunk
+                ranges (<code>@@ -42,7 +42,9 @@</code>), context
+                space-prefixed, deletions minus-prefixed, additions
+                plus-prefixed. The daily idiom is
+                <code>diff -u</code> to make and
+                <code>patch -p1</code> to apply. When a hunk does
+                not fit cleanly, patch tries line-fuzz; if it still
+                cannot, it writes the rejected hunk to a
+                <code>.rej</code> file, plainly. Honest about its
+                limits, that. FreeBSD ships patch in base, BSD-
+                licensed, descended directly from Larry Wall's
+                original source line; GNU patch is a separate fork
+                from the same root, GPL; both remain interoperable.
+                Larry Wall posted patch 1.3 to mod.sources on 8 May
+                1985 from NASA's JPL, two years before Perl; Wayne
+                Davison posted unidiff to
+                <code>comp.sources.misc</code> in August 1990,
+                saving roughly a quarter of the bytes. Forty-one
+                years later, every code review still speaks unified
+                diff. A format becomes universal when it is small
+                enough to be a sentence. Wall's was. Technical
+                Beauty Episode 38.</p>
+        </article>
+        <article class="vv-series-item" data-tags="the-unix-way">
+            <span class="day">1 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">linux</span>
+                <span class="vv-pill">unix</span>
+                <span class="vv-pill">tooling</span>
+            </div>
+            <h3><a href="/blog/procstat-vs-lsof">procstat vs lsof</a></h3>
+            <p>You go to delete a file. The system tells you it is
+                busy. <code>df</code> disagrees with <code>du</code>
+                by twenty gigabytes. Four refusals, one shared
+                question: which process is holding it open? FreeBSD
+                splits the work. <code>procstat(1)</code> is the
+                modern per-process interview, shipped with FreeBSD
+                9.0 in 2012 by Robert N M Watson and built on
+                <code>libprocstat(3)</code>, a stable C library
+                every tool can link against; <code>fstat(1)</code>
+                is the system-wide ledger, in base since
+                4.3BSD-Tahoe in 1988. Linux folds the same job into
+                <code>lsof(8)</code>, written by Vic Abell at
+                Purdue in 1991, two years after he had ported BSD's
+                fstat to DYNIX, SunOS and ULTRIX. The universal
+                hammer: regular files, sockets, pipes, anonymous
+                inodes, character devices and the synthetic entries
+                in <code>/proc</code>. <code>lsof +L1</code> names
+                the deleted-but-held files when <code>df</code> and
+                <code>du</code> disagree; on FreeBSD the shape is
+                <code>fstat -p &lt;pid&gt; | awk '$5=="-"'</code>.
+                The Unix way prefers parts that compose;
+                <code>lsof</code> prefers parts that arrive
+                together. Both ship with the OS. Neither asks you to
+                write JSON. Learn the flags before the page goes
+                off. The Unix Way Episode 19.</p>
+        </article>
+        <article class="vv-series-item" data-tags="on-second-thought">
+            <span class="day">31 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">kubernetes</span>
+                <span class="vv-pill">devops</span>
+            </div>
+            <h3><a href="/blog/why-we-restart-to-fix-it">Why We Restart to Fix It</a></h3>
+            <p>The pager has gone off. Memory on the auth service is
+                climbing. You SSH in, see nothing in particular, run
+                <code>kubectl delete pod</code>. Memory is fresh.
+                Nobody asks what was wrong. The reflex has two
+                parents and we kept one: a consumer-electronics
+                tradition with no language to be asked, and a 1986
+                architecture from Ericsson's Stockholm lab. Joe
+                Armstrong, Robert Virding and Mike Williams began
+                Erlang for telephone exchanges that could not go
+                down; the AXD301 switch is most often cited at nine
+                nines (the figure is contested, the architecture is
+                not). Let it crash, properly read, is not the Sky+
+                box; it is the IT Crowd if Roy were a written
+                contract. Processes are isolated, every worker has a
+                supervisor, every supervisor has a written strategy
+                (one-for-one, one-for-all, rest-for-one) with an
+                escalation limit. A failure is data. What we kept
+                was the crash; what we left in Stockholm was the
+                supervisor. Kubernetes liveness probes are, honestly
+                read, a contract that the orchestrator rotates the
+                symptoms while the cause goes unexamined.
+                Self-healing is accurate in the sense that someone
+                taking paracetamol every four hours has a
+                self-healing headache. WhatsApp serves over a
+                billion users on around fifty engineers, on Erlang,
+                on the Stockholm supervisor architecture. FreeBSD
+                has <code>init</code>, <code>rc.d</code>,
+                <code>dtrace</code>, <code>ktrace</code>,
+                <code>procstat</code>, core dumps; the reboot is
+                available, rarely the first reach, because the
+                system speaks. A restart is not a tool, it is a
+                measurement of how much of the cause you decided you
+                could afford to leave unknown. On Second Thought
+                Episode 10.</p>
+        </article>
+        <article class="vv-series-item" data-tags="not-in-the-brief">
+            <span class="day">30 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">cloud</span>
+                <span class="vv-pill">law</span>
+            </div>
+            <h3><a href="/blog/the-os-that-brought-its-own-ai">The OS That Brought Its Own AI</a></h3>
+            <p>Your phone changed assistants. You did not. Sometime
+                between Android 14 and 16, Google Assistant retired
+                and Gemini moved into the OS-level assistant slot,
+                the same long-press, the same "Hey Google". Pixel 10
+                shipped with Gemini already in the slot; eligible
+                Android devices (Android 10 or later, 2 GB RAM and
+                up) switched over by system update during 2025;
+                standalone Google Assistant retires around 31 March
+                2026, after which the only choices are Gemini or
+                None. On Pixel-class hardware Gemini Nano runs
+                on-device for a slice and powers Magic Compose, Call
+                Notes, Recorder Summaries and Scam Detection; heavier
+                work goes to Google's cloud, and the boundary is set
+                by Google with no UI indicator. iOS 27, due autumn
+                2026, takes the opposite path: Gemini as a sandboxed
+                extension at the application layer, opt-in, isolated
+                from the slot. A sandbox can be revoked and audited;
+                a model in the slot inherits the slot. The
+                architecture follows the business: Apple FY2025 is
+                about 74 per cent hardware, Alphabet 2025 about three
+                quarters advertising. The OS used to ask before
+                changing your browser. It did not ask before changing
+                the model behind your microphone. Not in the Brief
+                Episode 05.</p>
+        </article>
+        <article class="vv-series-item" data-tags="in-the-net">
+            <span class="day">29 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">licensing</span>
+                <span class="vv-pill">saas</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">law</span>
+            </div>
+            <h3><a href="/blog/the-licence-you-did-not-count">The Licence You Did Not Count</a></h3>
+            <p>You did not change how you use Java. In January 2023
+                Oracle changed how it counts you. The unit is no
+                longer how many people run Java; it is how many people
+                you employ. On 23 January 2023 Oracle replaced its
+                per-user and per-processor metrics with the Java SE
+                Universal Subscription, priced per employee, where
+                "employee" means every member of staff plus
+                contractors and agents, whether or not they have ever
+                touched Java. One server running Oracle's Java makes
+                the entire headcount billable. A firm of 12,000 staff
+                pays over &euro;2 million a year whether twelve or
+                twelve hundred use Java. Oracle reads download history,
+                so a single legacy install becomes a retroactive claim
+                against the whole workforce. The escape is one of the
+                cleanest in the series, because the format was never
+                proprietary: switch to a free OpenJDK build (Temurin,
+                Corretto, Zulu, Liberica), all TCK-tested and built
+                from the same source as Oracle's binary from Java 11
+                on. Write once, run anywhere. Licence once, pay for
+                everyone. In the Net Episode 05.</p>
+        </article>
+        <article class="vv-series-item" data-tags="wire-fire">
+            <span class="day">28 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">web</span>
+            </div>
+            <h3><a href="/blog/your-neighbour-is-now-root">Your Neighbour Is Now Root</a></h3>
+            <p>On a shared hosting server you share one machine with
+                hundreds of strangers. This week it emerged that any
+                one of them could become root, and on a shared server
+                root over one account is root over all of them.
+                CVE-2026-48172, a flaw in the LiteSpeed cPanel plugin,
+                exposed <code>lsws.redisAble</code> through the normal
+                cPanel API to any logged-in customer; it forgot to ask
+                who was calling and ran as root (CWE-266). On 19 May
+                cPanel pulled the plugin, citing "unauthorized root
+                access"; LiteSpeed fixed it on 21 May; on 26 May CISA
+                listed it as actively exploited, a zero-day before the
+                patch existed (CVSS v4.0: 10.0). Versions 2.3 to 2.4.4
+                are affected; upgrade to 2.4.7 or remove the plugin.
+                Shared hosting sells a boundary it does not enforce:
+                hundreds of tenants share one kernel, one root, and the
+                wall is plugin code and good manners. On FreeBSD the
+                tenant boundary has a name, the jail, enforced in the
+                kernel. You never chose the strangers on your server.
+                This week, one of them could choose to be you. Wire
+                Fire Episode 03.</p>
+        </article>
+        <article class="vv-series-item" data-tags="tales-from-the-bare-metal">
+            <span class="day">27 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">cloud</span>
+                <span class="vv-pill">devops</span>
+                <span class="vv-pill">freebsd</span>
+            </div>
+            <h3><a href="/blog/the-fire-that-reached-the-backups">The Fire That Reached the Backups</a></h3>
+            <p>In the early hours of 10 March 2021, a fire began in a
+                power room in Strasbourg. By morning an entire
+                OVHcloud data centre was gone. The data loss was not
+                the surprise; the surprise, for thousands of
+                customers, was that they had backups, and the backups
+                had burned with the building. SBG2 was destroyed
+                entirely, SBG1 badly damaged; ~3.6 million websites
+                went dark. SBG2 used a free-cooling tower design that,
+                once alight, behaved like a chimney; the floors were
+                wooden, rated for about an hour; none of the five
+                buildings had an automatic extinguishing system. The
+                lesson is not cooling towers but failure domains: a
+                backup can be complete, valid and restorable and still
+                worthless if it shares a failure domain with the
+                original. The rule is older than the cloud: 3-2-1,
+                three copies, two media, one off-site. On FreeBSD,
+                <code>zfs send</code> a snapshot to a pool in another
+                region; with restic or borg, replicate somewhere the
+                same fire cannot reach. Redundancy that shares a
+                postcode is decoration. The fire does not read your
+                architecture diagram. It reads the floor plan. Tales
+                from the Bare Metal Episode 05.</p>
+        </article>
+        <article class="vv-series-item" data-tags="technical-beauty">
+            <span class="day">26 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">unix</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">tooling</span>
+                <span class="vv-pill">linux</span>
+            </div>
+            <h3><a href="/blog/find">find</a></h3>
+            <p>A disk is filling up. Somewhere under /var are thousands
+                of stale log files. One line finds them all and clears
+                them: <code>find /var/log -name '*.log' -mtime +30
+                -delete</code>. No loop, no script. The tool that reads
+                that line like a sentence has been doing so since 1979.
+                Most Unix tools take flags; find takes an expression.
+                You compose primaries (<code>-name</code>,
+                <code>-type</code>, <code>-mtime</code>,
+                <code>-size</code>) and operators (implicit AND,
+                <code>-o</code>, <code>!</code>, grouping) into a small
+                query language, and the tool walks the tree satisfying
+                it. That is the reduction: not a flag for every case,
+                but a grammar that builds every case from a few parts.
+                FreeBSD ships BSD find in base, BSD-licensed and
+                POSIX-clean; GNU findutils (GPL) accreted more. Dick
+                Haight wrote find for Version 7 Unix in 1979 in the
+                Unix Support Group; the researchers were put off by the
+                syntax and kept it because it was useful. The modern
+                descendant fd (David Peter, Rust, 2017) reproduces the
+                same idea. find is the rare Unix tool that is a little
+                language pretending to be a command. Technical Beauty
+                Episode 37.</p>
+        </article>
+        <article class="vv-series-item" data-tags="the-unix-way">
+            <span class="day">25 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">linux</span>
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">unix</span>
+            </div>
+            <h3><a href="/blog/geli-vs-luks">GELI vs LUKS</a></h3>
+            <p>A laptop is left on a train. With full-disk encryption,
+                the finder has an expensive paperweight and a drive
+                full of noise. Without it, they have your keys, your
+                mail and your customers. FreeBSD and Linux both solve
+                this well; they solve it rather differently. GELI is a
+                GEOM class: in FreeBSD the block layer is one
+                framework, and encryption is just another composable
+                transform alongside mirroring, striping and labelling,
+                with per-sector HMAC integrity behind one flag. LUKS
+                writes a LUKS2 header and opens the device through
+                device-mapper as dm-crypt; its argon2id key derivation
+                is memory-hard and genuinely ahead of GELI's PBKDF2.
+                For integrity on Linux you add a second layer,
+                dm-integrity, beneath dm-crypt. Both default to
+                AES-256-XTS and both turn a stolen drive into noise.
+                One framework of uniform parts, or several specialised
+                parts composed. The Unix way prefers the version you
+                can hold in one hand. The Unix Way Episode 18.</p>
+        </article>
+        <article class="vv-series-item" data-tags="on-second-thought">
+            <span class="day">24 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">unix</span>
+                <span class="vv-pill">tooling</span>
+            </div>
+            <h3><a href="/blog/why-we-mock-everything">Why We Mock Everything</a></h3>
+            <p>A new test file. Before a single assertion, you build a
+                world: a fake database, a fake clock, a fake mailer.
+                Forty lines of fakes, two lines of test. A test with
+                no mocks at all would look almost negligent. The unit
+                test was born pure: Kent Beck's SUnit (1994) tested
+                parsers, algorithms, pure functions, with nothing to
+                fake. We carried the practice into application code,
+                which is nothing but world, and faked the world to
+                keep calling the tests "unit" tests; dependency
+                injection arrived to make the faking tidy. The larger
+                half of the question nobody asked: why was the logic
+                tangled with the world in the first place? The most
+                testable software ever written has no mocks at all. A
+                Unix filter (grep, awk, sort) is pure: text in, text
+                out. Gary Bernhardt called the shape functional core,
+                imperative shell (2012); Alistair Cockburn called it
+                ports and adapters (2005). A mock is not a tool. It is
+                a reading on a gauge. On Second Thought Episode 09.</p>
+        </article>
+        <article class="vv-series-item" data-tags="not-in-the-brief">
+            <span class="day">23 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">law</span>
+                <span class="vv-pill">web</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">freebsd</span>
+            </div>
+            <h3><a href="/blog/the-box-ticked-while-you-read-this">The Box Ticked While You Read This</a></h3>
+            <p>You are reading this on LinkedIn. Somewhere in your
+                settings sits a switch labelled "Data for Generative
+                AI Improvement". For most of us it is on. None of us
+                turned it on. It lets LinkedIn use your profile and
+                public posts to train generative AI models, its own
+                and those of its affiliate Microsoft; private messages
+                are excluded. It arrived already enabled on 18
+                September 2024, opt-out only, before the terms were
+                updated to mention it. Europe was spared after the UK
+                ICO raised concerns, then switched on as well on 3
+                November 2025. The legal basis claimed is "legitimate
+                interest"; the opt-out is forward-only, so anything you
+                made public before the regional cut-off is already in
+                the set. This is not a breach and not surveillance:
+                the content is what you chose to publish. The
+                judgement is about architecture: default-on with a
+                quiet notice treats your silence as a yes. Settings
+                &amp; Privacy &#x2192; Data Privacy &#x2192; Data for
+                Generative AI Improvement: thirty seconds to check.
+                Not in the Brief Episode 04.</p>
+        </article>
+        <article class="vv-series-item" data-tags="in-the-net">
+            <span class="day">22 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">licensing</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">saas</span>
+                <span class="vv-pill">freebsd</span>
+            </div>
+            <h3><a href="/blog/the-renewal-you-did-not-survive">The Renewal You Did Not Survive</a></h3>
+            <p>You bought VMware once, outright, the way you buy a
+                tool. In November 2023 a $69 billion acquisition
+                closed, and the thing you owned quietly became a thing
+                you rent. Broadcom ended perpetual licences
+                (subscription only, or support and security updates
+                stop), withdrew the free ESXi hypervisor then quietly
+                reinstated it as a non-production build that cannot
+                reach vCenter, and moved licensing from per-CPU to
+                per-core sold in bundles (VVF, VCF) that bill for NSX
+                and vSAN whether or not you run them. VMware held
+                roughly 70 per cent of the virtualisation market in
+                2024; Gartner expects 40 per cent by 2029. Ingram
+                Micro stopped carrying VMware in early 2025; a 72-core
+                minimum appeared then vanished ("never announced a
+                price change"); AT&amp;T had to sue to keep support.
+                The escape route is a stack, not a product: bhyve,
+                jails and ZFS in the FreeBSD base, Sylve as the
+                Proxmox-style UI, Proxmox VE as the mainstream target,
+                migration over OVF and qcow2. The hypervisor, it turns
+                out, was never the expensive part. In the Net Episode
+                04.</p>
+        </article>
+        <article class="vv-series-item" data-tags="wire-fire">
+            <span class="day">21 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">tooling</span>
+                <span class="vv-pill">devops</span>
+                <span class="vv-pill">freebsd</span>
+            </div>
+            <h3><a href="/blog/your-editor-extensions-run-as-you">Your Editor Extensions Run as You</a></h3>
+            <p>On 18 May 2026 an attacker published a poisoned version
+                of a popular Visual Studio Code extension. It was live
+                for eleven minutes. That was long enough to reach a
+                GitHub employee's laptop and exfiltrate around 3,800
+                of GitHub's own internal source-code repositories,
+                confirmed 20 May. The extension was a trojanised build
+                of Nx Console (<code>nrwl.angular-console</code>)
+                version 18.95.0. The attacker, TeamPCP (Google Threat
+                Intelligence: UNC6780), is asking over 50,000 dollars
+                for the stolen repositories. A VS Code extension runs
+                with the full privileges of the developer who
+                installed it, with no sandbox; the moment a workspace
+                opens, its activation code runs and can read any file,
+                run any command, reach any credential. The editor is
+                now part of the supply chain. The marketplace is a
+                registry now, and it is not being watched like one. On
+                FreeBSD the structural fix has a name: Capsicum. Wire
+                Fire Episode 02.</p>
+        </article>
+        <article class="vv-series-item" data-tags="tales-from-the-bare-metal">
+            <span class="day">20 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">tooling</span>
+                <span class="vv-pill">devops</span>
+            </div>
+            <h3><a href="/blog/the-unit-that-crossed-a-boundary">The Unit That Crossed a Boundary</a></h3>
+            <p>23 September 1999. The Mars Climate Orbiter fires its
+                main engine to enter orbit, passes behind Mars, and is
+                never heard from again. The spacecraft cost 193 million
+                dollars. It was lost to a number with no unit on it.
+                Lockheed Martin's ground software computed thruster
+                impulse in pound-force seconds (imperial); NASA JPL's
+                trajectory software expected newton-seconds (metric).
+                One pound-force second is 4.45 newton-seconds. Every
+                correction over nine months was off by that factor;
+                the craft arrived at 57 km instead of 226 km, deep in
+                the atmosphere. The number was correct; it simply had
+                no unit attached as it crossed between systems. Three
+                conditions let it survive: the spec was a document not
+                a check, the warning was below the escalation
+                threshold, no end-to-end test crossed the boundary. In
+                science and engineering, measure in metric; where
+                systems must meet, make the unit travel with the
+                number (Rust newtypes, F# units of measure). The same
+                trap hides in GB versus GiB. Tales from the Bare Metal
+                Episode 04.</p>
+        </article>
+        <article class="vv-series-item" data-tags="technical-beauty">
+            <span class="day">19 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">unix</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">tooling</span>
+                <span class="vv-pill">linux</span>
+            </div>
+            <h3><a href="/blog/grep">grep</a></h3>
+            <p>A development server holds a mystery. Someone deployed
+                something, the logs hold the truth. One types
+                <code>grep -i timeout /var/log/messages</code> and
+                three lines admit what happened. The command was
+                unremarkable. The thing that made it possible has
+                been answering that question since November 1973.
+                Doug McIlroy asked Ken Thompson for a tool: Lee
+                McMahon wanted to analyse the Federalist Papers by
+                pattern. Thompson disappeared into his office for
+                about an hour and emerged with grep, named after the
+                ed editor command <code>g/re/p</code> (global,
+                regex, print). The interior, carried for years by
+                Mike Haertel at GNU, uses Boyer-Moore for fixed
+                strings, Crochemore-Perrin two-way matching for
+                harder patterns, Thompson's 1968 NFA construction
+                for full regex, and <code>mmap</code> on the input.
+                FreeBSD ships bsdgrep in base since around 2010. The
+                shape (pattern plus files plus matching lines on
+                stdout) has stayed identical for fifty-three years.
+                ack, ag and ripgrep each rewrote the implementation;
+                none changed the interface. Technical Beauty Episode
+                36.</p>
+        </article>
+        <article class="vv-series-item" data-tags="the-unix-way">
+            <span class="day">18 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">linux</span>
+                <span class="vv-pill">unix</span>
+                <span class="vv-pill">licensing</span>
+            </div>
+            <h3><a href="/blog/dtrace-vs-ebpf">DTrace vs eBPF</a></h3>
+            <p>A production server is slow. The senior engineer wants
+                to know which syscall is blocking, on which thread,
+                for how long, without restarting the service. On
+                FreeBSD one types a <code>dtrace</code> one-liner and
+                the kernel answers. Linux took the rather scenic
+                route. Bryan Cantrill, Mike Shapiro and Adam Leventhal
+                designed DTrace at Sun in 2003; Solaris 10 GA in
+                January 2005; John Birrell ported it to FreeBSD on 6
+                January 2009. Linux could not adopt DTrace upstream
+                because the CDDL accepts coexistence and the GPL does
+                not. The Linux rebuild started from a 1992 substrate:
+                BPF by McCanne and Jacobson. Alexei Starovoitov and
+                Daniel Borkmann generalised it into eBPF, merged in
+                Linux 3.18 on 7 December 2014; BCC arrived in 2015;
+                Brendan Gregg announced bpftrace as "DTrace 2.0 for
+                Linux" in October 2018. The shape was always the same.
+                The journey was a great deal longer. The Unix Way
+                Episode 17.</p>
+        </article>
+        <article class="vv-series-item" data-tags="on-second-thought">
+            <span class="day">17 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">docker</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">kubernetes</span>
+            </div>
+            <h3><a href="/blog/why-we-containerise-everything">Why We Containerise Everything</a></h3>
+            <p>A new service. README, then Dockerfile. Within the
+                hour, the team is debating the registry, orchestrator,
+                sidecar and Helm chart. Nobody quite remembers when
+                this became the second decision. Three currents
+                converged. Isolation: Poul-Henning Kamp wrote Jails
+                for FreeBSD in 1999 as a single coherent abstraction
+                with no daemon; Linux reproduced it less coherently
+                as eight separate namespaces from 2006 to 2008; Docker
+                (2013) wrapped the arrangement in a brand. Org-shape:
+                Scrum (1995&#x2013;2001) split organisations into
+                sprint-shaped teams; Conway 1968 explained that
+                sprint-shaped teams produce service-shaped architecture.
+                Runtime: Node.js 2009 was single-threaded by design.
+                The bill: <code>node:22</code> over a gigabyte;
+                <code>dockerd</code> above 5 GB at 183 containers; a
+                network call costs one thousand times a function call.
+                Amazon Prime Video returned video monitoring to a
+                monolith at ~90% cost reduction; Segment consolidated
+                140 services into one; Istio merged its own control
+                plane back into a single binary. The alternatives have
+                been quietly working: FreeBSD Jails, Capsicum, OpenBSD
+                pledge and unveil, Go and Rust finding their own
+                cores. On Second Thought Episode 08.</p>
+        </article>
+        <article class="vv-series-item" data-tags="not-in-the-brief">
+            <span class="day">16 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">tooling</span>
+            </div>
+            <h3><a href="/blog/the-screenshot-diary">The Screenshot Diary</a></h3>
+            <p>Open Windows 11 on a Copilot+ PC. Navigate to Settings,
+                Privacy &amp; security, Recall &amp; snapshots. The
+                switch is there. The feature is opt-in today. It was
+                not opt-in when it was first shipped in May 2024, and
+                the first version stored its snapshot database mostly
+                in cleartext. Microsoft Recall captures snapshots at
+                regular intervals, indexes them with a local AI model,
+                and offers natural-language search over the user's
+                past activity. Announced at Build May 2024, withdrawn
+                June 2024 after Alexander Hagenah's TotalRecall
+                extracted the database trivially, re-released April
+                2025 on a VBS Enclave with AES-256-GCM, TPM-bound keys
+                and Windows Hello. In March 2026 Hagenah's TotalRecall
+                Reloaded showed user-level code injecting into
+                <code>AIXHost.exe</code> reads decrypted snapshots
+                after Windows Hello unlock. Microsoft VP David Weston:
+                "consistent with intended protections", "does not
+                represent a bypass". The vault door is titanium. The
+                wall next to it is drywall. The opt-in default is the
+                result of public pressure, not original design. Not
+                in the Brief Episode 03.</p>
+        </article>
+        <article class="vv-series-item" data-tags="in-the-net">
+            <span class="day">15 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">cloud</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">law</span>
+                <span class="vv-pill">saas</span>
+            </div>
+            <h3><a href="/blog/the-architecture-you-did-not-design">The Architecture You Did Not Design</a></h3>
+            <p>In March 2024 AWS waived data-egress fees for customers
+                wishing to leave. Two years on, leaving is harder than
+                ever, and egress is no longer the reason. The lock-in
+                lives in three layers, only one of which gets
+                discussed. The egress layer (Free Data Transfer Out
+                For Leaving, gated on good standing, more than 100 GB,
+                all data, 90 days, account-level review) arrived
+                rather neatly before EU Data Act Article 25 prohibits
+                all switching charges from 12 January 2027. The
+                runtime layer (Aurora's six-way replicated storage
+                fabric, Babelfish, Limitless Database, DynamoDB
+                without an on-prem equivalent, Lambda wired to
+                EventBridge, SQS, SNS, CloudWatch) compounds with
+                every AWS-specific decision. The identity layer (IAM
+                policy language, ARNs, KMS keys that never leave AWS
+                in plaintext, Identity Center permission sets) is
+                five years of security history in JSON. AWS holds
+                ~30% of the global cloud market, the Big Three ~65%.
+                37signals dropped from ~$3.2M/y to under $1M on-prem,
+                hardware recouped in year one. Twenty-one per cent of
+                workloads have already been repatriated. You can take
+                your data with you. The architecture stays behind.
+                In the Net Episode 03.</p>
+        </article>
+        <article class="vv-series-item" data-tags="wire-fire">
+            <span class="day">14 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">node</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">architecture</span>
+            </div>
+            <h3><a href="/blog/wire-fire-npm-is-on-fire">npm Is on Fire</a></h3>
+            <p>Six weeks, four waves, one open-source worm. 31 March
+                2026: state-sponsored operators (Microsoft Sapphire
+                Sleet, Mandiant UNC1069) backdoor <code>axios</code>
+                1.14.1 and 0.30.4 for three hours, tagged
+                <code>latest</code>; roughly 100M weekly downloads.
+                29 April: Mini Shai-Hulud hits four SAP-related npm
+                packages. 11 May 19:20 to 19:26 UTC: 84 versions
+                across 42 TanStack packages in six minutes, scaling
+                to 172 packages and 403 versions on npm and PyPI in
+                48 hours; ~518M cumulative downloads;
+                <code>@uipath</code>,
+                <code>@mistralai/mistralai</code>, OpenSearch and
+                Guardrails AI also affected. 12 May: vx-underground
+                reports the fully weaponised Shai-Hulud source is
+                now public. 454,648 malicious npm packages in 2025
+                alone; over 99 per cent of all open-source malware
+                now targets npm. The architectural answer is older
+                than the problem: FreeBSD VuXML, jails, Capsicum,
+                Ports with named maintainers and human review. Wire
+                Fire Episode 01.</p>
+        </article>
+        <article class="vv-series-item" data-tags="tales-from-the-bare-metal">
+            <span class="day">13 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">performance</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">freebsd</span>
+            </div>
+            <h3><a href="/blog/the-regex-that-ran-unbounded">The Regex That Ran Unbounded</a></h3>
+            <p>13:42 UTC, Tuesday 2 July 2019. A Cloudflare engineer
+                deploys one new managed WAF rule. Within seconds every
+                Cloudflare server in the world is at 100% CPU and HTTP
+                traffic stops moving. The rule was a regex of
+                forty-five characters; the catastrophic sub-expression
+                <code>(?:.*=.*)</code>, two greedy quantifiers in
+                sequence, classic catastrophic backtracking on PCRE.
+                Quicksilver propagated the change worldwide in
+                seconds; the dashboard that would have disabled it ran
+                on the same edge network, unreachable. Twenty-seven
+                minutes from push to traffic-restored on a service
+                that fronts a sizeable share of the public internet.
+                Three systemic conditions: an author solving for
+                coverage, an engine with no runtime budget, a
+                deployment path with no staged rollout. The unixoid
+                answer: linear-time engines (RE2, Rust regex), FreeBSD
+                <code>rctl(8)</code> for the budget the engine cannot
+                enforce, global propagation as the kill switch and not
+                the default. Tales from the Bare Metal Episode 03.</p>
+        </article>
+        <article class="vv-series-item" data-tags="technical-beauty">
+            <span class="day">12 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">linux</span>
+                <span class="vv-pill">tooling</span>
+                <span class="vv-pill">unix</span>
+            </div>
+            <h3><a href="/blog/tcpdump">tcpdump</a></h3>
+            <p>You have typed <code>tcpdump -ni em0 'tcp port 443'</code>
+                at three in the morning and watched the lines scroll
+                past in a small green miracle. The command was
+                unremarkable. The thing that made it possible has been
+                quietly doing the work for thirty-seven years. Van
+                Jacobson, Craig Leres and Steven McCanne wrote
+                <code>tcpdump</code> at Lawrence Berkeley Laboratory in
+                1988; McCanne and Jacobson published "The BSD Packet
+                Filter" in December 1992, winning Best Student Paper
+                at USENIX Winter 1993 and quietly rearranging how
+                every serious network tool would be built for the next
+                three decades. Wireshark, Zeek, <code>snort</code>,
+                <code>suricata</code>, <code>nmap</code>,
+                <code>ngrep</code> and <code>tshark</code> all sit on
+                <code>libpcap</code>, which sits on BPF, which still
+                sits in the kernel of every BSD and Linux machine in
+                production. eBPF (Alexei Starovoitov, Linux 3.18,
+                December 2014) is BPF with new opcodes and a verifier;
+                the lineage runs back to the same paper. Technical
+                Beauty Episode 35.</p>
+        </article>
+        <article class="vv-series-item" data-tags="the-unix-way">
+            <span class="day">11 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">linux</span>
+                <span class="vv-pill">unix</span>
+                <span class="vv-pill">performance</span>
+            </div>
+            <h3><a href="/blog/netstat-vs-ss">netstat vs ss</a></h3>
+            <p>On a busy Linux load balancer one types
+                <code>netstat -anp</code> and makes a cup of tea. On
+                FreeBSD the same workload returns before the kettle
+                finishes. Both speak Unix text and pipe into
+                <code>grep</code>; only one was built the way Unix
+                tools are built. FreeBSD's <code>netstat</code> has
+                been in base since 4.2BSD shipped TCP/IP in August
+                1983; it asks the kernel through
+                <code>sysctl net.inet.tcp.pcblist</code> and formats
+                the answer at its mouth. Linux net-tools
+                <code>netstat</code> reads <code>/proc/net/tcp</code>,
+                a kernel-rendered ASCII dump that is readable but not
+                askable; no new release since 2011, deprecation
+                attempted 2009. Alexey Kuznetsov restored the Unix
+                pattern with <code>ss</code> by adding netlink
+                <code>NETLINK_INET_DIAG</code> in Linux 2.6.14
+                (October 2005), generalised to
+                <code>NETLINK_SOCK_DIAG</code> in 3.3 (March 2012). The
+                shape <code>ss</code> restored is the shape
+                <code>sysctl</code> has been running on FreeBSD since
+                1983. The Unix Way Episode 16.</p>
+        </article>
+        <article class="vv-series-item" data-tags="on-second-thought">
+            <span class="day">10 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">web</span>
+                <span class="vv-pill">performance</span>
+                <span class="vv-pill">javascript</span>
+                <span class="vv-pill">architecture</span>
+            </div>
+            <h3><a href="/blog/why-we-render-everything-in-the-browser">Why We Render Everything in the Browser</a></h3>
+            <p>Brendan Eich wrote JavaScript in ten days in 1995, for
+                form validation. AJAX in 2005 had a real argument;
+                Gmail and Maps earned it. The brochure inherited it
+                without re-examination. The 2025 median page ships
+                697 KB of JavaScript before a single character of
+                content arrives, per the HTTP Archive Web Almanac. The
+                bill arrives in three layers: client power, a
+                duplicated server runtime in Node.js, and an npm
+                dependency cloud supervised by a second cloud of
+                Dependabot, Snyk and Renovate. Wikipedia on PHP, GOV.UK
+                with mandated progressive enhancement, Hacker News in
+                Arc, HEY on Hotwire, HTMX at 14 KB, Netflix removing
+                client React for +50% Time to Interactive, and
+                Cloudflare Pingora replacing nginx-and-Lua at 70% less
+                CPU at one trillion requests per day prove the
+                alternative is in production. The fastest bundle is
+                the one that is never shipped. On Second Thought
+                Episode 07.</p>
+        </article>
+        <article class="vv-series-item" data-tags="not-in-the-brief">
+            <span class="day">09 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">web</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">tooling</span>
+            </div>
+            <h3><a href="/blog/the-vault-that-stays-open">The Vault That Stays Open</a></h3>
+            <p>Open Microsoft Edge. The browser silently decrypts every
+                saved password into the <code>msedge.exe</code> process,
+                eagerly, at launch, and keeps the entire vault in cleartext
+                in RAM until the browser is closed. Disclosed by Tom J&oslash;ran
+                S&oslash;nstebyseter R&oslash;nning at Palo Alto Networks
+                Norway's BIG Bite of Tech, 29 April 2026. Microsoft, in its
+                own words, calls the architecture "by design". Chrome since
+                2024 decrypts lazily and binds keys to the SYSTEM-level
+                process via Application-Bound Encryption; Brave, Opera and
+                Vivaldi inherit the lazy behaviour. Edge alone does neither.
+                Five minutes with Process Explorer to see it; one Group
+                Policy value to disable it. Not in the Brief Episode 02.</p>
+        </article>
+        <article class="vv-series-item" data-tags="in-the-net">
+            <span class="day">08 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">licensing</span>
+                <span class="vv-pill">law</span>
+                <span class="vv-pill">saas</span>
+                <span class="vv-pill">architecture</span>
+            </div>
+            <h3><a href="/blog/linkedin-reach-you-did-not-earn">The Reach You Did Not Earn</a></h3>
+            <p>LinkedIn 2002. 1.1 billion users in 2026. The reach
+                algorithm penalises external links (~18.8 per cent
+                reduction in van der Blom's 2026 study of 1.3M posts),
+                penalises thematic breadth via a topic fingerprint, and
+                is computed by 360Brew, a 150-billion-parameter
+                foundation model trained on the Economic Graph. The
+                native CSV export gives first-degree names without the
+                graph that makes them a network. Microsoft is a DMA
+                gatekeeper; LinkedIn is not, by regulatory choice. The
+                exit door opens onto a car park.</p>
+        </article>
+        <article class="vv-series-item" data-tags="by-design">
+            <span class="day">07 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">lua</span>
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">tooling</span>
+                <span class="vv-pill">architecture</span>
+            </div>
+            <h3><a href="/blog/lua-tables-config">Lua Tables: The Configuration Format That Admits What It Is</a></h3>
+            <p>1993, PUC-Rio Tecgraf: Ierusalimschy, de Figueiredo and
+                Celes merged DEL and Sol into Lua to give Petrobras a
+                portable configuration language. Lua was not born as a
+                scripting language; it was born as a config language.
+                The table is array, hash, record, object and namespace
+                at once. FreeBSD's boot loader has read
+                <code>/boot/lua/loader.lua</code> since 2018, Neovim's
+                <code>init.lua</code> since 2021, OpenResty runs
+                Cloudflare's edge, World of Warcraft's UI is Lua, and
+                the Norway problem cannot occur because Lua has no
+                opinion about your country codes. The honest format
+                is the one that admits what it is.</p>
+        </article>
+        <article class="vv-series-item" data-tags="tales-from-the-bare-metal">
+            <span class="day">06 May 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">cloud</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">devops</span>
+                <span class="vv-pill">freebsd</span>
+            </div>
+            <h3><a href="/blog/the-command-that-removed-too-much">The Command That Removed Too Much</a></h3>
+            <p>09:37 PST, 28 February 2017. An authorised S3 engineer
+                presses Enter on a routine capacity-removal command
+                with one mistyped argument. By 13:54, half the
+                public-facing web has been quiet for four hours, and
+                the AWS Service Health Dashboard has spent two of them
+                showing every service in healthy green because its
+                console depended on S3. Three systemic conditions: a
+                tool with no floor of safety, a recovery path aged
+                unrehearsed, and a status surface that shared fate
+                with the system it described. The command did exactly
+                what was asked. The architecture decided what
+                <em>exactly</em> meant.</p>
+        </article>
         <article class="vv-series-item" data-tags="technical-beauty">
             <span class="day">05 May 2026</span>
             <div class="vv-pills">

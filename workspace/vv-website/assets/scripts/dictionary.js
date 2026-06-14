@@ -1,7 +1,8 @@
 /**
  * dictionary.js — Auto-link known IT terms in blog articles.
- * Fetches terms.json, scans .vv-article-body text nodes, wraps
- * first occurrence of each term in <a class="vv-term">.
+ * Fetches terms.json, scans .vv-article-body text nodes, wraps the
+ * first occurrence of every known term in <a class="vv-term"> —
+ * including several distinct terms within one text node.
  *
  * Copyright 2026 Vivian Voss. All rights reserved.
  */
@@ -37,31 +38,44 @@
                 if (parent.namespaceURI === "http://www.w3.org/2000/svg") continue;
 
                 var text = node.nodeValue;
-                var m = pattern.exec(text);
-                if (!m) continue;
+                // Wrap EVERY distinct, not-yet-linked term within this text
+                // node, not merely the first match. A single paragraph can
+                // name several terms (e.g. "Debian, Red Hat Enterprise Linux,
+                // SUSE, Arch"); each still links only at its first occurrence
+                // across the whole article (the `matched` guard).
+                var re = new RegExp(pattern.source, "g");
+                var frag = null;
+                var lastIdx = 0;
+                var m;
+                while ((m = re.exec(text)) !== null) {
+                    var found = m[1];
+                    var canonical = keys.filter(function (k) {
+                        return k === found;
+                    })[0] || found;
+                    if (matched[canonical.toLowerCase()]) continue;
+                    matched[canonical.toLowerCase()] = true;
 
-                var found = m[1];
-                var canonical = keys.filter(function (k) {
-                    return k === found;
-                })[0] || found;
-                if (matched[canonical.toLowerCase()]) continue;
-                matched[canonical.toLowerCase()] = true;
+                    if (!frag) frag = document.createDocumentFragment();
+                    if (m.index > lastIdx) {
+                        frag.appendChild(document.createTextNode(text.slice(lastIdx, m.index)));
+                    }
 
-                var id = canonical.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-                var before = text.slice(0, m.index);
-                var after = text.slice(m.index + found.length);
+                    var id = canonical.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+                    var a = document.createElement("a");
+                    a.href = "/dictionary#" + id;
+                    a.className = "vv-term";
+                    a.setAttribute("data-def", terms[canonical]);
+                    a.textContent = found;
+                    frag.appendChild(a);
 
-                var a = document.createElement("a");
-                a.href = "/dictionary#" + id;
-                a.className = "vv-term";
-                a.setAttribute("data-def", terms[canonical]);
-                a.textContent = found;
-
-                var frag = document.createDocumentFragment();
-                if (before) frag.appendChild(document.createTextNode(before));
-                frag.appendChild(a);
-                if (after) frag.appendChild(document.createTextNode(after));
-                parent.replaceChild(frag, node);
+                    lastIdx = m.index + found.length;
+                }
+                if (frag) {
+                    if (lastIdx < text.length) {
+                        frag.appendChild(document.createTextNode(text.slice(lastIdx)));
+                    }
+                    parent.replaceChild(frag, node);
+                }
             }
 
             /* Touch: first tap shows tooltip, second tap navigates */
