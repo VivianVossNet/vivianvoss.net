@@ -14,6 +14,7 @@ local pages = {
     { loc = "/print",      priority = "0.6",  changefreq = "monthly" },
     { loc = "/print/integrated-by-design", priority = "0.7", changefreq = "monthly" },
     -- blog articles
+    { loc = "/blog/the-count-that-was-never-justified", priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/definition-of-unix",                priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-single-tree",                   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/nine-years-in-the-page-cache",      priority = "0.7", changefreq = "yearly" },
