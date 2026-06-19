@@ -53,6 +53,40 @@
     <nav class="vv-pager" id="pager-top" aria-label="Page navigation"></nav>
 
     <div class="vv-series" id="blog-list">
+        <article class="vv-series-item" data-tags="security">
+            <span class="day">19 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">supply-chain</span>
+                <span class="vv-pill">npm</span>
+                <span class="vv-pill">freebsd</span>
+            </div>
+            <h3><a href="/blog/the-package-that-reads-your-keys">The Package That Reads Your Keys</a></h3>
+            <p>Between 01:12 and 02:39 UTC on 17 June, a dormant
+                contributor account whose publishing rights to the
+                @mastra npm scope were never revoked republished
+                <em>144 packages</em>, each with one added
+                dependency: easy-day-js, a typosquat of dayjs. Its
+                postinstall hook ran a cross-platform infostealer
+                that swept browser data, 166 cryptocurrency wallets,
+                SSH keys and cloud tokens; @mastra/core alone sees
+                roughly 918K weekly installs. There is <em>no
+                CVE</em>: an account takeover is not a software
+                defect, so every CVE-bound scanner was blind, and
+                only osv-scanner, reading open advisory data,
+                flagged it. The same month, Miasma republished 32
+                Red Hat npm packages and Shai-Hulud Hades worked
+                PyPI through a .pth file that runs whenever Python
+                merely starts. postinstall and .pth are one
+                decision: installing, or merely starting the
+                interpreter, is arbitrary code execution before
+                anyone has read a line. The BSD and Rust answer is
+                three gates &#x2014; review before the tree, verify
+                before use, isolate at execution: <em>pkg_add
+                verifies before it acts; postinstall acts before
+                anything is verified</em>. Security Review &#x22A3;
+                Standalone.</p>
+        </article>
         <article class="vv-series-item" data-tags="lean-software">
             <span class="day">17 June 2026</span>
             <div class="vv-pills">

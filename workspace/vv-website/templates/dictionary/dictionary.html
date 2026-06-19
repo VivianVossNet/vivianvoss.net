@@ -121,6 +121,10 @@
             <dt>BSD</dt>
             <dd>Berkeley Software Distribution. The line of Unix developed at the University of California, Berkeley from the late 1970s, and the family that descends from it today (FreeBSD, OpenBSD, NetBSD, DragonFly). Unix by inheritance, carrying the AT&amp;T-and-Berkeley code in its source under a permissive licence.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="build-rs">
+            <dt>build.rs</dt>
+            <dd>A Rust build script: arbitrary code a crate runs at build time, with full filesystem and network access under the developer's permissions. The reason Rust is not exempt from install-time code execution.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="bun">
             <dt>Bun</dt>
             <dd>An all-in-one JavaScript runtime, bundler, transpiler, and package manager. Written in Zig, designed for speed.</dd>
@@ -141,6 +145,10 @@
         <dl class="vv-dict-entry" id="capsicum">
             <dt>Capsicum</dt>
             <dd>A capability-based security framework in FreeBSD. One syscall (cap_enter) permanently removes all access to global namespaces. The process keeps only its existing file descriptors, each restricted via cap_rights_limit(). Irreversible. Compiled into FreeBSD 10.0 by default since 2014.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="cargo-vet">
+            <dt>cargo-vet</dt>
+            <dd>A Rust supply-chain tool from Mozilla that requires human-reviewed audits of a crate before it is allowed into a build, so a dependency cannot enter a project unreviewed.</dd>
         </dl>
         <dl class="vv-dict-entry" id="cast">
             <dt>CAST</dt>
@@ -182,6 +190,10 @@
             <dt>Copy-on-Write</dt>
             <dd>A storage strategy where data is never overwritten in place. New data is written to a new location, then the pointer is updated. Guarantees consistency after power failure.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="crates-io">
+            <dt>crates.io</dt>
+            <dd>The package registry for the Rust language. A published version is immutable: it can never be overwritten, only yanked, which removes the republish-an-existing-name trick used against npm.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="cron">
             <dt>cron</dt>
             <dd>The Unix job scheduler. Executes commands at specified times using a five-field time expression (minute, hour, day, month, weekday).</dd>
@@ -207,6 +219,10 @@
             <dt>Datastar</dt>
             <dd>A small hypermedia and reactivity framework taking a server-sent-events approach, combining ideas from HTMX and Alpine in one package in the same order of magnitude as HTMX. A modern entry in the lightweight front-end tier.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="dayjs">
+            <dt>dayjs</dt>
+            <dd>A small, widely used JavaScript date library. Its name and metadata were impersonated by the typosquat easy-day-js in the June 2026 Mastra supply-chain attack.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="debian">
             <dt>Debian</dt>
             <dd>A community-driven Linux distribution known for its stability-first release policy. Debian Stable freezes packages and releases when ready, not on a schedule. The reference for conservative, tested software deployment.</dd>
@@ -218,6 +234,10 @@
         <dl class="vv-dict-entry" id="deno">
             <dt>Deno</dt>
             <dd>A secure JavaScript/TypeScript runtime by the creator of Node.js. Built-in TypeScript support, URL imports, and sandboxed permissions.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="distinfo">
+            <dt>distinfo</dt>
+            <dd>The FreeBSD ports file that pins the SHA256 checksum and size of every distribution file a port downloads. A tampered upstream tarball fails the checksum and the port never builds.</dd>
         </dl>
         <dl class="vv-dict-entry" id="dkms">
             <dt>DKMS</dt>
@@ -240,6 +260,10 @@
             <dd>A dynamic tracing framework for real-time analysis of running systems. Originated in Solaris, ported to FreeBSD and macOS. Traces kernel and userspace with near-zero overhead when idle.</dd>
         </dl>
         <h3 id="letter-E">E</h3>
+        <dl class="vv-dict-entry" id="ed25519">
+            <dt>Ed25519</dt>
+            <dd>A modern public-key signature scheme, fast and compact, used by OpenSSH keys and by OpenBSD's signify for signing releases and packages.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="enshittification">
             <dt>Enshittification</dt>
             <dd>The process by which platforms degrade their product to extract value. Coined by Cory Doctorow in 2022. Three phases: attract users, lock in businesses at users' expense, extract value for shareholders at everyone's expense. Word of the Year 2023 (American Dialect Society) and 2024 (Macquarie Dictionary).</dd>
@@ -360,6 +384,10 @@
             <dt>IEEE 1003</dt>
             <dd>The IEEE standard family better known as POSIX, first published as IEEE 1003.1 in 1988. The technical text the Single UNIX Specification incorporates, specifying the interface a program sees rather than the system that implements it.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="infostealer">
+            <dt>infostealer</dt>
+            <dd>Malware whose purpose is to harvest secrets from a machine, browser data, cryptocurrency wallets, SSH keys, cloud tokens and credential files, and exfiltrate them to attacker infrastructure.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="io-pkt">
             <dt>io-pkt</dt>
             <dd>The networking stack of the QNX operating system, built directly on NetBSD's networking code. Berkeley's code compiled into QNX's own address space, which is why a Unixoid by kernel carries a genuine piece of the BSD line inside it.</dd>
@@ -370,8 +398,8 @@
         </dl>
         <h3 id="letter-J">J</h3>
         <dl class="vv-dict-entry" id="jails">
-            <dt>Jails</dt>
-            <dd>FreeBSD's OS-level virtualisation. Lightweight isolation of processes, filesystems, and network stacks without a hypervisor.</dd>
+            <dt>jails</dt>
+            <dd>FreeBSD's kernel-native operating-system virtualisation: an isolated environment that is a first-class kernel primitive rather than a daemon-mediated arrangement of namespaces. With VNET each jail holds an independent network stack.</dd>
         </dl>
         <dl class="vv-dict-entry" id="jest">
             <dt>Jest</dt>
@@ -435,6 +463,14 @@
         <dl class="vv-dict-entry" id="maintainers-file">
             <dt>MAINTAINERS file</dt>
             <dd>A file in the Linux kernel source tree listing who is responsible for each subsystem. In October 2024 it was edited to remove approximately eleven entries under stated compliance requirements, a change Linus Torvalds confirmed and declined to reverse. Illustrates that forking the source does not fork the governance.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="mastra">
+            <dt>Mastra</dt>
+            <dd>An open-source TypeScript framework for building AI applications, distributed as the @mastra npm scope. In June 2026 its publishing scope was hijacked through a dormant contributor account and 144 of its packages were backdoored.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="mcp">
+            <dt>MCP</dt>
+            <dd>Model Context Protocol, an open standard for connecting AI assistants to external tools and data sources. Packages aimed at MCP developers were a pointed target of the June 2026 PyPI supply-chain campaign.</dd>
         </dl>
         <dl class="vv-dict-entry" id="merkle-tree">
             <dt>Merkle tree</dt>
@@ -538,6 +574,10 @@
             <dt>ORM</dt>
             <dd>Object-Relational Mapping. A layer that translates between programming-language objects and relational database rows, abstracting SQL behind method calls.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="osv-scanner">
+            <dt>osv-scanner</dt>
+            <dd>An open-source vulnerability scanner that reads the OSV database of advisories rather than only CVE feeds. It flagged the malicious Mastra dependency that CVE-bound tools, finding no CVE, did not.</dd>
+        </dl>
         <h3 id="letter-P">P</h3>
         <dl class="vv-dict-entry" id="paas">
             <dt>PaaS</dt>
@@ -558,6 +598,14 @@
         <dl class="vv-dict-entry" id="postgresql">
             <dt>PostgreSQL</dt>
             <dd>An advanced open-source relational database with MVCC, JSON support, full-text search, and extensibility via custom types and functions.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="postinstall">
+            <dt>postinstall</dt>
+            <dd>An npm lifecycle hook: a script a package declares to run automatically the moment it is installed, with the full rights of whoever ran the install. Convenient for setup, and the standard foothold for supply-chain malware.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="poudriere">
+            <dt>Poudriere</dt>
+            <dd>The FreeBSD tool for building binary packages from ports inside clean, isolated jails, so a build process cannot reach the host that drives it.</dd>
         </dl>
         <dl class="vv-dict-entry" id="privilege-separation">
             <dt>Privilege Separation</dt>
@@ -646,6 +694,10 @@
             <dt>Serverless</dt>
             <dd>A cloud execution model where the provider allocates resources per request. You write functions, the vendor manages infrastructure.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="signify">
+            <dt>signify</dt>
+            <dd>OpenBSD's signature tool, written by Ted Unangst in 2014, using Ed25519. It signs releases and packages; pkg_add verifies each file against its recorded checksum immediately after extraction, before doing anything with it.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="single-unix-specification">
             <dt>Single UNIX Specification</dt>
             <dd>The written standard a system must conform to in order to be certified UNIX, maintained by The Open Group and aligned with POSIX; its current edition, Issue 8, aligns with POSIX.1-2024. It certifies the interface (the C library, the shell, the standard utilities), not the kernel beneath.</dd>
@@ -681,6 +733,10 @@
         <dl class="vv-dict-entry" id="stormshield">
             <dt>Stormshield</dt>
             <dd>A French network-security vendor whose appliances run on FreeBSD. One of the security-appliance tier, alongside pfSense and OPNsense, that quietly runs BSD in the gap between the public internet and the office.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="supply-chain">
+            <dt>supply chain</dt>
+            <dd>In software, the full chain of third-party code, registries, maintainer accounts and build steps a project depends on. A supply-chain attack compromises one of those links to reach everyone downstream.</dd>
         </dl>
         <dl class="vv-dict-entry" id="suse">
             <dt>SUSE</dt>
@@ -722,6 +778,10 @@
         <dl class="vv-dict-entry" id="typescript">
             <dt>TypeScript</dt>
             <dd>A typed superset of JavaScript that compiles to plain JS. Adds static type checking at build time.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="typosquat">
+            <dt>typosquat</dt>
+            <dd>A malicious package given a name deliberately close to a popular one, so that a typo, an autocomplete or an injected dependency line pulls in the impostor instead of the real library. easy-day-js was a typosquat of dayjs.</dd>
         </dl>
         <h3 id="letter-U">U</h3>
         <dl class="vv-dict-entry" id="unix">
