@@ -1,0 +1,296 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Boundary That Was Never Drawn &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A node_modules directory has no responsibility line, and the security cost of that absence is one the architecture cannot fix. Security here was never going to come from reading the code: nobody reads fifteen hundred packages. It comes from a responsibility line, the thing libc has and node_modules does not, knowing where a component lives, who is accountable for it, how it arrives and how to confirm it arrived intact. The first half of 2026 supplies a register, axios, node-ipc, a typosquat run, a dependency-confusion campaign and Miasma, five mechanisms and one shape: no line to cross. Third of eighteen Wednesdays on how we got here.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-boundary-that-was-never-drawn{( endslot )}
+
+{( slot og-title )}The Boundary That Was Never Drawn &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Lean Software, the third of eighteen Wednesdays on how we got here. Last week took the count on its own; this week takes the second of the four breaks, the one the count quietly sets up. A node_modules directory has no responsibility line, and the security cost of that absence is one the architecture cannot fix. The instinct is to audit, read them, scan them, pin them, sign them, and as a primary defence it is mistaken, because you will not read fifteen hundred packages and neither will anyone else. Security comes instead from a responsibility line: knowing where a component lives, who is accountable for it, how it arrives and how to confirm it arrived intact. libc is the proof the line is ordinary, a known home in the base source tree, named maintainers, numbered releases and reproducible, signed builds, for code nobody reads and everybody trusts. node_modules has none of those, and your application code and the fifteen hundred packages run with the same permissions: a post-install script runs as you, with your SSH keys and cloud tokens, before you have run anything. The first half of 2026 supplies a register, axios, node-ipc taken over through a lapsed domain renewal, a four-hour typosquat run, a dependency-confusion campaign and Miasma's signed-but-malicious Red Hat packages, five mechanisms and one shape: no responsibility line, so nothing to cross. An audit industry sells the boundary back, Dependabot, Snyk, Socket, signed provenance, but it bolts partial filters onto an architecture that has no boundary beneath them. Next Wednesday: the workaround that became architecture.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Boundary That Was Never Drawn",
+    "datePublished": "2026-06-24",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-boundary-that-was-never-drawn",
+    "description": "Lean Software, the third of eighteen Wednesdays on how we got here. Last week took the count on its own: an ordinary install brings several hundred megabytes, a hundred thousand files and a fifteen-hundred-package transitive closure to a project that has not yet run a line. This week takes the second of the four breaks, the one the count quietly sets up. A node_modules directory has no responsibility line, and the security cost of that absence is one the architecture cannot fix. The instinct, when this is pointed out, is to reach for the audit: read the dependencies, scan them, pin them, sign them. As a primary defence it is mistaken, because it answers a question nobody can answer at this scale; you will not read fifteen hundred packages and neither will anyone else. Security here was never going to come from reading the code. It comes from a responsibility line: knowing where a component lives, who is accountable for it, how it arrives on your disk, and how to confirm it arrived intact. libc is the clearest proof that the line is ordinary. Every program on a Unix system links against the C library; it is some of the most security-critical code on the machine and almost no application engineer has read it, yet almost none worry, because libc has a line drawn in four places at once: it lives in a known place, the base source tree of the operating system, on FreeBSD at src/lib/libc, shipped as one snapshot with the kernel; the GNU C Library is maintained under a public stewardship committee; it has named maintainers answerable in public; it arrives on a cadence of numbered releases; and it can be checked, the Reproducible Builds effort lets an independent party rebuild the binary and confirm byte for byte that it matches the source, and releases are signed. node_modules has none of those four. It lives in a registry any of millions of accounts can publish to; it is accountable to whoever currently holds the publish key; it arrives as whatever the latest tag points at in the moment you run npm install, which can be re-pointed retroactively; and you mostly cannot confirm it. Underneath all four is the absence of a boundary in the running model: your application code and the fifteen hundred packages run with the same permissions, and a package's post-install script runs as you, with your shell, your environment variables, your SSH keys and your cloud tokens, the moment the install completes and before you have run anything yourself. The first half of 2026 supplies a register, read in order because the mechanisms differ and the shape never does: axios, over a hundred million weekly downloads, two malicious versions from a compromised maintainer account with the latest tag re-pointed and a cross-platform remote-access trojan, with a CISA alert; node-ipc, around eight hundred and twenty-two thousand weekly downloads, an account taken over through the expired domain atlantis-software.net re-registered for the price of a renewal; a typosquat run of fourteen packages in four hours spoofing an upstream repository address; a dependency-confusion campaign of thirty-three packages across nine mirrored organisational scopes; and Miasma, thirty-two packages under the redhat-cloud-services scope published through a hijacked pipeline identity that carried valid signed SLSA provenance, the signature real and the package malicious all the same. Five mechanisms in three months and one shape underneath: there was no responsibility line, so there was nothing to cross. A market has grown up to sell the boundary back, package by package, and it is not worthless and it is not the boundary: Dependabot and its kind are reactive and alert only once an advisory exists; Snyk's default scan leaves devDependencies out, the majority of what an install puts on disk and what runs a post-install script; Socket and the behavioural scanners are themselves installed through npm into the environment they audit; and Miasma is the cleanest illustration of the limit, because signed provenance certifies that a known pipeline built an artifact, not that the pipeline was still in the right hands. None of this makes the tools useless, but the cure, sold as a boundary, is partial filters bolted onto an architecture that still has no boundary beneath them. The responsibility line is the architecture's job, and node_modules never drew one. Security here was never a reading problem; it was a boundary problem, and the boundary was never drawn. Next Wednesday: the workaround that became architecture.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-06-24">24 June 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Boundary That Was Never Drawn</h1>
+        <p class="vv-article-meta"><em>Lean Software &#x22A3; How We Got Here, 3 of 18.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">npm</span>
+            <span class="vv-pill">supply-chain</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">freebsd</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Last week we took the count. An ordinary install brings several hundred megabytes, a hundred thousand files and a fifteen-hundred-package transitive closure to a project that has not yet run a line, and none of it is a price the architecture forces. The count was the first of the four breaks. Today, the second, and the one the count quietly sets up. A node_modules directory has no responsibility line, and the security cost of that absence is one the architecture cannot fix.</p>
+
+        <p>The instinct, when this is pointed out, is to reach for the audit. Read the dependencies. Scan them. Pin them. Sign them. The instinct is understandable and, as a primary defence, mistaken, because it answers a question nobody can answer at this scale. You will not read fifteen hundred packages, and neither will anyone else. Security here was never going to come from reading the code.</p>
+
+        <p>It comes from somewhere else. It comes from a <strong>responsibility line</strong>: knowing where a component lives, who is accountable for it, and how it arrives on your disk. The clearest way to see what that means is to look at a piece of software nobody reads and everybody trusts.</p>
+
+        <h2>Libc, the Component Nobody Reads</h2>
+
+        <p>Every program on a Unix system links against the C library, libc. It is some of the most security-critical code on the machine: every string copy, every memory allocation, every system call passes through it. Almost no application engineer has read it. And almost none worry about it, which is the interesting part.</p>
+
+        <p>The reason is not that the code is open source. So is the typical npm package. The reason is that libc has a line, and the line is drawn in four places at once.</p>
+
+        <p>It <strong>lives</strong> in a known place: the base system source tree of the operating system. On FreeBSD it is <code>src/lib/libc</code>, shipped as one coherent snapshot with the kernel and the userland, by one project, as a single release. The <a href="https://sourceware.org/glibc/" target="_blank" rel="noopener">GNU C Library</a>, glibc, is maintained by the GNU project under a public stewardship committee.</p>
+
+        <p>It has <strong>named maintainers</strong> answerable in public: a project or a foundation with a roadmap, a mailing list and a release schedule, and people whose stated job is to be accountable for what ships.</p>
+
+        <p>It arrives on a <strong>cadence</strong>: numbered releases on a published schedule, not a new version pushed to the world at three in the morning by whoever currently holds a publish key.</p>
+
+        <p>And it can be <strong>checked</strong>: the Reproducible Builds effort lets an independent party <a href="https://reproducible-builds.org/" target="_blank" rel="noopener">rebuild the binary from the source</a> and confirm, byte for byte, that they match, and releases are signed, so the artifact on your disk is demonstrably the one the maintainers cut.</p>
+
+        <p>You do not read libc. You know where it lives, who is accountable for it, how it arrives, and how to confirm it arrived intact. That is a responsibility line. It is precisely what node_modules does not have, and the absence is not a matter of the packages being bad. It is a matter of the architecture never having drawn the line at all.</p>
+
+        <h2>node_modules, the Component With No Line</h2>
+
+        <p>Set the same four questions against an ordinary install and each one comes back empty. Where does it live? In a registry any of millions of accounts can publish to, under names any of them can claim. Who is accountable? Whoever currently holds the publish key for each of the fifteen hundred packages, an identity that can change overnight and answers to no schedule. How does it arrive? On the next <code>npm install</code>, as whatever the <code>latest</code> tag points at in the moment you run it, which can be re-pointed retroactively. And how do you confirm it is what you expected? You mostly cannot, because the thing you would confirm it against does not exist.</p>
+
+        <p>Underneath all four is the absence of a boundary in the running model. Your application code and the fifteen hundred packages it pulls in execute with the <strong>same permissions</strong>. A package's <a href="https://docs.npmjs.com/cli/v10/using-npm/scripts" target="_blank" rel="noopener">post-install script</a> runs as you, with your shell, your environment variables, your SSH keys and your cloud tokens, the moment the install completes and before you have run anything yourself. Any package can read and modify the files of any other. There is no sandbox, no capability list, no fence between the code you wrote and the code a stranger published last night. The trust model is total and implicit: everything you install is trusted with everything you have.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="A diagram contrasting the trust model of libc with that of node_modules. libc runs as part of the base system, maintained and verified, and the application calls into it across a clear line. In node_modules, your application code and roughly fifteen hundred third-party packages all run inside the same permission ring as you, with no fence between them; a package's post-install script runs as you, with your shell, environment variables, SSH keys and cloud tokens, the moment the install completes and before you have run anything yourself. The legend notes that the trust model is total and implicit." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ru-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ru-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ru-good { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ru-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ru-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ru-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ru-good-box { fill: none; stroke: #4ab542; stroke-width: 1.5; rx: 4; }
+                .ru-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ru-ring { fill: var(--accent); opacity: 0.07; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; rx: 8; }
+                .ru-chip { fill: var(--muted); opacity: 0.18; rx: 3; }
+            </style>
+            <text x="320" y="22" class="ru-title" text-anchor="middle">Two Trust Models</text>
+
+            <text x="150" y="50" class="ru-good" text-anchor="middle">libc &#x2014; a line</text>
+            <rect x="40" y="62" width="220" height="40" class="ru-box"/>
+            <text x="150" y="86" class="ru-text" text-anchor="middle">your application</text>
+            <line x1="150" y1="102" x2="150" y2="120" stroke="#4ab542" stroke-width="1.5"/>
+            <rect x="40" y="120" width="220" height="40" class="ru-good-box"/>
+            <text x="150" y="138" class="ru-good" text-anchor="middle">libc (base system)</text>
+            <text x="150" y="153" class="ru-muted" text-anchor="middle">maintained &#x2022; signed &#x2022; verified</text>
+            <text x="150" y="182" class="ru-muted" text-anchor="middle" font-style="italic">a clear line between you and it</text>
+
+            <text x="470" y="50" class="ru-head" text-anchor="middle">node_modules &#x2014; no line</text>
+            <rect x="350" y="60" width="250" height="150" class="ru-ring"/>
+            <text x="475" y="78" class="ru-muted" text-anchor="middle">one permission ring &#x2014; runs as you</text>
+            <rect x="366" y="88" width="96" height="22" class="ru-chip"/>
+            <text x="414" y="103" class="ru-text" text-anchor="middle">your code</text>
+            <rect x="488" y="88" width="96" height="22" class="ru-chip"/>
+            <text x="536" y="103" class="ru-muted" text-anchor="middle">~1,500 pkgs</text>
+            <rect x="366" y="116" width="46" height="20" class="ru-chip"/>
+            <rect x="418" y="116" width="46" height="20" class="ru-chip"/>
+            <rect x="470" y="116" width="46" height="20" class="ru-chip"/>
+            <rect x="522" y="116" width="62" height="20" class="ru-chip"/>
+            <text x="475" y="160" class="ru-head" text-anchor="middle">post-install runs as you</text>
+            <text x="475" y="176" class="ru-muted" text-anchor="middle">shell &#x2022; env &#x2022; SSH keys &#x2022; cloud tokens</text>
+            <text x="475" y="196" class="ru-muted" text-anchor="middle" font-style="italic">no sandbox, no fence, no capability list</text>
+
+            <line x1="40" y1="226" x2="600" y2="226" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="244" class="ru-muted" text-anchor="middle" font-style="italic">The trust model is total and implicit: everything you install is trusted with everything you have.</text>
+        </svg>
+
+        <p>libc you do not read either. But you know where it lives, who is accountable for it, and how it gets in. node_modules has none of those, and that is the boundary that was never drawn.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="A four-question comparison of libc against node_modules. Where does it live: libc lives in the base source tree, one project, one snapshot; node_modules lives in a registry any of millions of accounts can publish to. Who is accountable: libc has named maintainers on a public schedule; node_modules answers to whoever holds the publish key, which can change overnight. How does it arrive: libc arrives as numbered, signed releases; node_modules arrives as whatever the latest tag points at, re-pointable retroactively. How is it verified: libc can be rebuilt byte for byte and is signed; node_modules mostly cannot be confirmed. The legend notes that libc has a responsibility line drawn in four places and node_modules in none." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .rl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rl-good-h { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rl-bad-h { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rl-good { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rl-bad { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rl-q { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+            </style>
+            <text x="320" y="22" class="rl-title" text-anchor="middle">The Responsibility Line, in Four Questions</text>
+            <text x="200" y="46" class="rl-good-h" text-anchor="middle">libc</text>
+            <text x="470" y="46" class="rl-bad-h" text-anchor="middle">node_modules</text>
+            <line x1="20" y1="54" x2="620" y2="54" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="78" class="rl-q">Where does it live?</text>
+            <text x="200" y="94" class="rl-good" text-anchor="middle">base source tree, one snapshot</text>
+            <text x="470" y="94" class="rl-bad" text-anchor="middle">a registry anyone can publish to</text>
+            <line x1="20" y1="104" x2="620" y2="104" stroke="var(--border)" stroke-width="0.5" opacity="0.5"/>
+
+            <text x="20" y="128" class="rl-q">Who is accountable?</text>
+            <text x="200" y="144" class="rl-good" text-anchor="middle">named maintainers, public schedule</text>
+            <text x="470" y="144" class="rl-bad" text-anchor="middle">whoever holds the publish key</text>
+            <line x1="20" y1="154" x2="620" y2="154" stroke="var(--border)" stroke-width="0.5" opacity="0.5"/>
+
+            <text x="20" y="178" class="rl-q">How does it arrive?</text>
+            <text x="200" y="194" class="rl-good" text-anchor="middle">numbered, signed releases</text>
+            <text x="470" y="194" class="rl-bad" text-anchor="middle">latest tag, re-pointable</text>
+            <line x1="20" y1="204" x2="620" y2="204" stroke="var(--border)" stroke-width="0.5" opacity="0.5"/>
+
+            <text x="20" y="228" class="rl-q">How is it verified?</text>
+            <text x="200" y="244" class="rl-good" text-anchor="middle">rebuilt byte for byte, signed</text>
+            <text x="470" y="244" class="rl-bad" text-anchor="middle">mostly you cannot</text>
+        </svg>
+
+        <h2>The Register of 2026</h2>
+
+        <p>This is not a theoretical exposure. The first half of this year alone supplies a register, and it is worth reading in order, because the mechanisms differ and the shape never does.</p>
+
+        <p><strong>31 March, axios.</strong> The HTTP client, over a hundred million weekly downloads. Two malicious versions were published from a compromised maintainer account, with both the <code>latest</code> tag and a legacy tag pointed at them, so fresh installs pulled a backdoor by default; an injected dependency carried a post-install script that was a cross-platform remote-access trojan, and <a href="https://www.cisa.gov/news-events/alerts/2026/04/20/supply-chain-compromise-impacts-axios-node-package-manager" target="_blank" rel="noopener">CISA issued an alert</a>.</p>
+
+        <p><strong>14 May, node-ipc.</strong> An inter-process-communication library, around eight hundred and twenty-two thousand weekly downloads. Three malicious versions went out from a maintainer account whose recovery email lived on the domain <code>atlantis-software.net</code>, a domain that had expired in January 2025 and was <a href="https://www.csoonline.com/article/4171926/expired-domain-leads-to-supply-chain-attack-on-node-ipc-npm-package.html" target="_blank" rel="noopener">re-registered by the attacker</a> in May 2026 for the price of a registration. A standard password reset followed, and a credential stealer reached 822,000 weekly installs. The line that protected a near-million-download package ran through a lapsed domain renewal that nobody was watching.</p>
+
+        <p><strong>28 May, a typosquat run.</strong> A single actor under a fresh alias published <a href="https://www.microsoft.com/en-us/security/blog/2026/05/28/typosquatted-npm-packages-used-steal-cloud-ci-cd-secrets" target="_blank" rel="noopener">fourteen malicious packages inside four hours</a>, several of them spoofing the upstream OpenSearch repository address in their manifest so as to read as legitimate.</p>
+
+        <p><strong>29 May, dependency confusion.</strong> A <a href="https://www.microsoft.com/en-us/security/blog/2026/05/29/33-malicious-npm-packages-abuse-dependency-confusion-profile-developer-environments" target="_blank" rel="noopener">dependency confusion campaign</a>: thirty-three packages registered under organisational scopes that mirrored real internal corporate namespaces, across nine organisations, so that a build resolving an internal name would reach for the public impostor instead.</p>
+
+        <p><strong>1 June, Miasma.</strong> Thirty-two packages under the <code>@redhat-cloud-services</code> scope, published through a <a href="https://www.wiz.io/blog/miasma-supply-chain-attack-targeting-redhat-npm-packages" target="_blank" rel="noopener">hijacked continuous-integration pipeline identity</a>. This one is the sharpest, because the packages carried valid signed provenance: a genuine SLSA attestation that a known pipeline had built them. The signature was real. The package stole credentials anyway. The line had been drawn at the artifact and not at the identity permitted to publish it.</p>
+
+        <svg viewBox="0 0 640 300" aria-label="The register of npm supply-chain incidents in the first half of 2026, in order. 31 March, axios, over a hundred million weekly downloads, a compromised maintainer account with the latest tag re-pointed and a cross-platform remote-access trojan, with a CISA alert. 14 May, node-ipc, 822,000 weekly downloads, an account taken over through an expired domain re-registered for the price of a renewal. 28 May, a typosquat run, fourteen packages in four hours spoofing an upstream repository address. 29 May, dependency confusion, thirty-three packages across nine mirrored organisational scopes. 1 June, Miasma, thirty-two Red Hat packages through a hijacked pipeline carrying valid signed provenance. Five different mechanisms, one shape underneath: no responsibility line, so nothing to cross." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .rg-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rg-date { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rg-name { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rg-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rg-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .rg-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .rg-spine { stroke: var(--accent); stroke-width: 1.5; opacity: 0.5; }
+            </style>
+            <text x="320" y="22" class="rg-title" text-anchor="middle">The Register of 2026 (first half)</text>
+            <line x1="44" y1="58" x2="44" y2="244" class="rg-spine"/>
+
+            <circle cx="44" cy="68" r="4" fill="var(--accent)"/>
+            <text x="62" y="64" class="rg-date">31 Mar &#x2014; axios</text>
+            <text x="62" y="80" class="rg-text">100M+ weekly &#x2022; compromised account, latest re-pointed, cross-platform RAT &#x2022; CISA alert</text>
+
+            <circle cx="44" cy="104" r="4" fill="var(--accent)"/>
+            <text x="62" y="100" class="rg-date">14 May &#x2014; node-ipc</text>
+            <text x="62" y="116" class="rg-text">822K weekly &#x2022; account taken over via an expired domain re-registered for a renewal</text>
+
+            <circle cx="44" cy="140" r="4" fill="var(--accent)"/>
+            <text x="62" y="136" class="rg-date">28 May &#x2014; typosquat run</text>
+            <text x="62" y="152" class="rg-text">14 packages in 4 hours &#x2022; spoofed an upstream repository address to read as legitimate</text>
+
+            <circle cx="44" cy="176" r="4" fill="var(--accent)"/>
+            <text x="62" y="172" class="rg-date">29 May &#x2014; dependency confusion</text>
+            <text x="62" y="188" class="rg-text">33 packages &#x2022; 9 mirrored organisational scopes &#x2022; the build reaches for the public impostor</text>
+
+            <circle cx="44" cy="212" r="4" fill="var(--accent)"/>
+            <text x="62" y="208" class="rg-date">1 Jun &#x2014; Miasma</text>
+            <text x="62" y="224" class="rg-text">32 Red Hat packages &#x2022; hijacked pipeline &#x2022; valid signed provenance, malicious all the same</text>
+
+            <line x1="20" y1="260" x2="620" y2="260" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="280" class="rg-title" text-anchor="middle" font-size="11">Five mechanisms in three months. One shape underneath.</text>
+            <text x="320" y="296" class="rg-text" text-anchor="middle" font-style="italic">No responsibility line, so there was nothing to cross.</text>
+        </svg>
+
+        <p>Five incidents in three months. A stolen account, a lapsed domain, a typosquat, a dependency confusion, a hijacked pipeline: five different mechanisms, and one shape underneath all of them. There was no responsibility line, so there was nothing to cross. And the list is not closed; it never is, because the thing producing it is structural and not a run of bad luck.</p>
+
+        <h2>The Industry That Sells the Cure</h2>
+
+        <p>A market has grown up to sell the boundary back, package by package. It is not worthless, and it is not the boundary.</p>
+
+        <p>The advisory-driven tools, <a href="https://docs.github.com/en/code-security/dependabot" target="_blank" rel="noopener">Dependabot</a> and its kind, are <strong>reactive</strong> by construction: they alert once an advisory exists. For a freshly published malicious version there is a window, hours to days wide, in which the package installs clean by every tool that waits for a CVE. node-ipc was caught by behavioural detection, not by a feed that was still waiting for an identifier.</p>
+
+        <p><a href="https://docs.snyk.io/developer-tools/snyk-cli/commands/test" target="_blank" rel="noopener">Snyk</a>'s default scan tests production dependencies and, by default, leaves devDependencies out, on the reasonable-sounding ground that they are "noise" that does not reach production. But devDependencies are the majority of what a typical install puts on disk, and they run with the same permissions as everything else during development, which is exactly when a post-install script fires. The default scan looks past most of the directory it is pointed at, and does so by design.</p>
+
+        <p>The behavioural scanners that do better, <a href="https://socket.dev/" target="_blank" rel="noopener">Socket</a> among them, are themselves installed through npm, into the same environment they are asked to audit. The watchman lives in the house he is watching.</p>
+
+        <p>And Miasma is the cleanest illustration of the limit. The thing the audit industry increasingly sells, signed provenance, was present and correct, and the package was malicious all the same, because provenance certifies that a known pipeline built an artifact, not that the pipeline was still in the right hands. Signing did not draw the line. It moved the line to a place the attacker had already reached.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="The audit industry and the limit of each tool. Dependabot is reactive: it alerts once an advisory exists, leaving a window of hours to days in which a fresh malicious version installs clean. Snyk's default scan skips devDependencies as noise, although they are the majority of what installs on disk and run a post-install script. Socket is itself installed through npm into the environment it audits. Signed provenance certifies that a known pipeline built an artifact, not that the pipeline was still in the right hands, which is why Miasma's signature was real and the package malicious. The legend notes that the cure is partial filters bolted onto an architecture with no boundary beneath them." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cu-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cu-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cu-lim { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cu-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cu-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cu-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="cu-title" text-anchor="middle">The Cure the Market Sells, and Its Limit</text>
+
+            <rect x="20" y="44" width="295" height="64" class="cu-accent-box"/>
+            <text x="32" y="64" class="cu-head">Dependabot &#x2014; advisory-driven</text>
+            <text x="32" y="82" class="cu-lim">reactive: alerts once a CVE exists</text>
+            <text x="32" y="98" class="cu-muted">a fresh malicious version installs clean for hours to days</text>
+
+            <rect x="325" y="44" width="295" height="64" class="cu-accent-box"/>
+            <text x="337" y="64" class="cu-head">Snyk default &#x2014; production only</text>
+            <text x="337" y="82" class="cu-lim">skips devDependencies as "noise"</text>
+            <text x="337" y="98" class="cu-muted">the majority of disk, where post-install fires</text>
+
+            <rect x="20" y="116" width="295" height="64" class="cu-accent-box"/>
+            <text x="32" y="136" class="cu-head">Socket &#x2014; behavioural</text>
+            <text x="32" y="154" class="cu-lim">installed through npm itself</text>
+            <text x="32" y="170" class="cu-muted">the watchman lives in the house he is watching</text>
+
+            <rect x="325" y="116" width="295" height="64" class="cu-accent-box"/>
+            <text x="337" y="136" class="cu-head">Signed provenance &#x2014; SLSA</text>
+            <text x="337" y="154" class="cu-lim">certifies the pipeline, not its owner</text>
+            <text x="337" y="170" class="cu-muted">Miasma: signature real, package malicious</text>
+
+            <rect x="120" y="196" width="400" height="42" class="cu-box"/>
+            <text x="320" y="214" class="cu-head" text-anchor="middle">Partial filters, bolted on</text>
+            <text x="320" y="230" class="cu-muted" text-anchor="middle" font-style="italic">an architecture with no boundary beneath them</text>
+        </svg>
+
+        <p>None of this makes the tools useless. Dependabot closes known holes; Snyk finds real vulnerabilities; Socket's behavioural reading caught node-ipc when the feeds had not. The narrower and harder point is the one the first piece named: a market sells the cure for a disease the registry ships as a feature, and the cure, sold as a boundary, is a set of partial filters bolted onto an architecture that still has no boundary beneath them.</p>
+
+        <h2>The Point</h2>
+
+        <p>The responsibility line is the architecture's job, and node_modules never drew one. No scanner added afterwards can draw it retroactively, because the thing it would have to bound, the standing right of any of fifteen hundred strangers to run code as you on the next install, is the very thing the registry sells as convenience. You cannot bolt a boundary onto a model whose selling point is the absence of one.</p>
+
+        <p>libc is the proof that the line is not a fantasy. It is ordinary, in every operating system, for code that nobody reads and everybody depends on: a known home, a named owner, a delivery you can verify. The difference between libc and node_modules is not that one is audited and the other is not. It is that one has a boundary and the other was built, and sold, without one.</p>
+
+        <p>Security here was never a reading problem. It was a boundary problem, and the boundary was never drawn.</p>
+
+        <blockquote>
+            <p><strong>Next Wednesday: the workaround that became architecture.</strong></p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>References:</strong></p>
+            <ul>
+                <li>FreeBSD, libc in the base source tree, <em>src/lib/libc</em>. <a href="https://cgit.freebsd.org/src/tree/lib/libc" target="_blank" rel="noopener">cgit.freebsd.org</a></li>
+                <li>The GNU C Library (glibc), maintained under a public stewardship committee. <a href="https://sourceware.org/glibc/" target="_blank" rel="noopener">sourceware.org/glibc</a></li>
+                <li>Reproducible Builds, <em>an independent rebuild confirms the binary matches the source</em>. <a href="https://reproducible-builds.org/" target="_blank" rel="noopener">reproducible-builds.org</a></li>
+                <li>npm Docs, <em>scripts</em> (post-install hooks). <a href="https://docs.npmjs.com/cli/v10/using-npm/scripts" target="_blank" rel="noopener">docs.npmjs.com</a></li>
+                <li>CISA, <em>Supply Chain Compromise Impacts axios npm Package</em>, 20 April 2026. <a href="https://www.cisa.gov/news-events/alerts/2026/04/20/supply-chain-compromise-impacts-axios-node-package-manager" target="_blank" rel="noopener">cisa.gov</a></li>
+                <li>Microsoft Security, <em>Mitigating the axios npm Supply-Chain Compromise</em>, 1 April 2026. <a href="https://www.microsoft.com/en-us/security/blog/2026/04/01/mitigating-the-axios-npm-supply-chain-compromise" target="_blank" rel="noopener">microsoft.com</a></li>
+                <li>CSO Online, <em>Expired Domain Leads to Supply-Chain Attack on node-ipc</em>, May 2026. <a href="https://www.csoonline.com/article/4171926/expired-domain-leads-to-supply-chain-attack-on-node-ipc-npm-package.html" target="_blank" rel="noopener">csoonline.com</a></li>
+                <li>StepSecurity, <em>node-ipc npm Supply-Chain Attack</em>. <a href="https://www.stepsecurity.io/blog/node-ipc-npm-supply-chain-attack" target="_blank" rel="noopener">stepsecurity.io</a></li>
+                <li>Microsoft Security, <em>Typosquatted npm Packages Used to Steal Cloud CI/CD Secrets</em>, 28 May 2026. <a href="https://www.microsoft.com/en-us/security/blog/2026/05/28/typosquatted-npm-packages-used-steal-cloud-ci-cd-secrets" target="_blank" rel="noopener">microsoft.com</a></li>
+                <li>Microsoft Security, <em>33 Malicious npm Packages Abuse Dependency Confusion</em>, 29 May 2026. <a href="https://www.microsoft.com/en-us/security/blog/2026/05/29/33-malicious-npm-packages-abuse-dependency-confusion-profile-developer-environments" target="_blank" rel="noopener">microsoft.com</a></li>
+                <li>Wiz, <em>Miasma: Supply-Chain Attack Targeting Red Hat npm Packages</em>, 3 June 2026. <a href="https://www.wiz.io/blog/miasma-supply-chain-attack-targeting-redhat-npm-packages" target="_blank" rel="noopener">wiz.io</a></li>
+                <li>GitHub Docs, <em>Dependabot</em>. <a href="https://docs.github.com/en/code-security/dependabot" target="_blank" rel="noopener">docs.github.com</a></li>
+                <li>Snyk CLI, <em>snyk test</em>: devDependencies are excluded by default. <a href="https://docs.snyk.io/developer-tools/snyk-cli/commands/test" target="_blank" rel="noopener">docs.snyk.io</a></li>
+                <li>Socket, behavioural supply-chain analysis. <a href="https://socket.dev/" target="_blank" rel="noopener">socket.dev</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

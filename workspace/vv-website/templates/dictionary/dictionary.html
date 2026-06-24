@@ -279,6 +279,14 @@
             <dt>Dependabot</dt>
             <dd>A GitHub-integrated bot that automatically opens pull requests to update dependencies. On a monorepo, it can generate hundreds of PRs per week, each requiring review and testing.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="dependency-confusion">
+            <dt>dependency confusion</dt>
+            <dd>A supply-chain attack in which a package is published to a public registry under the name of a company's private internal package, so that a misconfigured build resolves the public impostor in preference to the intended private one.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="devdependencies">
+            <dt>devDependencies</dt>
+            <dd>The packages in an npm package.json needed only to develop or build a project, not to run it in production. A plain npm install pulls them in and runs them with the same permissions as everything else, which is when a post-install script fires; Snyk's default scan omits them.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="docker">
             <dt>Docker</dt>
             <dd>A container runtime that packages applications with their dependencies into isolated filesystem images, sharing the host kernel.</dd>
@@ -548,6 +556,10 @@
             <dt>Merkle tree</dt>
             <dd>A hash tree where every leaf node is labelled with the hash of a data block and every non-leaf node is labelled with the hash of its children. Used by ZFS for end-to-end checksumming.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="miasma">
+            <dt>Miasma</dt>
+            <dd>A June 2026 npm supply-chain attack that republished thirty-two packages under the @redhat-cloud-services scope through a hijacked continuous-integration pipeline identity. The packages carried valid signed provenance and stole credentials all the same, illustrating that an attestation certifies which pipeline built an artifact, not that the pipeline was still in the right hands.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="microcode">
             <dt>microcode</dt>
             <dd>The lowest layer of a CPU: the signed, encrypted program that translates architectural instructions into the processor's internal operations. It can be updated only with the manufacturer's signature; one cannot read it, write it, or fork it.</dd>
@@ -620,6 +632,10 @@
         <dl class="vv-dict-entry" id="nintendo-switch">
             <dt>Nintendo Switch</dt>
             <dd>Nintendo's games console (2017). Its Horizon operating system carries FreeBSD's networking code without being a FreeBSD derivative outright, code from one family running inside another. Counted with Sony's consoles, it tilts the console world towards BSD.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="node-ipc">
+            <dt>node-ipc</dt>
+            <dd>A widely used Node.js inter-process-communication library, around 822,000 weekly downloads. In May 2026 its maintainer account was taken over after the domain behind its recovery email, atlantis-software.net, was allowed to lapse and re-registered by an attacker for the price of a registration; a credential stealer then shipped to every installer.</dd>
         </dl>
         <dl class="vv-dict-entry" id="novell">
             <dt>Novell</dt>
@@ -707,6 +723,10 @@
             <dt>Prometheus</dt>
             <dd>A time-series monitoring system with a pull-based model, PromQL query language, and built-in alerting.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="provenance">
+            <dt>provenance</dt>
+            <dd>A signed attestation recording how a software artifact was built, for example which pipeline produced it and from which source. Useful but not a trust boundary: provenance certifies the build, not that the identity permitted to publish is still in the right hands, as the Miasma attack showed.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="pse52">
             <dt>PSE52</dt>
             <dd>The realtime-controller profile of the POSIX standard (IEEE 1003.13), against which QNX holds a formal certification. Issued by the same bodies that keep the UNIX register, only against a different standard, which is how QNX claims genuine POSIX certification without being certified UNIX.</dd>
@@ -732,6 +752,14 @@
         <dl class="vv-dict-entry" id="redis">
             <dt>Redis</dt>
             <dd>An in-memory data structure store used as database, cache, and message broker. Single-threaded, sub-millisecond latency.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="remote-access-trojan">
+            <dt>remote-access trojan</dt>
+            <dd>Malware (a RAT) that opens a covert remote-control channel to an attacker, allowing arbitrary commands, file access and data exfiltration from the infected machine. The axios npm compromise of March 2026 shipped a cross-platform one through a post-install script.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="reproducible-builds">
+            <dt>Reproducible Builds</dt>
+            <dd>An effort to make a build produce a bit-for-bit identical artifact from the same source, so that an independent party can rebuild a release and confirm the binary on disk matches the published source. A pillar of the responsibility line that node_modules lacks.</dd>
         </dl>
         <dl class="vv-dict-entry" id="rest">
             <dt>REST</dt>
@@ -810,9 +838,17 @@
             <dt>SiPearl</dt>
             <dd>A French company building high-performance server processors for the European Processor Initiative. Its Rhea1, taped out in 2025 as the most complex chip designed in Europe, is built on licensed ARM Neoverse cores and fabricated in Taiwan.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="slsa">
+            <dt>SLSA</dt>
+            <dd>Supply-chain Levels for Software Artifacts, a framework of provenance and integrity guarantees for build pipelines (pronounced salsa). It raises the bar for tampering, but, as Miasma showed, a valid SLSA attestation certifies the pipeline that built an artifact, not that its publishing identity is uncompromised.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="smic">
             <dt>SMIC</dt>
             <dd>Semiconductor Manufacturing International Corporation, China's largest chip foundry. It has produced 5nm-class parts (the Huawei Kirin 9030) using deep-ultraviolet multi-patterning, without the extreme-ultraviolet tools restricted to it.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="socket">
+            <dt>Socket</dt>
+            <dd>A behavioural supply-chain security tool that inspects package code for risky behaviour (network calls, file-system and shell access, install scripts) rather than waiting for a published advisory. It caught the node-ipc compromise, but is itself installed through npm into the environment it audits.</dd>
         </dl>
         <dl class="vv-dict-entry" id="softbank">
             <dt>SoftBank</dt>
