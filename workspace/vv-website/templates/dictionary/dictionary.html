@@ -452,6 +452,10 @@
             <dt>io-pkt</dt>
             <dd>The networking stack of the QNX operating system, built directly on NetBSD's networking code. Berkeley's code compiled into QNX's own address space, which is why a Unixoid by kernel carries a genuine piece of the BSD line inside it.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="io-uring">
+            <dt>io_uring</dt>
+            <dd>A Linux asynchronous I/O interface (Jens Axboe, kernel 5.1, 2019) built on two shared-memory rings, a submission queue and a completion queue, letting an application hand the kernel batches of work with very few system calls. Fast, but a large and fast-growing attack surface: around six in ten Linux kernel exploits submitted to Google's 2022 bounty went through it.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="ipsec">
             <dt>IPsec</dt>
             <dd>Internet Protocol Security. A suite of protocols for authenticating and encrypting IP packets. Complex configuration, largely replaced by WireGuard for VPNs.</dd>
@@ -695,6 +699,10 @@
             <dt>PHP-FPM</dt>
             <dd>FastCGI Process Manager for PHP. Manages a pool of PHP worker processes, each handling one request at a time. Typical memory: 40-128 MB per worker.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="pintheft">
+            <dt>PinTheft</dt>
+            <dd>A 2026 Linux local-privilege-escalation vulnerability (CVE-2026-43494) that chains a reference-counting bug in the kernel's RDS sockets with io_uring to overwrite a setuid-root binary in memory and obtain a root shell.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="platform-security-processor">
             <dt>Platform Security Processor</dt>
             <dd>AMD's equivalent of the Intel Management Engine: an embedded ARM core inside the SoC running signed proprietary firmware with full system access, but without the direct network path the Intel ME carries.</dd>
@@ -702,6 +710,10 @@
         <dl class="vv-dict-entry" id="posix">
             <dt>POSIX</dt>
             <dd>Portable Operating System Interface. A family of IEEE standards defining Unix-compatible APIs, shell behaviour, and utility conventions.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="posix-aio">
+            <dt>POSIX AIO</dt>
+            <dd>The POSIX standard's asynchronous I/O interface, an older way for a program to ask the kernel to perform input and output without blocking. On Linux it is the fourth of five accreted I/O interfaces, after select, poll and epoll and before io_uring.</dd>
         </dl>
         <dl class="vv-dict-entry" id="postgresql">
             <dt>PostgreSQL</dt>
@@ -1049,6 +1061,14 @@
     <section class="vv-dictionary" aria-labelledby="dict-people-title">
         <h2 id="dict-people-title" class="vv-dict-heading">People</h2>
         <h3 id="person-A">A</h3>
+        <dl class="vv-dict-entry" id="jens-axboe">
+            <dt>Jens Axboe</dt>
+            <dd>Linux kernel engineer, maintainer of the block layer and author of io_uring (merged in Linux 5.1, 2019) and the fio benchmark tool.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="jonathan-lemon">
+            <dt>Jonathan Lemon</dt>
+            <dd>FreeBSD developer who designed and wrote kqueue, the unified event-notification interface shipped in FreeBSD 4.1 in 2000 and later adopted by macOS and the other BSDs.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="jonathan-anderson">
             <dt>Jonathan Anderson</dt>
             <dd>Computer scientist, co-creator of Capsicum with Robert Watson. Their 2010 USENIX Security paper introduced capability-based sandboxing to FreeBSD. Now at Memorial University of Newfoundland.</dd>

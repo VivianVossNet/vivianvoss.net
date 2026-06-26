@@ -1,0 +1,210 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Surface You Never Added &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Google switched io_uring off across ChromeOS, Android and its own production servers, and the reason is a number: about six in ten of the Linux kernel exploits submitted to Google's 2022 bounty came through that one subsystem. io_uring is the fifth I/O interface Linux has accreted, and to go faster it moves asynchronous execution into the kernel across shared rings and well over a hundred opcodes, all of it attack surface. FreeBSD waits for I/O through one event primitive, kqueue, shipped in 2000 and never replaced: it notifies and gets out of the way, so the surface those bugs live on was never added. First of three Fridays on what makes a server operating system dependable.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-surface-you-never-added{( endslot )}
+
+{( slot og-title )}The Surface You Never Added &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Security Review, first of three Fridays on what makes a server operating system dependable, judged by the trouble it does not invite. In 2023 Google switched io_uring off: out of ChromeOS, restricted in Android, disabled on its production servers. The reason is a number. Of the Linux kernel exploits submitted to Google's bounty in 2022, about six in ten came through io_uring, a subsystem barely three years old, and the programme paid roughly a million euros for that component alone. io_uring is the fifth way Linux has offered to wait for input and output, after select, poll, epoll and POSIX AIO: the kernel did not replace its I/O model, it accreted one. To go faster, io_uring moves asynchronous execution into the kernel across two shared-memory rings and well over a hundred opcodes, every one of them attack surface, and it is still producing serious holes in 2026 (PinTheft, CVE-2026-43494; a zero-copy-receive use-after-free, CVE-2026-43174). FreeBSD waits for I/O through kqueue, written by Jonathan Lemon and shipped in FreeBSD 4.1 in July 2000, one kevent interface for files, sockets, signals, timers and processes, unreplaced in twenty-six years; it notifies and gets out of the way, with no shared ring and no in-kernel opcode catalogue, so the corridor io_uring offers an attacker was never built. Defect density is not bad luck: it follows from how a system is built. The safest feature is the one you never add.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Surface You Never Added",
+    "datePublished": "2026-06-26",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-surface-you-never-added",
+    "description": "Security Review, the first of three Fridays on what makes a server operating system dependable, judged through security by the trouble it does not invite. In 2023 Google switched io_uring off: out of ChromeOS entirely, restricted to a handful of system processes in Android, and disabled on its own production servers. The reason is a number. When Google's security team added up the Linux kernel exploits submitted to its bounty in 2022, about six in ten exploited io_uring, the majority of every break-in the programme was shown, from one subsystem barely three years old, and it paid roughly a million euros for that component alone. io_uring, written by Jens Axboe and merged into Linux 5.1 in 2019, is an asynchronous I/O interface built around two shared-memory rings, a submission queue and a completion queue, through which an application hands the kernel batches of work with very few system calls. It is the fifth way Linux has offered to wait for input and output, after select, poll, epoll and POSIX AIO: each was added because the previous was too slow, and each remains, so the kernel did not replace its I/O model but accreted one. To go faster, io_uring moves asynchronous execution onto the kernel side, a shared memory region both sides write to, and a growing catalogue of well over a hundred opcodes, every one of them attack surface. The stream has not dried up: in 2026 PinTheft (CVE-2026-43494) chains a reference-counting bug in the kernel's RDS sockets with io_uring to overwrite a setuid-root binary for local root, and a use-after-free in the zero-copy receive path (CVE-2026-43174) corrupts kernel memory. It would be dishonest to leave it there: io_uring solves a real problem, batching submissions and completions with almost no system calls is a measurable win for high-IOPS workloads, and FreeBSD is no temple, with its own advisories and its own bad mornings. The argument is duller and more useful: defect density is decided by process and planning. FreeBSD waits for I/O through kqueue, written by Jonathan Lemon and shipped in FreeBSD 4.1 in July 2000; one kevent interface watches files, sockets, signals, timers, file-system changes and processes, unreplaced in twenty-six years and adopted by macOS and the other BSDs. It notifies and gets out of the way; it does not run asynchronous work on a shared ring or maintain a hundred-opcode catalogue inside the kernel, and so it does not offer the corridor io_uring does. The same class of bug does not arise because the surface it would live on was never added. When you choose a kernel to run for a decade the question is not what it can do at peak throughput, it is what it will not do to you at three in the morning; a single event primitive unreplaced since 2000 is not the most exciting line on a changelog, and that is rather the point. The safest feature is the one you never add. Next Friday: the program you let into the kernel.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-06-26">26 June 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Surface You Never Added</h1>
+        <p class="vv-article-meta"><em>First of three Fridays on what makes a server operating system dependable. Security Review &#x22A3; Boring on Purpose, 1 of 3.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">kernel</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>There is a question an engineer asks once the novelty of a system has worn off and the pager has gone off at three in the morning a few times too often. It is not what the system can do. It is what it will not do to you. The two questions sound similar and lead to entirely different operating systems.</p>
+
+        <p>This little series is about the second question, seen through security, because security is where the difference shows first and costs most. And it begins with a quiet decision a very large company made in 2023.</p>
+
+        <p>Google turned io_uring off. Not deprecated, not warned about: switched off, in ChromeOS entirely, restricted to a handful of system processes in Android, and <a href="https://www.openwall.com/lists/oss-security/2023/07/19/7" target="_blank" rel="noopener">disabled on its own production servers</a>. When the firm that runs more Linux than almost anyone alive removes a kernel feature across its entire fleet, it is worth asking what it saw. Disabling a feature across a whole estate is not the reaction of a team that found it mildly inconvenient.</p>
+
+        <h2>The Breach</h2>
+
+        <p>io_uring is a genuinely clever piece of machinery. Written by Jens Axboe and <a href="https://lwn.net/Articles/810414/" target="_blank" rel="noopener">merged into Linux 5.1 in 2019</a>, it is a modern asynchronous I/O interface built around two shared-memory rings, a submission queue and a completion queue, through which an application hands the kernel batches of work and collects the results with very few system calls, sometimes none at all. For a database or a busy proxy, that is real throughput.</p>
+
+        <p>It is also, by the count of the people who hunt these things, the single most exploited thing in the recent Linux kernel. In 2023 Google's security team published what it had learnt from its kernel exploit bounty: of the submissions it received in 2022, about six in ten exploited io_uring, and the programme paid out roughly a million euros for that component alone. Six in ten. The majority of every kernel break-in the programme was shown, from one subsystem barely three years old. A feature added for speed had quietly become the most reliable way into the kernel you run, and that is not a number one files under teething trouble.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="A bar showing that of the Linux kernel exploits submitted to Google's bug bounty in 2022, about six in ten exploited the io_uring subsystem. io_uring accounts for roughly sixty per cent of submissions; all other parts of the kernel together account for the remaining forty per cent. The legend notes that this was one subsystem barely three years old, and that the programme paid about a million euros for io_uring exploits alone." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sx-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sx-big { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 34px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sx-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sx-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sx-bar-rest { fill: var(--muted); opacity: 0.22; rx: 2; }
+                .sx-bar-io { fill: var(--accent); opacity: 0.85; rx: 2; }
+            </style>
+            <text x="320" y="24" class="sx-title" text-anchor="middle">Linux kernel exploits submitted to Google's bounty, 2022</text>
+
+            <rect x="40" y="54" width="350" height="40" class="sx-bar-io"/>
+            <rect x="390" y="54" width="210" height="40" class="sx-bar-rest"/>
+            <text x="56" y="80" class="sx-text">io_uring</text>
+            <text x="486" y="79" class="sx-muted" text-anchor="middle">all the rest of the kernel</text>
+
+            <text x="40" y="150" class="sx-big">~ 6 in 10</text>
+            <text x="40" y="172" class="sx-text">of submitted kernel exploits used io_uring</text>
+            <text x="40" y="190" class="sx-muted">one subsystem, barely three years old &#x2022; ~ &#x20AC;1m paid for that component alone</text>
+
+            <line x1="40" y1="212" x2="600" y2="212" stroke="var(--border)" stroke-width="1"/>
+            <text x="40" y="232" class="sx-muted" font-style="italic">Source: Google Security Team, kCTF kernel-exploit bounty (oss-security, 2023)</text>
+        </svg>
+
+        <p>The stream has not dried up. In 2026 the subsystem is still producing serious holes: <a href="https://tuxcare.com/blog/cve-pintheft/" target="_blank" rel="noopener">PinTheft (CVE-2026-43494)</a> chains a reference-counting bug in the kernel's RDS sockets with io_uring to overwrite a setuid-root binary in memory and hand an unprivileged user a root shell; a separate <a href="https://www.sentinelone.com/vulnerability-database/cve-2026-43174/" target="_blank" rel="noopener">use-after-free in the zero-copy receive path (CVE-2026-43174)</a> corrupts kernel memory through mishandled object lifetimes. These are not the growing pains of something new. They are the steady output of a large, fast-moving surface.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>Here is the part that matters when you are choosing what to run, rather than merely what to patch.</p>
+
+        <p>io_uring did not arrive in a vacuum. It is the fifth way Linux has offered to wait for input and output: <code>select</code>, then <code>poll</code>, then <code>epoll</code>, then POSIX AIO, then io_uring. Each was added because the previous one was too slow for some workload, and each is still there, because removing an interface that programs depend on is its own kind of breakage. The kernel did not replace its I/O model. It accreted one.</p>
+
+        <svg viewBox="0 0 640 300" aria-label="A comparison of two approaches to waiting for input and output. On the Linux side, five interfaces accreted over time: select, poll, epoll, POSIX AIO and io_uring, each added because the previous was too slow, and all still present. io_uring is highlighted as the newest and largest attack surface. On the FreeBSD side, a single event primitive, kqueue, shipped in 2000 and never replaced. The legend notes that Linux accreted its I/O model while FreeBSD kept one, and that the surface you never add cannot be attacked." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sw-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sw-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sw-good-h { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sw-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sw-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sw-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .sw-accent { fill: none; stroke: var(--accent); stroke-width: 1; rx: 4; }
+                .sw-accent-fill { fill: var(--accent); opacity: 0.14; rx: 4; }
+                .sw-good { fill: none; stroke: #4ab542; stroke-width: 1.5; rx: 4; }
+                .sw-good-fill { fill: #4ab542; opacity: 0.12; rx: 4; }
+            </style>
+            <text x="320" y="22" class="sw-title" text-anchor="middle">Two ways to wait for input and output</text>
+
+            <text x="170" y="48" class="sw-head" text-anchor="middle">Linux: accreted</text>
+            <rect x="60" y="58" width="220" height="22" class="sw-box"/><text x="170" y="73" class="sw-muted" text-anchor="middle">select</text>
+            <rect x="60" y="84" width="220" height="22" class="sw-box"/><text x="170" y="99" class="sw-muted" text-anchor="middle">poll</text>
+            <rect x="60" y="110" width="220" height="22" class="sw-box"/><text x="170" y="125" class="sw-muted" text-anchor="middle">epoll</text>
+            <rect x="60" y="136" width="220" height="22" class="sw-box"/><text x="170" y="151" class="sw-muted" text-anchor="middle">POSIX AIO</text>
+            <rect x="60" y="162" width="220" height="34" class="sw-accent-fill"/>
+            <rect x="60" y="162" width="220" height="34" class="sw-accent"/>
+            <text x="170" y="180" class="sw-text" text-anchor="middle">io_uring (2019)</text>
+            <text x="170" y="192" class="sw-muted" text-anchor="middle">shared rings &#x2022; 100+ opcodes &#x2022; ~60% of exploits</text>
+            <text x="170" y="216" class="sw-muted" text-anchor="middle" font-style="italic">five interfaces, all still present</text>
+
+            <text x="470" y="48" class="sw-good-h" text-anchor="middle">FreeBSD: integrated</text>
+            <rect x="360" y="84" width="220" height="112" class="sw-good-fill"/>
+            <rect x="360" y="84" width="220" height="112" class="sw-good"/>
+            <text x="470" y="128" class="sw-text" text-anchor="middle">kqueue (2000)</text>
+            <text x="470" y="148" class="sw-muted" text-anchor="middle">one kevent interface</text>
+            <text x="470" y="164" class="sw-muted" text-anchor="middle">files, sockets, signals, timers, procs</text>
+            <text x="470" y="180" class="sw-muted" text-anchor="middle">unreplaced in 26 years</text>
+
+            <line x1="40" y1="236" x2="600" y2="236" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="256" class="sw-muted" text-anchor="middle" font-style="italic">Linux accreted its I/O model; FreeBSD kept one. The surface you never add cannot be attacked.</text>
+        </svg>
+
+        <p>io_uring is the sharpest expression of that habit. To go faster it moves work the application used to do across the boundary and into the kernel: asynchronous execution on the kernel side, a shared memory region the application and the kernel both write to, and a growing catalogue of operations, well over a hundred opcodes, each a small new thing the kernel will now do on a stranger's behalf. Every one of those is attack surface. The subsystem became a sixty-per-cent problem not because Axboe is a poor engineer, he is plainly an excellent one, but because the architecture rewards adding capability into the kernel and has nobody whose job is to keep that surface small.</p>
+
+        <p>This is the first thing an operator should weigh. Defect density is not bad luck. It follows from how a system is built. A kernel that keeps absorbing new privileged surface, for the best of reasons each time, is a kernel whose defect density you cannot bound, because the surface itself is still growing.</p>
+
+        <h2>The Limit</h2>
+
+        <p>It would be dishonest to leave it there, and this series will refuse to.</p>
+
+        <p>io_uring solves a real problem. For high-throughput, high-IOPS workloads, batching submissions and draining completions with almost no system calls is a measurable win, and the engineering inside it is serious work. FreeBSD's answer, which we are about to meet, does not give you that particular form of asynchronous throughput. If your workload genuinely lives or dies on millions of queued operations a second, io_uring is doing something for you that the alternative does not.</p>
+
+        <p>And FreeBSD is not a temple. It has its own advisories, its own bugs, its own mornings that begin badly. The argument of this series is not that one system is without fault. It is that defect density is decided by process and planning, which is a duller claim and a far more useful one. I will not call a design brilliant when it became the majority of the kernel exploits its own bounty paid out. I will say, without hedging, exactly what it bought, and let the reader weigh the price.</p>
+
+        <h2>The BSD Angle</h2>
+
+        <p>On FreeBSD, the same class of bug does not arise, and the reason is almost embarrassingly simple: the surface it would live on was never added.</p>
+
+        <p>FreeBSD waits for input and output through <a href="https://man.freebsd.org/cgi/man.cgi?query=kqueue" target="_blank" rel="noopener">kqueue</a>, written by Jonathan Lemon and shipped in FreeBSD 4.1 in July 2000. One mechanism, <code>kevent</code>, watches files, sockets, signals, timers, file-system changes and processes through a single interface. It has not needed replacing in twenty-six years. The whole of macOS and the other BSDs adopted it. It is, by any measure, one of the most boring success stories in systems software.</p>
+
+        <svg viewBox="0 0 640 240" aria-label="A diagram of what kqueue does not do, compared with io_uring. io_uring maintains two shared-memory rings that the application and kernel both write to, runs asynchronous work inside the kernel, and exposes well over a hundred opcodes, and all of this is attack surface. kqueue does only one thing: it notifies the program that an event is ready and then gets out of the way, with no shared ring, no in-kernel asynchronous execution and no opcode catalogue, so there is nothing for an attacker to work. The legend notes that boring is the result of engineering, not the absence of it." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sd-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sd-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sd-good-h { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sd-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sd-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sd-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .sd-accent-fill { fill: var(--accent); opacity: 0.10; rx: 4; }
+                .sd-good { fill: none; stroke: #4ab542; stroke-width: 1.5; rx: 4; }
+                .sd-good-fill { fill: #4ab542; opacity: 0.10; rx: 4; }
+            </style>
+            <text x="320" y="22" class="sd-title" text-anchor="middle">What kqueue does not do</text>
+
+            <rect x="30" y="42" width="290" height="150" class="sd-accent-fill"/>
+            <rect x="30" y="42" width="290" height="150" class="sd-accent"/>
+            <text x="46" y="64" class="sd-head">io_uring does the work</text>
+            <text x="46" y="88" class="sd-item">two shared-memory rings, both sides write</text>
+            <text x="46" y="110" class="sd-item">asynchronous execution inside the kernel</text>
+            <text x="46" y="132" class="sd-item">100+ opcodes the kernel runs for you</text>
+            <text x="46" y="170" class="sd-head" font-size="11">= all of it attack surface</text>
+
+            <rect x="340" y="42" width="270" height="150" class="sd-good-fill"/>
+            <rect x="340" y="42" width="270" height="150" class="sd-good"/>
+            <text x="356" y="64" class="sd-good-h">kqueue only notifies</text>
+            <text x="356" y="88" class="sd-item">one kevent interface</text>
+            <text x="356" y="110" class="sd-item">tells you an event is ready</text>
+            <text x="356" y="132" class="sd-item">then gets out of the way</text>
+            <text x="356" y="170" class="sd-good-h" font-size="11">= nothing to work</text>
+
+            <text x="320" y="222" class="sd-muted" text-anchor="middle" font-style="italic">Boring is not the absence of engineering. It is the result of it.</text>
+        </svg>
+
+        <p>The difference that matters for security is what <code>kqueue</code> does not do. It notifies. It tells your program that something is ready and then gets out of the way. It does not run asynchronous work for you on a shared ring, it does not maintain a hundred-opcode catalogue of operations to perform inside the kernel, and so it does not offer the attacker the corridor that io_uring does. The event loop your FreeBSD server already runs is the boring one, and boring, here, is the whole of the point.</p>
+
+        <p>This is not a claim that FreeBSD is faster. It is the observation that one project, building one event primitive and keeping it, produced a surface an attacker cannot work because it is not there to be worked.</p>
+
+        <h2>The Point</h2>
+
+        <p>When you choose a kernel to run for a decade, the question is not what it can do at peak throughput on benchmark day. It is what it will not do to you at three in the morning, eighteen months in, when a subsystem you never enabled on purpose turns out to be the way in.</p>
+
+        <p>A system that keeps adding execution surface, for excellent reasons each time, is a system whose defect density you have agreed not to bound. A single event primitive, unreplaced since 2000, is not the most exciting line on a changelog. That is rather the point. The boring system is the one still running, and boring is not the absence of engineering. It is the result of it.</p>
+
+        <blockquote>
+            <p><strong>Next Friday: if a kernel will keep adding surface for speed, what stops it from letting you run your own programs inside it?</strong></p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>References:</strong></p>
+            <ul>
+                <li>Google Security Team, on its kCTF kernel-exploit bounty: about 60% of 2022 submissions exploited io_uring; io_uring since limited across ChromeOS, Android and production servers. oss-security, 19 June 2023. <a href="https://www.openwall.com/lists/oss-security/2023/07/19/7" target="_blank" rel="noopener">openwall.com</a> &#x25A0; <a href="https://www.phoronix.com/news/Google-Restricting-IO_uring" target="_blank" rel="noopener">phoronix.com</a></li>
+                <li>io_uring, by Jens Axboe, merged in Linux 5.1 (2019); submission and completion rings in shared memory. LWN, <em>The rapid growth of io_uring</em>. <a href="https://lwn.net/Articles/810414/" target="_blank" rel="noopener">lwn.net</a></li>
+                <li>PinTheft, CVE-2026-43494: an RDS refcount bug chained with io_uring to overwrite a setuid-root binary for local privilege escalation. <a href="https://tuxcare.com/blog/cve-pintheft/" target="_blank" rel="noopener">tuxcare.com</a></li>
+                <li>CVE-2026-43174: use-after-free in the io_uring zero-copy receive (zcrx) path. <a href="https://www.sentinelone.com/vulnerability-database/cve-2026-43174/" target="_blank" rel="noopener">sentinelone.com</a></li>
+                <li>Jonathan Lemon, <em>Kqueue: A Generic and Scalable Event Notification Facility</em>, FREENIX Track, 2001 USENIX Annual Technical Conference; kqueue shipped in FreeBSD 4.1, July 2000. <a href="https://people.freebsd.org/~jlemon/papers/kqueue.pdf" target="_blank" rel="noopener">people.freebsd.org</a> &#x25A0; <a href="https://man.freebsd.org/cgi/man.cgi?query=kqueue" target="_blank" rel="noopener">man.freebsd.org</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

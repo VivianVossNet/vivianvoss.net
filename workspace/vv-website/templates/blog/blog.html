@@ -53,6 +53,37 @@
     <nav class="vv-pager" id="pager-top" aria-label="Page navigation"></nav>
 
     <div class="vv-series" id="blog-list">
+        <article class="vv-series-item" data-tags="security-review">
+            <span class="day">26 June 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">freebsd</span>
+                <span class="vv-pill">security</span>
+                <span class="vv-pill">linux</span>
+                <span class="vv-pill">kernel</span>
+            </div>
+            <h3><a href="/blog/the-surface-you-never-added">The Surface You Never Added</a></h3>
+            <p>First of three Fridays on what makes a server operating
+                system dependable, judged by the trouble it does not
+                invite. In 2023 Google switched <em>io_uring</em> off
+                across ChromeOS, Android and its own servers, and the
+                reason is a number: of the Linux kernel exploits
+                submitted to Google's 2022 bounty, about <em>six in
+                ten</em> came through that one subsystem, barely three
+                years old. io_uring is the fifth way Linux has offered
+                to wait for I/O, after select, poll, epoll and POSIX
+                AIO: the kernel did not replace its I/O model, it
+                <em>accreted</em> one, and to go faster io_uring moves
+                asynchronous execution into the kernel across shared
+                rings and a hundred-plus opcodes, all of it attack
+                surface. It is still producing holes in 2026 (PinTheft,
+                CVE-2026-43494). FreeBSD waits through <em>kqueue</em>,
+                one event primitive shipped in 2000 and never replaced;
+                it notifies and gets out of the way, so the corridor
+                io_uring offers an attacker was never built. Defect
+                density is not bad luck; it follows from how a system is
+                built. The safest feature is the one you never add.
+                Security Review &#x22A3; Boring on Purpose, 1 of 3.</p>
+        </article>
         <article class="vv-series-item" data-tags="lean-software">
             <span class="day">24 June 2026</span>
             <div class="vv-pills">
