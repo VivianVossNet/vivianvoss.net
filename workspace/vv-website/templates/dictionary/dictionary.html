@@ -96,6 +96,10 @@
             <dt>ARM</dt>
             <dd>A processor instruction-set architecture designed in Cambridge and licensed, core by core, to chip makers worldwide; the most widely deployed ISA on Earth, owned since 2016 by Japan's SoftBank.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="async-runtime">
+            <dt>async runtime</dt>
+            <dd>A library that drives non-blocking, event-driven tasks and schedules them across all cores inside one process, giving a language the concurrency for which a container is often used as a substitute. Tokio is the common one for Rust.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="aws">
             <dt>AWS</dt>
             <dd>Amazon Web Services. The dominant cloud computing platform offering IaaS, PaaS, and managed services.</dd>
@@ -112,6 +116,10 @@
         <dl class="vv-dict-entry" id="base-system">
             <dt>Base System</dt>
             <dd>In FreeBSD and the other BSDs, the kernel, C library, userland utilities, documentation, toolchain and release-engineering process maintained together in one source tree by one project and shipped as one tested snapshot. Contrasts with a Linux distribution, which assembles several hundred independently-governed projects. <em>Base</em> means what is shipped together; <em>system</em> means integrated whole.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="base-image">
+            <dt>base image</dt>
+            <dd>The distribution layer a container is built on top of, such as Debian or Alpine, carrying a userland, package manager and its own attack surface into every image derived from it.</dd>
         </dl>
         <dl class="vv-dict-entry" id="berkeley">
             <dt>Berkeley</dt>
@@ -206,9 +214,17 @@
             <dt>CI/CD</dt>
             <dd>Continuous Integration / Continuous Deployment. Automated pipelines that build, test, and deploy code on every commit.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="cluster-module">
+            <dt>cluster module</dt>
+            <dd>A Node.js core module that forks one worker process per CPU core and shares a listening socket between them; the first workaround for a single-threaded runtime that cannot, by itself, use more than one core.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="cncf">
             <dt>CNCF</dt>
             <dd>Cloud Native Computing Foundation. The Linux Foundation project hosting Kubernetes, Prometheus, Envoy, and other cloud-native infrastructure projects.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="container">
+            <dt>container</dt>
+            <dd>A packaged unit that bundles a process with a slice of userland (libraries, shell, tools) and runs it in an isolated view of a shared kernel; convenient for deployment, but often a small operating system shipped to run one process.</dd>
         </dl>
         <dl class="vv-dict-entry" id="cqrs">
             <dt>CQRS</dt>
@@ -389,6 +405,10 @@
         <dl class="vv-dict-entry" id="gnu">
             <dt>GNU</dt>
             <dd>GNU's Not Unix. The free-software project Richard Stallman began in 1983 to build a complete Unix-compatible system; its userland supplies the standard utilities, C library and toolchain on most Linux distributions. Unix-like by design, with no inherited Unix code.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="go">
+            <dt>Go</dt>
+            <dd>A compiled language from Google (2009); its runtime scheduler multiplexes lightweight goroutines across every core of a single process, so one binary saturates a multi-core machine without a cluster of processes or a container per core.</dd>
         </dl>
         <dl class="vv-dict-entry" id="gpl">
             <dt>GPL</dt>
@@ -657,6 +677,10 @@
             <dt>npm</dt>
             <dd>Node Package Manager. The default registry and CLI for JavaScript packages. Manages dependency trees in node_modules.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="non-blocking-i-o">
+            <dt>non-blocking I/O</dt>
+            <dd>An I/O model in which one thread issues many operations and is notified as each completes, rather than waiting on each in turn, so a single process can hold thousands of idle connections. The model at the heart of Node.js, and of Go and Rust async runtimes alike.</dd>
+        </dl>
         <h3 id="letter-O">O</h3>
         <dl class="vv-dict-entry" id="open-software-foundation">
             <dt>Open Software Foundation</dt>
@@ -681,6 +705,10 @@
         <dl class="vv-dict-entry" id="openbsd">
             <dt>OpenBSD</dt>
             <dd>A security-focused open-source Unix operating system. Produced OpenSSH, LibreSSL, OpenBGPD, and the pledge()/unveil() system calls. Known for code audits and minimal defaults.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="orchestrator">
+            <dt>orchestrator</dt>
+            <dd>A control system, such as Kubernetes, that schedules containers across cores and machines, health-checks them and restarts those that fail; the supervisor a single self-scheduling binary does not need.</dd>
         </dl>
         <dl class="vv-dict-entry" id="openindiana">
             <dt>OpenIndiana</dt>
@@ -942,6 +970,10 @@
             <dt>systemd</dt>
             <dd>The init system and service manager in most Linux distributions. Manages processes, logging, networking, and device events. Controversial for its scope.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="single-threaded">
+            <dt>single-threaded</dt>
+            <dd>Running on one thread, and therefore one core, at a time; the design Node.js chose in 2009 for safety, no shared-memory threads and no locks, at the cost of not using a multi-core machine on its own.</dd>
+        </dl>
         <h3 id="letter-T">T</h3>
         <dl class="vv-dict-entry" id="tape-out">
             <dt>tape-out</dt>
@@ -954,6 +986,10 @@
         <dl class="vv-dict-entry" id="terraform">
             <dt>Terraform</dt>
             <dd>An infrastructure-as-code tool by HashiCorp. Declares cloud resources in HCL files and manages their lifecycle.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="tokio">
+            <dt>Tokio</dt>
+            <dd>An asynchronous runtime for Rust that drives non-blocking I/O and schedules tasks across all cores from a single binary, without an external process supervisor.</dd>
         </dl>
         <dl class="vv-dict-entry" id="time-to-interactive">
             <dt>Time to Interactive</dt>

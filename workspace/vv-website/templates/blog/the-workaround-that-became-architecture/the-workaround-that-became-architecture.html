@@ -1,0 +1,245 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Workaround That Became Architecture &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="The container is often not architecture but a workaround. Node.js chose a single-threaded runtime in 2009, and a single-threaded runtime uses one core; to fill a multi-core machine you run many processes, then many containers, where a language with a scheduler would use one. Each container tends to carry a whole userland, its own attack surface and patch burden, a small operating system to keep one process company, shipped a thousand times over. Go and Rust saturate every core from one binary; FreeBSD jails gave kernel-native isolation at almost no cost in 2000. The fourth of eighteen Wednesdays on how we got here.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-workaround-that-became-architecture{( endslot )}
+
+{( slot og-title )}The Workaround That Became Architecture &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Lean Software, the fourth of eighteen Wednesdays on how we got here. This week takes the third of the four breaks, the workaround most often mistaken for good practice. Node.js in 2009 was a genuinely good answer for I/O-bound work, but a single-threaded runtime uses one core; to fill a modern machine you run many processes, then many containers, and the workaround for a runtime that could not use its cores quietly became the default architecture for everything. Each container tends to carry a whole userland with its own attack surface and patch burden, a small operating system to keep one process company, shipped a thousand times over. Go and Rust reach every core from a single binary; FreeBSD jails gave kernel-native isolation at almost no cost, and to an enterprise-grade standard, in 2000. Multiplied across every deployment now running, it is data centres of power spent on a workaround, at no gain in speed. Amazon Prime Video, Segment and Istio each walked the sprawl back, proof that it was a choice.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Workaround That Became Architecture",
+    "datePublished": "2026-07-01",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-workaround-that-became-architecture",
+    "description": "Lean Software, the fourth of eighteen Wednesdays on how we got here. This week takes the third of the four breaks, the one most often mistaken for good practice rather than a workaround. In November 2009 Ryan Dahl presented Node.js at JSConf EU: a single-threaded event loop with non-blocking I/O, a genuinely good answer for an I/O-bound workload. It did not stay confined to that question; within a few years Node was the default runtime for very nearly everything. But a single-threaded runtime uses one core, and by 2009 the multi-core processor was already ordinary, so a Node process left all but one core idle by design. The workaround arrived in layers: first the cluster module in 2011, one process pretending to be several, then Docker in 2013, each instance in its own container placed across cores and machines by an orchestrator. Because the convenient way to build a container starts from a distribution base image, each one tends to carry a whole userland, its own libraries, shell and package manager, and therefore its own attack surface, configuration drift and list of vulnerabilities to patch; you set out to ship one process and shipped a small operating system to keep it company, then ran a zoo of them to stand in for a single application. None of this was totally wrong, and on Linux it had genuine use: Docker packaged away the works-on-my-machine tax that a fragmented distribution landscape produces. That tax is a Linux tax; a system with a single base and one package tree, FreeBSD among them, never had the problem in the same form. But the container stopped being how you shipped a process and became how you reasoned about the system, and the workaround became the architecture for everything. The clean test of workaround versus architecture is whether a different choice removes the need for it, and here it does: Go ships a scheduler in its runtime, multiplexing goroutines across every core of one process, and Rust reaches the same through an async runtime such as Tokio, one binary, all cores. The isolation the container advertises was solved before it existed: FreeBSD jails shipped in FreeBSD 4.0 in 2000, from work by Poul-Henning Kamp, kernel-enforced, at almost no cost and to an enterprise-grade standard that has held in production ever since. Multiplied across every Node-and-container deployment now running, the sprawl is data centres of power and silicon spent on a workaround for a language decision, at no gain in speed, because a runtime that uses its own cores behind the same non-blocking model, isolated by a jail, answers at least as quickly and often faster; and power is only the measured part of the bill, the rest being a userland per container to keep patched where a single binary would need none. The returns confirm the sprawl was a choice: Amazon Prime Video collapsed a distributed pipeline into a single process and cut cost by about ninety per cent, Segment folded a hundred and forty services into one, and Istio merged its control plane into a single binary, istiod, in 2020. Lean here is not anti-container; it is the discipline of asking, before the Dockerfile, what the program actually is. Next Wednesday: the layers that hide what they should bound.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-01">1 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Workaround That Became Architecture</h1>
+        <p class="vv-article-meta"><em>Lean Software &#x22A3; How We Got Here, 4 of 18.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">nodejs</span>
+            <span class="vv-pill">docker</span>
+            <span class="vv-pill">containers</span>
+            <span class="vv-pill">freebsd</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>There is a moment, familiar to anyone who has shipped a small service in the last decade, that is worth looking at plainly. You have written a program that does one thing. It listens on a port and answers. To run it, you write a Dockerfile, build an image, push it to a registry, and describe to an orchestrator how many replicas to schedule, how to health-check them, how to route to them. The program is fifty lines. The apparatus around it is the architecture. And almost nobody stops to ask whether the program needed any of it, because containing everything is simply how things are done now.</p>
+
+        <p>This is the third of the four breaks the first piece named, and it is the one most often mistaken for good practice rather than a workaround. To see why, it helps to go back to a single decision, made in good faith, in 2009.</p>
+
+        <h2>The Decision of 2009</h2>
+
+        <p>In November 2009, Ryan Dahl presented <a href="https://nodejs.org/en/about" target="_blank" rel="noopener">Node.js</a> at JSConf EU. The idea was elegant and, for its problem, correct: a single-threaded event loop with non-blocking I/O, so that one process could hold thousands of idle connections without a thread per connection. For an I/O-bound workload, waiting on the network rather than the processor, it was a genuinely good answer, and it had the further appeal of letting a team write one language on both sides of the wire.</p>
+
+        <p>The difficulty is that it did not stay an answer to that question. Within a few years Node was the default runtime for very nearly everything, I/O-bound or not, and a model that was right for holding idle sockets was now being asked to run whole applications on a single core.</p>
+
+        <p>It also carried a consequence that took a few years to become visible. A single-threaded runtime uses one core. By 2009 the multi-core processor was already the ordinary desktop part, and the server had several. A Node process, by design, left all but one of them idle. This was not an oversight; it was the simplification that made the model safe, no shared-memory threads, no locks, no data races. The cost of that safety was that the runtime could not, on its own, use the machine it ran on.</p>
+
+        <h2>The Workaround</h2>
+
+        <p>The question that followed was reasonable: how do you use the other cores? The answer arrived in layers. First the <a href="https://nodejs.org/api/cluster.html" target="_blank" rel="noopener">cluster module</a> (Node 0.6, 2011), which forks one worker process per core and shares a listening socket between them. That is already a workaround, one process pretending to be several because the runtime cannot spread itself. Then, with <a href="https://www.docker.com/blog/containers-replacing-virtual-machines/" target="_blank" rel="noopener">Docker</a> (Solomon Hykes, 2013), a tidier packaging of the same idea: put each instance in its own container, and let an orchestrator place the containers across cores and machines and restart the ones that fall over.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="A comparison of how two kinds of runtime fill a multi-core machine. On the left, Node.js: one process uses one core, so to fill an eight-core box you run eight processes or eight containers, shown as eight separate orange boxes, one worker per core. On the right, a language with a scheduler such as Go or Rust: one binary saturates all eight cores from a single process, shown as one green box. The legend notes that the sprawl is a language limit generalised into a way of building." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nc-bad-h { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nc-good-h { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nc-good { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nc-cell { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .nc-bad-box { fill: none; stroke: var(--accent); stroke-width: 1.3; rx: 3; }
+                .nc-good-box { fill: none; stroke: #4ab542; stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="nc-title" text-anchor="middle">One Core, or All of Them</text>
+
+            <text x="160" y="52" class="nc-bad-h" text-anchor="middle">Node.js &#x2014; one core per process</text>
+            <rect x="40" y="66" width="110" height="34" class="nc-bad-box"/><text x="95" y="87" class="nc-cell" text-anchor="middle">worker &#x2192; core 1</text>
+            <rect x="170" y="66" width="110" height="34" class="nc-bad-box"/><text x="225" y="87" class="nc-cell" text-anchor="middle">worker &#x2192; core 2</text>
+            <rect x="40" y="108" width="110" height="34" class="nc-bad-box"/><text x="95" y="129" class="nc-cell" text-anchor="middle">worker &#x2192; core 3</text>
+            <rect x="170" y="108" width="110" height="34" class="nc-bad-box"/><text x="225" y="129" class="nc-cell" text-anchor="middle">worker &#x2192; core 4</text>
+            <rect x="40" y="150" width="110" height="34" class="nc-bad-box"/><text x="95" y="171" class="nc-cell" text-anchor="middle">worker &#x2192; core 5</text>
+            <rect x="170" y="150" width="110" height="34" class="nc-bad-box"/><text x="225" y="171" class="nc-cell" text-anchor="middle">worker &#x2192; core 6</text>
+            <text x="160" y="204" class="nc-muted" text-anchor="middle">N processes or containers to fill N cores</text>
+
+            <text x="475" y="52" class="nc-good-h" text-anchor="middle">Go / Rust &#x2014; one binary</text>
+            <rect x="370" y="66" width="210" height="118" class="nc-good-box"/>
+            <text x="475" y="118" class="nc-good" text-anchor="middle">one process</text>
+            <text x="475" y="138" class="nc-good" text-anchor="middle">all cores</text>
+            <text x="475" y="204" class="nc-muted" text-anchor="middle">a scheduler in the runtime fills the box</text>
+
+            <line x1="20" y1="226" x2="620" y2="226" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="244" class="nc-muted" text-anchor="middle" font-style="italic">The sprawl is a language limit, generalised into a way of building.</text>
+        </svg>
+
+        <p>And because the convenient way to build a container is to start from a distribution base image, each one tends to carry a whole userland with it: its own libraries, its own shell, its own package manager, and therefore its own attack surface, its own configuration drift, its own list of vulnerabilities to patch. You set out to ship one process and shipped a small operating system to keep it company, then ran a zoo of them to stand in for a single application.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="A comparison of what a container ships against what a jail ships. On the left, a container: a tiny green core at the top, your process, sits above thick stacked layers of a whole distribution userland, its shell, package manager, libraries and configuration, each an attack surface and a patch burden. On the right, a jail: the same small green process on its own, one binary and nothing else around it. The legend notes that it is one process wearing a whole operating system." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ct-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ct-bad-h { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ct-good-h { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ct-good { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ct-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ct-layer { fill: var(--accent); opacity: 0.13; stroke: var(--accent); stroke-width: 1; rx: 3; }
+                .ct-core { fill: #4ab542; opacity: 0.22; stroke: #4ab542; stroke-width: 1.5; rx: 3; }
+                .ct-bad-box { fill: none; stroke: var(--accent); stroke-width: 1.3; rx: 4; }
+                .ct-good-box { fill: none; stroke: #4ab542; stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="ct-title" text-anchor="middle">What Ships in the Container</text>
+
+            <text x="165" y="50" class="ct-bad-h" text-anchor="middle">container &#x2014; a small OS</text>
+            <rect x="70" y="60" width="190" height="150" class="ct-bad-box"/>
+            <rect x="82" y="70" width="166" height="24" class="ct-core"/><text x="165" y="86" class="ct-good" text-anchor="middle">your process</text>
+            <rect x="82" y="100" width="166" height="22" class="ct-layer"/><text x="165" y="115" class="ct-muted" text-anchor="middle">shell &#x2022; package manager</text>
+            <rect x="82" y="126" width="166" height="22" class="ct-layer"/><text x="165" y="141" class="ct-muted" text-anchor="middle">base-image libraries</text>
+            <rect x="82" y="152" width="166" height="22" class="ct-layer"/><text x="165" y="167" class="ct-muted" text-anchor="middle">config &#x2022; state</text>
+            <rect x="82" y="178" width="166" height="22" class="ct-layer"/><text x="165" y="193" class="ct-muted" text-anchor="middle">attack surface &#x2022; patch burden</text>
+
+            <text x="475" y="50" class="ct-good-h" text-anchor="middle">jail &#x2014; one binary</text>
+            <rect x="380" y="60" width="190" height="150" class="ct-good-box"/>
+            <rect x="415" y="120" width="120" height="30" class="ct-core"/><text x="475" y="140" class="ct-good" text-anchor="middle">your process</text>
+            <text x="475" y="180" class="ct-muted" text-anchor="middle">and nothing else around it</text>
+
+            <line x1="20" y1="228" x2="620" y2="228" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="244" class="ct-muted" text-anchor="middle" font-style="italic">One process, wearing a whole operating system.</text>
+        </svg>
+
+        <p>None of this was totally wrong, and on Linux it had genuine use. Docker packaged away the works-on-my-machine tax, the deployment inconsistency that a fragmented distribution landscape produces, and it did so well enough to change the industry in a year. It is worth noticing what kind of tax that is. A system with a single base and one package tree, FreeBSD among them, never had the problem in the same form, because the machine you built on and the machine you shipped to were the same machine. Docker paid down a Linux tax, and much of the world took the payment for a universal law. But watch what happened to the unit of thought. The container stopped being the way you shipped a process and became the way you reasoned about the system. Scaling meant more containers. A service meant a container. The default for a program that could have been one process on one machine became an image, a registry, a scheduler, and a control loop, whether or not the program had any reason to be distributed. The workaround for a runtime that could not use its cores had quietly become the architecture for everything.</p>
+
+        <h2>The Languages That Did Not Need It</h2>
+
+        <p>The clean test of whether something is architecture or workaround is to ask whether a different choice removes the need for it. Here it does.</p>
+
+        <p><a href="https://go.dev/" target="_blank" rel="noopener">Go</a>, released by Google around the same time, ships a scheduler in the runtime: goroutines are multiplexed across all the cores of one process, so a single binary saturates the machine without a cluster and without a container per core. <a href="https://www.rust-lang.org/" target="_blank" rel="noopener">Rust</a> reaches the same place through an async runtime such as <a href="https://tokio.rs/" target="_blank" rel="noopener">Tokio</a>: one binary, all cores, no external supervisor to fan work across processes. In both, the thing Node needed the container to do is done inside the language, for free, invisibly. I run a small web server of my own, a single Rust binary declared in an earlier piece, and it uses every core on its host without a cluster module or a scheduler in front of it; that is not a product and I am not selling it, only a demonstration that the sprawl is not compulsory.</p>
+
+        <p>So the sprawl is not a fact about distributed systems. It is a fact about a language that could not, by itself, use a whole computer, and about an industry that generalised one runtime's limitation into a universal way of building. That is worth saying without heat: the people who reached for the container were solving a real problem with the best tool to hand. The error was not the reach. It was the promotion of the reach to a principle.</p>
+
+        <h2>The Isolation Was Already Solved</h2>
+
+        <p>The usual defence of the container is that it is about isolation, not cores: one service cannot corrupt another, dependencies are pinned, the blast radius is bounded. That is a real virtue, and it is also not new, and it did not require any of this. Kernel-native isolation of exactly this kind shipped in FreeBSD 4.0 in 2000, in the form of <a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener">jails</a>, from <a href="https://papers.freebsd.org/2000/phk-jails/" target="_blank" rel="noopener">work by Poul-Henning Kamp</a>: a confined userland, its own file system view, its own network identity, enforced by the kernel at almost no cost and to an enterprise-grade standard that has held in production ever since. The isolation the container advertises was a solved problem before the container existed. What was new in 2013 was the packaging and the momentum, not the boundary.</p>
+
+        <h2>The Bill, at Scale</h2>
+
+        <p>Take this off the single machine and multiply it. Because a Node process holds one core, saturating a modern server means running many of them, as processes or as containers, each carrying its own runtime, its own heap, its own garbage collector, its own memory floor before it has done a thing. A language with a scheduler does the same work in one process on the same box. On one server the difference looks like waste you could tolerate.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="The cost contrast multiplied across a fleet. On the left, to fill one server with Node you stack many containers, each carrying its own runtime, heap, garbage collector and userland to patch, shown as a tall pile of orange boxes. On the right, one scheduler process fills the same server, shown as a single green box using all cores from one heap. The legend notes that multiplied across every deployment now running it is data centres of power, at no gain in speed." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bl-bad-h { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bl-good-h { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bl-good { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bl-cell { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .bl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bl-stack { fill: var(--accent); opacity: 0.13; stroke: var(--accent); stroke-width: 1; rx: 3; }
+                .bl-good-box { fill: #4ab542; opacity: 0.14; stroke: #4ab542; stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="bl-title" text-anchor="middle">The Bill, Multiplied</text>
+
+            <text x="165" y="50" class="bl-bad-h" text-anchor="middle">to fill one server: many containers</text>
+            <rect x="70" y="60" width="190" height="26" class="bl-stack"/><text x="165" y="77" class="bl-cell" text-anchor="middle">runtime + heap + GC + userland</text>
+            <rect x="70" y="90" width="190" height="26" class="bl-stack"/><text x="165" y="107" class="bl-cell" text-anchor="middle">runtime + heap + GC + userland</text>
+            <rect x="70" y="120" width="190" height="26" class="bl-stack"/><text x="165" y="137" class="bl-cell" text-anchor="middle">runtime + heap + GC + userland</text>
+            <rect x="70" y="150" width="190" height="26" class="bl-stack"/><text x="165" y="167" class="bl-cell" text-anchor="middle">runtime + heap + GC + userland</text>
+            <text x="165" y="196" class="bl-muted" text-anchor="middle">each one patched, each one paid for</text>
+
+            <text x="475" y="50" class="bl-good-h" text-anchor="middle">one scheduler process</text>
+            <rect x="380" y="60" width="190" height="116" class="bl-good-box"/>
+            <text x="475" y="112" class="bl-good" text-anchor="middle">all cores</text>
+            <text x="475" y="132" class="bl-good" text-anchor="middle">one heap</text>
+            <text x="475" y="196" class="bl-muted" text-anchor="middle">same work, one thing to patch</text>
+
+            <line x1="20" y1="222" x2="620" y2="222" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="240" class="bl-muted" text-anchor="middle" font-style="italic">Multiplied across every deployment: data centres of power, at no gain in speed.</text>
+        </svg>
+
+        <p>Multiplied across the number of Node-and-container deployments now running, it stops being tolerable. On any honest estimate it is data centres of power and silicon spent to operate a workaround for a language decision, and spent for no gain in speed, because a runtime that uses its own cores behind the same non-blocking model, isolated by a kernel-native jail, answers at least as quickly and often faster. And power is only the measured part of the bill. The rest is a userland per container to keep patched and configured, where a single binary in a jail would have needed none. It may be the most quietly expensive over-provisioning in modern computing, and almost none of it is charged to the decision that caused it.</p>
+
+        <h2>The Walk-Backs</h2>
+
+        <p>The first piece in this series already named the returns, so a sentence will do here: when the sprawl grew expensive enough to measure, the teams that could afford to measure it walked back.</p>
+
+        <svg viewBox="0 0 640 210" aria-label="Three production walk-backs from sprawl to a single process. Amazon Prime Video, in 2023, collapsed a distributed serverless pipeline into one process and cut cost by about ninety per cent. Segment, in 2018, folded a hundred and forty services back into one. Istio, in 2020, merged its control plane into a single binary called istiod. The legend notes that each walk-back is proof the sprawl was a choice." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wb-name { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wb-from { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wb-to { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+            </style>
+            <text x="320" y="22" class="wb-title" text-anchor="middle">The Walk-Backs</text>
+            <line x1="250" y1="36" x2="250" y2="150" stroke="var(--border)" stroke-width="1"/>
+            <line x1="392" y1="36" x2="392" y2="150" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="62" class="wb-name">Amazon Prime Video &#x2014; 2023</text>
+            <text x="245" y="62" class="wb-from" text-anchor="end">distributed pipeline</text>
+            <text x="402" y="62" class="wb-to">one process &#x2022; ~90% cheaper</text>
+            <line x1="20" y1="76" x2="620" y2="76" stroke="var(--border)" stroke-width="0.5" opacity="0.5"/>
+
+            <text x="20" y="102" class="wb-name">Segment &#x2014; 2018</text>
+            <text x="245" y="102" class="wb-from" text-anchor="end">140 services</text>
+            <text x="402" y="102" class="wb-to">one service</text>
+            <line x1="20" y1="116" x2="620" y2="116" stroke="var(--border)" stroke-width="0.5" opacity="0.5"/>
+
+            <text x="20" y="142" class="wb-name">Istio &#x2014; 2020</text>
+            <text x="245" y="142" class="wb-from" text-anchor="end">split control plane</text>
+            <text x="402" y="142" class="wb-to">one binary &#x2022; istiod</text>
+
+            <line x1="20" y1="176" x2="620" y2="176" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="196" class="wb-muted" text-anchor="middle" font-style="italic">Each walk-back is proof the sprawl was a choice, not a price the problem forced.</text>
+        </svg>
+
+        <p>Amazon's Prime Video quality team <a href="https://www.primevideotech.com/video-streaming/scaling-up-the-prime-video-audio-video-monitoring-service-and-reducing-costs-by-90" target="_blank" rel="noopener">collapsed a distributed pipeline into a single process</a> and cut cost by about ninety per cent; Segment <a href="https://segment.com/blog/goodbye-microservices/" target="_blank" rel="noopener">folded a hundred and forty services into one</a>; Istio <a href="https://istio.io/latest/blog/2020/istiod/" target="_blank" rel="noopener">merged its own control plane into a single binary</a>. The point for this piece is narrow and worth keeping: each walk-back is a proof that the sprawl was a choice. A thing you can undo by decision was never forced on you by the nature of the problem.</p>
+
+        <h2>The Point</h2>
+
+        <p>The container earned its place. It solved deployment, it bounded dependencies, and where a system is genuinely large and genuinely many-teamed, orchestrating it is honest work. What was sold beyond that, and bought without much argument, is the idea that a program should be wrapped, imaged, scheduled and supervised by default, when the truthful description of a great many services is one process that ought to use its cores and does not, because of a language decision made in 2009 and never revisited.</p>
+
+        <p>Lean here is not anti-container. It is the discipline of asking, before the Dockerfile, what the program actually is. Often it is a single binary that saturates its machine and isolates cleanly, and the whole apparatus was a costume for a workaround.</p>
+
+        <blockquote>
+            <p><strong>Next Wednesday: the layers that hide what they should bound.</strong></p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>References:</strong></p>
+            <ul>
+                <li>Node.js, <em>about the project</em> (single-threaded event loop, non-blocking I/O; Ryan Dahl, JSConf EU 2009). <a href="https://nodejs.org/en/about" target="_blank" rel="noopener">nodejs.org</a></li>
+                <li>Node.js Docs, <em>Cluster</em> (one worker per core over a shared socket). <a href="https://nodejs.org/api/cluster.html" target="_blank" rel="noopener">nodejs.org/api/cluster</a></li>
+                <li>Docker, <em>containers and the shift away from per-app machines</em> (Solomon Hykes, 2013). <a href="https://www.docker.com/blog/containers-replacing-virtual-machines/" target="_blank" rel="noopener">docker.com</a></li>
+                <li>Go, <em>the runtime scheduler multiplexes goroutines across cores</em>. <a href="https://go.dev/" target="_blank" rel="noopener">go.dev</a></li>
+                <li>Tokio, <em>an asynchronous runtime for Rust, one binary across all cores</em>. <a href="https://tokio.rs/" target="_blank" rel="noopener">tokio.rs</a></li>
+                <li>Poul-Henning Kamp &amp; Robert Watson, <em>Jails: Confining the omnipotent root</em>, SANE 2000 (FreeBSD 4.0). <a href="https://papers.freebsd.org/2000/phk-jails/" target="_blank" rel="noopener">papers.freebsd.org</a></li>
+                <li>FreeBSD Handbook, <em>Jails</em>. <a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener">docs.freebsd.org</a></li>
+                <li>Prime Video Tech, <em>Scaling up the Prime Video monitoring service and reducing costs by 90%</em>, 2023. <a href="https://www.primevideotech.com/video-streaming/scaling-up-the-prime-video-audio-video-monitoring-service-and-reducing-costs-by-90" target="_blank" rel="noopener">primevideotech.com</a></li>
+                <li>Segment, <em>Goodbye Microservices: From 100s of problem children to 1 superstar</em>, 2018. <a href="https://segment.com/blog/goodbye-microservices/" target="_blank" rel="noopener">segment.com</a></li>
+                <li>Istio, <em>Introducing istiod: simplifying the control plane</em>, 2020. <a href="https://istio.io/latest/blog/2020/istiod/" target="_blank" rel="noopener">istio.io</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
