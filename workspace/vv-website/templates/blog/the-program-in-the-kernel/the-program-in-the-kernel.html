@@ -1,0 +1,208 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Program in the Kernel &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="eBPF lets you load a program that the kernel compiles and runs in Ring 0, and the only thing standing between that program and the kernel is a static analyser called the verifier. The record of the verifier is not what one would wish for a load-bearing wall: of the eBPF vulnerability classes analysed in an IEEE S&P study, about sixty-eight per cent are memory-safety bugs, the exact class it exists to make impossible, and the bug class runs from 2017 to 2026 unbroken. FreeBSD delivers the same live-tracing capability through DTrace, designed at Sun with the safety requirement written first, in the base system, its language built so the dangerous program cannot be formed. Second of three Fridays on what makes a server operating system dependable.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-program-in-the-kernel{( endslot )}
+
+{( slot og-title )}The Program in the Kernel &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Security Review, the second of three Fridays on what makes a server operating system dependable. Last Friday ended on a question: if a kernel keeps adding surface for speed, what stops it from letting you run your own programs inside it? The answer is nothing. Every operator wants the capability, to ask a live production box questions without recompiling or rebooting, and Linux answers with eBPF, a virtual machine inside the kernel: you load a program, the kernel compiles it and runs it in Ring 0. Between that program and the kernel stands one thing, a static analyser called the verifier, which proves the program cannot touch what it should not. So its record is the record of the boundary, and that record is poor: of forty-one eBPF vulnerability classes analysed at IEEE S&P, twenty-eight, about sixty-eight per cent, are memory-safety bugs, the exact class the verifier exists to make impossible, and the cases run from CVE-2017-16995 through Pwn2Own's CVE-2020-8835 and a Kubernetes container escape to this year's CVE-2026-31413, nine years of the same structural class. The ecosystem's own admission is that since kernel 5.13 unprivileged eBPF ships switched off on most distributions. FreeBSD has had the same live trace since 2008 through DTrace, designed at Sun with the safety requirement written before the feature list, in the base system, privileged, jail-aware, its D language built with no loops and no writes by default so the dangerous sentence cannot be formed. One design verifies what you wrote; the other constrains what you can write. A verifier can have a bug; a missing capability cannot.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Program in the Kernel",
+    "datePublished": "2026-07-03",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-program-in-the-kernel",
+    "description": "Security Review, the second of three Fridays on what makes a server operating system dependable, judged by the difference between a capability that was planned and one that was retrofitted. Last Friday ended on a question: if a kernel keeps adding surface for speed, what stops it from letting you run your own programs inside it? The answer is nothing, and it happened a decade ago. Every operator wants the capability, because a production box misbehaves and you cannot recompile, reboot or attach a debugger to a machine doing revenue work; you want to ask the running system questions. Linux answers with eBPF, and eBPF goes further than asking: it is a virtual machine inside the kernel, into which you load a program that the kernel checks, compiles to native code and runs in the most privileged context the machine has, Ring 0. Between a loaded program and the kernel stands one thing, a static analyser called the verifier, which inspects the bytecode and proves, or believes it has proved, that the program cannot read or write where it should not. The verifier is the boundary, so its record is the record of the boundary. A systematisation-of-knowledge study presented at IEEE Symposium on Security and Privacy counted the eBPF vulnerability classes: of forty-one analysed, twenty-eight, about sixty-eight per cent, were memory-safety bugs, the exact class the verifier exists to make impossible. The individual cases read like a relay across a decade: CVE-2017-16995, a sign-extension mistake giving local root; CVE-2020-8835, a bounds-tracking flaw that won Pwn2Own; CVE-2021-3490, wrong 32-bit bounds arithmetic for arbitrary kernel read and write; CVE-2021-31440, the same class turned into a container escape from a Kubernetes pod; and this year CVE-2026-31413, where the verifier models an OR operation wrongly and tracks a register as zero while the running program holds a real value, and CVE-2026-31525, where the interpreter's signed division mishandles the one value the standard warns about. Nine years separate the first and the last; the bug class did not age out, it is structural. The quieter admission is the kernel's own: since 5.13 it carries a build option to disable unprivileged eBPF by default, SUSE flipped it in 2021, Ubuntu followed, and on most distributions an unprivileged process may not load eBPF at all. The verifier keeps failing because of what it is asked to do: prove properties of an arbitrary program, possibly an attacker's, ahead of time, and every new helper, map type and instruction class widens what must be reasoned about. eBPF descends from a packet filter taught, one extension at a time, to be a general-purpose machine; the capability arrived first and the containment was retrofitted, then patched in every release since. In fairness eBPF is genuinely capable: XDP at line rate, Cilium's Kubernetes networking, observability at scale, and the engineers who build the verifier do serious public work; capability and containment are simply different properties. FreeBSD is not smug either: DTrace has a privileged destructive mode of its own. But FreeBSD has had the operator's capability, the trace on a live production box, since 2008, when DTrace entered the base system. DTrace was designed at Sun in 2003 as an instrument for production systems, its safety requirement written before the feature list; the D language it exposes is deliberately small, with no loops, no arbitrary control flow and read-only against the kernel by default, so a runaway or malicious script is not expressible, and on FreeBSD it is jail-aware out of the box through a jid variable in every probe context. The difference is not capability, since both trace a live kernel; it is what stands between the operator and Ring 0. eBPF admits arbitrary programs and then tries to verify them, so the safety property must be proved per program by an analyser that keeps growing; DTrace never admits arbitrary programs, so the safety property is enforced by what the language cannot say. One verifies what you wrote; the other constrains what you can write. A verifier can have a bug; a missing capability cannot. An operator choosing a system for a decade should ask of every powerful feature not what it does but where it came from: planned with the system, or negotiated in afterwards behind a wall built to hold it back. Retrofitted capability is not wrong, it is merely never free, because somebody maintains the wall forever, and the wall is software too. Next Friday: when one of these surfaces finally gives, who patches it, and how fast can you trust the patch?",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-03">3 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Program in the Kernel</h1>
+        <p class="vv-article-meta"><em>Second of three Fridays on what makes a server operating system dependable, and the difference between a capability that was planned and one that was retrofitted. Security Review &#x22A3; Boring on Purpose, 2 of 3.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">ebpf</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Last Friday ended on a question: if a kernel will keep adding surface for speed, what stops it from letting you run your own programs inside it? The answer, it turns out, is nothing. That happened a decade ago, and it has a name.</p>
+
+        <p>First, the fairness the subject deserves, because the capability itself is one every operator genuinely wants. You have a production box misbehaving. You cannot recompile, you cannot reboot, you certainly cannot attach a debugger to the kernel of a machine doing revenue work. What you want is to ask the running system questions: which process is hammering the disk, what is that latency spike, who keeps opening this file. The ability to trace a live kernel without stopping it is not a luxury. It is the difference between diagnosis and folklore.</p>
+
+        <p>Linux answers with eBPF, and eBPF goes further than asking questions. It is a virtual machine inside the kernel: you write a program, the kernel checks it, compiles it to native code, and runs it in the most privileged context the machine has. Ring 0, the floor every other protection stands on. Networking, security tooling, observability: whole industries now run their logic there. Which raises the obvious question, and the answer is the interesting part: what stands between a loaded program and the kernel it runs inside? One thing. A static analyser called the <strong>verifier</strong>, which inspects the bytecode before it is admitted and proves, or believes it has proved, that the program cannot read or write where it should not.</p>
+
+        <p>The verifier is the boundary. So the record of the verifier is the record of the boundary.</p>
+
+        <h2>The Breach</h2>
+
+        <p>That record is not what one would wish for a load-bearing wall.</p>
+
+        <p>A <a href="http://www.nebelwelt.net/files/25Oakland.pdf" target="_blank" rel="noopener">systematisation-of-knowledge study</a> presented at IEEE S&amp;P counted the eBPF vulnerability classes: of forty-one analysed, twenty-eight, about sixty-eight per cent, were memory-safety bugs, the exact class the verifier exists to make impossible. The wall's job is to stop memory corruption, and memory corruption is the majority of what comes through it.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="A bar showing that of forty-one eBPF vulnerability classes analysed in an IEEE Symposium on Security and Privacy study, twenty-eight, about sixty-eight per cent, are memory-safety bugs, which is the exact class the verifier exists to make impossible. The remaining thirteen classes are other kinds. The legend notes that since kernel 5.13 unprivileged eBPF ships switched off by default on most distributions." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .vf-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .vf-big { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 34px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .vf-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .vf-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .vf-bar-rest { fill: var(--muted); opacity: 0.22; rx: 2; }
+                .vf-bar-mem { fill: var(--accent); opacity: 0.85; rx: 2; }
+            </style>
+            <text x="320" y="24" class="vf-title" text-anchor="middle">eBPF vulnerability classes analysed (IEEE S&amp;P)</text>
+
+            <rect x="40" y="54" width="382" height="40" class="vf-bar-mem"/>
+            <rect x="422" y="54" width="178" height="40" class="vf-bar-rest"/>
+            <text x="56" y="80" class="vf-text">memory-safety (28)</text>
+            <text x="511" y="79" class="vf-muted" text-anchor="middle">other (13)</text>
+
+            <text x="40" y="150" class="vf-big">~ 68%</text>
+            <text x="40" y="172" class="vf-text">of eBPF vulnerability classes are memory-safety</text>
+            <text x="40" y="190" class="vf-muted">the exact class the verifier exists to make impossible</text>
+
+            <line x1="40" y1="212" x2="600" y2="212" stroke="var(--border)" stroke-width="1"/>
+            <text x="40" y="232" class="vf-muted" font-style="italic">Since kernel 5.13, unprivileged eBPF ships switched off by default on most distributions.</text>
+        </svg>
+
+        <p>The individual cases read like a relay race across a decade. CVE-2017-16995, a sign-extension mistake in the verifier's arithmetic, gave local root and worked on stock distribution kernels. <a href="https://www.thezdi.com/blog/2020/4/8/cve-2020-8835-linux-kernel-privilege-escalation-via-improper-ebpf-program-verification" target="_blank" rel="noopener">CVE-2020-8835</a> won at Pwn2Own: the verifier mistracked register bounds, and the researcher walked out of the sandbox and into the kernel. CVE-2021-3490 was the same species, wrong bounds in 32-bit arithmetic, arbitrary kernel read and write. <a href="https://www.tigera.io/blog/cve-2021-31440-kubernetes-container-escape-using-ebpf/" target="_blank" rel="noopener">CVE-2021-31440</a> turned the class into a container escape, exploited from inside a Kubernetes pod.</p>
+
+        <p>And the race has not finished. This year's entries: <a href="https://ubuntu.com/security/CVE-2026-31413" target="_blank" rel="noopener">CVE-2026-31413</a>, where the verifier models an OR operation wrongly, tracks a register as zero while the running program holds a real value, and the divergence between what was proved and what executes becomes an out-of-bounds write; and <a href="https://www.sentinelone.com/vulnerability-database/cve-2026-31525/" target="_blank" rel="noopener">CVE-2026-31525</a>, where the interpreter's signed division mishandles the one value the C standard warns about, and the arithmetic itself lies.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="A timeline of eBPF verifier and interpreter vulnerabilities across nine years. In 2017, CVE-2017-16995, a sign-extension flaw giving local root on stock kernels. In 2020, CVE-2020-8835, a bounds-tracking flaw that won Pwn2Own. In 2021, CVE-2021-3490 and CVE-2021-31440, wrong bounds arithmetic and a Kubernetes container escape. In 2026, CVE-2026-31413 and CVE-2026-31525, a verifier OR-tracking divergence and a signed-division flaw. The legend notes that nine years separate the first and last, the same class throughout, so it is structural rather than teething trouble." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .rl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rl-date { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .rl-spine { stroke: var(--accent); stroke-width: 1.5; opacity: 0.5; }
+            </style>
+            <text x="320" y="22" class="rl-title" text-anchor="middle">The verifier's record, 2017 to 2026</text>
+            <line x1="44" y1="46" x2="44" y2="196" class="rl-spine"/>
+
+            <circle cx="44" cy="58" r="4" fill="var(--accent)"/>
+            <text x="62" y="54" class="rl-date">2017 &#x2014; CVE-2017-16995</text>
+            <text x="62" y="70" class="rl-text">sign-extension flaw in the verifier &#x2022; local root on stock kernels</text>
+
+            <circle cx="44" cy="94" r="4" fill="var(--accent)"/>
+            <text x="62" y="90" class="rl-date">2020 &#x2014; CVE-2020-8835</text>
+            <text x="62" y="106" class="rl-text">bounds-tracking flaw &#x2022; won Pwn2Own, sandbox to kernel</text>
+
+            <circle cx="44" cy="130" r="4" fill="var(--accent)"/>
+            <text x="62" y="126" class="rl-date">2021 &#x2014; CVE-2021-3490 / -31440</text>
+            <text x="62" y="142" class="rl-text">wrong 32-bit bounds &#x2022; arbitrary read/write &#x2022; Kubernetes container escape</text>
+
+            <circle cx="44" cy="166" r="4" fill="var(--accent)"/>
+            <text x="62" y="162" class="rl-date">2026 &#x2014; CVE-2026-31413 / -31525</text>
+            <text x="62" y="178" class="rl-text">verifier OR-tracking divergence &#x2022; signed-division mishandling</text>
+
+            <line x1="20" y1="212" x2="620" y2="212" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="232" class="rl-title" text-anchor="middle" font-size="11">Nine years, one class. The bug did not age out; it is structural.</text>
+        </svg>
+
+        <p>There is a quieter admission worth more than any CVE list: the kernel's own configuration now ships unprivileged eBPF switched off. Since 5.13 the kernel has carried a <a href="https://cateee.net/lkddb/web-lkddb/BPF_UNPRIV_DEFAULT_OFF.html" target="_blank" rel="noopener">build option to disable it by default</a>; SUSE flipped it in 2021, <a href="https://discourse.ubuntu.com/t/unprivileged-ebpf-disabled-by-default-for-ubuntu-20-04-lts-18-04-lts-16-04-esm/27047" target="_blank" rel="noopener">Ubuntu followed</a>, and today an unprivileged process on most distributions may not load eBPF at all. The ecosystem that built the feature examined the wall it stood behind and decided ordinary users should not be allowed to touch it. That is not a verdict I have to argue for. It is one the ecosystem reached about itself.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>Why does the verifier keep failing? Not because its authors are careless. Because of what it is being asked to do.</p>
+
+        <p>The verifier must take an arbitrary program, written by someone else, possibly an attacker, and prove ahead of time that it is safe to run in Ring 0. Proving properties of arbitrary programs is the hardest problem in computer science; the verifier survives by restricting what programs may do and then reasoning about every path through them, tracking the possible range of every register at every instruction. Each new eBPF capability, every helper, every map type, every instruction class, widens what must be reasoned about. The proof engine grows with the feature set, and a single arithmetic slip anywhere in it, one wrong bound, one mismodelled operation, is not a bug in a tool. It is a hole in the floor of the machine.</p>
+
+        <p>This is the second face of the pattern this series is tracing. Last week the kernel accreted surface for speed. Here it accreted programmability for capability, and the shape is the same: the feature arrived first, and the containment had to be retrofitted around it, then patched, then patched again. eBPF descends from a packet filter that was taught, one extension at a time, to be a general-purpose machine. Nobody sat down in 1993 and designed a safe way to run foreign programs in the kernel. The capability was negotiated into an architecture that had not planned for it, and the verifier is the shape of that negotiation: a wall built after the rooms, load-bearing from the day it was poured, and mended in every kernel release since. A safety net that becomes the most reliable way through the floor is not, on reflection, doing the job its name promised.</p>
+
+        <h2>The Limit</h2>
+
+        <p>Honesty, in both directions.</p>
+
+        <p>eBPF is genuinely capable, and the industry around it is not a fashion. XDP pushes packet processing to line rate; <a href="https://cilium.io/" target="_blank" rel="noopener">Cilium</a> runs the networking of a large share of the world's Kubernetes clusters on it; the observability it enables at scale is real and, for some estates, indispensable. The engineers who built the verifier are doing serious, difficult work, and doing it in public. None of that is in question, and none of it is contradicted by the CVE record either: capability and containment are different properties, and it is possible to admire the first while declining to trust the second.</p>
+
+        <p>And FreeBSD does not get to be smug here. DTrace has a destructive mode, <code>dtrace -w</code>, that can modify a running kernel; it is a deliberate, privileged, separately-gated choice, but it exists, and an operator who grants it has granted something serious. FreeBSD has its own advisories and its own bad mornings. The claim on the table is narrower than sainthood: it is that one design keeps producing a class of hole and the other was shaped so the class has nowhere to live.</p>
+
+        <h2>The BSD Angle</h2>
+
+        <p>FreeBSD has had the operator's capability, the trace on a live production box, since 2008, when <a href="https://docs.freebsd.org/en/books/handbook/dtrace/" target="_blank" rel="noopener">DTrace</a> entered the base system. It arrived from a different direction, and the direction is the whole story.</p>
+
+        <p>DTrace was designed at Sun in 2003 as an instrument for production systems, by people who wrote down the safety requirement before the feature list. The D language it exposes is deliberately small: no loops, no arbitrary control flow, read-only against the kernel by default. Probes fire, questions are answered, and the language is constructed so that a runaway or malicious script is not expressible in the first place. It runs privileged, full stop; there was never an unprivileged path to stand behind a proof engine. And on FreeBSD it is jail-aware out of the box: a <code>jid</code> variable in every probe context, so tracing a multi-tenant box respects the boundaries the system already has.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="A comparison of two designs for tracing a live kernel. On the eBPF side, the kernel admits an arbitrary program, so a verifier must prove it safe for Ring 0, per program, and the proof engine keeps growing, which means the verifier can have a bug. On the DTrace side, a small language with no loops and no writes by default means the dangerous program cannot be formed, so there is nothing to prove. The legend notes that one design verifies what you wrote and the other constrains what you can write, and that a verifier can have a bug while a missing capability cannot." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pr-bad-h { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pr-good-h { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pr-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pr-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pr-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .pr-accent-fill { fill: var(--accent); opacity: 0.10; rx: 4; }
+                .pr-good { fill: none; stroke: #4ab542; stroke-width: 1.5; rx: 4; }
+                .pr-good-fill { fill: #4ab542; opacity: 0.10; rx: 4; }
+            </style>
+            <text x="320" y="22" class="pr-title" text-anchor="middle">Verify what you wrote, or constrain what you can write</text>
+
+            <rect x="30" y="42" width="290" height="162" class="pr-accent-fill"/>
+            <rect x="30" y="42" width="290" height="162" class="pr-accent"/>
+            <text x="46" y="64" class="pr-bad-h">eBPF &#x2014; admit, then verify</text>
+            <text x="46" y="90" class="pr-item">admits an arbitrary program</text>
+            <text x="46" y="112" class="pr-item">a verifier must prove it safe, per program</text>
+            <text x="46" y="134" class="pr-item">the proof engine keeps growing</text>
+            <text x="46" y="182" class="pr-bad-h" font-size="11">a verifier can have a bug</text>
+
+            <rect x="340" y="42" width="270" height="162" class="pr-good-fill"/>
+            <rect x="340" y="42" width="270" height="162" class="pr-good"/>
+            <text x="356" y="64" class="pr-good-h">DTrace &#x2014; constrain the language</text>
+            <text x="356" y="90" class="pr-item">a small language: no loops</text>
+            <text x="356" y="112" class="pr-item">read-only by default</text>
+            <text x="356" y="134" class="pr-item">the dangerous program cannot be formed</text>
+            <text x="356" y="182" class="pr-good-h" font-size="11">a missing capability cannot</text>
+
+            <text x="320" y="230" class="pr-muted" text-anchor="middle" font-style="italic">One verifies what you wrote. The other constrains what you can write.</text>
+        </svg>
+
+        <p>Put the two designs side by side and the difference is not capability. Both trace a live kernel. The difference is what stands between the operator and Ring 0. eBPF admits arbitrary programs and then tries to verify them: the safety property must be proved, per program, by an analyser that keeps growing. DTrace never admits arbitrary programs: the safety property is enforced by what the language cannot say. One verifies what you wrote. The other constrains what you can write. A verifier can have a bug; a missing capability cannot. Shipping the instrument in the toolbox rather than as a separate download is not glamorous, and designing the language so the dangerous sentence cannot be formed is not exciting. It is merely one fewer thing to get wrong, enforced by construction rather than by proof.</p>
+
+        <p>That is what planned capability looks like, next to retrofitted capability. Not better engineers. An earlier decision.</p>
+
+        <h2>The Point</h2>
+
+        <p>An operator choosing a system for the next decade should ask of every powerful feature not what it does, but where it came from. Was the capability designed with the system, its safety written down first, its language shaped to make the dangerous thing inexpressible? Or did it arrive later, negotiated into an architecture that had not planned for it, with a wall built afterwards to hold it back? Retrofitted capability is not wrong. It is merely never free: somebody has to maintain the wall, forever, and the wall is software too.</p>
+
+        <p>The question, as ever in this series, is not what the system can do. It is what it will not do to you, at three in the morning, when the wall has a hole in it. A capability that was planned is one moving part fewer that can fail. Boring is not the absence of engineering. It is the result of engineering done early enough.</p>
+
+        <blockquote>
+            <p><strong>Next Friday: when one of these surfaces finally gives, who patches it, and how fast can you trust the patch?</strong></p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>References:</strong></p>
+            <ul>
+                <li>Kaiming Huang et al., <em>SoK: Challenges and Paths Toward Memory Safety for eBPF</em>, IEEE Symposium on Security and Privacy 2025: 28 of 41 analysed eBPF vulnerabilities (~68%) are memory-safety bugs. <a href="http://www.nebelwelt.net/files/25Oakland.pdf" target="_blank" rel="noopener">nebelwelt.net</a></li>
+                <li>CVE-2020-8835: eBPF verifier bounds-tracking flaw, demonstrated at Pwn2Own 2020. <a href="https://www.thezdi.com/blog/2020/4/8/cve-2020-8835-linux-kernel-privilege-escalation-via-improper-ebpf-program-verification" target="_blank" rel="noopener">thezdi.com</a></li>
+                <li>CVE-2021-31440: eBPF verifier bounds error, container escape from a Kubernetes pod. <a href="https://www.tigera.io/blog/cve-2021-31440-kubernetes-container-escape-using-ebpf/" target="_blank" rel="noopener">tigera.io</a></li>
+                <li>CVE-2026-31413: verifier scalar tracking of BPF_OR diverges from runtime, out-of-bounds map access. <a href="https://ubuntu.com/security/CVE-2026-31413" target="_blank" rel="noopener">ubuntu.com</a> &#x25A0; <a href="https://www.sentinelone.com/vulnerability-database/cve-2026-31413/" target="_blank" rel="noopener">sentinelone.com</a></li>
+                <li>CVE-2026-31525: BPF interpreter signed-division mishandling of S32_MIN. <a href="https://www.sentinelone.com/vulnerability-database/cve-2026-31525/" target="_blank" rel="noopener">sentinelone.com</a></li>
+                <li>CONFIG_BPF_UNPRIV_DEFAULT_OFF (kernel 5.13); unprivileged eBPF disabled by default on most distributions. <a href="https://cateee.net/lkddb/web-lkddb/BPF_UNPRIV_DEFAULT_OFF.html" target="_blank" rel="noopener">cateee.net</a> &#x25A0; <a href="https://discourse.ubuntu.com/t/unprivileged-ebpf-disabled-by-default-for-ubuntu-20-04-lts-18-04-lts-16-04-esm/27047" target="_blank" rel="noopener">discourse.ubuntu.com</a></li>
+                <li>DTrace on FreeBSD (Cantrill, Shapiro &amp; Leventhal, Sun 2003; in FreeBSD base since 7.0, 2008); D language and the jid probe variable. <a href="https://docs.freebsd.org/en/books/handbook/dtrace/" target="_blank" rel="noopener">docs.freebsd.org</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

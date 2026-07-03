@@ -1735,5 +1735,9 @@
     "non-blocking I/O": "An I/O model in which one thread issues many operations and is notified as each completes, rather than waiting on each in turn, so a single process can hold thousands of idle connections.",
     "orchestrator": "A control system, such as Kubernetes, that schedules containers across cores and machines, health-checks them and restarts those that fail; the supervisor a single self-scheduling binary does not need.",
     "single-threaded": "Running on one thread, and therefore one core, at a time; the design Node.js chose in 2009 for safety, no shared-memory threads and no locks, at the cost of not using a multi-core machine on its own.",
-    "Tokio": "An asynchronous runtime for Rust that drives non-blocking I/O and schedules tasks across all cores from a single binary, without an external process supervisor."
+    "Tokio": "An asynchronous runtime for Rust that drives non-blocking I/O and schedules tasks across all cores from a single binary, without an external process supervisor.",
+    "verifier": "In eBPF, the static analyser that inspects a loaded program's bytecode before it runs and tries to prove it cannot access kernel memory unsafely: the single gate between foreign code and Ring 0, and a recurring source of privilege-escalation bugs, since a flaw in the proof engine is a hole in the kernel.",
+    "Ring 0": "The most privileged execution level of an x86 processor, where the operating-system kernel runs with full control of the machine. Code here can do anything, so it is the level every other protection depends on; running foreign code in Ring 0 is what makes the eBPF verifier load-bearing.",
+    "XDP": "eXpress Data Path: an eBPF hook that processes network packets at the earliest point in the Linux networking stack, close to the driver, for very high throughput. One of the capabilities that makes eBPF genuinely useful, alongside Cilium's networking.",
+    "Pwn2Own": "A recurring computer-security contest in which researchers demonstrate working exploits against fully-patched software for cash prizes; a public benchmark of what is currently exploitable."
 }
