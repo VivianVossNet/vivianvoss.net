@@ -1,0 +1,405 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Line Without the Paper &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Last Monday's certified Unixes shared a word and almost nothing else. The BSDs share a code lineage instead: four siblings, FreeBSD, OpenBSD, NetBSD and DragonFly, forked from one Berkeley source and each stayed a whole operating system. The reason they forked without fragmenting is the base system, the kernel and core userland grown, released and audited as a single source tree. Branch two of four in the Unix Family.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-line-without-the-paper{( endslot )}
+
+{( slot og-title )}The Line Without the Paper &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Unix Universe, the second of four portraits of the Unix family. The certified Unixes shared a word and almost nothing else. The BSDs are the opposite problem, and the more interesting one: a family that forked as sharply as any, more than once out of a plain falling-out, and stayed a single thing. Four siblings came out of one Berkeley source, each a complete operating system you can name, run and hold responsible: FreeBSD the dependable generalist, whose jails shipped kernel-enforced container isolation in 2000; OpenBSD, which would rather be correct than popular and gave the world OpenSSH; NetBSD, which will run anywhere and carries the portable pkgsrc tree; and DragonFly BSD, the youngest, with its HAMMER2 filesystem. They forked and did not fragment because each inherited a base system, the kernel and core userland as one source tree. A Linux distribution keeps the whole in the assembler's hands; a BSD keeps it in the tree.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Line Without the Paper",
+    "datePublished": "2026-07-06",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-line-without-the-paper",
+    "description": "Unix Universe, the second of four portraits of the Unix family, one branch per Monday. If the certified Unixes are a register of strangers who happen to share a word, the BSDs are the opposite problem, and the more interesting one: a family that forked as sharply as any, more than once out of a plain falling-out, and stayed a single thing. Fragmentation is supposed to be what forking produces, and the Linux world is the standing example, one kernel underneath several hundred distributions that agree on very little above it. The BSDs forked too and did not fragment. Four siblings came out of one Berkeley source, each with a temperament sharp enough to have caused the split. FreeBSD is the generalist, built to be depended on: Netflix serves a large share of the evening internet from FreeBSD appliances, every PlayStation runs an operating system that is FreeBSD extended with Sony's own layers on top, and Juniper has routed the world's traffic on it for a quarter of a century. Its choices are wide driver support, ZFS as a first-class citizen, the bhyve hypervisor, and jails, kernel-enforced container isolation that shipped in 2000, the same idea the industry would rediscover more than a decade later and call containers, only thinner. OpenBSD, forked from NetBSD by Theo de Raadt in October 1995, would rather be correct than popular: it audits its source by hand, continuously, and gave the world OpenSSH, LibreSSL, doas and OpenNTPD, and pf; the price of the guarantee is that it runs on less hardware and takes up new drivers slowly. NetBSD will run anywhere, targeting on the order of sixty hardware platforms across sixteen processor architectures, and its pkgsrc package tree of roughly twenty-nine thousand recipes builds the same software on illumos, macOS and Linux; the price is that it leads on none of them. DragonFly BSD, forked from FreeBSD 4.8 by Matthew Dillon in June 2003 over the kernel's multiprocessing direction, built a kernel organised around message-passing and produced the HAMMER2 filesystem. What the four share is not a certificate but the shape of the thing each inherited: a base system, in which the kernel and the core userland, the compiler, the C library, the shell, the daemons and the manual pages are one source tree, grown together, released together and audited as a single object. Fork a system built that way and you carry off a whole, not a fragment that needs a hundred other projects before it becomes usable. A Linux distribution is assembled instead, a kernel from one project, a C library from another, core utilities from a third, and several hundred more parts integrated by the distributor every release. Both ship excellent systems; they keep the whole in different places. A BSD keeps it in the tree; a distribution keeps it in the work. When the whole is kept in one tree, a disagreement can take the tree and remain whole. Next Monday: discipline without descent, the outsider that kept the rules Unix wrote, in a kernel Unix never chose.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-06">6 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Line Without the Paper</h1>
+        <p class="vv-article-meta"><em>The certified Unixes shared a
+            word. The BSDs share a code lineage, and they forked
+            anyway, and each fork stayed a whole system. Unix Universe
+            &#x22A3; The Unix Family, 2 of 4.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">bsd</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">openbsd</span>
+            <span class="vv-pill">netbsd</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Last Monday closed on the certified branch of the family and
+            pointed here, to the same lineage without the paper. If the
+            certified Unixes are a register of strangers who happen to
+            share a word, the BSDs are the opposite problem, and the
+            more interesting one: a family that forked as sharply as
+            any, more than once out of a plain falling-out, and stayed
+            a single thing.</p>
+
+        <p>That is the fact worth explaining. Fragmentation is supposed
+            to be what forking produces. The Linux world is the
+            standing example, one kernel underneath several hundred
+            distributions that agree on very little above it. The BSDs
+            forked too, and did not fragment. Four siblings came out of
+            one Berkeley source, each with a temperament sharp enough
+            to have caused the split, and each is a complete operating
+            system you can name, run, and hold responsible. The
+            question is why the same act, forking, breaks one family
+            into parts and leaves the other whole.</p>
+
+        <svg viewBox="0 0 1040 460" aria-label="An organisation chart of the BSD branch of the Unix family. A root box, BSD, branches into four siblings, all marked living with one base system each: FreeBSD (generalist, jails), OpenBSD (secure by default), NetBSD (portable, pkgsrc) and DragonFly (HAMMER2). To the left, a faded box, Certified Unix, marks last Monday's branch one of four. To the right, a faded stack of QNX, BeOS, Minix and Linux marks systems that are unix-like by resemblance, not family, and the subjects of other Mondays. A legend marks green as living with one base system and grey as unix-like resemblance." role="img" style="max-width:1040px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uf-bg { fill: var(--bg); }
+                .uf-ttl { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-weight: 700; font-size: 20px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uf-sub { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 12px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uf-name { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-weight: 700; font-size: 15px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uf-name-sm { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-weight: 700; font-size: 13px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uf-tag { font-family: 'Oxanium', system-ui, sans-serif; font-size: 10px; font-weight: 700; }
+                .uf-leg { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 11px; }
+                .uf-lnk { stroke: var(--border); stroke-width: 1.5; fill: none; }
+                .uf-lnk-d { stroke: var(--border); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+                .uf-live { fill: none; stroke: #4ab542; stroke-width: 2; rx: 6; }
+                .uf-root { fill: none; stroke: #4ab542; stroke-width: 2.5; rx: 6; }
+                .uf-faint { opacity: 0.3; }
+            </style>
+            <rect class="uf-bg" x="0" y="0" width="1040" height="460"/>
+            <text class="uf-ttl" x="30" y="40">THE UNIX FAMILY</text>
+            <text class="uf-sub" x="32" y="60">branch 2 of 4 &#183; the BSDs &#183; forked, and still whole</text>
+
+            <!-- left: certified (last Monday), faded -->
+            <g class="uf-faint">
+                <rect x="30" y="99" width="180" height="42" rx="6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+                <text class="uf-name-sm" x="120" y="125" text-anchor="middle">&#8592; CERTIFIED UNIX</text>
+                <text class="uf-leg" x="30" y="160">last Monday &#183; branch 1/4</text>
+            </g>
+            <line class="uf-lnk-d" x1="210" y1="120" x2="440" y2="120"/>
+
+            <!-- right: unix-like cousins, faded -->
+            <line class="uf-lnk-d" x1="600" y1="120" x2="850" y2="120"/>
+            <g class="uf-faint">
+                <line x1="850" y1="79" x2="850" y2="187" stroke="var(--muted)" stroke-width="1.5"/>
+                <rect x="850" y="64" width="160" height="30" rx="6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+                <text class="uf-name-sm" x="930" y="84" text-anchor="middle">QNX &#8594;</text>
+                <rect x="850" y="100" width="160" height="30" rx="6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+                <text class="uf-name-sm" x="930" y="120" text-anchor="middle">BeOS</text>
+                <rect x="850" y="136" width="160" height="30" rx="6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+                <text class="uf-name-sm" x="930" y="156" text-anchor="middle">Minix</text>
+                <rect x="850" y="172" width="160" height="30" rx="6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+                <text class="uf-name-sm" x="930" y="192" text-anchor="middle">Linux &#8594;</text>
+                <text class="uf-leg" x="850" y="216">unix-like &#183; not family</text>
+            </g>
+
+            <!-- root -->
+            <rect class="uf-root" x="440" y="96" width="160" height="48"/>
+            <text class="uf-name" x="520" y="126" text-anchor="middle" font-size="18">BSD</text>
+
+            <!-- bus -->
+            <line class="uf-lnk" x1="520" y1="144" x2="520" y2="205"/>
+            <line class="uf-lnk" x1="125" y1="205" x2="915" y2="205"/>
+            <line class="uf-lnk" x1="125" y1="205" x2="125" y2="235"/>
+            <line class="uf-lnk" x1="388" y1="205" x2="388" y2="235"/>
+            <line class="uf-lnk" x1="651" y1="205" x2="651" y2="235"/>
+            <line class="uf-lnk" x1="914" y1="205" x2="914" y2="235"/>
+
+            <rect class="uf-live" x="30" y="235" width="190" height="56"/>
+            <text class="uf-name" x="125" y="264" text-anchor="middle">FreeBSD</text>
+            <text class="uf-tag" x="125" y="284" text-anchor="middle" fill="#4ab542">generalist &#183; jails</text>
+
+            <rect class="uf-live" x="293" y="235" width="190" height="56"/>
+            <text class="uf-name" x="388" y="264" text-anchor="middle">OpenBSD</text>
+            <text class="uf-tag" x="388" y="284" text-anchor="middle" fill="#4ab542">secure by default</text>
+
+            <rect class="uf-live" x="556" y="235" width="190" height="56"/>
+            <text class="uf-name" x="651" y="264" text-anchor="middle">NetBSD</text>
+            <text class="uf-tag" x="651" y="284" text-anchor="middle" fill="#4ab542">portable &#183; pkgsrc</text>
+
+            <rect class="uf-live" x="819" y="235" width="190" height="56"/>
+            <text class="uf-name" x="914" y="264" text-anchor="middle">DragonFly</text>
+            <text class="uf-tag" x="914" y="284" text-anchor="middle" fill="#4ab542">HAMMER2</text>
+
+            <!-- caption -->
+            <text class="uf-sub" x="520" y="345" text-anchor="middle" font-size="13">four forks &#183; one base system each &#183; one code line, still whole</text>
+
+            <!-- legend -->
+            <g transform="translate(30,430)">
+                <circle cx="7" cy="-4" r="6" fill="#4ab542"/><text class="uf-leg" x="20" y="0">living &#183; one base system</text>
+                <circle cx="240" cy="-4" r="6" fill="var(--muted)"/><text class="uf-leg" x="253" y="0">unix-like (resemblance)</text>
+                <text class="uf-leg" x="470" y="0">certified &#183; QNX &#183; Linux = other Mondays</text>
+            </g>
+        </svg>
+
+        <h2>One Tree, Four Temperaments</h2>
+
+        <p>Start with the four, because they are genuinely four
+            characters and not four logos.</p>
+
+        <p><strong>FreeBSD</strong> is the generalist, and the one
+            built to be depended on. Its temperament is breadth held to
+            a production standard: it wants to be the system you put
+            under a database, a file server, a firewall or a fleet of
+            virtual machines and then stop thinking about. The evidence
+            is the quiet kind. Netflix serves a large share of the
+            evening's internet from FreeBSD appliances, every
+            PlayStation runs an operating system that is FreeBSD
+            extended with Sony's own layers on top, and Juniper has
+            routed the world's traffic on it for a quarter of a
+            century. What lets one system cover that much ground is a
+            set of choices the other siblings mostly did not chase:
+            wide hardware and driver support, so it runs well on the
+            machines people actually have; ZFS as a first-class
+            citizen, so storage is snapshotted and self-verifying by
+            default; bhyve, a native hypervisor, for running other
+            systems on top. And jails, the one worth pausing on:
+            kernel-enforced container isolation that
+            <a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener">shipped in 2000</a>,
+            the same idea the industry would rediscover more than a
+            decade later and call containers, only thinner, enforced by
+            the kernel itself rather than bolted on above it. FreeBSD
+            optimised for being useful to the largest number of people,
+            and the breadth is not an accident. It is the
+            personality.</p>
+
+        <p><strong>OpenBSD</strong> is the one that would rather be
+            correct than popular. It began in October 1995, when Theo
+            de Raadt, having parted ways with the NetBSD project he had
+            helped found, took the code and started again with a single
+            non-negotiable priority: audit the source by hand,
+            continuously, and ship nothing whose safety cannot be
+            reasoned about.&#185; Thirty years later that is still the
+            whole personality. The temperament shows most clearly in
+            what the project gives away.
+            <a href="https://www.openssh.com/" target="_blank" rel="noopener">OpenSSH</a>,
+            LibreSSL, doas and OpenNTPD were all written for OpenBSD and
+            now run far outside it, including across the Linux world
+            that does not always remember where they came from; the
+            packet filter pf belongs on that list too, though that
+            story has been told elsewhere.&#178; The project's own
+            boast, two remotely exploitable holes in the default
+            install in a very long time, carries the usual caveats
+            about what counts as default and as remote, and is still
+            not a small thing to be able to say.&#179; The same
+            discipline draws the limits, too: OpenBSD runs on less
+            hardware than FreeBSD and takes up new drivers slowly,
+            because it will not ship what it has not audited. That
+            narrowness is the bill for the guarantee, not a defect in
+            it. OpenBSD is what happens when a family member decides
+            that doing less, provably, is the ambition.</p>
+
+        <p><strong>NetBSD</strong> is the one that will run anywhere.
+            Its motto, "of course it runs NetBSD," is a portability
+            claim it has spent three decades earning: the current line
+            targets on the order of sixty hardware platforms across
+            sixteen processor architectures, from modern 64-bit ARM
+            down to machines the rest of the industry has forgotten it
+            ever made.&#8308; Portability that wide is a discipline
+            rather than a stunt, because it forces a clean line between
+            the machine-independent core and the machine-specific
+            edges, and a codebase that survives being split that way
+            tends to be a tidy one. NetBSD's other export makes the
+            point twice:
+            <a href="https://www.pkgsrc.org/" target="_blank" rel="noopener">pkgsrc</a>,
+            its package system, carries roughly twenty-nine thousand
+            recipes and does not require NetBSD underneath it at all,
+            building the same software the same way on illumos, on
+            macOS, on Linux.&#8309; A family member whose package tree
+            is portable to the rest of the family, and well beyond it,
+            is telling you how it thinks. Running everywhere has a
+            price, and NetBSD pays it on purpose: a system that must
+            boot on sixty platforms leads on none of them, chasing
+            neither peak performance nor the newest hardware, because
+            the reach was the point.</p>
+
+        <p><strong>DragonFly BSD</strong> is the youngest and the most
+            opinionated. In June 2003 Matthew Dillon, a FreeBSD
+            developer, disagreed with the way FreeBSD had chosen to use
+            many processors at once, the fine-grained locking of the
+            coming FreeBSD 5, and rather than argue it release after
+            release he forked FreeBSD 4.8 and built the
+            alternative.&#8310; The alternative was a kernel organised
+            around message-passing and lightweight threads instead of
+            locks scattered through the code, and out of it came
+            HAMMER2, a filesystem with snapshots, clustering and
+            self-healing that no other BSD carries. DragonFly is the
+            smallest of the four by users and the largest by distance
+            travelled from the shared starting line, which is the
+            useful thing about it: it is proof that a fork in this
+            family can be a laboratory rather than a schism.</p>
+
+        <h2>Why It Stays Whole</h2>
+
+        <p>Four forks, then, and four temperaments sharp enough to
+            explain each split. The question the certified branch could
+            not answer, what actually holds a family together when the
+            paper does not, this branch answers by construction.</p>
+
+        <p>What the four share is not a certificate and not a marketing
+            council. It is the shape of the thing each of them
+            inherited: a base system. In a BSD, the kernel and the core
+            userland, the compiler, the C library, the shell, the
+            daemons, the manual pages, are one source tree, grown
+            together, released together, and audited as a single
+            object. Third-party software sits on top of that line, as
+            ports or packages, visibly outside it.</p>
+
+        <svg viewBox="0 0 1040 470" aria-label="A comparison of two ways to keep an operating system whole. On the left, a BSD: a single green box labelled base system, one source tree, containing the kernel, C library, compiler, shell, daemons and manual pages together, with third-party software sitting on top as ports. On the right, a Linux distribution: separate boxes for a kernel from kernel.org, a C library such as glibc, core utilities from GNU, an init system such as systemd, and several hundred more parts, each independently governed and connected by dashed lines to a bar labelled integrated by the distributor, every release. The caption reads: the one solves coherence once, in the tree; the other solves it again at every release." role="img" style="max-width:1040px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bs-bg { fill: var(--bg); }
+                .bs-ttl { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-weight: 700; font-size: 15px; }
+                .bs-sub { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 11px; }
+                .bs-cap { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 12px; }
+                .bs-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 12px; font-weight: 700; }
+                .bs-part { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .bs-tree { fill: none; stroke: #4ab542; stroke-width: 2.5; rx: 8; }
+                .bs-row { fill: none; stroke: #4ab542; stroke-width: 1; rx: 4; opacity: 0.55; }
+                .bs-ports { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3; rx: 6; }
+                .bs-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 5; }
+                .bs-bar { fill: none; stroke: var(--muted); stroke-width: 2; rx: 5; }
+                .bs-lnk { stroke: var(--border); stroke-width: 1.5; fill: none; stroke-dasharray: 4 4; }
+            </style>
+            <rect class="bs-bg" x="0" y="0" width="1040" height="470"/>
+
+            <!-- LEFT: one tree -->
+            <text class="bs-ttl" x="40" y="34">ONE TREE &#183; a BSD</text>
+            <rect class="bs-ports" x="40" y="52" width="420" height="40"/>
+            <text class="bs-part" x="250" y="77" text-anchor="middle" fill="var(--muted)">third-party software (ports / packages)</text>
+            <rect class="bs-tree" x="40" y="108" width="420" height="286"/>
+            <text class="bs-item" x="250" y="138" text-anchor="middle" fill="#4ab542">base system &#183; one source tree</text>
+            <rect class="bs-row" x="70" y="158" width="360" height="34"/>
+            <text class="bs-item" x="250" y="180" text-anchor="middle">kernel</text>
+            <rect class="bs-row" x="70" y="200" width="360" height="34"/>
+            <text class="bs-item" x="250" y="222" text-anchor="middle">C library</text>
+            <rect class="bs-row" x="70" y="242" width="360" height="34"/>
+            <text class="bs-item" x="250" y="264" text-anchor="middle">compiler</text>
+            <rect class="bs-row" x="70" y="284" width="360" height="34"/>
+            <text class="bs-item" x="250" y="306" text-anchor="middle">shell &#183; daemons</text>
+            <rect class="bs-row" x="70" y="326" width="360" height="34"/>
+            <text class="bs-item" x="250" y="348" text-anchor="middle">manual pages</text>
+            <text class="bs-sub" x="250" y="378" text-anchor="middle">grown, released and audited as one object</text>
+
+            <!-- RIGHT: assembled -->
+            <text class="bs-ttl" x="580" y="34">ASSEMBLED &#183; a Linux distribution</text>
+            <rect class="bs-box" x="580" y="52" width="180" height="40"/>
+            <text class="bs-part" x="670" y="76" text-anchor="middle">kernel &#183; kernel.org</text>
+            <rect class="bs-box" x="820" y="52" width="180" height="40"/>
+            <text class="bs-part" x="910" y="76" text-anchor="middle">C library &#183; glibc</text>
+            <rect class="bs-box" x="580" y="108" width="180" height="40"/>
+            <text class="bs-part" x="670" y="132" text-anchor="middle">core utils &#183; GNU</text>
+            <rect class="bs-box" x="820" y="108" width="180" height="40"/>
+            <text class="bs-part" x="910" y="132" text-anchor="middle">init &#183; systemd</text>
+            <rect class="bs-box" x="580" y="164" width="180" height="40"/>
+            <text class="bs-part" x="670" y="188" text-anchor="middle">libc, tools, X, &#8230;</text>
+            <rect class="bs-box" x="820" y="164" width="180" height="40"/>
+            <text class="bs-part" x="910" y="188" text-anchor="middle">+ several hundred</text>
+            <line class="bs-lnk" x1="670" y1="204" x2="670" y2="330"/>
+            <line class="bs-lnk" x1="910" y1="204" x2="910" y2="330"/>
+            <line class="bs-lnk" x1="670" y1="148" x2="670" y2="164"/>
+            <line class="bs-lnk" x1="910" y1="148" x2="910" y2="164"/>
+            <rect class="bs-bar" x="580" y="330" width="420" height="46"/>
+            <text class="bs-item" x="790" y="358" text-anchor="middle" fill="var(--muted)">integrated by the distributor, every release</text>
+
+            <!-- caption -->
+            <line x1="40" y1="418" x2="1000" y2="418" stroke="var(--border)" stroke-width="1"/>
+            <text class="bs-cap" x="520" y="446" text-anchor="middle">The one solves coherence once, in the tree. The other solves it again at every release.</text>
+        </svg>
+
+        <p>Fork a system built that way and you do not carry off a
+            fragment that needs a hundred other projects before it
+            becomes usable. You carry off a whole, and you keep growing
+            it as a whole. That is why OpenBSD and DragonFly, born from
+            the two sharpest disagreements in the family, are not loose
+            collections of patches but complete systems with their own
+            release engineering and their own character. The coherence
+            is not a rule anyone enforces after the fact. It is simply
+            where the code lives.</p>
+
+        <p>It is worth being precise about the contrast with Linux,
+            because it is a difference in design, not a difference in
+            worth. A Linux distribution is assembled: a kernel from one
+            project, a C library from another, core utilities from a
+            third, an init system that occasioned a decade of argument,
+            and several hundred more parts, each independently
+            governed, integrated into a working whole by the
+            distributor. That integration is real engineering, and some
+            of it is superb. But the whole lives in the assembler's
+            hands and has to be remade every release; the coherence is
+            a service the distribution performs, not a property of a
+            single tree. Both answers ship excellent systems. They keep
+            the whole in different places, that is all: a BSD keeps it
+            in the tree, and a distribution keeps it in the work. The
+            one solves coherence once, in the tree; the other solves it
+            again at every release. Forking a tree hands the next
+            maintainer a whole system. Forking a kernel hands them a
+            kernel, and the invitation to assemble everything else
+            again.</p>
+
+        <blockquote>
+            <p>The certified Unixes shared a word. The BSDs share a
+                code lineage, and they have spent thirty years
+                demonstrating that the lineage is the more durable
+                thing, precisely because it let them disagree without
+                breaking. They forked over security, over portability,
+                over how to drive a processor, and each fork produced
+                not a splinter but a sibling: a complete system with a
+                temperament of its own, still readable, in effect line
+                by line, back to the same Berkeley source.</p>
+        </blockquote>
+
+        <h2>The Point</h2>
+
+        <p>Code lineage without the paper turns out to be the most
+            alive branch of the whole family, and the reason is
+            unglamorous. When the whole is kept in one tree, a
+            disagreement can take the tree and remain whole. When the
+            whole is kept in the assembly, a disagreement takes a part.
+            The certified branch shares a certificate and stays
+            strangers; the BSD branch shares a source tree and stays
+            kin, through the sharpest disagreements a project can have.
+            A shared lineage holds where a shared word could not.</p>
+
+        <p>Next Monday: discipline without descent, the outsider that
+            kept the rules Unix wrote, in a kernel Unix never chose.</p>
+
+        <aside class="vv-aside">
+            <p><strong>Run them yourself:</strong></p>
+            <ul>
+                <li><strong>The four siblings:</strong>
+                    <a href="https://www.freebsd.org/" target="_blank" rel="noopener">FreeBSD</a>,
+                    <a href="https://www.openbsd.org/" target="_blank" rel="noopener">OpenBSD</a>,
+                    <a href="https://www.netbsd.org/" target="_blank" rel="noopener">NetBSD</a>,
+                    <a href="https://www.dragonflybsd.org/" target="_blank" rel="noopener">DragonFly BSD</a>.</li>
+                <li><strong>Born in OpenBSD, run everywhere:</strong>
+                    <a href="https://www.openssh.com/" target="_blank" rel="noopener">OpenSSH</a>,
+                    <a href="https://www.libressl.org/" target="_blank" rel="noopener">LibreSSL</a>,
+                    <a href="https://www.openbsd.org/security.html" target="_blank" rel="noopener">the security record</a>.</li>
+                <li><strong>The portable package tree:</strong>
+                    <a href="https://www.pkgsrc.org/" target="_blank" rel="noopener">pkgsrc</a> (roughly 29,000 recipes, on NetBSD and well beyond it).</li>
+                <li><strong>Kernel-enforced isolation since 2000:</strong>
+                    <a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener">FreeBSD jails</a>.</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
