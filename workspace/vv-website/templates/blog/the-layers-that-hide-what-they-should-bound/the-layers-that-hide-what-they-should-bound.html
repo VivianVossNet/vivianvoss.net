@@ -1,0 +1,248 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Layers That Hide What They Should Bound &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Layering was one of the field's good ideas: Dijkstra built the THE system as strict levels in 1968, and Parnas named the discipline in 1972, hide a decision that is likely to change. Somewhere the verb shifted from containing complexity to postponing the look beneath it. A modern layer leaks the thing below and spares you nothing, so you carry the layer and the thing at once. Lehman's second law explains why the tower only grows: complexity accrues on its own, reduction has to be chosen and funded. The counter-proof is the software allowed to finish: SQLite in one file on four billion phones, awk, sed, make and pf, bound by being complete, not by hiding. The fifth of eighteen Wednesdays on how we got here, and the close of the diagnosis.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-layers-that-hide-what-they-should-bound{( endslot )}
+
+{( slot og-title )}The Layers That Hide What They Should Bound &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Lean Software, the fifth of eighteen Wednesdays on how we got here, and the close of the diagnosis. This week takes the fourth of the four breaks, the layers. Layering is not the mistake; it is one of the good ideas in the field. Dijkstra built the THE system in 1968 as strict levels so an engineer could reason one level at a time, and Parnas gave the rule its edge in 1972: a module should hide a decision that is likely to change. Somewhere the verb shifted from containing complexity to postponing the look beneath it, and the promise broke both ways, the thing below leaks up while you now carry the layer and the thing it was meant to spare you. Lehman's second law tells you why the tower only grows: complexity accrues on its own, reduction has to be funded, and nobody funds it. The counter-proof is the software that was allowed to finish, SQLite in a single amalgamated file on four billion phones, awk since 1977, sed, make and pf, each bound by being complete rather than by hiding.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Layers That Hide What They Should Bound",
+    "datePublished": "2026-07-08",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-layers-that-hide-what-they-should-bound",
+    "description": "Lean Software, the fifth of eighteen Wednesdays on how we got here, and the close of the diagnosis. This week takes the fourth of the four breaks, the layers, the subtlest of them, because layering is not a mistake but one of the genuinely good ideas in the field. In 1968 Edsger Dijkstra described the THE multiprogramming system as a strict hierarchy of levels, each built only on the one below, a discipline for containing complexity so a programmer could reason about a single level and trust everything beneath it as settled. In 1972 David Parnas gave the discipline its sharpest formulation, coining the term information hiding: a module should hide a design decision that is likely to change, so the boundary is drawn where the volatility lives. Somewhere between Parnas and the cloud generation the verb changed from containing to postponing, and the promise broke both ways. The thing below keeps leaking through, the ORM's SQL in the slow-query log, the cache's staleness as the bug that cannot be reproduced, the mesh's retry as the write that landed twice; and it stopped reducing what you must know, because you now carry the layer and the thing it was supposed to spare you. There is a well-worn line, usually given to Phil Karlton and preserved by Tim Bray, that there are only two hard things in computer science, cache invalidation and naming things, and the modern stack does both at once by adding a layer. In 1974, studying IBM's OS/360, Meir Lehman set down his second law of software evolution: complexity increases unless explicit work is done to reduce it, and reduction has to be chosen and funded against every incentive, so the layers accumulate and the reduction is the work nobody is paid to do. The alternative is to bound complexity with things small enough to be understood whole and complete enough to need nothing wrapped around them. SQLite is about 156,000 lines of C shipped as a single amalgamated file, on over four billion smartphones and an estimated trillion databases in active use, bounding complexity by being finished rather than hidden. awk has done its one job since 1977, sed dates from 1974, make from 1976, and pf has been one configuration file with one coherent syntax since OpenBSD 3.0 in December 2001, refined for a quarter of a century and never replaced. A FreeBSD base is one source tree, kernel, C library, firewall and documentation built and released together, so the pieces fit because they were made to fit. Four things broke at once, the count, the boundary, the workaround and the layers, four diagnoses of one system with three carriers behind it, npm, Docker and the way we organise teams. Next Wednesday begins the second phase: npm in detail, starting with the registry that was never a service but a market.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-08">8 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Layers That Hide What They Should Bound</h1>
+        <p class="vv-article-meta"><em>Lean Software &#x22A3; How We Got Here, 5 of 18.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">softwarearchitecture</span>
+            <span class="vv-pill">sqlite</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">freebsd</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>There is a particular kind of afternoon, familiar to anyone who has kept a modern service alive, that is worth looking at plainly. A write occasionally lands twice. To find out why, you go down. The ORM was supposed to spare you the SQL, so you read the SQL it generated. The cache was supposed to spare you the database, so you reason about what it might be holding. The service mesh was supposed to spare you the network, so you check whether it retried. The operator was supposed to spare you the YAML, which was hiding the kubelet, which was hiding the container, which was hiding the process that, in the end, wrote the row twice. Every layer promised you would not have to look beneath it. To fix the bug, you looked beneath all of them, and you had to understand each layer on the way down as well.</p>
+
+        <p>This is the fourth of the four breaks the first piece named, and it closes the diagnosis. Last week we took the workaround: the container solved a language's inability to use its cores, and the industry promoted the workaround to an architecture. Today, the layers, which is the subtlest of the four, because layering is not a mistake. It is one of the genuinely good ideas in the field. The trouble is what a good idea becomes when nobody is paid to keep it honest.</p>
+
+        <h2>The Promise a Layer Makes</h2>
+
+        <p>Start with the idea at its best, because it deserves it.</p>
+
+        <p>In 1968 Edsger Dijkstra described the <a href="https://en.wikipedia.org/wiki/THE_multiprogramming_system" target="_blank" rel="noopener">THE multiprogramming system</a> in a paper that is still read for pleasure. Its structure was a strict hierarchy of levels, each built only on the one below, so that a programmer could reason about a single level at a time and trust everything beneath it as settled. The layer was a discipline for <em>containing</em> complexity: below this line, the problem is solved, and you need not carry it in your head.</p>
+
+        <p>Four years later David Parnas gave the discipline its sharpest formulation. His 1972 paper on decomposing systems into modules coined the term <a href="https://en.wikipedia.org/wiki/Information_hiding" target="_blank" rel="noopener">information hiding</a>, and its criterion is the part worth memorising: a module should hide a design decision that is <em>likely to change</em>, so that when the decision does change, only that module changes. The boundary is drawn where the volatility lives. Draw it well and the layer is a promise kept: the thing below is bounded, it will not leak, and you are free of it.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="A comparison of two kinds of boundary. On the left, a boundary that bounds, in green: it hides a decision that is settled and stable, so you carry one thing less and are genuinely free of what is below. On the right, a boundary that postpones, in the accent colour: it hides a decision that is still live, so the thing below leaks up through it, and you must know both the layer and the thing it was meant to spare you. The legend notes that a good boundary hides what is settled; a postponing one only defers the look." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pb-good-h { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pb-bad-h { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pb-good { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pb-cell { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .pb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pb-good-box { fill: none; stroke: #4ab542; stroke-width: 1.5; rx: 4; }
+                .pb-bad-box { fill: none; stroke: var(--accent); stroke-width: 1.3; rx: 4; }
+                .pb-good-fill { fill: #4ab542; opacity: 0.14; stroke: #4ab542; stroke-width: 1; rx: 3; }
+                .pb-bad-fill { fill: var(--accent); opacity: 0.13; stroke: var(--accent); stroke-width: 1; rx: 3; }
+            </style>
+            <text x="320" y="22" class="pb-title" text-anchor="middle">What the Boundary Hides</text>
+
+            <text x="165" y="50" class="pb-good-h" text-anchor="middle">bounds &#x2014; hides what is settled</text>
+            <rect x="70" y="60" width="190" height="150" class="pb-good-box"/>
+            <rect x="82" y="72" width="166" height="24" class="pb-good-fill"/><text x="165" y="88" class="pb-good" text-anchor="middle">you, above the line</text>
+            <line x1="82" y1="112" x2="248" y2="112" stroke="#4ab542" stroke-width="1.5"/>
+            <text x="165" y="132" class="pb-cell" text-anchor="middle">a decision that will not change</text>
+            <text x="165" y="150" class="pb-cell" text-anchor="middle">stays behind the line</text>
+            <text x="165" y="188" class="pb-good" text-anchor="middle">one thing less to carry</text>
+
+            <text x="475" y="50" class="pb-bad-h" text-anchor="middle">postpones &#x2014; hides what is live</text>
+            <rect x="380" y="60" width="190" height="150" class="pb-bad-box"/>
+            <rect x="392" y="72" width="166" height="24" class="pb-bad-fill"/><text x="475" y="88" class="pb-cell" text-anchor="middle">you, above the line</text>
+            <line x1="392" y1="112" x2="558" y2="112" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3"/>
+            <path d="M 475 150 L 475 116" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#pb-arrow)"/>
+            <text x="475" y="168" class="pb-cell" text-anchor="middle">a live decision leaks up</text>
+            <text x="475" y="188" class="pb-cell" text-anchor="middle">now you carry both</text>
+            <defs>
+                <marker id="pb-arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--accent)"/></marker>
+            </defs>
+
+            <line x1="20" y1="226" x2="620" y2="226" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="244" class="pb-muted" text-anchor="middle" font-style="italic">A boundary bounds only what stays settled behind it.</text>
+        </svg>
+
+        <p>That is the honest version of a layer. It bounds. It hides a decision that is genuinely settled behind it, and in exchange it asks you to know one thing less.</p>
+
+        <h2>Where Containing Became Postponing</h2>
+
+        <p>Somewhere between Parnas and the cloud generation, the verb changed. The layer stopped bounding and started <em>postponing</em>, and it broke Parnas's promise in both directions at once.</p>
+
+        <p>It stopped hiding a stable decision, because the thing below keeps leaking through. The ORM's SQL surfaces in the slow-query log the first time a page is slow. The cache's staleness surfaces as the bug report that cannot be reproduced. The mesh's retry surfaces as the write that landed twice. A boundary is only a boundary if what it hides stays hidden, and none of these do, because none of them hide a decision that is settled: they hide one that is live, and a live decision does not stay behind a line.</p>
+
+        <p>And it stopped reducing what you must know, because now you must know both. The layer was meant to let you carry one thing less; instead you carry the layer <em>and</em> the thing it was supposed to spare you, because when it leaks you are debugging both at once. A boundary you cannot see past, but must, is not an abstraction. It is a blindfold with rather good documentation.</p>
+
+        <svg viewBox="0 0 560 400" aria-label="A vertical stack of eight layers descending from the top, labelled ORM, cache, service mesh, operator, YAML, kubelet, container and process. Each layer carries the same note, promises you need not look below. A thin accent-coloured crack runs down the whole stack from top to bottom, the leak that reaches every level. At the bottom sits the one process that wrote the row twice. The legend notes that to fix one write you looked beneath all eight." role="img" style="max-width:520px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .el-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .el-name { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .el-note { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .el-bottom { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .el-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .el-box { fill: var(--border); opacity: 0.10; stroke: var(--border); stroke-width: 1; rx: 3; }
+            </style>
+            <text x="280" y="22" class="el-title" text-anchor="middle">Eight Layers Down</text>
+
+            <rect x="70" y="38" width="420" height="34" class="el-box"/><text x="86" y="54" class="el-name">ORM</text><text x="474" y="60" class="el-note" text-anchor="end">promises you need not look below</text>
+            <rect x="70" y="76" width="420" height="34" class="el-box"/><text x="86" y="92" class="el-name">cache</text><text x="474" y="98" class="el-note" text-anchor="end">promises you need not look below</text>
+            <rect x="70" y="114" width="420" height="34" class="el-box"/><text x="86" y="130" class="el-name">service mesh</text><text x="474" y="136" class="el-note" text-anchor="end">promises you need not look below</text>
+            <rect x="70" y="152" width="420" height="34" class="el-box"/><text x="86" y="168" class="el-name">operator</text><text x="474" y="174" class="el-note" text-anchor="end">promises you need not look below</text>
+            <rect x="70" y="190" width="420" height="34" class="el-box"/><text x="86" y="206" class="el-name">YAML</text><text x="474" y="212" class="el-note" text-anchor="end">promises you need not look below</text>
+            <rect x="70" y="228" width="420" height="34" class="el-box"/><text x="86" y="244" class="el-name">kubelet</text><text x="474" y="250" class="el-note" text-anchor="end">promises you need not look below</text>
+            <rect x="70" y="266" width="420" height="34" class="el-box"/><text x="86" y="282" class="el-name">container</text><text x="474" y="288" class="el-note" text-anchor="end">promises you need not look below</text>
+            <rect x="70" y="304" width="420" height="34" class="el-box"/><text x="86" y="320" class="el-name">process</text><text x="474" y="326" class="el-bottom" text-anchor="end">wrote the row twice</text>
+
+            <path d="M 280 38 L 274 90 L 286 150 L 276 210 L 288 270 L 280 338" fill="none" stroke="var(--accent)" stroke-width="2"/>
+
+            <line x1="70" y1="356" x2="490" y2="356" stroke="var(--border)" stroke-width="1"/>
+            <text x="280" y="376" class="el-muted" text-anchor="middle" font-style="italic">To fix one write, you looked beneath all eight.</text>
+        </svg>
+
+        <p>There is a well-worn line, usually given to Phil Karlton and <a href="https://martinfowler.com/bliki/TwoHardThings.html" target="_blank" rel="noopener">preserved for the rest of us by Tim Bray</a>, that there are only two hard things in computer science: cache invalidation and naming things. It is funnier than it looks, because the modern stack has gamely volunteered to do both at once, and to do them by adding a layer: a cache, which must be invalidated, reached through a service, which must be named and resolved. The two hard things are not solved by the tower. They are what the tower is made of.</p>
+
+        <h2>The Work Nobody Is Funded to Do</h2>
+
+        <p>Why does the tower only ever grow taller? For that, the cleanest answer is fifty years old.</p>
+
+        <p>In 1974, studying the evolution of IBM's OS/360, Meir Lehman set down what became his <a href="https://en.wikipedia.org/wiki/Lehman%27s_laws_of_software_evolution" target="_blank" rel="noopener">second law of software evolution</a>: as a system evolves, its complexity increases unless explicit work is done to reduce it. Note the asymmetry the law describes. Complexity accrues on its own, as a by-product of change. Reduction does not. Reduction has to be chosen, funded, and done on purpose, against the grain of every incentive.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="A chart of two paths over time. The accent-coloured line rises steadily on its own, labelled complexity accrues as a by-product of change. The green line stays low and flat, labelled reduction, which must be chosen and funded, and it is drawn faint and dotted because almost nobody funds it. The legend notes that adding a layer ships and is rewarded, while removing one ships no feature, so the stack only grows." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .lh-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lh-bad { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lh-good { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lh-axis { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .lh-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+            </style>
+            <text x="320" y="22" class="lh-title" text-anchor="middle">Complexity Rises Unless Reduced</text>
+
+            <line x1="70" y1="60" x2="70" y2="200" stroke="var(--border)" stroke-width="1"/>
+            <line x1="70" y1="200" x2="600" y2="200" stroke="var(--border)" stroke-width="1"/>
+            <text x="62" y="66" class="lh-axis" text-anchor="end">more</text>
+            <text x="62" y="200" class="lh-axis" text-anchor="end">less</text>
+            <text x="70" y="216" class="lh-axis">release 1</text>
+            <text x="600" y="216" class="lh-axis" text-anchor="end">release N</text>
+
+            <path d="M 70 190 C 220 178, 360 120, 600 60" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+            <text x="592" y="52" class="lh-bad" text-anchor="end">complexity accrues on its own</text>
+
+            <path d="M 70 190 L 600 184" fill="none" stroke="#4ab542" stroke-width="2" stroke-dasharray="5 4" opacity="0.85"/>
+            <text x="360" y="178" class="lh-good" text-anchor="middle">reduction, if anyone funded it</text>
+
+            <line x1="20" y1="226" x2="620" y2="226" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="246" class="lh-muted" text-anchor="middle" font-style="italic">Adding a layer ships. Removing one is unpaid. So the stack only grows.</text>
+        </svg>
+
+        <p>Watch what that does to a layer. Adding one is easy to justify: it solves today's problem, it ships, it appears in the release notes, someone gives a talk about it. Removing one is almost impossible to justify, because it ships no feature, closes no ticket the customer filed, wins no conference slot, and appears on no roadmap. In the industry's accounting, removing a layer is indistinguishable from doing nothing, which is why it is the first thing cut and the last thing rewarded. So the layers accumulate, each defensible on the day it arrived, and the reduction that Lehman says the system needs is precisely the work nobody is paid to do. The plaster is cheap. The wound is not.</p>
+
+        <h2>The Things That Were Allowed to Finish</h2>
+
+        <p>The alternative is not to abolish layers. It is to bound complexity the other way: with things small enough to be understood whole and complete enough to need nothing wrapped around them. This is not a wistful idea. It is running, at a scale the tower rarely reaches.</p>
+
+        <p><a href="https://sqlite.org/mostdeployed.html" target="_blank" rel="noopener">SQLite</a> is about a hundred and fifty-six thousand lines of C, shipped as a single amalgamated file you drop into a build, with no server, no connection pool, no ORM required to make it bearable. It is, on its authors' own careful estimate, in over four billion smartphones and something on the order of a trillion databases in active use, which makes it very probably the most deployed database engine on Earth. It bounds its complexity by being finished, not by being hidden. Where the standard stack would put a database behind a pool behind an ORM behind a cache, SQLite is one library you can read.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A table of small tools that were allowed to finish. SQLite, from 2000, is about 156,000 lines of C in one amalgamated file, deployed on over four billion phones. awk, from 1977, is essentially unchanged in purpose. sed dates from 1974 and make from 1976. pf, the OpenBSD packet filter from 2001, is one configuration syntax, refined but never replaced. All are marked in green as bound by being complete. On the right, an accent-coloured tower keeps growing, marked never removed. The legend notes that these bound complexity by being complete, not by hiding." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tf-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tf-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .tf-name { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tf-cell { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .tf-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tf-bad { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tf-stack { fill: var(--accent); opacity: 0.13; stroke: var(--accent); stroke-width: 1; rx: 2; }
+            </style>
+            <text x="320" y="22" class="tf-title" text-anchor="middle">Allowed to Finish</text>
+
+            <text x="40" y="50" class="tf-head">tool</text>
+            <text x="150" y="50" class="tf-head">since</text>
+            <text x="230" y="50" class="tf-head">shape</text>
+            <line x1="40" y1="56" x2="430" y2="56" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="40" y="78" class="tf-name">SQLite</text><text x="150" y="78" class="tf-cell">2000</text><text x="230" y="78" class="tf-cell">~156k lines, one file, ~4bn phones</text>
+            <text x="40" y="104" class="tf-name">awk</text><text x="150" y="104" class="tf-cell">1977</text><text x="230" y="104" class="tf-cell">one tool, unchanged in purpose</text>
+            <text x="40" y="130" class="tf-name">sed</text><text x="150" y="130" class="tf-cell">1974</text><text x="230" y="130" class="tf-cell">one stream editor</text>
+            <text x="40" y="156" class="tf-name">make</text><text x="150" y="156" class="tf-cell">1976</text><text x="230" y="156" class="tf-cell">one build tool</text>
+            <text x="40" y="182" class="tf-name">pf</text><text x="150" y="182" class="tf-cell">2001</text><text x="230" y="182" class="tf-cell">one config, refined, never replaced</text>
+            <line x1="40" y1="196" x2="430" y2="196" stroke="var(--border)" stroke-width="0.5" opacity="0.6"/>
+            <text x="40" y="216" class="tf-muted">bound by being complete, not by hiding</text>
+
+            <text x="540" y="50" class="tf-bad" text-anchor="middle">the tower</text>
+            <rect x="482" y="60" width="116" height="18" class="tf-stack"/>
+            <rect x="490" y="82" width="100" height="18" class="tf-stack"/>
+            <rect x="498" y="104" width="84" height="18" class="tf-stack"/>
+            <rect x="490" y="126" width="100" height="18" class="tf-stack"/>
+            <rect x="482" y="148" width="116" height="18" class="tf-stack"/>
+            <rect x="494" y="170" width="92" height="18" class="tf-stack"/>
+            <text x="540" y="212" class="tf-muted" text-anchor="middle">never removed</text>
+
+            <line x1="20" y1="242" x2="620" y2="242" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="262" class="tf-muted" text-anchor="middle" font-style="italic">A pipe is a boundary you can see through. A laminated layer is one built so you cannot.</text>
+        </svg>
+
+        <p>It is not alone, and the others are older. <a href="https://en.wikipedia.org/wiki/AWK" target="_blank" rel="noopener">awk</a> has done its one job since 1977 and is essentially the same tool today. sed dates from 1974, <a href="https://en.wikipedia.org/wiki/Make_(software)" target="_blank" rel="noopener">make</a> from 1976, each small enough that it could be completed rather than merely versioned. <a href="https://www.openbsd.org/faq/pf/" target="_blank" rel="noopener">pf</a>, the packet filter, has been one configuration file with one coherent syntax since it shipped in OpenBSD 3.0 in December 2001: refined for a quarter of a century, never once replaced. These tools compose the Unix way, side by side through a visible seam, a pipe or a file you can inspect, rather than by stacking through hidden ones. A pipe is a boundary you can see through. A laminated layer is a boundary built so you cannot.</p>
+
+        <p>The same instinct scales to a whole system. A <a href="https://docs.freebsd.org/en/books/handbook/" target="_blank" rel="noopener">FreeBSD base</a> is one source tree: kernel, C library, firewall and documentation built, tested and released together, so the pieces fit because they were made to fit, and there is no laminating layer needed between them to translate one project's assumptions into another's. That is the quiet opposite of the tower. It is not that it hides less. It is that there is less to hide, because nothing between the parts is a stranger. Boring, in the way that eighteen months of uneventful uptime is boring.</p>
+
+        <h2>The Point</h2>
+
+        <p>That closes the diagnosis. Four things broke at the same time, and we have now taken each on its own. The <strong>count</strong> was never justified: kilobytes do the work the industry bills in megabytes. The <strong>boundary</strong> was never drawn: node_modules has no responsibility line, and no scanner can add one after the fact. The <strong>workaround</strong> became architecture: a language that could not use its cores was answered with a container, and the container was promoted to a principle. And the <strong>layers</strong> hide what they should bound: a discipline for containing complexity became a habit of postponing the look beneath, stacked as high as Lehman's law predicts when no one is funded to bring it down.</p>
+
+        <p>They are four diagnoses of one system, and the system has three carriers that explain every break in depth: npm, the registry sold as a service; Docker, the workaround sold as an architecture; and the way we organise teams, which sets the whole arrangement in the org chart. The next thirteen Wednesdays take the carriers one at a time.</p>
+
+        <blockquote>
+            <p><strong>Next Wednesday begins the second phase: npm in detail, starting with the registry that was never a service but a market.</strong></p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>References:</strong></p>
+            <ul>
+                <li>Dijkstra, <em>The Structure of the THE-Multiprogramming System</em> (Communications of the ACM, 1968); a strict hierarchy of levels, each built on the one below. <a href="https://en.wikipedia.org/wiki/THE_multiprogramming_system" target="_blank" rel="noopener">en.wikipedia.org</a></li>
+                <li>Parnas, <em>On the Criteria to Be Used in Decomposing Systems into Modules</em> (Communications of the ACM, 15, 1972); coined information hiding, hide the decision likely to change. <a href="https://en.wikipedia.org/wiki/Information_hiding" target="_blank" rel="noopener">en.wikipedia.org</a></li>
+                <li>Lehman, <em>second law of software evolution</em> (increasing complexity), from the 1974 study of IBM OS/360, formalised in 1980. <a href="https://en.wikipedia.org/wiki/Lehman%27s_laws_of_software_evolution" target="_blank" rel="noopener">en.wikipedia.org</a></li>
+                <li>&#x201C;Two hard things in computer science: cache invalidation and naming things,&#x201D; attributed to Phil Karlton, first recorded publicly by Tim Bray. <a href="https://martinfowler.com/bliki/TwoHardThings.html" target="_blank" rel="noopener">martinfowler.com</a></li>
+                <li>SQLite, <em>Most Widely Deployed SQL Database Engine</em> (single-file amalgamation; over four billion smartphones, an estimated trillion databases). <a href="https://sqlite.org/mostdeployed.html" target="_blank" rel="noopener">sqlite.org</a></li>
+                <li>awk (Aho, Weinberger, Kernighan, Bell Labs, 1977); essentially unchanged in purpose. <a href="https://en.wikipedia.org/wiki/AWK" target="_blank" rel="noopener">en.wikipedia.org</a></li>
+                <li>make (Stuart Feldman, Bell Labs, 1976); sed (Lee McMahon, Bell Labs, 1974). <a href="https://en.wikipedia.org/wiki/Make_(software)" target="_blank" rel="noopener">en.wikipedia.org</a></li>
+                <li>pf, the OpenBSD packet filter (Daniel Hartmeier, OpenBSD 3.0, December 2001); one configuration syntax, refined but never replaced. <a href="https://www.openbsd.org/faq/pf/" target="_blank" rel="noopener">openbsd.org</a></li>
+                <li>FreeBSD Handbook (one base system: kernel, userland, firewall and documentation from a single source tree). <a href="https://docs.freebsd.org/en/books/handbook/" target="_blank" rel="noopener">docs.freebsd.org</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
