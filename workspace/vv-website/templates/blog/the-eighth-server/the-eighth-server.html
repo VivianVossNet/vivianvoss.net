@@ -1,0 +1,632 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Eighth Server &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="At 09:30 on 1 August 2012 the New York Stock Exchange opened the Retail Liquidity Program. By 10:15 Knight Capital had ceased to be a going concern. Forty-five minutes had cost the firm roughly $440 million in realised pre-tax loss. The culprit was one server out of eight, running code from 2003 that should have been gone for years. SMARS ran on eight servers; new code reached seven; the eighth kept a 2003 module called Power Peg, disabled in 2005 by a flag, never deleted. In 2012 the same flag bit was repurposed for RLP eligibility. On seven servers it meant RLP. On the eighth it meant start Power Peg. Delete dead code; do not gate it. Verify after deploy: the deployment ends when every target reports the new build hash, not when files have copied.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-eighth-server{( endslot )}
+
+{( slot og-title )}The Eighth Server &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Tales from the Bare Metal Episode 06. At 09:30 on 1 August 2012 the New York Stock Exchange opened the Retail Liquidity Program; by 10:15 Knight Capital Group, one of the largest market makers on American equities, had ceased to function as a going concern. The forty-five minutes between cost the firm roughly $440 million in realised pre-tax loss, required around $400 million of emergency capital from Jefferies within days, drew a $12 million SEC fine for violations of the Market Access Rule, and led to acquisition by Getco before the year was out. The proximate cause was one server out of eight, running code from 2003 that, in a source-control sense, had never gone away. Knight's SMARS, the Smart Market Access Routing System, ran on eight production servers. The release prepared for the RLP launch reached seven of them; on the eighth the deployment did not complete, and nobody knew. When the markets opened, retail orders bearing the new RLP flag were routed correctly by the seven; the eighth interpreted the same flag through code paths last meaningful in 2003. The defective behaviour came from a module called Power Peg, written in 2003 as a parent-order management test routine, disabled after 2005 by a flag and never deleted; the disabling was operational, not structural. In 2012 the same flag bit was repurposed to signal RLP eligibility. On the seven up-to-date servers the bit meant RLP. On the eighth, in code from 2003, the bit still meant start Power Peg. Each RLP-eligible order woke a nine-year-old corpse. Power Peg had no production-grade concept of order filled; it bought at the ask and sold at the bid until told to stop, and nobody had told it to stop in nine years. Around four million orders, around seven billion dollars of unintended positions, hundreds of stocks visibly moved, and a firm absorbed. Three drifts compounded, none foolish at the time. Dead code had been disabled by a flag, not deleted, by people no longer present. The deployment script reported success once files were copied, with no verification that the new binary was the running binary on every host. The release note recorded the new use of the flag without recording that the same bit had once enabled an ancient module, because the link lived in nobody's head. Two architectural disciplines would have stopped it. Delete dead code, do not gate it: a flag that disables a module is a switch an unrelated change can later flip. Verify after deploy: the deployment ends not when files have copied, but when every target reports the new build hash. On FreeBSD this is rc.d managing the service, plus a deploy script in plain shell that hits /version on each host and refuses to declare success until every host returns the expected build. The same shape travels: Kubernetes rolling updates with a cached image on one node; feature-flag libraries with quietly-shifted semantics; cloud auto-scaling with a stale AMI in the launch template; Helm or Kustomize manifests served from one node's older registry cache; CI/CD job matrices that report success on N of N exit codes without checking any running version. A deploy that succeeds on seven of eight is one that failed quietly on one. Production does not give partial credit; the market gives none at all.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Eighth Server",
+    "datePublished": "2026-06-03",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-eighth-server",
+    "description": "Tales from the Bare Metal Episode 06. At 09:30 on 1 August 2012 the New York Stock Exchange opened a new programme for retail-order matching, the Retail Liquidity Program. By 10:15 Knight Capital Group, one of the largest market makers on the American equities markets, had ceased to function as a going concern. The forty-five minutes between those two times cost the firm roughly $440 million in realised pre-tax loss, required emergency capital from Jefferies within days, drew a $12 million SEC fine, and led to acquisition by Getco within months. The proximate cause was one server out of eight, running code from 2003 that, in a strictly source-control sense, had never gone away. Knight ran a routing system called SMARS, the Smart Market Access Routing System, which decided how to forward orders into American equity venues; it sat on eight production servers, identical and redundant. The release prepared for the NYSE Retail Liquidity Program reached seven of the eight; on the eighth the deployment did not complete, and nobody knew. The server kept running the previous build. When the markets opened, retail order flow began arriving at SMARS bearing a particular flag in the order-routing protocol set by the RLP programme; on the seven correctly-deployed servers the routing logic recognised the flag and consulted the new RLP code path; on the eighth the same flag was interpreted through code paths last meaningful in 2003. The eighth server began generating orders at an exceptional rate, accumulating positions Knight had never intended to take, paying the ask and selling at the bid in hundreds of stocks. By the time the firm halted trading and unwound, roughly four million orders had been sent, roughly seven billion dollars of unintended positions had been built, and individual share prices had moved by tens of per cent in minutes. The defective behaviour came from a module called Power Peg, written in 2003 to manage parent-order execution, used in production briefly, judged unfit and disabled after 2005 by a flag, never deleted; the disabling was operational, not structural. Years passed, Power Peg was not removed in any subsequent refactor, and the 2003 code, unchanged, continued to be built into every release of SMARS. In 2012, in preparation for the RLP launch, the SMARS routing protocol gained a new feature: the ability to recognise RLP-eligible orders. The implementation, plausibly enough, repurposed the bit position that had once carried the Power Peg activation signal; the bit was no longer in use, the engineers reasoned, let it carry the RLP signal now. The new code, on the seven correctly-deployed servers, read the bit and routed by RLP rules. The old code, still resident on the eighth server, read the same bit and read it as start Power Peg. Each RLP-eligible order, on the eighth server, was therefore an instruction to fire up a nine-year-old algorithm. Power Peg, as originally written, was a test routine with no production-grade understanding of fills or order completion; its inner loop bought at the ask and sold at the bid, its outer loop fed it more parent orders to slice. The retail order stream of a major venue at market open is a great many orders; each became a parent, each parent became a flurry. Three quiet drifts compounded, and none of them, judged at the time they happened, was foolish. The first was the source tree: in 2005 the team that decided Power Peg was unfit gated it with a flag rather than deleting it, defensible at the time because the code might still be wanted and removal was real work for uncertain payoff; the gating worked perfectly, every day, for seven years; the engineers who made the 2005 decision were no longer present in 2012, and the link between the flag, the gated module and the bit position existed in nobody's head. The second was the deployment script: it treated deployment as a file-copy operation, reporting success when files had landed and SMARS had restarted, without interrogating each host for a build identifier or requiring a healthcheck that only the new code could pass; an old binary on one host looked exactly like a new binary on the others from outside, as long as you only asked did the deploy command succeed. The third was the release note: the change documentation for the RLP release recorded that the cumulative-quantity-flag bit was now being used to signal RLP eligibility, but did not, and probably could not, record that the same bit had once been the activation signal for an ancient module still compiled into the running binary. All three were ordinary, every team does at least one, most teams do all three; Knight's bad luck was to do all three on the morning a stock exchange opened a new programme. Two architectural disciplines would have prevented it. Delete dead code, do not gate it: a flag that disables a module is a switch an unrelated change can later flip; a deleted module is gone from the binary and the running process. If a module is too dangerous to remove, the right response is to make it safe enough to remove, not to leave it gated. Verify after deploy on the property of the deployed code itself: the end of a deployment is not the files copied successfully, it is every target host reports the new build's identity; a script that hits a /version endpoint on each host after restart, compares the returned hash to the expected hash, and fails loudly if any host disagrees, is half a page of shell that catches the specific class of failure that ended Knight Capital. In a FreeBSD shop this is rc.d managing the SMARS-equivalent plus a deploy script in plain shell that loops over the host list, hits /version on each, and refuses to declare success until every host returns the expected build. The pattern wears the local clothes everywhere it travels. Kubernetes: a rolling update on a Deployment where one node has the image cached under the same tag from a previous build; with imagePullPolicy: IfNotPresent the kubelet uses the cached image, the readiness probe passes from either version, and the Deployment reports rolled out with one pod silently still on the old code. Feature-flag libraries (LaunchDarkly, ConfigCat, Unleash, Flagsmith): a flag whose semantic meaning has shifted between releases; the old code path is still in the binary, gated by the same flag, waiting for somebody to wake it. Cloud auto-scaling: an EC2 launch template that points at an outdated AMI ID; newly scaled-out instances run the old binary while the freshly-deployed ones run the new. Helm and Kustomize: a Deployment manifest pins version 2.4.0, but one cluster node's local image cache resolves the tag to an older 2.3.7. CI/CD job matrices: a deployment job that reports success when N of N return zero exit codes without verifying any target's running version. The shape is identical in each: a release that completes on N minus one out of N targets, a verification step that asks did the deploy succeed rather than is the new version running everywhere, and a piece of latent surface area lying in wait on the unverified one. Knight was absorbed; the architectural lessons are by now in many shops' release checklists; the risk has not gone away, it has merely been moved into stacks that have richer deployment tooling and, often, the same blind spots dressed in newer vocabulary. The single sentence worth carrying out of this episode is the question that ends it: when our deployment reports success this afternoon, on what property of the deployed code did it confirm that? A deploy that succeeds on seven of eight is one that failed quietly on one. Production does not give partial credit; the market gives none at all.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-06-03">3 June 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Eighth Server</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">devops</span>
+            <span class="vv-pill">kubernetes</span>
+            <span class="vv-pill">cloud</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Tales from the Bare Metal</em> &#x22A3; Episode 06</p>
+
+        <p>At 09:30 on 1 August 2012, the New York Stock Exchange
+            opened a new programme for retail-order matching, the
+            Retail Liquidity Program. By 10:15, Knight Capital
+            Group, one of the largest market makers on the American
+            equities markets, had ceased to function as a going
+            concern. The forty-five minutes between those two times
+            cost the firm roughly $440 million in realised pre-tax
+            loss, required emergency capital from Jefferies within
+            days, and led to acquisition by Getco within months. The
+            proximate cause was one server out of eight, running
+            code from 2003 that, in a strictly source-control sense,
+            had never gone away.</p>
+
+        <h2>The Incident</h2>
+
+        <p>Knight ran a routing system called SMARS, the Smart
+            Market Access Routing System, which decided how to
+            forward orders into the various American equity venues.
+            The production deployment of SMARS sat on eight servers:
+            identical, redundant, all expected to handle a share of
+            the morning's order flow. In late July, in preparation
+            for the NYSE's launch of the Retail Liquidity Program
+            on 1 August, Knight's developers prepared a release
+            that taught SMARS to recognise and route RLP-eligible
+            orders.</p>
+
+        <p>The deployment to the eight production servers ran on
+            schedule the day before the launch. By
+            <a href="https://www.sec.gov/litigation/admin/2013/34-70694.pdf" target="_blank" rel="noopener">the SEC's later account</a>,
+            the new code reached seven of the eight servers
+            correctly. On the eighth, the deployment did not
+            complete, and nobody knew. The server kept running the
+            previous build.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="A diagram of Knight Capital's SMARS routing system on the morning of 1 August 2012. Eight servers are shown in a row, seven of them marked with the new release tag, the eighth with the old build from 2005. Retail orders carrying the RLP flag arrive from a stream above and are distributed across the eight; the seven route by RLP rules to the venues, the eighth routes via the 2003 Power Peg path. A note records that the deploy script reported success on all eight." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tales-srv-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-srv-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-srv-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-srv-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-srv-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tales-srv-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tales-srv-arr { stroke: var(--accent); stroke-width: 1; fill: none; marker-end: url(#tales-srv-arrow); }
+            </style>
+            <defs>
+                <marker id="tales-srv-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="tales-srv-title" text-anchor="middle">SMARS, 09:30 on 1 August 2012</text>
+
+            <rect x="180" y="44" width="280" height="36" class="tales-srv-box"/>
+            <text x="320" y="64" class="tales-srv-head" text-anchor="middle">retail orders with RLP flag</text>
+            <text x="320" y="76" class="tales-srv-muted" text-anchor="middle">NYSE Retail Liquidity Program stream</text>
+
+            <line x1="80" y1="100" x2="80" y2="120" class="tales-srv-arr"/>
+            <line x1="148" y1="100" x2="148" y2="120" class="tales-srv-arr"/>
+            <line x1="216" y1="100" x2="216" y2="120" class="tales-srv-arr"/>
+            <line x1="284" y1="100" x2="284" y2="120" class="tales-srv-arr"/>
+            <line x1="352" y1="100" x2="352" y2="120" class="tales-srv-arr"/>
+            <line x1="420" y1="100" x2="420" y2="120" class="tales-srv-arr"/>
+            <line x1="488" y1="100" x2="488" y2="120" class="tales-srv-arr"/>
+            <line x1="560" y1="100" x2="560" y2="120" class="tales-srv-arr"/>
+
+            <rect x="50" y="120" width="60" height="44" class="tales-srv-box"/>
+            <text x="80" y="140" class="tales-srv-text" text-anchor="middle">srv 1</text>
+            <text x="80" y="156" class="tales-srv-muted" text-anchor="middle">new</text>
+
+            <rect x="118" y="120" width="60" height="44" class="tales-srv-box"/>
+            <text x="148" y="140" class="tales-srv-text" text-anchor="middle">srv 2</text>
+            <text x="148" y="156" class="tales-srv-muted" text-anchor="middle">new</text>
+
+            <rect x="186" y="120" width="60" height="44" class="tales-srv-box"/>
+            <text x="216" y="140" class="tales-srv-text" text-anchor="middle">srv 3</text>
+            <text x="216" y="156" class="tales-srv-muted" text-anchor="middle">new</text>
+
+            <rect x="254" y="120" width="60" height="44" class="tales-srv-box"/>
+            <text x="284" y="140" class="tales-srv-text" text-anchor="middle">srv 4</text>
+            <text x="284" y="156" class="tales-srv-muted" text-anchor="middle">new</text>
+
+            <rect x="322" y="120" width="60" height="44" class="tales-srv-box"/>
+            <text x="352" y="140" class="tales-srv-text" text-anchor="middle">srv 5</text>
+            <text x="352" y="156" class="tales-srv-muted" text-anchor="middle">new</text>
+
+            <rect x="390" y="120" width="60" height="44" class="tales-srv-box"/>
+            <text x="420" y="140" class="tales-srv-text" text-anchor="middle">srv 6</text>
+            <text x="420" y="156" class="tales-srv-muted" text-anchor="middle">new</text>
+
+            <rect x="458" y="120" width="60" height="44" class="tales-srv-box"/>
+            <text x="488" y="140" class="tales-srv-text" text-anchor="middle">srv 7</text>
+            <text x="488" y="156" class="tales-srv-muted" text-anchor="middle">new</text>
+
+            <rect x="528" y="120" width="64" height="44" class="tales-srv-accent-box"/>
+            <text x="560" y="140" class="tales-srv-head" text-anchor="middle">srv 8</text>
+            <text x="560" y="156" class="tales-srv-muted" text-anchor="middle">2003 build</text>
+
+            <rect x="40" y="184" width="430" height="38" class="tales-srv-box"/>
+            <text x="255" y="204" class="tales-srv-text" text-anchor="middle">RLP route &#x2192; venues</text>
+            <text x="255" y="218" class="tales-srv-muted" text-anchor="middle">as designed</text>
+
+            <rect x="480" y="184" width="120" height="38" class="tales-srv-accent-box"/>
+            <text x="540" y="204" class="tales-srv-head" text-anchor="middle">Power Peg</text>
+            <text x="540" y="218" class="tales-srv-muted" text-anchor="middle">2003 path</text>
+
+            <line x1="80" y1="164" x2="200" y2="184" class="tales-srv-arr"/>
+            <line x1="284" y1="164" x2="284" y2="184" class="tales-srv-arr"/>
+            <line x1="488" y1="164" x2="380" y2="184" class="tales-srv-arr"/>
+            <line x1="560" y1="164" x2="540" y2="184" class="tales-srv-arr"/>
+
+            <text x="320" y="245" class="tales-srv-muted" text-anchor="middle">The deploy script had reported success on all eight.</text>
+        </svg>
+
+        <p>When the markets opened at 09:30, retail order flow began
+            arriving at SMARS bearing a new piece of metadata: a
+            particular flag in the order-routing protocol, set by
+            the RLP programme, indicating an order eligible for
+            retail matching. On the seven correctly-deployed
+            servers, the routing logic recognised the flag,
+            consulted the new RLP code path, and routed accordingly.
+            On the eighth, the same flag was interpreted through
+            code paths last meaningful in 2003.</p>
+
+        <p>What happened next is the part that reads like a horror
+            story even now. The eighth server began generating
+            orders at an exceptional rate, accumulating positions
+            Knight had never intended to take, paying the ask and
+            selling at the bid, again and again, in hundreds of
+            stocks. By the time the firm halted trading and unwound,
+            the numbers were unprecedented: roughly four million
+            orders had been sent, roughly seven billion dollars of
+            unintended positions had been built, and individual
+            share prices had moved by tens of per cent in minutes.
+            Knight booked a realised pre-tax loss of approximately
+            $440 million when it unwound the position. The firm
+            raised roughly $400 million of emergency capital from
+            investors led by Jefferies within days,
+            <a href="https://www.sec.gov/newsroom/press-releases/2013-222" target="_blank" rel="noopener">the SEC subsequently fined Knight $12 million</a>
+            for violations of the Market Access Rule, and Getco
+            Holdings acquired the firm before the year was out. The
+            Knight name effectively ended that morning.</p>
+
+        <svg viewBox="0 0 640 220" aria-label="A timeline of the morning of 1 August 2012. At 09:30 the NYSE opens the Retail Liquidity Program. By 09:45 the eighth server's behaviour is visible in share prices. By 10:00 around hundred stocks are visibly moved. By 10:15 Knight halts and unwinds. The forty-five-minute span is marked, with the realised loss of approximately 440 million dollars under the closing tick." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tales-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .tales-tl-tick { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+                .tales-tl-dot { fill: var(--accent); }
+                .tales-tl-span { stroke: var(--accent); stroke-width: 1.5; fill: none; stroke-dasharray: 4 3; }
+            </style>
+            <text x="320" y="22" class="tales-tl-title" text-anchor="middle">Forty-Five Minutes</text>
+
+            <line x1="60" y1="110" x2="580" y2="110" class="tales-tl-axis"/>
+
+            <circle cx="80" cy="110" r="5" class="tales-tl-dot"/>
+            <line x1="80" y1="110" x2="80" y2="74" class="tales-tl-tick"/>
+            <text x="80" y="68" class="tales-tl-head" text-anchor="middle">09:30</text>
+            <text x="80" y="130" class="tales-tl-text" text-anchor="middle">NYSE open</text>
+            <text x="80" y="144" class="tales-tl-muted" text-anchor="middle">RLP launches</text>
+
+            <circle cx="240" cy="110" r="5" class="tales-tl-dot"/>
+            <line x1="240" y1="110" x2="240" y2="86" class="tales-tl-tick"/>
+            <text x="240" y="80" class="tales-tl-head" text-anchor="middle">09:45</text>
+            <text x="240" y="130" class="tales-tl-text" text-anchor="middle">visible in prices</text>
+            <text x="240" y="144" class="tales-tl-muted" text-anchor="middle">tens of per cent</text>
+
+            <circle cx="400" cy="110" r="5" class="tales-tl-dot"/>
+            <line x1="400" y1="110" x2="400" y2="74" class="tales-tl-tick"/>
+            <text x="400" y="68" class="tales-tl-head" text-anchor="middle">10:00</text>
+            <text x="400" y="130" class="tales-tl-text" text-anchor="middle">hundreds moved</text>
+            <text x="400" y="144" class="tales-tl-muted" text-anchor="middle">unintended positions</text>
+
+            <circle cx="560" cy="110" r="5" class="tales-tl-dot"/>
+            <line x1="560" y1="110" x2="560" y2="86" class="tales-tl-tick"/>
+            <text x="560" y="80" class="tales-tl-head" text-anchor="middle">10:15</text>
+            <text x="560" y="130" class="tales-tl-text" text-anchor="middle">trading halted</text>
+            <text x="560" y="144" class="tales-tl-muted" text-anchor="middle">~$440M realised</text>
+
+            <line x1="80" y1="184" x2="560" y2="184" class="tales-tl-span"/>
+            <text x="320" y="178" class="tales-tl-muted" text-anchor="middle">forty-five minutes &#x2022; ~4M orders &#x2022; ~$7B in unintended positions</text>
+            <text x="320" y="202" class="tales-tl-muted" text-anchor="middle">Knight Capital acquired by Getco within months.</text>
+        </svg>
+
+        <h2>The Diagnosis</h2>
+
+        <p>The defective behaviour was produced by a module called
+            Power Peg.</p>
+
+        <p>Power Peg had been written in 2003 to manage parent-order
+            execution: an algorithmic test routine for slicing large
+            orders into many smaller ones. It had been used in
+            production briefly, judged unfit for purpose, and
+            disabled after 2005 by a flag. The disabling, however,
+            was operational rather than structural. The Power Peg
+            code remained in the SMARS source tree, compiled into
+            the binary, dormant. What kept it dormant was a single
+            flag in the order-routing protocol: when that flag was
+            set, the SMARS code activated Power Peg; when not, the
+            module did nothing. After 2005, the systems that
+            produced upstream orders simply stopped setting the
+            flag, and Power Peg slept.</p>
+
+        <p>Years passed. Power Peg was not removed in any subsequent
+            refactor. The 2003 code, unchanged, continued to be
+            built into every release of SMARS.</p>
+
+        <p>In 2012, in preparation for the RLP launch, the SMARS
+            routing protocol gained a new feature: the ability to
+            recognise RLP-eligible orders. The implementation,
+            plausibly enough, repurposed the bit position that had
+            once carried the Power Peg activation signal. The bit
+            was no longer in use, the engineers reasoned; let it
+            carry the RLP signal now. The new code, on the seven
+            correctly-deployed servers, read the bit and routed by
+            RLP rules. The old code, still resident on the eighth
+            server, read the same bit and read it as "start Power
+            Peg".</p>
+
+        <svg viewBox="0 0 640 260" aria-label="A diagram of the same flag bit interpreted two ways. A single bit position in the order-routing protocol is shown at the top. Below it the bit splits into two paths: on the left the new 2012 SMARS code reads the bit as RLP eligibility and routes to the Retail Liquidity Program; on the right the 2003 SMARS code reads the same bit as the activation signal for the Power Peg module, which then enters its uncapped buy-at-ask sell-at-bid loop. The legend notes that the bit had two meanings only because the old code never went away." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tales-flag-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-flag-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-flag-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-flag-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-flag-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tales-flag-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tales-flag-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#tales-flag-arrow); }
+            </style>
+            <defs>
+                <marker id="tales-flag-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="tales-flag-title" text-anchor="middle">One Bit, Two Meanings</text>
+
+            <rect x="220" y="42" width="200" height="46" class="tales-flag-accent-box"/>
+            <text x="320" y="64" class="tales-flag-head" text-anchor="middle">flag bit = 1</text>
+            <text x="320" y="80" class="tales-flag-muted" text-anchor="middle">order-routing protocol</text>
+
+            <line x1="280" y1="88" x2="180" y2="120" class="tales-flag-arr"/>
+            <line x1="360" y1="88" x2="460" y2="120" class="tales-flag-arr"/>
+
+            <rect x="60" y="120" width="240" height="46" class="tales-flag-box"/>
+            <text x="180" y="142" class="tales-flag-head" text-anchor="middle">2012 SMARS code (srv 1-7)</text>
+            <text x="180" y="158" class="tales-flag-muted" text-anchor="middle">"RLP eligible"</text>
+
+            <line x1="180" y1="166" x2="180" y2="190" class="tales-flag-arr"/>
+
+            <rect x="60" y="190" width="240" height="46" class="tales-flag-box"/>
+            <text x="180" y="212" class="tales-flag-text" text-anchor="middle">route to RLP venue</text>
+            <text x="180" y="228" class="tales-flag-muted" text-anchor="middle">as designed</text>
+
+            <rect x="340" y="120" width="240" height="46" class="tales-flag-accent-box"/>
+            <text x="460" y="142" class="tales-flag-head" text-anchor="middle">2003 SMARS code (srv 8)</text>
+            <text x="460" y="158" class="tales-flag-muted" text-anchor="middle">"start Power Peg"</text>
+
+            <line x1="460" y1="166" x2="460" y2="190" class="tales-flag-arr"/>
+
+            <rect x="340" y="190" width="240" height="46" class="tales-flag-accent-box"/>
+            <text x="460" y="208" class="tales-flag-text" text-anchor="middle">buy at ask, sell at bid</text>
+            <text x="460" y="222" class="tales-flag-muted" text-anchor="middle">no concept of "filled"</text>
+            <text x="460" y="234" class="tales-flag-muted" text-anchor="middle" font-style="italic">until told to stop</text>
+        </svg>
+
+        <p>Each RLP-eligible order, on the eighth server, was
+            therefore an instruction to fire up a nine-year-old
+            algorithm. Power Peg, as originally written, was a test
+            routine. It had no production-grade understanding of
+            fills, of order completion, of when to stop. Its inner
+            loop bought at the ask and sold at the bid; the outer
+            loop fed it more parent orders to slice. The retail
+            order stream of a major venue at market open is a great
+            many orders. Each one became a parent. Each parent
+            became a flurry. Within minutes, Knight was the
+            dominant counterparty in dozens of stocks. Within
+            fifteen minutes, the firm's exposure was visible in
+            the prices themselves.</p>
+
+        <h2>The Context</h2>
+
+        <p>Three quiet drifts compounded, and none of them, judged
+            at the time they happened, was foolish.</p>
+
+        <p>The first was the source tree. In 2005, the team that
+            decided Power Peg was unfit gated it with a flag rather
+            than deleting it. That decision was defensible at the
+            time: the code might still be wanted, removing it risked
+            breaking adjacent assumptions, the codebase was large
+            and removal was real work for an uncertain payoff. The
+            gating worked perfectly, every day, for seven years. The
+            flag became invisible: still there, still loaded, still
+            compiled, but inert. The engineers who made the 2005
+            decision were no longer present in 2012. The link
+            between the flag, the gated module and the bit position
+            the flag occupied existed in nobody's head, and was
+            nowhere recorded as a constraint on future use of that
+            bit.</p>
+
+        <p>The second was the deployment script. The script that
+            pushed code to the eight SMARS hosts treated
+            "deployment" as a file-copy operation. It reported
+            success when files had landed and the SMARS process had
+            restarted on each target. It did not, as part of
+            "success", verify that the running binary on each
+            target was the new one. It did not interrogate each host
+            for a build identifier. It did not require a healthcheck
+            that the new code alone could pass. In a fleet of eight,
+            an old binary on one looks exactly like a new binary on
+            the others from outside, as long as you only ask "did
+            the deploy command succeed". For the eighth server, the
+            deploy command did succeed, in the sense the script
+            meant; the files had not, in fact, arrived. The
+            script's notion of success was the wrong notion.</p>
+
+        <p>The third was the release note. The change documentation
+            for the RLP release recorded that the cumulative-
+            quantity-flag bit was now being used to signal RLP
+            eligibility. It did not, and probably could not, record
+            that the same bit had once been the activation signal
+            for an ancient module that was still compiled into the
+            running binary. The reviewer reading "we now use this
+            flag bit for RLP" had no honest way of knowing the bit
+            had a prior life; the prior life had been dormant for
+            seven years and lived in a comment, if it lived
+            anywhere. To call the review careless is to misunderstand
+            what was visible to the reviewer.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="A diagram of three compounding drifts. The first is gate-not-delete: the Power Peg flag was added in 2005 and remained for seven years, growing invisible. The second is file-copy-as-success: the deploy script ended when files had copied, without verifying the running binary on each host. The third is the release-note blind spot: the new use of the flag was documented, the prior life of the same bit was not. The three boxes converge on a single accent box labelled the morning of 1 August 2012." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tales-d-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-d-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-d-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-d-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-d-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tales-d-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tales-d-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#tales-d-arrow); }
+            </style>
+            <defs>
+                <marker id="tales-d-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="tales-d-title" text-anchor="middle">Three Drifts, None Foolish at the Time</text>
+
+            <rect x="20" y="50" width="190" height="80" class="tales-d-box"/>
+            <text x="115" y="70" class="tales-d-head" text-anchor="middle">1. Source tree</text>
+            <text x="115" y="86" class="tales-d-text" text-anchor="middle">gate-not-delete</text>
+            <text x="115" y="104" class="tales-d-muted" text-anchor="middle">2005: flag added</text>
+            <text x="115" y="118" class="tales-d-muted" text-anchor="middle">seven years invisible</text>
+
+            <rect x="225" y="50" width="190" height="80" class="tales-d-box"/>
+            <text x="320" y="70" class="tales-d-head" text-anchor="middle">2. Deploy script</text>
+            <text x="320" y="86" class="tales-d-text" text-anchor="middle">file-copy = success</text>
+            <text x="320" y="104" class="tales-d-muted" text-anchor="middle">no build-hash check</text>
+            <text x="320" y="118" class="tales-d-muted" text-anchor="middle">no /version probe</text>
+
+            <rect x="430" y="50" width="190" height="80" class="tales-d-box"/>
+            <text x="525" y="70" class="tales-d-head" text-anchor="middle">3. Release note</text>
+            <text x="525" y="86" class="tales-d-text" text-anchor="middle">prior life unrecorded</text>
+            <text x="525" y="104" class="tales-d-muted" text-anchor="middle">flag has new meaning</text>
+            <text x="525" y="118" class="tales-d-muted" text-anchor="middle">old meaning forgotten</text>
+
+            <line x1="115" y1="130" x2="280" y2="178" class="tales-d-arr"/>
+            <line x1="320" y1="130" x2="320" y2="178" class="tales-d-arr"/>
+            <line x1="525" y1="130" x2="360" y2="178" class="tales-d-arr"/>
+
+            <rect x="180" y="178" width="280" height="48" class="tales-d-accent-box"/>
+            <text x="320" y="200" class="tales-d-head" text-anchor="middle">the morning of 1 August 2012</text>
+            <text x="320" y="216" class="tales-d-muted" text-anchor="middle">all three at once, on opening day</text>
+        </svg>
+
+        <p>All three were ordinary. Gating instead of deleting;
+            treating "files copied" as "deploy succeeded";
+            documenting the new use of a flag without auditing every
+            prior use across the source tree. Every team does at
+            least one of these. Most teams do all three. Knight's
+            bad luck was to do all three on the morning a stock
+            exchange opened a new programme.</p>
+
+        <h2>The Principle</h2>
+
+        <p>Two architectural disciplines would have prevented this
+            incident, and they remain useful in every modern
+            stack.</p>
+
+        <p>The first is to delete dead code, not to gate it. A flag
+            that disables a module is a switch that an unrelated
+            change can later flip. The module is still present,
+            still loaded, still subject to whatever the runtime
+            decides to do with it; its absence in behaviour rests
+            on a piece of state that was never intended to be a
+            load-bearing safety mechanism. A deleted module, on the
+            other hand, is gone: not in the binary, not in the
+            loaded process, not waiting for an accidental
+            activation. Source control retains the history; the
+            running system retains nothing. If a module is too
+            dangerous to remove, the right response is to make it
+            safe enough to remove, not to leave it gated.</p>
+
+        <p>The second is to verify after deploy, on the property of
+            the deployed code itself. The end of a deployment is not
+            "the files copied successfully". It is "every target
+            host reports the new build's identity". A deployment
+            script that hits a <code>/version</code> endpoint on
+            each host after restart, that compares the returned hash
+            to the expected hash, that fails loudly if any host
+            disagrees, is a small piece of plumbing that catches
+            the specific class of failure that ended Knight Capital.
+            In a FreeBSD shop, this is <code>rc.d</code> managing
+            the SMARS-equivalent, plus a deploy script in plain
+            shell that loops over the host list, hits a
+            <code>/version</code> endpoint on each, and refuses to
+            declare success until every host returns the expected
+            build. This is not exotic engineering. It is half a
+            page of shell.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="A diagram contrasting two deploy contracts. On the left the file-copy contract ends when files have copied and the process has restarted, illustrating Knight's actual flow with no version check; the result is a green tick that is misleading. On the right the verified contract continues after restart with a /version probe on each host, comparing the returned hash to the expected hash, and only then declares success; the result is a green tick that is honest. The legend notes that the difference is roughly half a page of shell." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tales-v-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-v-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-v-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-v-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tales-v-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tales-v-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tales-v-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#tales-v-arrow); }
+            </style>
+            <defs>
+                <marker id="tales-v-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="tales-v-title" text-anchor="middle">Two Notions of "Deploy Succeeded"</text>
+
+            <text x="155" y="48" class="tales-v-head" text-anchor="middle">File-copy contract</text>
+            <rect x="20" y="60" width="270" height="180" class="tales-v-box"/>
+
+            <rect x="40" y="78" width="230" height="30" class="tales-v-box"/>
+            <text x="155" y="98" class="tales-v-text" text-anchor="middle">copy files to N hosts</text>
+
+            <line x1="155" y1="108" x2="155" y2="124" class="tales-v-arr"/>
+
+            <rect x="40" y="124" width="230" height="30" class="tales-v-box"/>
+            <text x="155" y="144" class="tales-v-text" text-anchor="middle">restart SMARS</text>
+
+            <line x1="155" y1="154" x2="155" y2="170" class="tales-v-arr"/>
+
+            <rect x="40" y="170" width="230" height="30" class="tales-v-accent-box"/>
+            <text x="155" y="190" class="tales-v-text" text-anchor="middle">declare success &#x2713;</text>
+
+            <text x="155" y="222" class="tales-v-muted" text-anchor="middle">no check of running binary</text>
+            <text x="155" y="234" class="tales-v-muted" text-anchor="middle">an old binary looks new</text>
+
+            <text x="485" y="48" class="tales-v-head" text-anchor="middle">Verified contract</text>
+            <rect x="350" y="60" width="270" height="180" class="tales-v-box"/>
+
+            <rect x="370" y="78" width="230" height="30" class="tales-v-box"/>
+            <text x="485" y="98" class="tales-v-text" text-anchor="middle">copy files to N hosts</text>
+
+            <line x1="485" y1="108" x2="485" y2="124" class="tales-v-arr"/>
+
+            <rect x="370" y="124" width="230" height="30" class="tales-v-box"/>
+            <text x="485" y="144" class="tales-v-text" text-anchor="middle">restart, then GET /version</text>
+
+            <line x1="485" y1="154" x2="485" y2="170" class="tales-v-arr"/>
+
+            <rect x="370" y="170" width="230" height="30" class="tales-v-accent-box"/>
+            <text x="485" y="190" class="tales-v-text" text-anchor="middle">all hashes match? &#x2713;</text>
+
+            <text x="485" y="222" class="tales-v-muted" text-anchor="middle">declares success only when</text>
+            <text x="485" y="234" class="tales-v-muted" text-anchor="middle">every host reports the new build</text>
+        </svg>
+
+        <p>A great many of the practices that have become normal in
+            the last decade, particularly the discipline of
+            immutable infrastructure, container image hashes, and
+            deploy verification through Kubernetes' Deployment
+            status, are downstream of incidents like Knight's. They
+            exist precisely because, before them, organisations
+            could not be sure what was running on which host.</p>
+
+        <h2>Where It Travels</h2>
+
+        <p>The pattern wears the local clothes everywhere.</p>
+
+        <p><strong>Kubernetes:</strong> a rolling update on a
+            <code>Deployment</code> where one node has the image
+            cached under the same tag from a previous build. With
+            <code>imagePullPolicy: IfNotPresent</code> (the default
+            for some tags), the kubelet uses the cached image. The
+            new pod starts, the readiness probe passes (returning
+            200 from either version), and the Deployment reports
+            rolled out, with one pod silently still on the old
+            code.</p>
+
+        <p><strong>Feature-flag libraries</strong> (LaunchDarkly,
+            ConfigCat, Unleash, Flagsmith): a flag whose semantic
+            meaning has shifted between releases. The old code path
+            is still in the binary, gated by the same flag, waiting
+            for somebody to wake it.</p>
+
+        <p><strong>Cloud auto-scaling:</strong> an EC2 launch
+            template that points at an outdated AMI ID. Newly
+            scaled-out instances run the old binary while the
+            freshly-deployed ones run the new. Traffic is balanced
+            across them as if they were identical.</p>
+
+        <p><strong>Helm and Kustomize:</strong> a Deployment manifest
+            pins version 2.4.0, but one cluster node's local image
+            cache resolves the tag to an older 2.3.7. The Pod runs
+            from the local cache; the Deployment status reports
+            healthy.</p>
+
+        <p><strong>CI/CD job matrices:</strong> a deployment job
+            that mass-deploys to a list of targets and reports
+            success when N out of N return zero exit codes, without
+            verifying any target's running version.</p>
+
+        <p>The shape is identical in each: a release that completes
+            on <em>N-1</em> out of <em>N</em> targets, a
+            verification step that asks "did the deploy succeed"
+            rather than "is the new version running everywhere",
+            and a piece of latent surface area (a stale image, a
+            repurposed flag, a cached AMI, an older registry layer)
+            lying in wait on the unverified one.</p>
+
+        <h2>Coda</h2>
+
+        <p>Knight rebuilt nothing; Knight was absorbed. The
+            architectural lessons of 1 August 2012 are by now in
+            many shops' release checklists, and the SEC's Market
+            Access Rule has acquired a fixed point in
+            financial-services compliance training. The risk has not
+            gone away; it has merely been moved, into stacks that
+            have richer deployment tooling and, often, the same
+            blind spots dressed in newer vocabulary.</p>
+
+        <p>The single sentence worth carrying out of this episode
+            is the question that ends it: when our deployment
+            reports success this afternoon, on what property of the
+            deployed code did it confirm that?</p>
+
+        <blockquote>
+            <p>A deploy that succeeds on seven of eight is one that
+                failed quietly on one. Production does not give
+                partial credit; the market gives none at all.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Forty-five minutes that ended Knight
+                Capital:</strong></p>
+            <ul>
+                <li><strong>09:30, 1 Aug 2012:</strong> NYSE opens
+                    the Retail Liquidity Program</li>
+                <li>Knight's SMARS deploy reached 7 of 8 servers;
+                    the 8th kept 2003 code</li>
+                <li>A flag bit meaning "RLP" on the seven meant
+                    "start Power Peg" on the 8th</li>
+                <li>Power Peg, a 2003 test routine, had no concept
+                    of "order filled"</li>
+                <li>~4M orders, ~$7B unintended positions, ~$440M
+                    realised loss</li>
+                <li>Acquired by Getco within months; $12M SEC
+                    fine</li>
+            </ul>
+            <p><strong>Two disciplines that would have stopped
+                it:</strong></p>
+            <ul>
+                <li>Delete dead code; do not gate it. A repurposed
+                    flag wakes the corpse.</li>
+                <li>Verify after deploy: every target reports the
+                    new build hash.</li>
+            </ul>
+            <p><strong>Same shape today:</strong> K8s cached images,
+                feature flags with shifted semantics, stale AMIs,
+                Helm manifests served from older caches.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

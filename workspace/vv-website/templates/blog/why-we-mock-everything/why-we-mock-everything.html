@@ -1,0 +1,433 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Why We Mock Everything &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A new test file. Before a single assertion, you build a world: a fake database, a fake clock, a fake mailer. Forty lines of fakes, two lines of test. A test with no mocks at all would look almost negligent. The unit test was born pure: Kent Beck's SUnit (1994) tested parsers, algorithms, pure functions, with nothing to fake. We carried the practice into application code, which is nothing but world, and faked the world to keep calling the tests unit tests. The larger half of the question nobody asked: why was the logic tangled with the world in the first place? The most testable software ever written has no mocks at all. A Unix filter (grep, awk, sort) is pure: text in, text out. Gary Bernhardt called the shape functional core, imperative shell (2012); Alistair Cockburn called it ports and adapters (2005). A mock is not a tool. It is a reading on a gauge.">
+{( endslot )}
+
+{( slot canonical )}/blog/why-we-mock-everything{( endslot )}
+
+{( slot og-title )}Why We Mock Everything &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}On Second Thought Episode 09. To test our own logic, we first fake everything around it. The unit test was born pure: Kent Beck's SUnit (1994) tested library code (parsers, algorithms, pure functions), with no world to touch. We carried it into application code, which is nothing but world (a database, a queue, an API, a clock), and faked the world; dependency injection arrived to make the faking tidy, and we reshaped our code so the fakes would fit. The cost: forty lines of mock setup to two of assertion; refactor without changing behaviour and fifty tests turn red because they tested structure, not result; the suite ships green and the checkout breaks in production because every dependency behaved perfectly except the real ones; and the design grows seams and interfaces that exist only to receive a mock. The most testable software ever written has no mocks at all: a Unix filter is pure, text in, text out. Gary Bernhardt named the shape functional core, imperative shell (2012); Alistair Cockburn called it ports and adapters (2005). A mock is not a tool, it is a reading on a gauge: how far the logic was allowed to wander into the world.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Why We Mock Everything",
+    "datePublished": "2026-05-24",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/why-we-mock-everything",
+    "description": "On Second Thought Episode 09. The reflex is universal: to test a unit, first isolate it; to isolate it, fake everything it touches. The unit test was born pure: Kent Beck wrote SUnit for Smalltalk in 1994 and adapted it into JUnit with Erich Gamma in 1998, to test library code (parsers, algorithms, data structures, pure functions) with nothing to mock because there was no world to touch. The practice was carried wholesale into application code, which is nothing but world (a database, a queue, a payment API, a clock, a mailer), and to keep calling the tests unit tests we faked the world; dependency injection arrived to give every collaborator a seam through which a fake could be inserted, and the architecture was reshaped so the fakes would fit. Martin Fowler's 2007 essay Mocks Aren't Stubs named the classicist and mockist camps; the London school (Freeman and Pryce, Growing Object-Oriented Software, Guided by Tests, 2009) is coherent and disciplined, but the industry generalised it until unit test came to mean test with the dependencies mocked out. The cost arrives in three layers: daily friction (forty lines of mock setup to two of assertion; refactoring with no behaviour change turns fifty tests red because mockist tests assert on interactions, not behaviour); false confidence (four hundred green tests, broken checkout in production, because every dependency was a mock); and the hidden design cost (interfaces, seams and injection points that exist only to receive a mock). The most testable software ever written has no mocks at all: a Unix filter (grep, awk, sort in the FreeBSD base) is pure, text in, text out, isolated by construction because the kernel and the shell handle the world. Doug McIlroy's pipe (1973) was, in modern terms, a functional core with an imperative shell. Gary Bernhardt named that shape functional core, imperative shell in his 2012 talk Boundaries; Alistair Cockburn called it ports and adapters (hexagonal architecture, renamed 2005). A pure core needs no mocks; a thin shell needs only a few real integration tests. A mock is not a tool, it is a reading on a gauge of how far the logic was allowed to wander into the world.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-24">24 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Why We Mock Everything</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>On Second Thought</em> &#x262F; Episode 09</p>
+
+        <p>A new test file is opened. Before a single assertion is
+            written, a world is constructed: a fake database, a fake
+            clock, a fake mailer, a fake queue. Forty lines of fakes,
+            two lines of actual test. A test with no mocks at all
+            would look, to most teams in 2026, almost negligent. This
+            is the ninth episode of <em>On Second Thought</em>, a
+            series about the daily routines we perform without ever
+            quite deciding to. Today's routine is the one that begins
+            every test we write: we fake the world in order to examine
+            our own logic.</p>
+
+        <p>A note on what this is not. I have written before, in
+            another series, that
+            <a href="/blog/unit-tests-for-everything">a test built entirely of mocks verifies your mocks rather than your software</a>,
+            and that the integration test you avoided would have caught
+            the broken checkout. That remains true, and it is the easy
+            half of the argument. This essay is about the harder half,
+            the question the mock-versus-integration debate steps
+            around: why does the code need to be mocked at all?</p>
+
+        <h2>The Axiom</h2>
+
+        <p>The reflex is universal. To test a unit, first isolate it;
+            to isolate it, fake everything it touches. The mock is so
+            deeply routine that a test which simply calls a function
+            with values and checks the result looks suspiciously
+            simple, as though the author had forgotten to do the hard
+            part. We have arrived at a place where constructing a
+            parallel universe of fakes is the normal cost of examining
+            a single function, and where not doing so reads as
+            negligence.</p>
+
+        <svg viewBox="0 0 600 180" aria-label="A bar comparison of a typical mock-heavy test. The mock setup is forty lines, drawn as a long bar. The assertion is two lines, drawn as a tiny bar beside it. A note observes that this is the ordinary shape of a test for a method with four collaborators, not an exaggeration." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-r-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-r-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-r-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-r-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-r-fake { fill: var(--muted); opacity: 0.5; }
+                .ost-r-real { fill: var(--accent); opacity: 0.85; }
+            </style>
+            <text x="300" y="22" class="ost-r-title" text-anchor="middle">The Ordinary Shape of a Test</text>
+
+            <text x="40" y="64" class="ost-r-head">Mock setup</text>
+            <rect x="180" y="54" width="360" height="22" class="ost-r-fake"/>
+            <text x="548" y="71" class="ost-r-text" text-anchor="end">~40 lines</text>
+
+            <text x="40" y="108" class="ost-r-head">Assertion</text>
+            <rect x="180" y="98" width="18" height="22" class="ost-r-real"/>
+            <text x="208" y="115" class="ost-r-text">2 lines</text>
+
+            <text x="300" y="156" class="ost-r-muted" text-anchor="middle" font-style="italic">Not an exaggeration: the ordinary shape of a test for a method with four collaborators.</text>
+        </svg>
+
+        <p>That feeling, that a mock-free test is somehow incomplete,
+            is the topic.</p>
+
+        <h2>The Origin</h2>
+
+        <p>The unit test was born pure, and its purity is the part we
+            forgot.</p>
+
+        <p>Kent Beck wrote SUnit for Smalltalk in 1994, and with Erich
+            Gamma adapted it into JUnit in 1998. The code it was
+            designed to test was library code: parsers, algorithms,
+            data structures, pure functions. You call a function, you
+            get a result, you compare the result to what you expected.
+            There was nothing to mock because there was no world to
+            touch. A sorting routine does not have a database. A
+            parser does not send email. The "unit" in unit test meant
+            a unit of logic with stable inputs and stable outputs, and
+            the technique fitted it exactly.</p>
+
+        <p>Then the practice was carried, wholesale, into application
+            code. And application code is nothing but world. An
+            endpoint reads a request, queries a database, calls a
+            payment API, writes to a queue, reads the clock, sends an
+            email, and returns a response. There is no pure unit
+            hiding in there to isolate. There is a sequence of side
+            effects with a little logic distributed between them.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A contrast between two kinds of code. On the left, library code as SUnit tested it in 1994: a pure function, value in, value out, nothing to fake. On the right, application code: an endpoint that reads a request, queries a database, calls a payment API, writes to a queue, reads the clock and sends an email, which is nothing but world. Below the application code, the consequence: to keep calling the tests unit tests, every collaborator is mocked, and dependency injection is added so the fakes can be inserted." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-o-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-o-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-o-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-o-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-o-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-o-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ost-o-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ost-o-arrow); }
+            </style>
+            <defs>
+                <marker id="ost-o-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="ost-o-title" text-anchor="middle">Library Code (1994) vs Application Code</text>
+
+            <rect x="20" y="44" width="250" height="80" class="ost-o-accent-box"/>
+            <text x="145" y="64" class="ost-o-head" text-anchor="middle">Library code (SUnit, 1994)</text>
+            <text x="145" y="86" class="ost-o-muted" text-anchor="middle">parser, sort, pure function</text>
+            <text x="145" y="102" class="ost-o-text" text-anchor="middle">value in &#x2192; value out</text>
+            <text x="145" y="116" class="ost-o-muted" text-anchor="middle">nothing to fake</text>
+
+            <rect x="330" y="44" width="250" height="80" class="ost-o-box"/>
+            <text x="455" y="64" class="ost-o-head" text-anchor="middle">Application code</text>
+            <text x="455" y="84" class="ost-o-muted" text-anchor="middle">request, DB, payment API, queue,</text>
+            <text x="455" y="98" class="ost-o-muted" text-anchor="middle">clock, mailer, response</text>
+            <text x="455" y="116" class="ost-o-muted" text-anchor="middle">nothing but world</text>
+
+            <line x1="455" y1="124" x2="455" y2="150" class="ost-o-arr"/>
+
+            <rect x="330" y="150" width="250" height="66" class="ost-o-box"/>
+            <text x="455" y="170" class="ost-o-head" text-anchor="middle">So: mock the world</text>
+            <text x="455" y="190" class="ost-o-muted" text-anchor="middle">mock DB, API, clock, mailer;</text>
+            <text x="455" y="204" class="ost-o-muted" text-anchor="middle">add dependency injection for the seams</text>
+
+            <text x="145" y="170" class="ost-o-muted" text-anchor="middle" font-style="italic">the technique</text>
+            <text x="145" y="184" class="ost-o-muted" text-anchor="middle" font-style="italic">fitted exactly</text>
+            <text x="145" y="204" class="ost-o-muted" text-anchor="middle" font-style="italic">here it does not</text>
+        </svg>
+
+        <p>To keep calling tests of this code "unit" tests, we had to
+            fake the world it lived in. So we mocked the database,
+            mocked the API, mocked the clock, mocked the mailer. And
+            because you cannot mock what you cannot replace, dependency
+            injection arrived to give every collaborator a seam through
+            which a fake could be inserted. We then reshaped our code,
+            often considerably, so that the fakes would fit: interfaces
+            extracted for single implementations, constructors widened
+            to accept their own dependencies, factories and containers
+            introduced to wire it all together. A great deal of the
+            architecture of a modern application exists so that its
+            tests can substitute fakes for its collaborators.</p>
+
+        <p>The mockist tradition made this explicit and respectable.
+            Martin Fowler's 2007 essay
+            <a href="https://martinfowler.com/articles/mocksArentStubs.html" target="_blank" rel="noopener">"Mocks Aren't Stubs"</a>
+            named the two camps: classicists, who use real objects
+            where they can and test final state, and mockists (the
+            London school, codified in Freeman and Pryce's
+            <em>Growing Object-Oriented Software, Guided by Tests</em>,
+            2009), who test interactions by mocking collaborators. The
+            London school is a coherent and disciplined practice. But
+            its centre of gravity is the assumption that mocking
+            collaborators is the normal way to test, and from there the
+            industry generalised: by the late 2010s, in a great deal of
+            writing and tooling, "unit test" had quietly come to mean
+            "test with the dependencies mocked out". The redefinition
+            happened without a vote.</p>
+
+        <p>All of this was a reasonable response to a real constraint.
+            If logic and I/O are interleaved, mocking is genuinely the
+            only way to exercise the logic in isolation. The origin of
+            the routine is not foolish. The unasked question is one
+            level down: we accepted that logic and I/O had to be
+            interleaved, and then spent two decades building tools to
+            test around the interleaving, rather than asking whether
+            the interleaving was necessary.</p>
+
+        <h2>The Cost</h2>
+
+        <p>The cost arrives in three layers, and only the first is the
+            one usually discussed.</p>
+
+        <svg viewBox="0 0 600 250" aria-label="The three layers of the cost of mock-heavy testing. First, daily friction: forty lines of setup to two of assertion, and a refactor with no behaviour change turns fifty tests red because they assert on interactions, not behaviour. Second, false confidence: four hundred green tests and a broken checkout in production, because every dependency was a mock and the real database, API and clock behaved differently. Third, the hidden design cost: interfaces, seams and injection points that exist only to receive a mock, so the code is shaped by the need to be mockable." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-c-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-c-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-c-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-c-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-c-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-c-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="ost-c-title" text-anchor="middle">Three Layers, Only One of Them Billed</text>
+
+            <rect x="40" y="46" width="520" height="56" class="ost-c-box"/>
+            <text x="60" y="68" class="ost-c-head">1 &#x25A0; Daily friction</text>
+            <text x="60" y="86" class="ost-c-muted">40 lines setup to 2 of assertion; refactor with no behaviour change &#x2192; 50 tests red</text>
+            <text x="60" y="98" class="ost-c-muted">they tested the structure, not the result; the suite taxes the refactoring it should protect</text>
+
+            <rect x="40" y="112" width="520" height="56" class="ost-c-box"/>
+            <text x="60" y="134" class="ost-c-head">2 &#x25A0; False confidence</text>
+            <text x="60" y="152" class="ost-c-muted">400 green tests, broken checkout in production; every dependency behaved perfectly</text>
+            <text x="60" y="164" class="ost-c-muted">except the real ones: real constraint, real API shape, real daylight-saving boundary</text>
+
+            <rect x="40" y="178" width="520" height="56" class="ost-c-accent-box"/>
+            <text x="60" y="200" class="ost-c-head">3 &#x25A0; The hidden design cost (nobody bills it)</text>
+            <text x="60" y="218" class="ost-c-muted">interfaces, seams, injection points that exist only to receive a mock; the design grows joints</text>
+            <text x="60" y="230" class="ost-c-muted">so fakes can clip on. Mock count = a reading of how far logic and I/O were stirred together</text>
+        </svg>
+
+        <p>The first layer is the daily friction. The mock setup runs
+            to forty lines; the assertion, to two. The ratio is not an
+            exaggeration; it is the ordinary shape of a test for a
+            method with four collaborators. The setup is also fragile
+            in a particular and maddening way: because mockist tests
+            assert on how the unit calls its collaborators, they are
+            coupled to the structure of the code, not to its
+            behaviour. Rename a method, change the order of two calls,
+            extract a helper, and fifty tests turn red although the
+            observable behaviour has not changed by one bit. The tests
+            have become a tax on refactoring, which is precisely the
+            opposite of what tests are for. A test suite that punishes
+            you for improving the code is training you not to improve
+            it.</p>
+
+        <p>The second layer is false confidence, and it is the one
+            that reaches production. You have four hundred tests. They
+            are green. You deploy. The checkout is broken. Not one
+            test exercised the real flow, because every dependency was
+            a mock, and the mocks behaved impeccably. The real database
+            had a constraint the mock did not model; the real API
+            returned a shape the mock did not return; the real clock
+            crossed a daylight-saving boundary the mock never saw. The
+            green suite certified the fidelity of your fakes to your
+            assumptions, which is not the same thing as the correctness
+            of your software, and was never going to be.</p>
+
+        <p>The third layer is the one this series exists to point at,
+            because nobody bills it. We add interfaces, seams,
+            injection points and indirection that exist for no reason
+            whatsoever except to receive a mock. The design grows extra
+            joints so the fakes have somewhere to clip on. A class
+            acquires an interface with exactly one production
+            implementation, purely so a test can supply a second. A
+            function takes its dependencies as parameters it never
+            varies in production, purely so a test can vary them. The
+            shape of the code is being dictated by the testing
+            strategy, and the testing strategy assumes mocks, so the
+            code is being shaped, quietly and pervasively, by the need
+            to be mockable. The number of mocks in a test is a fairly
+            precise measurement of how thoroughly computation and I/O
+            have been stirred together in the code under test. A high
+            mock count is not a property of the test. It is a reading
+            taken from the design.</p>
+
+        <h2>The Question</h2>
+
+        <p>Here is the part worth sitting with, and it starts
+            somewhere unfashionable: the most testable software ever
+            written has no mocks in it at all.</p>
+
+        <p>A Unix filter is the example. <a href="/blog/grep">grep</a>,
+            <a href="/blog/technical-beauty-awk">awk</a>, sort, cut,
+            tr, the small sharp tools that fill the FreeBSD base
+            system, are pure in the way that matters: text in, text
+            out. You test one by handing it input and reading what
+            comes back. <code>printf 'b\na\n' | sort</code> returns
+            <code>a</code> then <code>b</code>, and that is the whole
+            test, with no fake filesystem, no mock kernel, no injected
+            clock, because the filter does not reach into the world.
+            The kernel opened the files; the shell wired the pipes;
+            redirection moved the bytes. The filter only computed.
+            Isolation was not achieved by faking the world; it was
+            achieved by not touching it.</p>
+
+        <svg viewBox="0 0 600 210" aria-label="A diagram of a Unix filter. Text labelled DATA flows in from the left, through a single pure filter such as grep, awk or sort in the middle, and emerges as text out to the right. Above and below, the kernel and the shell handle the world: opening files, wiring pipes, moving bytes. The filter only computes. A note observes that isolation was achieved not by faking the world but by not touching it, and that this is a functional core with an imperative shell, four decades before the name." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-f-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-f-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-f-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-f-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-f-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-f-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ost-f-shell-box { fill: none; stroke: var(--muted); stroke-width: 1; rx: 6; stroke-dasharray: 4,3; }
+                .ost-f-arr { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#ost-f-arrow); }
+            </style>
+            <defs>
+                <marker id="ost-f-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="ost-f-title" text-anchor="middle">The Filter: Isolation by Construction</text>
+
+            <rect x="40" y="50" width="520" height="120" class="ost-f-shell-box"/>
+            <text x="300" y="68" class="ost-f-muted" text-anchor="middle">imperative shell: kernel opens files, shell wires pipes, redirection moves bytes</text>
+
+            <text x="80" y="118" class="ost-f-head" text-anchor="middle">DATA</text>
+            <line x1="110" y1="118" x2="230" y2="118" class="ost-f-arr"/>
+
+            <rect x="230" y="96" width="140" height="44" class="ost-f-accent-box"/>
+            <text x="300" y="116" class="ost-f-text" text-anchor="middle">pure filter</text>
+            <text x="300" y="130" class="ost-f-muted" text-anchor="middle">grep / awk / sort</text>
+
+            <line x1="370" y1="118" x2="490" y2="118" class="ost-f-arr"/>
+            <text x="520" y="118" class="ost-f-head" text-anchor="middle">RESULT</text>
+
+            <text x="300" y="160" class="ost-f-muted" text-anchor="middle">the filter only computes; it does not reach into the world</text>
+
+            <text x="300" y="194" class="ost-f-muted" text-anchor="middle" font-style="italic">A functional core with an imperative shell, four decades before the name.</text>
+        </svg>
+
+        <p>That arrangement is older than the vocabulary we now use for
+            it. Doug McIlroy's
+            <a href="/blog/the-pipe">pipe (1973)</a> and the filter
+            model it enabled are, in modern terms, a functional core
+            with an imperative shell: the programs are the pure core,
+            and the shell, the redirection, the kernel's file handling
+            are the impure shell that does the talking to the world.
+            The Unix tradition separated computation from I/O at the
+            level of the operating system, four decades before anyone
+            needed to give the pattern a conference title.</p>
+
+        <p>The conference titles, when they came, described the same
+            shape. Gary Bernhardt's talk
+            <a href="https://www.destroyallsoftware.com/talks/boundaries" target="_blank" rel="noopener">"Boundaries"</a>
+            (SCNA, 2012) named it functional core, imperative shell:
+            put all the decisions and logic in a pure,
+            value-in-value-out core, and confine the side effects to a
+            thin imperative shell wrapped around it. Alistair
+            Cockburn's hexagonal architecture, which he renamed
+            <a href="https://alistair.cockburn.us/hexagonal-architecture" target="_blank" rel="noopener">ports and adapters</a>
+            in 2005, draws the same line differently: the application
+            core talks only to abstract ports, and the adapters that
+            touch the database, the network and the user interface live
+            at the edges.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A diagram of functional core, imperative shell. At the centre, a large region labelled functional core: pure, value in, value out, all the decisions and logic, and the note that it needs no mocks because it touches nothing. Around it, a thin ring labelled imperative shell: the database, the network, the clock and the user interface, the note that there is very little of it, and that it is covered by a few real integration tests. A caption observes that the mock-heavy and mock-free worlds test the same application; one fakes a universe, the other separated the logic from the universe first." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-fci-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-fci-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-fci-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-fci-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-fci-shell { fill: none; stroke: var(--muted); stroke-width: 1.5; rx: 10; stroke-dasharray: 5,3; }
+                .ost-fci-core { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 8; }
+            </style>
+            <text x="300" y="22" class="ost-fci-title" text-anchor="middle">Functional Core, Imperative Shell</text>
+
+            <rect x="60" y="44" width="480" height="160" class="ost-fci-shell"/>
+            <text x="300" y="62" class="ost-fci-muted" text-anchor="middle">imperative shell &#x2014; DB, network, clock, UI &#x2014; little of it, a few real integration tests</text>
+
+            <rect x="170" y="80" width="260" height="92" class="ost-fci-core"/>
+            <text x="300" y="106" class="ost-fci-head" text-anchor="middle">functional core</text>
+            <text x="300" y="126" class="ost-fci-muted" text-anchor="middle">pure: value in &#x2192; value out</text>
+            <text x="300" y="142" class="ost-fci-muted" text-anchor="middle">all decisions and logic</text>
+            <text x="300" y="158" class="ost-fci-text" text-anchor="middle">needs no mocks</text>
+
+            <text x="300" y="224" class="ost-fci-muted" text-anchor="middle" font-style="italic">Same application. One fakes a universe; the other separated the logic from the universe first.</text>
+        </svg>
+
+        <p>The consequence for testing is the entire point. A pure
+            functional core needs no mocks, because it touches nothing:
+            you test it the way you test sort, with values in and
+            values out, and the tests assert on behaviour rather than
+            on interactions, so they survive refactoring. The
+            imperative shell does touch the world, but there is very
+            little of it, and what there is gets tested with a small
+            number of real integration tests against the real database
+            and the real API, the few tests that actually catch the
+            broken checkout. The mock-heavy world and the mock-free
+            world test the same application. One of them spends forty
+            lines faking a universe; the other spends none, because it
+            separated the logic from the universe first.</p>
+
+        <p>So the honest question is not how to write better mocks, or
+            where exactly the line between unit and integration should
+            fall. Those are questions about the symptom. The question
+            underneath is about the design: what if the urge to mock
+            was never a testing problem at all, but the code quietly
+            confessing that the computation and the world were stirred
+            together, and could have been kept apart?</p>
+
+        <blockquote>
+            <p>A mock, on second thought, is not a tool. It is a
+                reading on a gauge. It tells you, with some precision,
+                how far your logic has been allowed to wander into the
+                world, and how much of the world you must now
+                counterfeit to get it back.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The lineage, the smell, the alternative:</strong></p>
+            <ul>
+                <li><strong>The lineage</strong>: 1994 Kent Beck, SUnit, unit tests for pure library code; 1998 JUnit with Erich Gamma; 2007 Fowler, "Mocks Aren't Stubs", the mockist vs classicist split; then "unit test" quietly came to mean "mocked test"</li>
+                <li><strong>The smell</strong>: 40 lines of mock setup, 2 lines of assertion; refactor with no behaviour change, 50 tests red because they tested structure, not result; mock count = how far logic and I/O were stirred together</li>
+                <li><strong>The alternative</strong> (documented, lived): functional core, imperative shell (Gary Bernhardt, "Boundaries", SCNA 2012); ports and adapters (Alistair Cockburn, 2005); the Unix filter (grep, awk, sort) and McIlroy's pipe (1973) as the original functional core. A pure core needs no mocks; a thin shell gets a few real integration tests</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

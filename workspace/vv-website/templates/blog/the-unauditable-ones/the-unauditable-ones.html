@@ -1,0 +1,579 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Unauditable Ones &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Open a fresh terminal. npm create vite@latest my-app and three minutes later you have 250 to 400 MB on disk, 100,000 to 220,000 files, 1,200 to 1,800 transitively pulled packages, a maintainer count in the hundreds, often four-figure. You have not written a line. Four things broke at once: the count was never justified (HTMX is 14 KB, MediaWiki runs Wikipedia, GOV.UK is HTML-first, Pingora runs Cloudflare with 70 per cent less CPU), the boundary was never drawn (node_modules has no responsibility line), the workaround became architecture (Node.js single-threaded, the container is the workaround), the layers hide what they should bound. First of eighteen Wednesdays on how we got here.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-unauditable-ones{( endslot )}
+
+{( slot og-title )}The Unauditable Ones &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Lean Software, the first of eighteen Wednesdays on how we got here. Open a fresh terminal. Pick the most common starting point for a modern web project, the one a bootcamp will tell you to take this week: npm create vite@latest my-app, template react-ts. Three minutes later, npm install settles. The shell returns. The project has not yet run. What is on disk: roughly 250 to 400 megabytes for the leaner choice (Vite + React + TypeScript), a typical Next.js install reaches 700 megabytes to a full gigabyte (the majority devDependencies), around 100,000 to 220,000 files, 30 to 50 packages listed in package.json, 1,200 to 1,800 packages actually pulled in (the transitive closure), a maintainer count in the hundreds, often four-figure. You have not written a line. You have already accepted the work of a small town's worth of strangers, each free to publish a new version overnight, and each free, in the npm trust model, to do almost anything on the next install. This is the ordinary case. Not the edge case. The starting point. Four things broke at the same time, each independently against the lean principle that the engineer's head should be free for the work, each on its own deserving its own diagnosis. One: the count was never justified. A modern web project arrives with one to two thousand packages, several hundred megabytes of disk, and a hundred thousand files; none of this is required by what the project actually does. HTMX delivers reactivity to a browser in fourteen kilobytes minified, around five gzipped. MediaWiki runs sixty million Wikipedia articles on a server-rendered PHP stack with no SPA. GOV.UK is mandated to progressive enhancement and ships HTML-first. Hacker News is rendered server-side in Common Lisp. Hotwire, in production at Basecamp, gives full reactivity over the wire. Cloudflare replaced the standard nginx+Lua web tier with a Rust service, Pingora, and runs around seventy per cent less CPU at one trillion requests per day. The 700 megabytes are not a consequence of what the application needs; they are a choice. Two: the boundary was never drawn. A node_modules directory has no responsibility line; the line is absent because the architecture never drew one; there is no boundary between your application code and the 1,500 packages it pulls in. The post-install script of any one of them can modify the others; the latest tag can shift retroactively, as the axios maintainer found on the morning of 31 March 2026; the maintainer of a popular package can be socially engineered. libc, by contrast, has a line: it lives in the base source tree of an operating system, maintained by named engineers in a foundation with a public roadmap, released on a regular cadence, with reproducible builds and signed artifacts. Three: the workaround became architecture. Node.js arrived in 2009 with a single-threaded event loop; multi-core hardware required multi-container deployment, because the runtime could not use the cores; the fix was more containers and an orchestrator to schedule them. Two decades later, the container is the unit of thought, not the deployment artefact; a minimal Node.js image is 150 MB, the convenient default a full gigabyte, and dockerd at 183 containers has been documented above five gigabytes of memory. The container architecture is not the right answer to isolation; it is a workaround for a language that cannot use the machine, dressed up as architecture. Amazon Prime Video returned its video monitoring to a monolith with a ninety per cent cost reduction. Segment consolidated 140 services into one. Istio merged its control plane back into a single binary. The reversal is happening; the original architecture was sold by advertisement, not by parts removed. Four: the layers hide what they should bound. The ORM hides the SQL. The cache hides the ORM. The service mesh hides the services. The operator hides the YAML, which hides the kubelet, which hides the container, which hides the process. Somewhere between Dijkstra's 1968 THE Operating System paper and the modern stack, the verb shifted: containing became postponing. Lehman's second law of software evolution, written in 1974, said it plainly: complexity rises unless explicit work is done to reduce it. The reduction is the work nobody is funded to do. The result is not a system that occasionally fails. It is a system that is, on its own terms, unauditable: large where it could be small, ungoverned where it could be bounded, oddly shaped where it could fit the machine, layered where it could be plain. Next Wednesday: the count, and why none of it was justified.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Unauditable Ones",
+    "datePublished": "2026-06-10",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-unauditable-ones",
+    "description": "Lean Software, the first of eighteen Wednesdays on how we got here. Open a fresh terminal. Pick the most common starting point for a modern web project, the one a bootcamp will tell you to take this week: npm create vite@latest my-app, template react-ts. Three minutes later, npm install settles. The shell returns. The project has not yet run. What is on disk: roughly 250 to 400 megabytes in node_modules for the leaner choice, Vite plus React plus TypeScript; a typical Next.js install reaches 700 megabytes to a full gigabyte, the majority devDependencies; around 100,000 to 220,000 files; 30 to 50 packages listed in package.json; 1,200 to 1,800 packages actually pulled in, the transitive closure; a maintainer count in the hundreds, often four-figure. You have not written a line. You have already accepted the work of a small town's worth of strangers, each free to publish a new version overnight, and each free, in the npm trust model, to do almost anything on the next install. This is the ordinary case. Not the edge case. The starting point. The point of this Bow is not that one thing in this picture is broken; the point is that four things broke at the same time, each independently against the lean principle that the engineer's head should be free for the work, each on its own deserving its own diagnosis. Together they have produced a software stack that is, in the precise sense, unauditable: nobody can tell you, with a defensible line, what runs on the next install. One: the count was never justified. A modern web project arrives with one to two thousand packages, several hundred megabytes of disk, and a hundred thousand files; none of this is required by what the project actually does. HTMX delivers reactivity to a browser in fourteen kilobytes minified, around five gzipped. MediaWiki runs sixty million Wikipedia articles on a server-rendered PHP stack with no SPA. GOV.UK is mandated to progressive enhancement and ships HTML-first. Hacker News is rendered server-side in Common Lisp. Hotwire, in production at Basecamp, gives full reactivity over the wire. Cloudflare replaced the standard nginx plus Lua web tier with a Rust service, Pingora, and runs around seventy per cent less CPU at one trillion requests per day. The 700 megabytes are not a consequence of what the application needs; they are a choice; the alternatives are not theoretical; they are running, today, at scale. Two: the boundary was never drawn. A node_modules directory has no responsibility line; not because the code is open source, so is libc and nobody reads libc either; the line is absent because the architecture never drew one. There is no boundary between your application code and the 1,500 packages it pulls in; they run with the same permissions; they can read each other; the post-install script of any one of them can modify the others. The latest tag can shift retroactively, as the axios maintainer found on the morning of 31 March 2026; the maintainer of a popular package can be socially engineered, or simply hand over the keys. libc, by contrast, has a line: it lives in the base source tree of an operating system, maintained by named engineers in a foundation with a public roadmap, released on a regular cadence, with reproducible builds and signed artifacts. You do not read it. You know where it lives, who is accountable for it, and how it arrived on your disk. node_modules has none of these. Three: the workaround became architecture. Node.js arrived in 2009 with a single-threaded event loop; multi-core hardware required multi-container deployment, because the runtime could not use the cores; the fix was more containers and an orchestrator to schedule them. Two decades later, the container is the unit of thought, not the deployment artefact: a minimal Node.js image is 150 megabytes, the convenient default a full gigabyte, and dockerd at 183 containers has been documented above five gigabytes of memory. The container architecture is not the right answer to isolation. It is a workaround for a language that cannot use the machine, dressed up as architecture. Amazon Prime Video returned its video monitoring to a monolith, a ninety per cent cost reduction. Segment consolidated 140 services into one. Istio merged its control plane back into a single binary. The reversal is happening. The original architecture was sold by advertisement, not by parts removed. Four: the layers hide what they should bound. The ORM hides the SQL. The cache hides the ORM. The service mesh hides the services. The operator hides the YAML, which hides the kubelet, which hides the container, which hides the process. Each layer was, in its origin, an idea about containing complexity, so that an engineer could reason one layer at a time. Somewhere between Dijkstra's 1968 THE Operating System paper and the modern stack, the verb shifted: containing became postponing. Layers no longer keep their lower neighbour from leaking; they exist to defer the moment of examining it. Lehman's second law of software evolution, written in 1974, said it plainly: complexity rises unless explicit work is done to reduce it. The reduction is the work nobody is funded to do. These are four diagnoses. They share a system. None of them, on its own, is the whole problem. Each of the four breaks deserves its own week; the next four Wednesdays take the axes one at a time, the count, the boundary, the workaround, the layers; then three pillars across the rest of the summer and into the autumn: npm in detail (15 July to 12 August) covering the registry that wasn't a service but a market, the code quality question with names attached, the maintainer economy, the audit industry, the alternatives; Docker in detail (19 August to 16 September) on image bloat as a default, the container escape register, the orchestrator stack, the resource cost, the firms walking back; Teams and the labour market (23 to 30 September) on how sprint-shaped organisations produce service-shaped architecture and how the hiring filter locks both in. The closing Wednesday on 7 October asks what could still be. Eighteen Wednesdays, four months, one investigation. Each piece stands on its own. The 700 megabytes are part of the problem; so is the rest of what follows; four things broke at once, each defensible at the time it was introduced, each compounded by the next, each kept in place by an industry that has no interest in reducing it. The result is not a system that occasionally fails. It is a system that is, on its own terms, unauditable: large where it could be small, ungoverned where it could be bounded, oddly shaped where it could fit the machine, layered where it could be plain. Next Wednesday: the count, and why none of it was justified.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-06-10">10 June 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Unauditable Ones</h1>
+        <p class="vv-article-meta"><em>Lean Software &#x22A3; How
+            We Got Here, 1 of 18.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">node</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Open a fresh terminal. Pick the most common starting
+            point for a modern web project, the one a bootcamp will
+            tell you to take this week:
+            <code>npm create vite@latest my-app -- --template react-ts</code>.
+            Three minutes later, <code>npm install</code> settles.
+            The shell returns. The project has not yet run.</p>
+
+        <p>What is on disk:</p>
+
+        <ul>
+            <li>Roughly 250 to 400 MB in <code>node_modules</code>
+                for the leaner choice, Vite + React +
+                TypeScript</li>
+            <li>A typical Next.js install reaches 700 MB to a full
+                gigabyte, the majority devDependencies</li>
+            <li>Around 100,000 to 220,000 files</li>
+            <li>30 to 50 packages listed in <code>package.json</code></li>
+            <li>1,200 to 1,800 packages actually pulled in, the
+                transitive closure</li>
+            <li>A maintainer count in the hundreds, often
+                four-figure</li>
+        </ul>
+
+        <p>You have not written a line. You have already accepted
+            the work of a small town's worth of strangers, each
+            free to publish a new version overnight, and each
+            free, in the npm trust model, to do almost anything on
+            the next install.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A diagram of what lands on disk after a single npm create vite@latest command. The package.json contains 30 to 50 packages declared. The transitive closure pulls in 1,200 to 1,800 packages. On disk, the leaner choice (Vite plus React plus TypeScript) is 250 to 400 megabytes; a typical Next.js install is 700 megabytes to a full gigabyte. The file count is 100,000 to 220,000 files. The maintainer count is in the hundreds, often four-figure. The legend notes that the project has not yet run." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ls-inst-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-inst-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-inst-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-inst-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-inst-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ls-inst-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ls-inst-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ls-inst-arrow); }
+            </style>
+            <defs>
+                <marker id="ls-inst-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="ls-inst-title" text-anchor="middle">What an Ordinary npm create vite@latest Buys You</text>
+
+            <rect x="20" y="50" width="160" height="60" class="ls-inst-accent-box"/>
+            <text x="100" y="72" class="ls-inst-head" text-anchor="middle">package.json</text>
+            <text x="100" y="90" class="ls-inst-text" text-anchor="middle">30 &#x2013; 50 packages</text>
+            <text x="100" y="104" class="ls-inst-muted" text-anchor="middle">what you wrote</text>
+
+            <line x1="180" y1="80" x2="240" y2="80" class="ls-inst-arr"/>
+
+            <rect x="240" y="50" width="160" height="60" class="ls-inst-accent-box"/>
+            <text x="320" y="72" class="ls-inst-head" text-anchor="middle">transitive closure</text>
+            <text x="320" y="90" class="ls-inst-text" text-anchor="middle">1,200 &#x2013; 1,800</text>
+            <text x="320" y="104" class="ls-inst-muted" text-anchor="middle">what they brought</text>
+
+            <line x1="400" y1="80" x2="460" y2="80" class="ls-inst-arr"/>
+
+            <rect x="460" y="50" width="160" height="60" class="ls-inst-accent-box"/>
+            <text x="540" y="72" class="ls-inst-head" text-anchor="middle">maintainers</text>
+            <text x="540" y="90" class="ls-inst-text" text-anchor="middle">hundreds &#x2014; four-figure</text>
+            <text x="540" y="104" class="ls-inst-muted" text-anchor="middle">strangers, free to publish</text>
+
+            <rect x="20" y="130" width="290" height="60" class="ls-inst-accent-box"/>
+            <text x="165" y="152" class="ls-inst-head" text-anchor="middle">on disk (Vite + React + TS)</text>
+            <text x="165" y="170" class="ls-inst-text" text-anchor="middle">250 &#x2013; 400 MB</text>
+            <text x="165" y="184" class="ls-inst-muted" text-anchor="middle">the leaner choice</text>
+
+            <rect x="330" y="130" width="290" height="60" class="ls-inst-accent-box"/>
+            <text x="475" y="152" class="ls-inst-head" text-anchor="middle">on disk (Next.js)</text>
+            <text x="475" y="170" class="ls-inst-text" text-anchor="middle">700 MB &#x2013; 1 GB</text>
+            <text x="475" y="184" class="ls-inst-muted" text-anchor="middle">majority devDependencies</text>
+
+            <rect x="20" y="200" width="600" height="46" class="ls-inst-box"/>
+            <text x="320" y="222" class="ls-inst-head" text-anchor="middle">file count: 100,000 &#x2013; 220,000</text>
+            <text x="320" y="238" class="ls-inst-muted" text-anchor="middle">the project has not yet run</text>
+
+            <text x="320" y="268" class="ls-inst-muted" text-anchor="middle" font-style="italic">This is the ordinary case. Not the edge case. The starting point.</text>
+        </svg>
+
+        <p>This is the ordinary case. Not the edge case. The starting
+            point.</p>
+
+        <p>The point of this Bow is not that one thing in this
+            picture is broken. The point is that <strong>four things
+            broke at the same time</strong>, each independently
+            against the lean principle that the engineer's head
+            should be free for the work, and each, on its own,
+            would deserve its own diagnosis. Together they have
+            produced a software stack that is, in the precise sense,
+            unauditable: nobody can tell you, with a defensible
+            line, what runs on the next install.</p>
+
+        <svg viewBox="0 0 640 320" aria-label="A 2x2 grid of the four diagnoses. Top left, the count was never justified: a thousand-plus packages and hundreds of megabytes on disk, none required by the project. Top right, the boundary was never drawn: node_modules has no responsibility line, no separation between application code and pulled packages, post-install scripts can modify each other. Bottom left, the workaround became architecture: Node single-threaded event loop, multi-container deployment as a fix, the container as unit of thought rather than deployment artefact. Bottom right, the layers hide what they should bound: ORM hides SQL, cache hides ORM, mesh hides services, operator hides YAML; containing became postponing. The legend notes that these four diagnoses share one system." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ls-four-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-four-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-four-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-four-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-four-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 24px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-four-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="ls-four-title" text-anchor="middle">Four Things Broke at Once</text>
+
+            <rect x="20" y="50" width="290" height="120" class="ls-four-accent-box"/>
+            <text x="44" y="80" class="ls-four-num">1</text>
+            <text x="70" y="76" class="ls-four-head">the count was never justified</text>
+            <text x="36" y="108" class="ls-four-text">1,200 &#x2013; 1,800 packages</text>
+            <text x="36" y="124" class="ls-four-text">700 MB &#x2014; a gigabyte on disk</text>
+            <text x="36" y="140" class="ls-four-muted">none required by the project</text>
+            <text x="36" y="158" class="ls-four-muted" font-style="italic">the alternatives run at scale today</text>
+
+            <rect x="330" y="50" width="290" height="120" class="ls-four-accent-box"/>
+            <text x="354" y="80" class="ls-four-num">2</text>
+            <text x="380" y="76" class="ls-four-head">the boundary was never drawn</text>
+            <text x="346" y="108" class="ls-four-text">no responsibility line</text>
+            <text x="346" y="124" class="ls-four-text">post-install can modify others</text>
+            <text x="346" y="140" class="ls-four-muted">latest tag can shift retroactively</text>
+            <text x="346" y="158" class="ls-four-muted" font-style="italic">libc has a line; node_modules has none</text>
+
+            <rect x="20" y="180" width="290" height="120" class="ls-four-accent-box"/>
+            <text x="44" y="210" class="ls-four-num">3</text>
+            <text x="70" y="206" class="ls-four-head">the workaround became architecture</text>
+            <text x="36" y="238" class="ls-four-text">Node single-threaded, 2009</text>
+            <text x="36" y="254" class="ls-four-text">containers are the cores</text>
+            <text x="36" y="270" class="ls-four-muted">image: 150 MB &#x2192; 1 GB</text>
+            <text x="36" y="288" class="ls-four-muted" font-style="italic">Prime Video, Segment, Istio walk back</text>
+
+            <rect x="330" y="180" width="290" height="120" class="ls-four-accent-box"/>
+            <text x="354" y="210" class="ls-four-num">4</text>
+            <text x="380" y="206" class="ls-four-head">layers hide what they should bound</text>
+            <text x="346" y="238" class="ls-four-text">ORM hides SQL</text>
+            <text x="346" y="254" class="ls-four-text">mesh hides services</text>
+            <text x="346" y="270" class="ls-four-muted">operator hides YAML, kubelet, container</text>
+            <text x="346" y="288" class="ls-four-muted" font-style="italic">containing became postponing</text>
+        </svg>
+
+        <h2>One: The Count Was Never Justified</h2>
+
+        <p>A modern web project arrives with one to two thousand
+            packages, several hundred megabytes of disk, and a
+            hundred thousand files. None of this is required by what
+            the project actually does.
+            <a href="https://htmx.org/" target="_blank" rel="noopener">HTMX delivers reactivity to a browser in fourteen kilobytes minified</a>,
+            around five gzipped.
+            <a href="https://www.mediawiki.org/" target="_blank" rel="noopener">MediaWiki runs sixty million Wikipedia articles</a>
+            on a server-rendered PHP stack with no SPA.
+            <a href="https://www.gov.uk/service-manual/technology/using-progressive-enhancement" target="_blank" rel="noopener">GOV.UK is mandated to progressive enhancement</a>
+            and ships HTML-first. Hacker News is rendered server-side
+            in Common Lisp. Hotwire, in production at Basecamp,
+            gives full reactivity over the wire.
+            <a href="https://blog.cloudflare.com/how-we-built-pingora-the-proxy-that-connects-cloudflare-to-the-internet" target="_blank" rel="noopener">Cloudflare replaced the standard nginx+Lua web tier with a Rust service, Pingora, and runs around seventy per cent less CPU at one trillion requests per day</a>.</p>
+
+        <p>The 700 megabytes are not a consequence of what the
+            application needs. They are a choice. The alternatives
+            are not theoretical; they are running, today, at
+            scale.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A comparison of the standard Next.js stack at around 700 megabytes against four lean alternatives running in production at scale. HTMX delivers reactivity in 14 kilobytes minified. MediaWiki serves Wikipedia from a server-rendered PHP stack. GOV.UK is mandated to progressive enhancement and ships HTML-first. Cloudflare Pingora is a Rust replacement for the nginx plus Lua web tier and runs about seventy per cent less CPU at one trillion requests per day. The legend notes that the alternatives are not theoretical." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ls-alt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-alt-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-alt-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-alt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-alt-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ls-alt-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ls-alt-bigfill { fill: var(--muted); opacity: 0.18; rx: 4; }
+                .ls-alt-smallfill { fill: var(--accent); opacity: 0.6; rx: 4; }
+            </style>
+            <text x="320" y="22" class="ls-alt-title" text-anchor="middle">The Alternatives Run at Scale Today</text>
+
+            <text x="100" y="50" class="ls-alt-head" text-anchor="middle">Next.js install</text>
+            <rect x="20" y="60" width="160" height="180" class="ls-alt-bigfill"/>
+            <rect x="20" y="60" width="160" height="180" class="ls-alt-accent-box"/>
+            <text x="100" y="148" class="ls-alt-text" text-anchor="middle">~ 700 MB</text>
+            <text x="100" y="166" class="ls-alt-muted" text-anchor="middle">to a full gigabyte</text>
+            <text x="100" y="184" class="ls-alt-muted" text-anchor="middle">majority devDeps</text>
+            <text x="100" y="218" class="ls-alt-muted" text-anchor="middle">before you write a line</text>
+
+            <text x="410" y="50" class="ls-alt-head" text-anchor="middle">running in production</text>
+
+            <rect x="220" y="60" width="190" height="42" class="ls-alt-accent-box"/>
+            <text x="232" y="78" class="ls-alt-text">HTMX</text>
+            <text x="232" y="94" class="ls-alt-muted">~ 14 KB min, 5 KB gz</text>
+
+            <rect x="420" y="60" width="200" height="42" class="ls-alt-accent-box"/>
+            <text x="432" y="78" class="ls-alt-text">MediaWiki</text>
+            <text x="432" y="94" class="ls-alt-muted">60M Wikipedia articles, PHP</text>
+
+            <rect x="220" y="108" width="190" height="42" class="ls-alt-accent-box"/>
+            <text x="232" y="126" class="ls-alt-text">GOV.UK</text>
+            <text x="232" y="142" class="ls-alt-muted">progressive enhancement, HTML-first</text>
+
+            <rect x="420" y="108" width="200" height="42" class="ls-alt-accent-box"/>
+            <text x="432" y="126" class="ls-alt-text">Hotwire (Basecamp)</text>
+            <text x="432" y="142" class="ls-alt-muted">reactivity over the wire</text>
+
+            <rect x="220" y="156" width="400" height="42" class="ls-alt-accent-box"/>
+            <text x="232" y="174" class="ls-alt-text">Cloudflare Pingora (Rust)</text>
+            <text x="232" y="190" class="ls-alt-muted">~70% less CPU at 1 trillion req/day, replacing nginx + Lua</text>
+
+            <rect x="220" y="204" width="400" height="36" class="ls-alt-box"/>
+            <text x="420" y="222" class="ls-alt-muted" text-anchor="middle">Hacker News &#x2014; server-side, Common Lisp</text>
+            <text x="420" y="236" class="ls-alt-muted" text-anchor="middle" font-style="italic">the 700 MB are a choice, not a requirement</text>
+        </svg>
+
+        <h2>Two: The Boundary Was Never Drawn</h2>
+
+        <p>A <code>node_modules</code> directory has no
+            responsibility line. Not because the code is open
+            source &#x2014; so is libc, and nobody reads libc
+            either. The line is absent because the architecture
+            never drew one.</p>
+
+        <p>There is no boundary between your application code and
+            the 1,500 packages it pulls in. They run with the same
+            permissions. They can read each other. The post-install
+            script of any one of them can modify the others. The
+            <code>latest</code> tag can shift retroactively, as the
+            axios maintainer found on the morning of 31 March 2026.
+            The maintainer of a popular package can be socially
+            engineered, or simply hand over the keys.</p>
+
+        <p>libc, by contrast, has a line: it lives in the base
+            source tree of an operating system, maintained by
+            named engineers in a foundation with a public roadmap,
+            released on a regular cadence, with reproducible builds
+            and signed artifacts. You do not read it. You know
+            <strong>where it lives, who is accountable for it, and
+            how it arrived on your disk</strong>.
+            <code>node_modules</code> has none of these.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A side-by-side comparison of libc and node_modules as governance models. On the left, libc sits inside the OS base source tree with named engineers, a public roadmap, regular releases, reproducible builds and signed artifacts; the receiver knows where it lives, who is accountable and how it arrived. On the right, node_modules is a flat pile of 1,500 packages with shared permissions, no responsibility line, retroactive latest tags and post-install scripts that can modify each other. The legend notes that libc has a line, node_modules does not." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ls-line-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-line-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-line-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-line-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-line-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ls-line-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ls-line-dashed { fill: none; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 3; rx: 4; }
+            </style>
+            <text x="320" y="22" class="ls-line-title" text-anchor="middle">Where the Line Is Drawn</text>
+
+            <text x="155" y="48" class="ls-line-head" text-anchor="middle">libc (base OS)</text>
+            <rect x="20" y="60" width="270" height="200" class="ls-line-accent-box"/>
+            <text x="36" y="84" class="ls-line-text">named engineers</text>
+            <text x="36" y="104" class="ls-line-text">foundation, public roadmap</text>
+            <text x="36" y="124" class="ls-line-text">regular release cadence</text>
+            <text x="36" y="144" class="ls-line-text">reproducible builds</text>
+            <text x="36" y="164" class="ls-line-text">signed artifacts</text>
+            <text x="36" y="184" class="ls-line-text">base source tree</text>
+            <text x="155" y="222" class="ls-line-muted" text-anchor="middle">you do not read it</text>
+            <text x="155" y="240" class="ls-line-muted" text-anchor="middle" font-style="italic">but you know where it lives</text>
+
+            <text x="485" y="48" class="ls-line-head" text-anchor="middle">node_modules</text>
+            <rect x="350" y="60" width="270" height="200" class="ls-line-dashed"/>
+            <text x="366" y="84" class="ls-line-text">no responsibility line</text>
+            <text x="366" y="104" class="ls-line-text">shared permissions</text>
+            <text x="366" y="124" class="ls-line-text">post-install can modify others</text>
+            <text x="366" y="144" class="ls-line-text">latest tag shifts retroactively</text>
+            <text x="366" y="164" class="ls-line-text">maintainer can be engineered</text>
+            <text x="366" y="184" class="ls-line-text">1,500 packages, one heap</text>
+            <text x="485" y="222" class="ls-line-muted" text-anchor="middle">you do not read it</text>
+            <text x="485" y="240" class="ls-line-muted" text-anchor="middle" font-style="italic">and you cannot say where it lives</text>
+        </svg>
+
+        <h2>Three: The Workaround Became Architecture</h2>
+
+        <p>Node.js arrived in 2009 with a single-threaded event
+            loop. Multi-core hardware required multi-container
+            deployment, because the runtime could not use the
+            cores. The fix was more containers and an orchestrator
+            to schedule them.</p>
+
+        <p>Two decades later, the container is the unit of thought,
+            not the deployment artefact: a minimal Node.js image is
+            150 MB, the convenient default a full gigabyte, and
+            <code>dockerd</code> at 183 containers has been
+            documented above five gigabytes of memory. The
+            container architecture is not the right answer to
+            isolation. It is a workaround for a language that
+            cannot use the machine, dressed up as architecture.</p>
+
+        <p><a href="https://www.primevideotech.com/video-streaming/scaling-up-the-prime-video-audio-video-monitoring-service-and-reducing-costs-by-90" target="_blank" rel="noopener">Amazon Prime Video returned its video monitoring to a monolith</a>,
+            a ninety per cent cost reduction.
+            <a href="https://segment.com/blog" target="_blank" rel="noopener">Segment consolidated 140 services into one</a>.
+            <a href="https://istio.io/" target="_blank" rel="noopener">Istio merged its control plane back into a single binary</a>.
+            The reversal is happening. The original architecture was
+            sold by advertisement, not by parts removed.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A causal chain diagram of how Node.js's single-threaded event loop became container architecture. Node.js arrives in 2009 with one thread per process. Multi-core hardware requires multiple Node processes to use the cores. Each Node process gets its own container. An orchestrator (Kubernetes) is needed to schedule the containers. The container becomes the unit of thought, not the deployment artefact. The cost: dockerd at 183 containers above five gigabytes of memory, a minimal Node.js image at 150 megabytes, the convenient default at one gigabyte. The reversal is happening at Amazon Prime Video (ninety per cent cost reduction), Segment (140 services into one), and Istio (single binary)." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ls-cas-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-cas-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-cas-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-cas-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-cas-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ls-cas-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ls-cas-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ls-cas-arrow); }
+                .ls-cas-back { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 3; fill: none; marker-end: url(#ls-cas-arrow); }
+            </style>
+            <defs>
+                <marker id="ls-cas-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="ls-cas-title" text-anchor="middle">How a Single-Threaded Runtime Became Container Architecture</text>
+
+            <rect x="10" y="60" width="140" height="46" class="ls-cas-accent-box"/>
+            <text x="80" y="80" class="ls-cas-head" text-anchor="middle">Node.js (2009)</text>
+            <text x="80" y="96" class="ls-cas-muted" text-anchor="middle">single-threaded loop</text>
+
+            <line x1="150" y1="83" x2="180" y2="83" class="ls-cas-arr"/>
+
+            <rect x="180" y="60" width="140" height="46" class="ls-cas-accent-box"/>
+            <text x="250" y="80" class="ls-cas-head" text-anchor="middle">multi-core hardware</text>
+            <text x="250" y="96" class="ls-cas-muted" text-anchor="middle">runtime cannot use it</text>
+
+            <line x1="320" y1="83" x2="350" y2="83" class="ls-cas-arr"/>
+
+            <rect x="350" y="60" width="140" height="46" class="ls-cas-accent-box"/>
+            <text x="420" y="80" class="ls-cas-head" text-anchor="middle">one container per Node</text>
+            <text x="420" y="96" class="ls-cas-muted" text-anchor="middle">the workaround</text>
+
+            <line x1="490" y1="83" x2="520" y2="83" class="ls-cas-arr"/>
+
+            <rect x="520" y="60" width="110" height="46" class="ls-cas-accent-box"/>
+            <text x="575" y="80" class="ls-cas-head" text-anchor="middle">orchestrator</text>
+            <text x="575" y="96" class="ls-cas-muted" text-anchor="middle">to schedule them</text>
+
+            <line x1="320" y1="106" x2="320" y2="140" class="ls-cas-arr"/>
+
+            <rect x="40" y="140" width="560" height="46" class="ls-cas-accent-box"/>
+            <text x="320" y="160" class="ls-cas-head" text-anchor="middle">the container is now the unit of thought</text>
+            <text x="320" y="176" class="ls-cas-muted" text-anchor="middle">150 MB minimal image &#x2022; ~1 GB convenient default &#x2022; dockerd at 183 containers &gt;5 GB RAM</text>
+
+            <line x1="320" y1="186" x2="320" y2="220" class="ls-cas-back"/>
+
+            <rect x="40" y="220" width="560" height="46" class="ls-cas-accent-box"/>
+            <text x="320" y="240" class="ls-cas-head" text-anchor="middle">the reversal is happening</text>
+            <text x="320" y="256" class="ls-cas-muted" text-anchor="middle">Prime Video monolith (&#x2212;90% cost) &#x2022; Segment 140 &#x2192; 1 &#x2022; Istio control plane &#x2192; single binary</text>
+        </svg>
+
+        <h2>Four: The Layers Hide What They Should Bound</h2>
+
+        <p>The ORM hides the SQL. The cache hides the ORM. The
+            service mesh hides the services. The operator hides the
+            YAML, which hides the kubelet, which hides the
+            container, which hides the process. Each layer was, in
+            its origin, an idea about containing complexity, so
+            that an engineer could reason one layer at a time.</p>
+
+        <p>Somewhere between Dijkstra's 1968 <em>THE Operating
+            System</em> paper and the modern stack, the verb
+            shifted: <strong>containing became postponing</strong>.
+            Layers no longer keep their lower neighbour from
+            leaking; they exist to defer the moment of examining
+            it. Lehman's second law of software evolution, written
+            in 1974, said it plainly: complexity rises unless
+            explicit work is done to reduce it. The reduction is
+            the work nobody is funded to do.</p>
+
+        <svg viewBox="0 0 640 320" aria-label="A diagram of the modern stack as a stack of hiders. ORM hides SQL. Cache hides ORM. Service mesh hides services. Operator hides YAML. YAML hides kubelet. Kubelet hides container. Container hides process. Each layer was originally about containing complexity so an engineer could reason one layer at a time; the verb shifted from containing to postponing. The legend cites Dijkstra (1968) and Lehman's second law of software evolution (1974)." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ls-stk-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-stk-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-stk-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-stk-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-stk-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ls-stk-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ls-stk-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ls-stk-arrow); }
+            </style>
+            <defs>
+                <marker id="ls-stk-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="ls-stk-title" text-anchor="middle">A Stack of Hiders</text>
+
+            <rect x="180" y="50" width="280" height="32" class="ls-stk-accent-box"/>
+            <text x="320" y="70" class="ls-stk-head" text-anchor="middle">ORM</text>
+            <text x="475" y="70" class="ls-stk-muted">hides &#x2193;</text>
+
+            <rect x="180" y="86" width="280" height="32" class="ls-stk-accent-box"/>
+            <text x="320" y="106" class="ls-stk-head" text-anchor="middle">SQL / cache</text>
+            <text x="475" y="106" class="ls-stk-muted">hides &#x2193;</text>
+
+            <rect x="180" y="122" width="280" height="32" class="ls-stk-accent-box"/>
+            <text x="320" y="142" class="ls-stk-head" text-anchor="middle">service mesh</text>
+            <text x="475" y="142" class="ls-stk-muted">hides &#x2193;</text>
+
+            <rect x="180" y="158" width="280" height="32" class="ls-stk-accent-box"/>
+            <text x="320" y="178" class="ls-stk-head" text-anchor="middle">operator / YAML</text>
+            <text x="475" y="178" class="ls-stk-muted">hides &#x2193;</text>
+
+            <rect x="180" y="194" width="280" height="32" class="ls-stk-accent-box"/>
+            <text x="320" y="214" class="ls-stk-head" text-anchor="middle">kubelet</text>
+            <text x="475" y="214" class="ls-stk-muted">hides &#x2193;</text>
+
+            <rect x="180" y="230" width="280" height="32" class="ls-stk-accent-box"/>
+            <text x="320" y="250" class="ls-stk-head" text-anchor="middle">container</text>
+            <text x="475" y="250" class="ls-stk-muted">hides &#x2193;</text>
+
+            <rect x="180" y="266" width="280" height="32" class="ls-stk-box"/>
+            <text x="320" y="286" class="ls-stk-head" text-anchor="middle">the process</text>
+
+            <text x="320" y="312" class="ls-stk-muted" text-anchor="middle" font-style="italic">Dijkstra 1968: containing complexity. Lehman 1974: it rises unless reduced.</text>
+        </svg>
+
+        <p>These are four diagnoses. They share a system. None of
+            them, on its own, is the whole problem.</p>
+
+        <h2>Eighteen Wednesdays, One Investigation</h2>
+
+        <p>Each of the four breaks deserves its own week. None can
+            be honestly handled in a paragraph. The next four
+            Wednesdays take the axes one at a time &#x2014; the
+            count, the boundary, the workaround, the layers.</p>
+
+        <p>Then three pillars, across the rest of the summer and
+            into the autumn. <strong>npm in detail</strong>
+            (15 July &#x2013; 12 August): the registry that wasn't
+            a service but a market; the code quality question with
+            names attached; the maintainer economy that the system
+            asks for and does not pay for; the audit industry that
+            sells the cure for the disease the registry sells as a
+            feature; the alternatives that did not win, and why.
+            <strong>Docker in detail</strong>
+            (19 August &#x2013; 16 September): image bloat as a
+            default; the container escape register; the
+            orchestrator stack; the resource cost; the firms
+            walking back, in their own words.
+            <strong>Teams and the labour market</strong>
+            (23 &#x2013; 30 September): how sprint-shaped
+            organisations produce service-shaped architecture; how
+            the hiring filter locks both in.</p>
+
+        <p>And the closing Wednesday, <strong>7 October</strong>,
+            asks what could still be.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A roadmap of the eighteen-Wednesday investigation. Phase 1 (June and early July): four Wednesdays one per axis (count, boundary, workaround, layers). Phase 2 (15 July to 12 August): npm in detail. Phase 3 (19 August to 16 September): Docker in detail. Phase 4 (23 to 30 September): teams and the labour market. Phase 5 (7 October): what could still be. The legend notes that each piece stands on its own; together they are one investigation." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ls-rm-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-rm-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-rm-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-rm-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ls-rm-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ls-rm-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="ls-rm-title" text-anchor="middle">Eighteen Wednesdays, One Investigation</text>
+
+            <rect x="10" y="50" width="120" height="180" class="ls-rm-accent-box"/>
+            <text x="70" y="72" class="ls-rm-head" text-anchor="middle">Phase 1</text>
+            <text x="70" y="88" class="ls-rm-text" text-anchor="middle">The Four Axes</text>
+            <text x="70" y="108" class="ls-rm-muted" text-anchor="middle">17 Jun &#x2013; 8 Jul</text>
+            <text x="70" y="136" class="ls-rm-muted" text-anchor="middle">count</text>
+            <text x="70" y="152" class="ls-rm-muted" text-anchor="middle">boundary</text>
+            <text x="70" y="168" class="ls-rm-muted" text-anchor="middle">workaround</text>
+            <text x="70" y="184" class="ls-rm-muted" text-anchor="middle">layers</text>
+            <text x="70" y="212" class="ls-rm-muted" text-anchor="middle" font-style="italic">4 weeks</text>
+
+            <rect x="140" y="50" width="120" height="180" class="ls-rm-accent-box"/>
+            <text x="200" y="72" class="ls-rm-head" text-anchor="middle">Phase 2</text>
+            <text x="200" y="88" class="ls-rm-text" text-anchor="middle">npm in Detail</text>
+            <text x="200" y="108" class="ls-rm-muted" text-anchor="middle">15 Jul &#x2013; 12 Aug</text>
+            <text x="200" y="136" class="ls-rm-muted" text-anchor="middle">the registry</text>
+            <text x="200" y="152" class="ls-rm-muted" text-anchor="middle">quality + names</text>
+            <text x="200" y="168" class="ls-rm-muted" text-anchor="middle">audit industry</text>
+            <text x="200" y="184" class="ls-rm-muted" text-anchor="middle">alternatives</text>
+            <text x="200" y="212" class="ls-rm-muted" text-anchor="middle" font-style="italic">5 weeks</text>
+
+            <rect x="270" y="50" width="120" height="180" class="ls-rm-accent-box"/>
+            <text x="330" y="72" class="ls-rm-head" text-anchor="middle">Phase 3</text>
+            <text x="330" y="88" class="ls-rm-text" text-anchor="middle">Docker in Detail</text>
+            <text x="330" y="108" class="ls-rm-muted" text-anchor="middle">19 Aug &#x2013; 16 Sep</text>
+            <text x="330" y="136" class="ls-rm-muted" text-anchor="middle">image bloat</text>
+            <text x="330" y="152" class="ls-rm-muted" text-anchor="middle">escape register</text>
+            <text x="330" y="168" class="ls-rm-muted" text-anchor="middle">orchestrator</text>
+            <text x="330" y="184" class="ls-rm-muted" text-anchor="middle">walk-backs</text>
+            <text x="330" y="212" class="ls-rm-muted" text-anchor="middle" font-style="italic">5 weeks</text>
+
+            <rect x="400" y="50" width="120" height="180" class="ls-rm-accent-box"/>
+            <text x="460" y="72" class="ls-rm-head" text-anchor="middle">Phase 4</text>
+            <text x="460" y="88" class="ls-rm-text" text-anchor="middle">Teams + Labour</text>
+            <text x="460" y="108" class="ls-rm-muted" text-anchor="middle">23 &#x2013; 30 Sep</text>
+            <text x="460" y="136" class="ls-rm-muted" text-anchor="middle">sprint shape &#x2192;</text>
+            <text x="460" y="152" class="ls-rm-muted" text-anchor="middle">service shape</text>
+            <text x="460" y="168" class="ls-rm-muted" text-anchor="middle">hiring filter</text>
+            <text x="460" y="184" class="ls-rm-muted" text-anchor="middle">lock-in</text>
+            <text x="460" y="212" class="ls-rm-muted" text-anchor="middle" font-style="italic">2 weeks</text>
+
+            <rect x="530" y="50" width="100" height="180" class="ls-rm-accent-box"/>
+            <text x="580" y="72" class="ls-rm-head" text-anchor="middle">Phase 5</text>
+            <text x="580" y="88" class="ls-rm-text" text-anchor="middle">Close</text>
+            <text x="580" y="108" class="ls-rm-muted" text-anchor="middle">7 Oct</text>
+            <text x="580" y="148" class="ls-rm-muted" text-anchor="middle">what could</text>
+            <text x="580" y="164" class="ls-rm-muted" text-anchor="middle">still be</text>
+            <text x="580" y="212" class="ls-rm-muted" text-anchor="middle" font-style="italic">1 week</text>
+
+            <text x="320" y="260" class="ls-rm-muted" text-anchor="middle">Each piece stands on its own. Together they are the magazine the next ordinary install actually deserves.</text>
+        </svg>
+
+        <h2>The Point</h2>
+
+        <p>The 700 MB are part of the problem. So is the rest of
+            what follows. <strong>Four things broke at once</strong>,
+            each defensible at the time it was introduced, each
+            compounded by the next, each kept in place by an
+            industry that has no interest in reducing it. The
+            result is not a system that occasionally fails. It is a
+            system that is, on its own terms, unauditable: large
+            where it could be small, ungoverned where it could be
+            bounded, oddly shaped where it could fit the machine,
+            layered where it could be plain.</p>
+
+        <p>This is what the rest of the Bow will take, one
+            Wednesday at a time. The first cut, not the last.</p>
+
+        <blockquote>
+            <p><strong>Next Wednesday: the count, and why none of
+                it was justified.</strong></p>
+        </blockquote>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

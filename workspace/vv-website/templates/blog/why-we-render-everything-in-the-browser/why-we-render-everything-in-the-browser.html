@@ -1,0 +1,585 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Why We Render Everything in the Browser &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="The median web page in 2025 ships 697 KB of JavaScript before a single character of content arrives. Brendan Eich wrote JavaScript in ten days in 1995. AJAX in 2005 had a real argument; the brochure inherited it without re-examination. The bill arrives in three layers: client power, duplicated server runtime, and a dependency cloud supervised by another cloud. Wikipedia, GOV.UK, Hacker News, HEY, HTMX, Netflix's logged-out homepage and Cloudflare Pingora prove the alternative is in production. The question is no longer whether reactivity needs a runtime. It is why we ship one to render a heading.">
+{( endslot )}
+
+{( slot canonical )}/blog/why-we-render-everything-in-the-browser{( endslot )}
+
+{( slot og-title )}Why We Render Everything in the Browser &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}On Second Thought Episode 07. The median 2025 page ships 697 KB of JavaScript before any content arrives, per the HTTP Archive Web Almanac. Gmail had an argument in 2005; the restaurant menu inherited it. Cost in three layers: client electricity and battery, a duplicated runtime on the server, and an npm dependency cloud supervised by a second cloud of Dependabot, Snyk and Renovate. Wikipedia on PHP, GOV.UK with mandated progressive enhancement, Hacker News in Arc, HEY on Hotwire, HTMX at 14 KB, Netflix removing client React for +50% TTI, and Cloudflare Pingora replacing nginx-and-Lua at 70% less CPU at one trillion requests per day are the proofs that another way exists.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Why We Render Everything in the Browser",
+    "datePublished": "2026-05-10",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/why-we-render-everything-in-the-browser",
+    "description": "On Second Thought Episode 07. JavaScript was written in ten days in 1995, without a standard library. AJAX in 2005 gave the desktop application in the browser its argument; Gmail, Maps, Figma earned it. The brochure inherited it without re-examination. The 2025 median page ships 697 KB of JavaScript before any content arrives. Cost arrives in three layers: client power and battery, a duplicated server runtime in Node.js, and an npm dependency cloud supervised by a supervisory cloud (Dependabot, Snyk, Renovate). Wikipedia (MediaWiki on PHP), GOV.UK (mandated progressive enhancement), Hacker News (Arc), HEY/Basecamp (Hotwire), HTMX (14 KB minified), Netflix (removed client React, +50% TTI), and Cloudflare Pingora (Rust over nginx+Lua, ~70% less CPU at 1T req/day) prove the alternative is in production. Reactivity is not the obstacle. The vacuum was the language.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-10">10 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Why We Render Everything in the Browser</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>On Second Thought</em> &#x25A0; Episode 07</p>
+
+        <p>Open the utility provider's login page. The fan stirs. The
+            cursor hesitates. A laptop with eight gigabytes of memory
+            and a respectable amount of silicon spends a measurable
+            second arranging itself to display a username field, a
+            password field, and a button. The
+            <a href="https://almanac.httparchive.org/en/2025/page-weight" target="_blank" rel="noopener">HTTP Archive Web Almanac, 2025 edition</a>,
+            puts the median home page at 697 KB of JavaScript before a
+            single character of content arrives. The browser has been
+            asked, with a fair amount of ceremony, to do what a server
+            in 1996 already did, and to do it on a battery, on a
+            metered connection, on a chassis warm enough to taste.</p>
+
+        <p>This is the post about that.</p>
+
+        <h2>The Axiom</h2>
+
+        <p>The reflex is universal. Every new web project begins with a
+            frontend framework, a build pipeline, a bundler, and a
+            hydration strategy. The server, where the data already
+            lives, has been demoted to a JSON tap. Rendering is the
+            browser's problem now. Nobody quite remembers when this
+            was decided.</p>
+
+        <p>It was not decided in any single meeting, or with any
+            single argument. It compounded. Each project chose the
+            framework because the previous project had; each developer
+            learned the framework because that was the job posting. By
+            the time anyone thought to question the assumption, the
+            assumption had become the architecture, the curriculum, the
+            conference circuit, and the hiring funnel. Reaching for a
+            server-rendered page in 2026 feels, to many engineers,
+            like reaching for COBOL: technically defensible,
+            professionally suspect.</p>
+
+        <p>That feeling is the topic.</p>
+
+        <h2>The Origin</h2>
+
+        <p><a href="https://en.wikipedia.org/wiki/Brendan_Eich" target="_blank" rel="noopener">Brendan Eich</a>
+            wrote JavaScript at Netscape in May 1995, in ten days, for
+            form validation and image rollovers. The language shipped
+            without a standard library worth the name. It was, at the
+            time, an entirely reasonable thing for a small extension
+            language to lack; nobody was building applications with
+            it. They were validating that the email field contained an
+            at-sign before the form posted.</p>
+
+        <p>Ten years later, Jesse James Garrett gave the next pattern
+            its name. His 2005 essay coined
+            <a href="https://en.wikipedia.org/wiki/Ajax_(programming)" target="_blank" rel="noopener">AJAX</a>
+            and described how Gmail and Google Maps used asynchronous
+            <code>XMLHttpRequest</code> to update parts of a page
+            without a full reload. The technique was real, the gain
+            was real, and the use cases were narrow: applications in
+            which a user lived for hours and interacted hundreds of
+            times per session. Backbone arrived in 2010 (Jeremy
+            Ashkenas), Angular the same year (Misko Hevery, Adam
+            Abrons), Ember in 2011, React in 2013 (Jordan Walke at
+            Facebook). Each was a sincere response to a real problem:
+            the desktop application in a browser. Gmail, Maps, Figma.
+            Real applications, real argument.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A horizontal timeline from 1995 to 2025 showing the evolution of frontend complexity. 1995 JavaScript ten days at Netscape. 2005 AJAX coined by Garrett. 2010 Backbone, AngularJS. 2013 React. 2018 SPA the default architecture. 2025 median 697 KB of JavaScript per page. The line rises gently from left to centre, then steeply on the right, illustrating that complexity grew slowly until the SPA became the default and then accelerated." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ost-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .ost-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ost-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .ost-tl-curve { stroke: var(--accent); stroke-width: 1.8; fill: none; }
+                .ost-tl-dot { fill: var(--accent); }
+                .ost-tl-tick { stroke: var(--muted); stroke-width: 1; }
+            </style>
+            <text x="300" y="22" class="ost-tl-title" text-anchor="middle">From Ten Days to Seven Hundred Kilobytes</text>
+
+            <line x1="40" y1="180" x2="560" y2="180" class="ost-tl-axis"/>
+
+            <path d="M 60 178 Q 180 175, 260 168 T 380 152 Q 460 130, 540 70" class="ost-tl-curve"/>
+
+            <circle cx="60" cy="178" r="4" class="ost-tl-dot"/>
+            <line x1="60" y1="180" x2="60" y2="186" class="ost-tl-tick"/>
+            <text x="60" y="200" class="ost-tl-text" text-anchor="middle">1995</text>
+            <text x="60" y="214" class="ost-tl-muted" text-anchor="middle">JS, ten days</text>
+            <text x="60" y="226" class="ost-tl-muted" text-anchor="middle">no stdlib</text>
+
+            <circle cx="170" cy="172" r="4" class="ost-tl-dot"/>
+            <line x1="170" y1="180" x2="170" y2="186" class="ost-tl-tick"/>
+            <text x="170" y="200" class="ost-tl-text" text-anchor="middle">2005</text>
+            <text x="170" y="214" class="ost-tl-muted" text-anchor="middle">AJAX named</text>
+            <text x="170" y="226" class="ost-tl-muted" text-anchor="middle">Gmail, Maps</text>
+
+            <circle cx="270" cy="160" r="4" class="ost-tl-dot"/>
+            <line x1="270" y1="180" x2="270" y2="186" class="ost-tl-tick"/>
+            <text x="270" y="200" class="ost-tl-text" text-anchor="middle">2010</text>
+            <text x="270" y="214" class="ost-tl-muted" text-anchor="middle">Backbone</text>
+            <text x="270" y="226" class="ost-tl-muted" text-anchor="middle">Angular.js</text>
+
+            <circle cx="360" cy="146" r="4" class="ost-tl-dot"/>
+            <line x1="360" y1="180" x2="360" y2="186" class="ost-tl-tick"/>
+            <text x="360" y="200" class="ost-tl-text" text-anchor="middle">2013</text>
+            <text x="360" y="214" class="ost-tl-muted" text-anchor="middle">React</text>
+            <text x="360" y="226" class="ost-tl-muted" text-anchor="middle">at Facebook</text>
+
+            <circle cx="450" cy="118" r="4" class="ost-tl-dot"/>
+            <line x1="450" y1="180" x2="450" y2="186" class="ost-tl-tick"/>
+            <text x="450" y="200" class="ost-tl-text" text-anchor="middle">2018</text>
+            <text x="450" y="214" class="ost-tl-muted" text-anchor="middle">SPA is</text>
+            <text x="450" y="226" class="ost-tl-muted" text-anchor="middle">the default</text>
+
+            <circle cx="540" cy="70" r="4" class="ost-tl-dot"/>
+            <line x1="540" y1="180" x2="540" y2="186" class="ost-tl-tick"/>
+            <text x="540" y="200" class="ost-tl-text" text-anchor="middle">2025</text>
+            <text x="540" y="214" class="ost-tl-muted" text-anchor="middle">median</text>
+            <text x="540" y="226" class="ost-tl-muted" text-anchor="middle">697 KB JS</text>
+
+            <text x="540" y="58" class="ost-tl-muted" text-anchor="middle" font-style="italic">to render</text>
+            <text x="540" y="48" class="ost-tl-muted" text-anchor="middle" font-style="italic">a heading</text>
+        </svg>
+
+        <p>The pattern then crossed every threshold. Marketing pages,
+            brochure sites, restaurant menus, government forms,
+            regional rail booking, doctor's surgery appointments. The
+            argument that justified Gmail's architecture was never
+            re-examined for the brochure, because re-examining the
+            argument required a different skill set than building the
+            brochure had required. By 2018, the
+            <a href="/blog/the-spa-tax">SPA</a> was treated as the
+            default architecture of the web. By 2020, "I'll just spin
+            up a Next.js project" was the unexamined first move for
+            static content.</p>
+
+        <p>The shift was not theoretical; it was a hiring problem. A
+            generation of frontend developers learned React in a
+            bootcamp, then a job, then another job, and never learned
+            a server language. The job market rewarded React on the
+            CV; nobody was hiring for "knows what a session cookie
+            is". TypeScript arrived as the local repair: a build-time
+            wrapper meant to compensate for the deficiencies of the
+            language the team had chosen because it was the only one
+            anyone knew. The fix was added before the question was
+            asked.</p>
+
+        <p><a href="/blog/why-we-teach-tools">Episode 02</a> of this
+            series left a question open: what happens when a profession
+            trains on tools instead of foundations? This is its first
+            practical consequence. The architecture follows the
+            curriculum. The web becomes a thing that requires a 700 KB
+            bundle to display a heading because the people who build it
+            cannot, professionally, build it any other way.</p>
+
+        <h2>The Cost</h2>
+
+        <p>Median page weight in 2025, per the
+            <a href="https://almanac.httparchive.org/en/2025/page-weight" target="_blank" rel="noopener">HTTP Archive Web Almanac</a>:
+            697 KB of JavaScript on home pages, 632 KB on inner pages.
+            The 90th percentile reaches 1,979 KB. The 10th percentile
+            sits at 87 KB. The lower bound is, demonstrably, achievable.
+            Most teams are nowhere near it.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A bar comparison of JavaScript bundle sizes in 2025. The 10th percentile at 87 KB sits as a small bar on the left. The median at 697 KB is roughly eight times larger. The 90th percentile at 1,979 KB is more than twenty times the floor. A faint line at 87 KB extends across the chart, marking the achievable lower bound the typical team is nowhere near." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-pw-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ost-pw-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ost-pw-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .ost-pw-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ost-pw-bar-low { fill: var(--accent); opacity: 0.85; }
+                .ost-pw-bar-mid { fill: var(--muted); opacity: 0.55; }
+                .ost-pw-bar-high { fill: var(--muted); opacity: 0.35; }
+                .ost-pw-floor { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 3,3; fill: none; }
+            </style>
+            <text x="300" y="22" class="ost-pw-title" text-anchor="middle">JavaScript per Page, 2025 Median Web</text>
+
+            <text x="40" y="64" class="ost-pw-head">10th percentile</text>
+            <rect x="40" y="72" width="22" height="22" class="ost-pw-bar-low"/>
+            <text x="74" y="89" class="ost-pw-text">87 KB</text>
+            <text x="74" y="102" class="ost-pw-muted">the achievable floor</text>
+
+            <text x="40" y="128" class="ost-pw-head">Median</text>
+            <rect x="40" y="136" width="172" height="22" class="ost-pw-bar-mid"/>
+            <text x="222" y="153" class="ost-pw-text">697 KB</text>
+            <text x="222" y="166" class="ost-pw-muted">where the typical team is</text>
+
+            <text x="40" y="192" class="ost-pw-head">90th percentile</text>
+            <rect x="40" y="200" width="490" height="22" class="ost-pw-bar-high"/>
+            <text x="540" y="217" class="ost-pw-text">1,979 KB</text>
+
+            <line x1="62" y1="50" x2="62" y2="226" class="ost-pw-floor"/>
+            <text x="68" y="48" class="ost-pw-muted">floor</text>
+        </svg>
+
+        <p>The first cost is paid downstream, on the device, in
+            electricity. On a mid-range Android over 4G, those numbers
+            translate into eight seconds to Time to Interactive on a
+            representative page, more on a slow connection. Mobile
+            data, in EU roaming, is not free. The cost that is harder
+            to name on an invoice is the wattage. Each page load now
+            drives the client CPU and GPU as if it were running a
+            workload, not displaying text. Frameworks parse, hydrate,
+            diff, reconcile, and re-render; the silicon spins; the
+            fan, in a quiet office, becomes audible. Battery sensors
+            register the drain in measurable single-digit percentages
+            per twenty minutes of casual reading. The user is, in
+            literal terms, paying for the rendering with their own
+            battery and their own data plan, on hardware they bought,
+            for content the server already had. There is no return on
+            the spending, because the page was a printed leaflet at
+            heart.</p>
+
+        <p>Multiplied across a billion daily web sessions, the
+            unnecessary draw climbs into terawatt-hours per year, a
+            figure documented in the
+            <a href="https://w3c.github.io/sustyweb/" target="_blank" rel="noopener">W3C Web Sustainability Guidelines</a>
+            and the Sustainable Web Manifesto reference dataset. The
+            electricity is only the easiest column to count. Beneath
+            it sits the hardware that consumed it: the lithium for the
+            laptop battery that drains faster, the rare earths in the
+            radio that keeps the data flowing, the cobalt in the
+            datacentre's storage, the copper in the racks, the cooling
+            water that the racks then warm. Megatons of natural
+            resources, quietly enlisted on the side of a marketing
+            page that did not need any of them. There is, here, an
+            inconvenient observation. The same conferences that run
+            sustainability tracks ship frameworks of half a megabyte
+            per visit; the same engineer who publishes a
+            sustainability-conscious LinkedIn post will, on Monday
+            morning, push a pull request that adds 200 KB of JavaScript
+            to a marketing page. The contradiction holds itself
+            politely apart, and is, on close inspection, untenable.
+            One cannot ship the bundle and lecture on pollution in the
+            same conversation.</p>
+
+        <p>Accessibility collapses without JavaScript. Screen readers
+            must wait for the framework to construct the DOM before
+            they can announce anything; if the JavaScript fails to
+            load, the page is empty. Crawlers must execute the
+            JavaScript to index the content, which means search-engine
+            indexing has become a secondary industry of headless
+            browsers, and the cost of that industry is borne by
+            datacentres no one sees on the invoice. The browser tab is
+            now the heaviest process on the average laptop. Most of
+            what it computes is layout for content that the server
+            already had, in a format the server could already serve.</p>
+
+        <p>Then, having pacified the client, the same language was
+            asked to manage the server. Node.js, originally an
+            event-driven runtime for I/O-bound real-time workloads
+            (which it does competently), was deployed in whole cohorts
+            of new projects to do work that PHP, Ruby, Python and Go
+            had been doing efficiently for decades. The reason was not
+            technical.
+            <a href="/blog/javascript-backend">Node.js is not faster than Go</a>
+            (it is not), not smaller than Rust (it is not), not safer
+            than Python (it is not). It was deployed because the team
+            knew only the one language and could not, professionally,
+            choose another. The build pipeline that wraps the language
+            to compensate for its deficiencies on the client was
+            duplicated on the server. Every architectural decision
+            compounds. The bill is paid twice: once at the client,
+            once at the rack.</p>
+
+        <p>Around all of it, the dependency cloud, and a quietly
+            inconvenient truth at the bottom of it. JavaScript was
+            shipped, in 1995, without a standard library worthy of the
+            name; npm appeared in 2010 to fill the vacuum, and the
+            vacuum filled, in turn, with hundreds of transitive
+            packages from strangers, then thousands. It is, by some
+            distance, the public software repository most reliably
+            compromised in routine use. The
+            <a href="https://www.sonatype.com/state-of-the-software-supply-chain" target="_blank" rel="noopener">2024 Sonatype State of the Software Supply Chain report</a>
+            counted more than half a million malicious packages across
+            public registries; npm carried the bulk of them.
+            <a href="https://en.wikipedia.org/wiki/Npm_left-pad_incident" target="_blank" rel="noopener">left-pad in 2016</a>,
+            event-stream in 2018, ua-parser-js in 2021, and the
+            September 2025 incident in which eighteen packages with
+            2.6 billion weekly downloads were compromised in a single
+            coordinated attack, are the headlines a Senior Engineer
+            can name. The thousand smaller incidents are the ones
+            nobody tracks.</p>
+
+        <svg viewBox="0 0 600 280" aria-label="A diagram of three layers of cost. Top layer: the client, with downstream electricity, mobile data, battery drain, and accessibility. Middle layer: the server, where Node.js duplicates the runtime in a language chosen for the client. Bottom layer: the dependency cloud of npm packages, supervised by a second cloud of Dependabot, Snyk and Renovate. Each layer is annotated with what it costs that no invoice itemises." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-cs-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ost-cs-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .ost-cs-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .ost-cs-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ost-cs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-cs-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="ost-cs-title" text-anchor="middle">The Bill, in Three Layers</text>
+
+            <rect x="40" y="50" width="520" height="62" class="ost-cs-accent-box"/>
+            <text x="60" y="74" class="ost-cs-head">Downstream &#x2014; Client</text>
+            <text x="60" y="92" class="ost-cs-muted">CPU, GPU, fan, battery, mobile data, screen reader, headless crawler</text>
+            <text x="60" y="106" class="ost-cs-muted">paid in watts, milliseconds, and accessibility</text>
+
+            <rect x="40" y="122" width="520" height="62" class="ost-cs-box"/>
+            <text x="60" y="146" class="ost-cs-head">Upstream &#x2014; Server</text>
+            <text x="60" y="164" class="ost-cs-muted">Node.js displaces PHP, Ruby, Python, Go, not for speed or size</text>
+            <text x="60" y="178" class="ost-cs-muted">paid in CPU cycles and megawatt-hours at the rack</text>
+
+            <rect x="40" y="194" width="520" height="76" class="ost-cs-box"/>
+            <text x="60" y="218" class="ost-cs-head">Around it &#x2014; Dependency Cloud</text>
+            <text x="60" y="236" class="ost-cs-muted">npm: ~500k malicious packages observed; Sept 2025: 18 pkgs, 2.6B weekly downloads</text>
+            <text x="60" y="250" class="ost-cs-muted">supervisory cloud: Dependabot, Snyk, Renovate, opening PRs for other servers</text>
+            <text x="60" y="264" class="ost-cs-muted">paid in pull requests, Slack triage, and another vendor</text>
+        </svg>
+
+        <p>The maintenance of the dependency cloud is then outsourced
+            to a second cloud, the supervisory cloud: Dependabot,
+            Snyk, Renovate, GitHub Advanced Security, the long tail of
+            supply-chain-monitoring SaaS. Each one runs on servers,
+            consumes electricity, opens pull requests for other
+            servers to review, sends Slack notifications for engineers
+            to triage, and produces dashboards for managers to look
+            at. The supervisory cloud has, in turn, its own
+            dependencies, its own build pipelines, its own pricing
+            tiers. The wrappers wrap the wrappers. One does, at some
+            point, lose count of the clouds.</p>
+
+        <p>The question that closes this section is the obvious one,
+            and the one the industry has spent fifteen years pretending
+            not to ask. If the answer to a security failure in your
+            dependencies is to add another vendor, another runtime,
+            another monitoring service, and another bill, you have not
+            solved the problem. You have rented a louder version of
+            it. None of this would exist in a language whose standard
+            library could carry the weight of a real application.
+            Rust, Go, Python, Ruby, even PHP all ship with first-party
+            batteries that npm has spent a decade and a half badly
+            approximating, with the supply chain to match. The vacuum
+            was self-inflicted, in the choice of the language at the
+            bottom of the stack.</p>
+
+        <h2>The Question</h2>
+
+        <p>The proofs are not theoretical. They are in production, and
+            they have been for years.</p>
+
+        <p><a href="https://www.mediawiki.org/wiki/Manual:MediaWiki_architecture" target="_blank" rel="noopener">Wikipedia</a>:
+            roughly 60 million articles, MediaWiki on PHP 8.3 with
+            MySQL/MariaDB and an aggressive caching layer, server-rendered,
+            faster on a budget Android over a coffee-shop wireless than
+            most marketing single-page applications. The Wikimedia
+            infrastructure handles hundreds of thousands of views per
+            second, and it does so by caching server-rendered HTML, not
+            by shipping a runtime to the client.</p>
+
+        <p><a href="https://www.gov.uk/service-manual/technology/using-progressive-enhancement" target="_blank" rel="noopener">GOV.UK</a>:
+            67 million citizens, designed by the Government Digital
+            Service from 2012 onward, with progressive enhancement
+            mandated by the GOV.UK service manual for every government
+            service. HTML first, CSS second, JavaScript only as
+            enhancement. The principle is documented, the policy is
+            enforced, the result is a public-sector portal that opens
+            on a Nokia from 2007 and an iPhone from 2024 alike. It is
+            not glamorous. It is, demonstrably, robust.</p>
+
+        <p><a href="https://en.wikipedia.org/wiki/Hacker_News" target="_blank" rel="noopener">Hacker News</a>:
+            server-rendered, written in Arc (a Common Lisp dialect) by
+            Paul Graham and Robert Morris from 2007, opens before the
+            loading spinner of any modern dashboard. The site is famously
+            austere, deliberately so. It is also, after eighteen years,
+            still online and still fast.</p>
+
+        <p>HEY and Basecamp, the products of 37signals: server-rendered
+            with <a href="https://hotwired.dev/" target="_blank" rel="noopener">Hotwire</a>
+            (a Ruby on Rails extension that DHH and his team published
+            in 2020), fully interactive, no client-side framework. The
+            interactive elements arrive over the wire as HTML fragments,
+            swapped into place by a tiny client-side library. The model
+            is older than the SPA, applied to a modern email client,
+            and it works.</p>
+
+        <p><a href="https://htmx.org/" target="_blank" rel="noopener">HTMX</a>,
+            by Carson Gross at Big Sky Software (2020): 14 KB minified,
+            around 5 KB gzipped, doing what JavaScript frameworks an
+            order of magnitude larger claim to do. Carson Gross's
+            argument is the simplest version of the case in this post:
+            most of what we want a SPA for can be done with attributes
+            on plain HTML, and the rest can wait.</p>
+
+        <p>Netflix's logged-out homepage, 2017: the team removed
+            client-side React entirely from the landing page and
+            rebuilt the language switcher in fewer than 300 lines of
+            vanilla JavaScript. Time to Interactive improved by more
+            than 50%, and
+            <a href="https://jakearchibald.com/2017/netflix-and-react/" target="_blank" rel="noopener">Jake Archibald's writeup of the change</a>
+            remains one of the canonical case studies for the cost of
+            unnecessary client-side rendering. Netflix did not abandon
+            React; it kept it server-side, where the value is, and
+            removed it from the client, where the cost is.</p>
+
+        <p><a href="https://blog.cloudflare.com/how-we-built-pingora-the-proxy-that-connects-cloudflare-to-the-internet/" target="_blank" rel="noopener">Cloudflare Pingora</a>,
+            2022: Cloudflare published a blog post describing how
+            their nginx-and-Lua proxy, after years of scaling, had hit
+            the limits of its architecture, and was replaced with a
+            Rust-based proxy of their own design. The new proxy serves
+            over a trillion requests per day, with about 70% less CPU
+            and 67% less memory than the old one. The lesson is not
+            "Rust beats Lua" in any tribal sense; it is "a small,
+            focused, efficient server kernel beats a tower of accreted
+            layers, and the savings show up on the electricity bill
+            the same week".</p>
+
+        <svg viewBox="0 0 600 320" aria-label="Seven production examples of server-rendered architectures at scale. Wikipedia on PHP, GOV.UK with mandated progressive enhancement, Hacker News in Arc, HEY on Hotwire, HTMX at 14 KB minified, Netflix with React removed from the client, and Cloudflare Pingora replacing nginx and Lua. Each annotated with the language, the headline number, and the demonstrable result." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-pr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ost-pr-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ost-pr-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .ost-pr-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ost-pr-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-pr-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="ost-pr-title" text-anchor="middle">Seven Proofs in Production</text>
+
+            <rect x="20" y="46" width="180" height="76" class="ost-pr-accent-box"/>
+            <text x="32" y="66" class="ost-pr-head">Wikipedia</text>
+            <text x="32" y="82" class="ost-pr-text">MediaWiki on PHP 8.3</text>
+            <text x="32" y="98" class="ost-pr-muted">~60M articles, server-rendered</text>
+            <text x="32" y="112" class="ost-pr-muted">faster than most SPAs</text>
+
+            <rect x="210" y="46" width="180" height="76" class="ost-pr-accent-box"/>
+            <text x="222" y="66" class="ost-pr-head">GOV.UK</text>
+            <text x="222" y="82" class="ost-pr-text">67M citizens served</text>
+            <text x="222" y="98" class="ost-pr-muted">progressive enhancement</text>
+            <text x="222" y="112" class="ost-pr-muted">mandated by service manual</text>
+
+            <rect x="400" y="46" width="180" height="76" class="ost-pr-accent-box"/>
+            <text x="412" y="66" class="ost-pr-head">Hacker News</text>
+            <text x="412" y="82" class="ost-pr-text">Arc (Common Lisp), 2007</text>
+            <text x="412" y="98" class="ost-pr-muted">opens before any dashboard's</text>
+            <text x="412" y="112" class="ost-pr-muted">loading spinner does</text>
+
+            <rect x="20" y="132" width="180" height="76" class="ost-pr-accent-box"/>
+            <text x="32" y="152" class="ost-pr-head">HEY / Basecamp</text>
+            <text x="32" y="168" class="ost-pr-text">Hotwire, since 2020</text>
+            <text x="32" y="184" class="ost-pr-muted">HTML fragments over the wire</text>
+            <text x="32" y="198" class="ost-pr-muted">no client-side framework</text>
+
+            <rect x="210" y="132" width="180" height="76" class="ost-pr-accent-box"/>
+            <text x="222" y="152" class="ost-pr-head">HTMX</text>
+            <text x="222" y="168" class="ost-pr-text">14 KB min, ~5 KB gzip</text>
+            <text x="222" y="184" class="ost-pr-muted">attributes on plain HTML</text>
+            <text x="222" y="198" class="ost-pr-muted">Carson Gross, Big Sky, 2020</text>
+
+            <rect x="400" y="132" width="180" height="76" class="ost-pr-accent-box"/>
+            <text x="412" y="152" class="ost-pr-head">Netflix (logged-out)</text>
+            <text x="412" y="168" class="ost-pr-text">React removed from client</text>
+            <text x="412" y="184" class="ost-pr-muted">+50% Time to Interactive</text>
+            <text x="412" y="198" class="ost-pr-muted">switcher in &lt;300 LOC vanilla JS</text>
+
+            <rect x="115" y="218" width="370" height="76" class="ost-pr-accent-box"/>
+            <text x="127" y="238" class="ost-pr-head">Cloudflare Pingora</text>
+            <text x="127" y="254" class="ost-pr-text">Rust replaces nginx + Lua</text>
+            <text x="127" y="270" class="ost-pr-muted">&gt;1 trillion requests per day</text>
+            <text x="127" y="284" class="ost-pr-muted">~70% less CPU, ~67% less memory</text>
+
+            <text x="300" y="312" class="ost-pr-muted" text-anchor="middle">Each shipped, each interactive. Reactivity solved in kilobytes.</text>
+        </svg>
+
+        <p>A word on the standard objection, before it appears. The
+            reflexive defence of the SPA is "but we need reactivity".
+            Reactivity has not been an obstacle to server-rendered
+            architectures for at least a decade. Hotwire's Turbo
+            Streams, HTMX's <code>hx-swap</code> and
+            <code>hx-trigger</code> attributes, Phoenix LiveView's
+            WebSocket-driven HTML diffs, Laravel Livewire, ASP.NET
+            Blazor Server: all of them deliver partial updates,
+            optimistic UI, two-way binding, even real-time
+            collaborative behaviour, by sending small HTML fragments
+            over the wire instead of shipping a runtime to interpret
+            JSON. The total client-side weight, in every one of these
+            patterns, is in single-digit kilobytes. Reactivity is a
+            solved problem. The framework industry sells it back as if
+            it were not.</p>
+
+        <p>Each of these stacks chose a different server language: PHP
+            for MediaWiki, Ruby for Rails and Hotwire, Common Lisp for
+            Hacker News, Python for Django sites in the same family,
+            Go for many modern static-content tools, Rust for Pingora
+            and the modern wave. On a FreeBSD server, any of these is
+            a single <code>pkg install</code> away, with one service
+            manager and one configuration tree. The language is the
+            smaller question; what matters is that the rendering
+            happens on the server, where the data and the session
+            already live, in a runtime that does not have to be
+            re-shipped to every visitor.</p>
+
+        <p>Rust is, for the modern build, particularly hard to argue
+            against. The combination of a single static binary, no
+            garbage collector, native concurrency, and the kind of
+            compile-time safety that removes whole classes of runtime
+            error is, today, the easiest case to make. But the case is
+            not "use Rust". The case is "render where the data is".</p>
+
+        <p>The larger question is this. What if rendering happened
+            where the data already lived, and the data did not need to
+            be guarded from a thousand strangers we never invited into
+            the project? Most of the cost of the modern web, paid in
+            milliseconds, in power, in megabytes, in accessibility, in
+            indexability, in carbon, in security incidents, in
+            supervisory SaaS, would simply not exist. The fastest
+            bundle is the one that is never shipped. The safest
+            dependency is the one that was never installed.</p>
+
+        <blockquote>
+            <p>JavaScript was written in ten days in 1995, without a
+                standard library. AJAX in 2005 had a real argument;
+                Gmail and Maps earned it. The brochure inherited it
+                without re-examination. The 2025 median page ships
+                697 KB of JavaScript before any content arrives. The
+                bill arrives in three layers: client power and battery,
+                a duplicated server runtime, and a dependency cloud
+                supervised by a supervisory cloud. Wikipedia on PHP,
+                GOV.UK with mandated progressive enhancement, Hacker
+                News in Arc, HEY on Hotwire, HTMX at 14 KB, Netflix
+                removing client React for a +50% TTI gain, and
+                Cloudflare Pingora replacing nginx-and-Lua at 70% less
+                CPU at one trillion requests per day prove the
+                alternative is in production. The fastest bundle is
+                the one that is never shipped.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The numbers, briefly:</strong></p>
+            <ul>
+                <li><strong>Page weight, 2025</strong> (HTTP Archive Web Almanac): median 697 KB JS on home pages, 632 KB on inner; 90th percentile 1,979 KB; 10th percentile 87 KB. The floor is reachable</li>
+                <li><strong>The dependency cloud</strong> (Sonatype 2024 + recent incidents): ~500K malicious packages observed across public registries; left-pad (2016), event-stream (2018), ua-parser-js (2021); September 2025: 18 packages, 2.6 billion weekly downloads, single coordinated attack</li>
+                <li><strong>The alternative, in production</strong>: Wikipedia on MediaWiki/PHP 8.3, ~60M articles; GOV.UK with progressive enhancement mandated; Hacker News server-rendered in Arc/Common Lisp; HEY and Basecamp on Hotwire over Rails; HTMX 14 KB minified, ~5 KB gzipped (Carson Gross, Big Sky Software); Netflix logged-out: client React removed, +50% Time to Interactive (Archibald 2017); Cloudflare Pingora: Rust over nginx-and-Lua, ~70% less CPU and ~67% less memory at one trillion requests per day</li>
+                <li><strong>The reactivity objection, pre-empted</strong>: Hotwire Turbo Streams, HTMX <code>hx-swap</code>, Phoenix LiveView, Laravel Livewire, ASP.NET Blazor Server. Single-digit kilobytes on the client, partial updates over the wire as HTML fragments. Reactivity is a solved problem</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

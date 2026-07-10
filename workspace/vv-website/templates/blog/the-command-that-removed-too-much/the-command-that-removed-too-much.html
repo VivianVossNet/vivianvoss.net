@@ -1,0 +1,506 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Command That Removed Too Much &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="At 09:37 PST on Tuesday 28 February 2017, an authorised S3 engineer pressed Enter on a routine capacity-removal command with one mistyped argument. Four hours later, half of the public-facing internet was still quiet, and the AWS Service Health Dashboard was still showing every service in healthy green. The tool did exactly what was asked. The architecture decided what exactly meant.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-command-that-removed-too-much{( endslot )}
+
+{( slot og-title )}The Command That Removed Too Much &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Tales from the Bare Metal Episode 02. AWS S3 US-EAST-1, 28 February 2017. One mistyped argument; index and placement subsystems both gone; four hours and seventeen minutes of outage across GitHub, Slack, Trello, Travis CI, Heroku and roughly half the public-facing web. For two of those hours, the Service Health Dashboard could not even update because it depended on S3. Three systemic conditions: a tool with no floor of safety, a recovery path aged unrehearsed, and a status surface that shared fate with the system it described.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Command That Removed Too Much",
+    "datePublished": "2026-05-06",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-command-that-removed-too-much",
+    "description": "AWS S3 US-EAST-1 service disruption, 28 February 2017. A routine capacity-removal command in the S3 billing subsystem received one mistyped input; servers from the index and placement subsystems were also removed. Four hours and seventeen minutes of outage across half the public-facing web. The AWS Service Health Dashboard could not update for two of those hours because its console depended on S3. Tales from the Bare Metal Episode 02 walks through the postmortem, names three systemic conditions, and lays out the architectural moves that were older than S3.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-06">6 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Command That Removed Too Much</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">cloud</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">devops</span>
+            <span class="vv-pill">freebsd</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Tales from the Bare Metal</em> &#x25A0; Episode 02</p>
+
+        <blockquote>
+            <p>&laquo; Thou shalt not type into production what thou wouldst not type into thy own laptop! &raquo;</p>
+        </blockquote>
+
+        <p>At 9:37 in the morning, Pacific time, on Tuesday 28 February
+            2017, an authorised engineer in
+            <a href="https://aws.amazon.com/s3/" target="_blank" rel="noopener">Amazon's S3 team</a>
+            typed a command. The command was meant to remove a small
+            number of servers from the S3 billing subsystem, an internal
+            cost-tracking layer that had been showing an issue worth
+            debugging. By 13:54, roughly half of the public-facing
+            internet had been down for four hours, and Amazon had spent
+            most of those four hours unable to update its own status
+            dashboard to say so.</p>
+
+        <p>This is a long-documented incident.
+            <a href="https://aws.amazon.com/message/41926/" target="_blank" rel="noopener">Amazon's
+            official postmortem</a>, posted on aws.amazon.com on the
+            day after, is brief, factual, and self-critical in the AWS
+            house style. The story has been retold many times. The
+            point of revisiting it now is the architecture, which is
+            what survives the retelling.</p>
+
+        <h2>What Happened, in Sequence</h2>
+
+        <p>The S3 team was investigating slow billing reports. The
+            investigation pointed at a small set of servers in the
+            billing subsystem that needed to be removed and replaced.
+            Capacity removal in S3 is a routine operation; it has been
+            part of normal operations since the service was launched
+            in 2006. The S3 team has a tool for it.</p>
+
+        <p>At 09:37 PST, the engineer ran the tool. One of the inputs
+            to the command was entered incorrectly. The tool did
+            exactly what its arguments said: it removed servers. The
+            set it removed was much larger than the small set the
+            engineer had in mind. The servers it removed were not all
+            part of the billing subsystem; they were also part of two
+            other S3 subsystems.</p>
+
+        <p>The first of those was the
+            <a href="https://aws.amazon.com/message/41926/" target="_blank" rel="noopener">index
+            subsystem</a>. The index subsystem is what AWS calls the
+            layer that "manages the metadata and location information
+            of all S3 objects in the region". When a client makes a
+            GET, LIST, PUT or DELETE request, the index subsystem is
+            consulted before any byte of object data is touched. With
+            insufficient index capacity, S3 in US-EAST-1 could not
+            serve requests against existing objects. Every S3-backed
+            application in that region lost the ability to read or
+            write.</p>
+
+        <p>The second was the placement subsystem. The placement
+            subsystem allocates storage for new objects, and it depends
+            on the index subsystem to function. Once the index was
+            below capacity, placement was also down by transitive
+            dependency.</p>
+
+        <p>The team began restarting both subsystems. Restarting them
+            was where the morning got worse. AWS state in their
+            postmortem: <em>"S3 has experienced massive growth over
+            the last several years and the process of restarting these
+            services and running the necessary safety checks to
+            validate the integrity of the metadata took longer than
+            expected."</em> In other words: the subsystems had not been
+            fully restarted in larger regions for a long time, and the
+            integrity validation against years of accumulated metadata
+            was a procedure no one had recently rehearsed at this
+            scale.</p>
+
+        <p>The index subsystem reached partial recovery at 12:26 PST,
+            full recovery at 13:18 PST. The placement subsystem, which
+            had to wait for index, completed recovery at 13:54 PST.
+            Total visible outage: roughly four hours and seventeen
+            minutes.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Timeline of the AWS S3 incident on 28 February 2017. 09:37 PST: the capacity-removal command runs with a mistyped input. 11:37 PST: AWS regains the ability to update the Service Health Dashboard. 12:26 PST: the index subsystem reaches partial recovery. 13:18 PST: index reaches full recovery. 13:54 PST: the placement subsystem recovers, four hours and seventeen minutes after the trigger." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ttbm-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ttbm-tl-event { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ttbm-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .ttbm-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .ttbm-tl-line { stroke: var(--border); stroke-width: 1; fill: none; }
+                .ttbm-tl-window { fill: var(--muted); opacity: 0.18; }
+            </style>
+            <text x="280" y="22" class="ttbm-tl-title" text-anchor="middle">Four Hours and Seventeen Minutes</text>
+
+            <rect x="80" y="100" width="450" height="40" class="ttbm-tl-window"/>
+            <line x1="40" y1="120" x2="540" y2="120" class="ttbm-tl-line"/>
+
+            <circle cx="80" cy="120" r="6" fill="var(--accent)"/>
+            <text x="80" y="92" class="ttbm-tl-event" text-anchor="middle">09:37 PST</text>
+            <text x="80" y="148" class="ttbm-tl-text" text-anchor="middle">command run</text>
+            <text x="80" y="162" class="ttbm-tl-muted" text-anchor="middle">mistyped input</text>
+
+            <circle cx="220" cy="120" r="4" fill="var(--accent)"/>
+            <text x="220" y="92" class="ttbm-tl-event" text-anchor="middle">11:37 PST</text>
+            <text x="220" y="148" class="ttbm-tl-text" text-anchor="middle">SHD updates again</text>
+            <text x="220" y="162" class="ttbm-tl-muted" text-anchor="middle">two hours of green</text>
+
+            <circle cx="335" cy="120" r="4" fill="var(--accent)"/>
+            <text x="335" y="92" class="ttbm-tl-event" text-anchor="middle">12:26 PST</text>
+            <text x="335" y="148" class="ttbm-tl-text" text-anchor="middle">index partial</text>
+
+            <circle cx="430" cy="120" r="4" fill="var(--accent)"/>
+            <text x="430" y="92" class="ttbm-tl-event" text-anchor="middle">13:18 PST</text>
+            <text x="430" y="148" class="ttbm-tl-text" text-anchor="middle">index full</text>
+
+            <circle cx="530" cy="120" r="5" fill="var(--accent)"/>
+            <text x="530" y="92" class="ttbm-tl-event" text-anchor="middle">13:54 PST</text>
+            <text x="530" y="148" class="ttbm-tl-text" text-anchor="middle">placement</text>
+            <text x="530" y="162" class="ttbm-tl-muted" text-anchor="middle">recovered</text>
+
+            <text x="280" y="200" class="ttbm-tl-muted" text-anchor="middle">Index gone takes placement with it. The dashboard insisted on green for the first two hours.</text>
+        </svg>
+
+        <h2>What the Status Page Did Not Say</h2>
+
+        <p>There is a small additional indignity in the AWS postmortem
+            that deserves its own paragraph.</p>
+
+        <p>From 09:37 to 11:37 PST, AWS was unable to update the
+            <a href="https://health.aws.amazon.com/health/status" target="_blank" rel="noopener">AWS
+            Service Health Dashboard</a>. The dashboard administration
+            console depended on S3 in US-EAST-1. The status icons on
+            the public Service Health page were stored as image files
+            on S3. During the outage, the page showed the affected
+            services as healthy, in green, while many of those services
+            were in fact unable to serve a single request.</p>
+
+        <p>AWS communicated through
+            <a href="https://twitter.com/AWSCloud" target="_blank" rel="noopener">@AWSCloud
+            on Twitter</a> and via SHD banner text until they were
+            able to update individual service status at 11:37 PST. The
+            Service Health Dashboard was subsequently rebuilt to run
+            across multiple AWS regions, so that an outage in any one
+            region could no longer take down the page that reported
+            the outage.</p>
+
+        <p>This is the same architectural shape as the
+            <a href="https://engineering.fb.com/2021/10/05/networking-traffic/outage-details/" target="_blank" rel="noopener">Facebook
+            BGP outage of October 2021</a>, where the system used to
+            recover the network depended on the network. The pattern,
+            in both cases: a control surface should not share fate
+            with the data plane it controls.</p>
+
+        <svg viewBox="0 0 560 220" aria-label="Two boxes describing fate-sharing. On the left, the AWS S3 incident in 2017: the Service Health Dashboard depends on S3 in US-EAST-1, and the icons themselves are S3 objects. When S3 fails, the dashboard fails with it. On the right, the Facebook BGP incident in 2021: the recovery tooling depends on the network it is meant to fix. The pattern in both: a control surface that shares fate with its data plane." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ttbm-fs-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ttbm-fs-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .ttbm-fs-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .ttbm-fs-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ttbm-fs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ttbm-fs-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ttbm-fs-arrow); }
+            </style>
+            <defs>
+                <marker id="ttbm-fs-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="ttbm-fs-title" text-anchor="middle">Same Shape, Two Outages</text>
+
+            <rect x="20" y="50" width="240" height="140" class="ttbm-fs-box"/>
+            <text x="140" y="74" class="ttbm-fs-head" text-anchor="middle">AWS S3 (Feb 2017)</text>
+            <text x="140" y="100" class="ttbm-fs-text" text-anchor="middle">Service Health Dashboard</text>
+            <text x="140" y="120" class="ttbm-fs-muted" text-anchor="middle">depends on</text>
+            <text x="140" y="140" class="ttbm-fs-text" text-anchor="middle">S3 in US-EAST-1</text>
+            <text x="140" y="170" class="ttbm-fs-muted" text-anchor="middle">two hours of green icons</text>
+
+            <line x1="140" y1="108" x2="140" y2="128" class="ttbm-fs-arr"/>
+
+            <rect x="300" y="50" width="240" height="140" class="ttbm-fs-box"/>
+            <text x="420" y="74" class="ttbm-fs-head" text-anchor="middle">Facebook BGP (Oct 2021)</text>
+            <text x="420" y="100" class="ttbm-fs-text" text-anchor="middle">recovery tooling</text>
+            <text x="420" y="120" class="ttbm-fs-muted" text-anchor="middle">depends on</text>
+            <text x="420" y="140" class="ttbm-fs-text" text-anchor="middle">the network being fixed</text>
+            <text x="420" y="170" class="ttbm-fs-muted" text-anchor="middle">six hours, on-site rescue</text>
+
+            <line x1="420" y1="108" x2="420" y2="128" class="ttbm-fs-arr"/>
+
+            <text x="280" y="208" class="ttbm-fs-muted" text-anchor="middle">A control surface must not share fate with the data plane it controls.</text>
+        </svg>
+
+        <h2>The Context, in Fairness to the Build</h2>
+
+        <p>The capacity-removal tool was a routine internal operation.
+            It had been built in the early days of S3, when the
+            operational footprint was small and humans driving the
+            tool were a few experienced engineers who knew every part
+            of the system. In that context, accepting whatever
+            arguments the operator typed and acting on them was a
+            reasonable design. The cost of an over-shoot was small
+            because the system was small.</p>
+
+        <p>Three systemic conditions made the morning of 28 February
+            what it became.</p>
+
+        <p><strong>First: the tool's authority exceeded the floor of
+            safety.</strong> The capacity-removal command, as built,
+            would remove whatever capacity it was told to remove.
+            There was no rate-limit. There was no minimum-capacity
+            floor. There was no dry-run default that printed what
+            would be removed before doing it. The tool was correct;
+            the tool was also unforgiving in a way that had grown out
+            of proportion to the system it now operated against.</p>
+
+        <p><strong>Second: the recovery procedure had aged
+            unrehearsed.</strong> The index and placement subsystems
+            had not been completely restarted in larger regions for
+            many years. The validation steps required to bring them
+            back, against years of accumulated metadata, took longer
+            than the team's recovery model assumed. This is the same
+            shape as
+            <a href="/blog/the-backup-that-wasnt">the GitLab backup
+            that had not been restored</a>: a procedure that is correct
+            on paper degrades silently if it is not regularly
+            exercised.</p>
+
+        <p><strong>Third: the status surface shared fate with the
+            system it described.</strong> The dashboard meant to
+            communicate the outage was itself dependent on the
+            subsystem that was outaged. Communication therefore had to
+            migrate, mid-event, to a separate channel
+            (<a href="https://twitter.com/AWSCloud" target="_blank" rel="noopener">@AWSCloud</a>
+            on Twitter), which was less prominent and less trusted,
+            while the official dashboard continued to display green
+            icons.</p>
+
+        <p>These are not excuses. The wrong number of servers was
+            removed by an operator who could read the count they had
+            typed. The error happened. But the consequences of the
+            error (four hours of outage across half the public web)
+            were architectural, not behavioural. A different
+            architecture would have absorbed the same error in
+            seconds.</p>
+
+        <h2>The Principle</h2>
+
+        <p>There are three architectural moves, each older than S3
+            itself.</p>
+
+        <p><strong>A destructive tool must refuse to descend below a
+            defined floor.</strong> The capacity-removal tool's job is
+            to remove capacity. Its second job, equally important, is
+            to know how much capacity is the minimum required for the
+            subsystem to function, and to refuse any command that
+            would breach that floor. After the incident, AWS modified
+            the tool to do exactly this. The pattern is not new. On
+            FreeBSD, the small expression of it is
+            <code>zfs snapshot tank/data@before-cleanup</code> before
+            any destructive operation: cost, milliseconds; benefit,
+            five seconds of arrival before <code>zfs rollback</code>
+            returns the dataset.
+            <a href="https://man.freebsd.org/cgi/man.cgi?capsicum(4)" target="_blank" rel="noopener">Capsicum</a>
+            or <a href="/blog/technical-beauty-jails">jails</a> can
+            take it one step further by limiting the tool to the
+            capability it actually needs (remove a small set of hosts)
+            and refusing any escalation.</p>
+
+        <svg viewBox="0 0 560 230" aria-label="A two-state diagram of a capacity-removal tool. On the left, the original behaviour: the operator types a number, the tool reads it, the tool removes that many servers. There is no floor check. On the right, the post-incident behaviour: the operator types a number, the tool first asks whether the resulting capacity would breach a defined minimum, and if so refuses with an explicit error before any server is touched." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ttbm-fl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ttbm-fl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .ttbm-fl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .ttbm-fl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .ttbm-fl-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ttbm-fl-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ttbm-fl-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ttbm-fl-arrow); }
+            </style>
+            <defs>
+                <marker id="ttbm-fl-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="ttbm-fl-title" text-anchor="middle">A Floor Under the Destructive Tool</text>
+
+            <text x="140" y="50" class="ttbm-fl-head" text-anchor="middle">Before</text>
+            <text x="420" y="50" class="ttbm-fl-head" text-anchor="middle">After</text>
+
+            <rect x="40" y="64" width="200" height="36" class="ttbm-fl-box"/>
+            <text x="140" y="86" class="ttbm-fl-text" text-anchor="middle">read --count argument</text>
+
+            <line x1="140" y1="100" x2="140" y2="116" class="ttbm-fl-arr"/>
+
+            <rect x="40" y="118" width="200" height="36" class="ttbm-fl-box"/>
+            <text x="140" y="140" class="ttbm-fl-text" text-anchor="middle">remove that many</text>
+
+            <line x1="140" y1="154" x2="140" y2="170" class="ttbm-fl-arr"/>
+
+            <rect x="40" y="172" width="200" height="36" class="ttbm-fl-box"/>
+            <text x="140" y="194" class="ttbm-fl-text" text-anchor="middle">at the speed of Enter</text>
+
+            <rect x="320" y="64" width="200" height="36" class="ttbm-fl-accent-box"/>
+            <text x="420" y="86" class="ttbm-fl-text" text-anchor="middle">read --count argument</text>
+
+            <line x1="420" y1="100" x2="420" y2="116" class="ttbm-fl-arr"/>
+
+            <rect x="320" y="118" width="200" height="36" class="ttbm-fl-accent-box"/>
+            <text x="420" y="135" class="ttbm-fl-text" text-anchor="middle">would result &lt; floor?</text>
+            <text x="420" y="148" class="ttbm-fl-muted" text-anchor="middle">refuse and exit</text>
+
+            <line x1="420" y1="154" x2="420" y2="170" class="ttbm-fl-arr"/>
+
+            <rect x="320" y="172" width="200" height="36" class="ttbm-fl-accent-box"/>
+            <text x="420" y="194" class="ttbm-fl-text" text-anchor="middle">remove rate-limited</text>
+        </svg>
+
+        <p><strong>Recovery procedures must be rehearsed.</strong> A
+            subsystem that has not been completely restarted in years
+            is not a recoverable subsystem; it is a subsystem with a
+            hopeful runbook. Periodic restart drills, sometimes called
+            Game Days, surface the unspoken integrity checks that have
+            grown over time. The drill needs to run against a
+            meaningful fraction of production load, not against a
+            sandbox of toy data.</p>
+
+        <p><strong>Status surfaces must run out-of-band.</strong> The
+            page on which an organisation reports the health of its
+            systems must be structurally independent of those systems.
+            If S3 is down, the S3 status page must still load. If BGP
+            is misconfigured, the network operations team must still
+            be able to reach their out-of-band console. AWS rebuilt
+            the Service Health Dashboard to span multiple regions;
+            Facebook, four years later, rebuilt their internal
+            authentication paths after their BGP outage. Both reached
+            the same conclusion: control surface and data plane must
+            not share fate.</p>
+
+        <p>The further structural change in S3 was to partition the
+            index subsystem into smaller "cells", so that a future
+            capacity-removal mistake against one cell would not take
+            down the entire region. This is the architectural pattern
+            of
+            <a href="https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/use-bulkhead-architectures-to-limit-scope-of-impact.html" target="_blank" rel="noopener">cellularisation</a>:
+            many small, independently failable units instead of one
+            large unit. It is the same pattern that gave us containers,
+            jails, and microservices; the difference is in execution,
+            not in idea.</p>
+
+        <h2>Where the Pattern Travels</h2>
+
+        <p>The principle is not specific to S3, not specific to AWS,
+            not specific to cloud.</p>
+
+        <p><strong>Kubernetes.</strong>
+            <code>kubectl delete -A</code> on the wrong context,
+            <code>kubectl scale --replicas=0</code> with the wrong
+            namespace selected, a Helm release uninstalled in the
+            wrong cluster. Kubernetes accepts the command as typed.
+            The defensive shape is the same: a CI-driven dry-run
+            default, a pre-flight that announces what will change, an
+            admission controller that refuses to drop below a defined
+            replica floor.</p>
+
+        <p><strong>Cloud control planes in general.</strong> Terraform
+            applied against the wrong workspace destroys real
+            infrastructure in seconds. The <code>az</code> CLI with
+            the wrong subscription scoped, <code>gcloud</code> with
+            the wrong project active, AWS CLI with the wrong
+            account-aliased profile. The tools do as they are asked.
+            The discipline is to make destructive commands print a
+            confirmation that includes the resolved scope before they
+            act.</p>
+
+        <p><strong>PostgreSQL and other databases.</strong>
+            <code>TRUNCATE</code> on the wrong database, <code>DROP
+            TABLE</code> because the prompt looked like staging,
+            role-grant scripts run as superuser when they were
+            intended for a constrained role. The defensive shapes are
+            well-established: schemas with naming conventions that
+            make the wrong target obvious, dedicated users with
+            limited grants, transactions on every destructive
+            statement so that COMMIT is a deliberate second decision.</p>
+
+        <p><strong>Backup and rotation pipelines.</strong> A rotation
+            job that deletes the oldest copy is fine. A rotation job
+            that deletes the only good copy because it could not parse
+            its own retention rule is a Bare Metal incident. The
+            defensive shape: never delete unless the tool can prove
+            that at least one verified copy remains.</p>
+
+        <p><strong>Internal status pages and alerting.</strong> This
+            is the hardest one to retrofit because it requires the
+            organisation to model fate-sharing explicitly. The
+            question is: when our most important systems are down,
+            can the people who need to coordinate the response still
+            talk to each other, still see what is happening, still
+            reach the boxes? If the answer is "yes, we use Slack", and
+            Slack runs on AWS in US-EAST-1, the answer is no.</p>
+
+        <p>In every case, the same shape: the tool does as it is told.
+            The architecture decides what "as it is told" actually
+            means in the worst case. Build the architecture as if the
+            worst case is the case you have been given.</p>
+
+        <h2>What to Take Home</h2>
+
+        <p>If your operational situation reminds you of any of the
+            following, treat it as something to investigate this
+            week:</p>
+
+        <ul>
+            <li>You have an internal tool that performs destructive operations and has no minimum-state floor.</li>
+            <li>Your status page, alerting system or incident-response chat shares infrastructure with the systems it reports on.</li>
+            <li>Your most critical subsystems have not been completely restarted from cold in the last twelve months.</li>
+            <li>Your operators rely on terminal hostnames and prompts to distinguish production from staging.</li>
+        </ul>
+
+        <p>Each of these was true at AWS on 28 February 2017. Each of
+            them is true at many organisations now.</p>
+
+        <p>The fix is not a new tool. The fix is a small set of
+            structural moves: floors on destructive operations,
+            rehearsal of recovery, out-of-band status, cellularisation
+            of single points of failure. The cost of these moves is
+            engineering time. The cost of not making them, when the
+            wrong argument is eventually typed, is broadcasting your
+            outage on Twitter while your own dashboard insists
+            everything is green.</p>
+
+        <p>The command did exactly what was asked. The architecture
+            decided what exactly meant.</p>
+
+        <blockquote>
+            <p>09:37 PST, 28 February 2017: an authorised S3 engineer
+                runs a routine capacity-removal command with one
+                mistyped input. Index and placement subsystems both
+                lose capacity. From 09:37 to 11:37 the AWS Service
+                Health Dashboard cannot update because its console
+                depends on S3. Index reaches partial recovery 12:26,
+                full 13:18. Placement recovers 13:54: four hours
+                seventeen minutes total. Cyence later estimated $150M
+                S&amp;P-500 cost; 54 of the top 100 retailers saw 20+
+                per cent slowdowns. The fix was older than S3:
+                destructive tools refuse below a floor, recovery
+                procedures get rehearsed, status surfaces run
+                out-of-band.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The forensic, the short version:</strong></p>
+            <ul>
+                <li><strong>The trigger:</strong> 28 February 2017, 09:37 PST. An authorised S3 engineer runs a routine capacity-removal command in the billing subsystem; one input is mistyped; the tool removes more capacity than intended, including from the index and placement subsystems</li>
+                <li><strong>Affected:</strong> roughly half of the public-facing web for four hours seventeen minutes. GitHub, Slack, Trello, Travis CI, Heroku, Coursera, Twilio, Mailchimp, Quora, Medium, Signal, Imgur, Docker Hub, Expedia. Cyence Inc. estimate: $150M S&amp;P-500 cost; 54 of top 100 retailers saw 20+ per cent slowdowns</li>
+                <li><strong>The recovery:</strong> 12:26 PST index partial, 13:18 PST index full, 13:54 PST placement. Restart of subsystems took longer than expected because integrity checks against years of accumulated metadata had not been rehearsed at scale</li>
+                <li><strong>The status-page indignity:</strong> 09:37&#x2013;11:37 PST, the AWS Service Health Dashboard could not update. Its console depended on S3 in US-EAST-1; the icons themselves were S3 objects. Communication moved to @AWSCloud on Twitter</li>
+                <li><strong>Three systemic conditions:</strong> tool authority exceeded the floor of safety; recovery procedures had aged unrehearsed; status surface shared fate with the system it described</li>
+                <li><strong>The architectural fixes:</strong> capacity-removal tool now rate-limits and refuses to breach a minimum-capacity floor; index subsystem partitioned into independent "cells"; Service Health Dashboard rebuilt across multiple regions</li>
+                <li><strong>The pattern, older than S3:</strong> destructive tools refuse below a floor (zfs snapshot before destroy, Capsicum/jails for capability drop), recovery is rehearsed (Game Days), status surfaces run out-of-band, single points of failure are cellularised</li>
+                <li><strong>Where it travels:</strong> Kubernetes (<code>kubectl delete -A</code>), Terraform on the wrong workspace, <code>TRUNCATE</code> on the wrong database, rotation jobs that delete the only good copy, status pages that share infrastructure with what they monitor</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

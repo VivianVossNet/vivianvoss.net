@@ -1,0 +1,607 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The OS That Brought Its Own AI &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Your phone changed assistants. You did not. Between Android 14 and 16, Google Assistant retired and Gemini moved into the same OS slot, the same long-press, the same Hey Google. Pixel 10 shipped with Gemini already there; eligible Android devices switched over by system update; the standalone Google Assistant retires around 31 March 2026, after which the only choices are Gemini or None. On iOS 27 the same vendor's model arrives as a sandboxed extension, opt-in, isolated from the assistant slot, invoked only when called. A sandbox can be revoked and audited; a model in the slot inherits the slot. The architecture follows the business: Apple FY2025 is about 74 per cent hardware, Alphabet 2025 about three quarters advertising. Settings, Apps, Default apps, Digital assistant app: thirty seconds to check.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-os-that-brought-its-own-ai{( endslot )}
+
+{( slot og-title )}The OS That Brought Its Own AI &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Not in the Brief Episode 05. Sometime between Android 14 and 16, Google Assistant retired and Gemini moved into the OS-level assistant slot on every eligible device. Pixel 10 shipped with Gemini already there; on the rest of the eligible estate (Android 10 or later, 2 GB RAM and up) Gemini arrived as a system update, in some cases as a notification offering to upgrade the existing assistant; the standalone Google Assistant retires on or around 31 March 2026, after which the only choices in the slot are Gemini or None. On Pixel-class hardware Gemini Nano runs on-device for part of the work and powers system features (Magic Compose in Messages, Call Notes, Recorder Summaries, Scam Detection); for anything heavier the call goes to Google's cloud, and the boundary is set by Google, not displayed in the UI. iOS 27 takes the opposite path: Gemini ships as a sandboxed extension at the application layer, opt-in, isolated from the assistant role, invoked only when the user explicitly calls it. A sandbox can be revoked and audited; a model installed into the slot inherits the slot, microphone and default-app reach included. The architecture follows the business: Apple FY2025 revenue is about 74 per cent hardware and 26 per cent services; Alphabet 2025 revenue is about three quarters advertising. None of this is a breach. All of it can be checked in three taps: Settings, Apps, Default apps, Digital assistant app; pick Gemini or None; App management, Gemini, Disable and Force Stop.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The OS That Brought Its Own AI",
+    "datePublished": "2026-05-30",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-os-that-brought-its-own-ai",
+    "description": "Not in the Brief Episode 05. Sometime between Android 14 and 16, Google Assistant retired and Gemini moved into the OS-level assistant slot on every eligible device, the same long-press, the same Hey Google. Pixel 10 (announced 20 August 2025, shipping from 28 August 2025) shipped with Gemini already there; on the rest of the eligible Android estate (Android 10 or later, 2 GB RAM and up) Gemini arrived as a system update during 2025, in some cases as a notification offering to upgrade the existing assistant, framed in that wording as the outdated version of itself; devices below the threshold keep classic Google Assistant by default, not by choice. The standalone Google Assistant retires on or around 31 March 2026 with the full sunset announced in December 2025, after which the only choices presented by Android in the digital-assistant slot are Gemini or None. The assistant slot on Android is a role: the operating system exposes a hook (the assistant role), exactly one application at a time holds it, and the long-press of the home button, the wake word and the assistant intent from any third-party app all route to the holder; until 2024 the holder was Google Assistant, now it is Gemini. On Pixel-class hardware Gemini Nano runs on-device for a slice of the work and powers system features including Magic Compose in Google Messages, Call Notes (Pixel-exclusive), Pixel Recorder summaries and Scam Detection; for anything heavier the request goes to Google's cloud, where a larger model decides what to do with what was said, and the boundary between handled-locally and sent-to-the-cloud is set by Google with no UI indicator. iOS 27, due in autumn 2026, takes the opposite architectural path: Gemini ships as a sandboxed extension at the application layer in a new Extensions framework Apple introduced after a public partnership with Google in early 2026, opt-in, isolated from system hooks because iOS does not expose the slot to extensions, and invoked only when the user explicitly calls it. The privacy implication is structural: a sandbox can be revoked, audited and constrained by fine-grained permissions; a model installed into the slot inherits the slot, the microphone access and the default-app reach. The architecture follows the business: Apple FY2025 revenue is approximately 74 per cent hardware and 26 per cent services, with Services Margin above 70 per cent; Alphabet 2025 revenue is approximately three quarters advertising (Google Search and YouTube combined, about 224 and 40 billion US dollars respectively), with cloud at about 14.57 per cent. None of this is a breach and none of it is hidden. The verification path: Settings, Apps, Default apps, Digital assistant app, choose Gemini or None; App management, Gemini, Disable and Force Stop; on Samsung Settings, Apps, Choose default apps, Assistant app.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-30">30 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The OS That Brought Its Own AI</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">cloud</span>
+            <span class="vv-pill">law</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Not in the Brief</em> &#x22A3; Episode 05</p>
+
+        <p>Your phone changed assistants. You did not. Sometime
+            between Android 14 and 16, Google Assistant retired and
+            Gemini moved in, into the same slot, with the same
+            long-press, answering to the same "Hey Google". This is
+            the fifth episode of <em>Not in the Brief</em>, a series
+            on the documented things software does that the user did
+            not ask for. We have covered a browser that brought a
+            language model, a vault that stays open in memory, a
+            screenshot index nobody requested, and a platform setting
+            flipped on by default. This week the change is one layer
+            deeper: it is not a feature inside an app, it is the
+            assistant the operating system answers to.</p>
+
+        <h2>The Feature</h2>
+
+        <p>Gemini is now Android's default assistant on Pixel 10 and
+            is rolling out across the eligible Android estate. The
+            hardware threshold, set by Google, is Android 10 or later
+            and at least 2 GB of system RAM. The replacement is
+            system-level: Gemini does not sit beside the existing
+            assistant as a competing app. It sits in the assistant
+            slot the OS exposes to all apps. The standalone Google
+            Assistant, having been available since 2016, retires on
+            or around 31 March 2026. After that date, the choices
+            Android presents in the digital-assistant slot are Gemini
+            or None. The third option that existed for nearly a
+            decade is going away, on a published schedule, with
+            <a href="https://9to5google.com/2025/12/19/google-assistant-gemini-2026/" target="_blank" rel="noopener">9to5Google reporting the full sunset for March 2026</a>.</p>
+
+        <p>Pixel 10
+            (<a href="https://techcrunch.com/2025/08/20/pixel-10-new-gemini-features-the-pixel-watch-and-everything-else-announced-at-the-made-by-google-2025-event/" target="_blank" rel="noopener">announced 20 August 2025</a>,
+            shipping from 28 August 2025) shipped with Gemini already
+            in the slot. On the rest of the eligible estate, Gemini
+            arrived as a system update over the course of 2025, in
+            some cases as a notification offering to "upgrade" the
+            existing assistant; framed, in that wording, as the
+            outdated version of itself. Devices below the threshold
+            keep classic Google Assistant by default, not by choice;
+            they simply lack the resources to run the new model.</p>
+
+        <svg viewBox="0 0 620 260" aria-label="A diagram of the Android assistant role as an operating-system hook. Three input channels (the long-press of the home button, the wake word Hey Google, and the assistant intent invoked by third-party apps) all route to a single OS slot labelled assistant role, which until 2024 was held by Google Assistant and is now held by Gemini. The legend notes that the slot accepts exactly one holder at a time, including None." role="img" style="max-width:620px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-os-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-os-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-os-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-os-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-os-strike { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; text-decoration: line-through; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-os-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nitb-os-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .nitb-os-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#nitb-os-arrow); }
+            </style>
+            <defs>
+                <marker id="nitb-os-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="310" y="22" class="nitb-os-title" text-anchor="middle">The Assistant Slot Is a Role, Not an App</text>
+
+            <rect x="20" y="50" width="160" height="40" class="nitb-os-box"/>
+            <text x="100" y="68" class="nitb-os-text" text-anchor="middle">long-press home</text>
+            <text x="100" y="82" class="nitb-os-muted" text-anchor="middle">user gesture</text>
+
+            <rect x="20" y="110" width="160" height="40" class="nitb-os-box"/>
+            <text x="100" y="128" class="nitb-os-text" text-anchor="middle">"Hey Google"</text>
+            <text x="100" y="142" class="nitb-os-muted" text-anchor="middle">wake word</text>
+
+            <rect x="20" y="170" width="160" height="40" class="nitb-os-box"/>
+            <text x="100" y="188" class="nitb-os-text" text-anchor="middle">assistant intent</text>
+            <text x="100" y="202" class="nitb-os-muted" text-anchor="middle">from any app</text>
+
+            <line x1="180" y1="70" x2="280" y2="125" class="nitb-os-arr"/>
+            <line x1="180" y1="130" x2="280" y2="130" class="nitb-os-arr"/>
+            <line x1="180" y1="190" x2="280" y2="135" class="nitb-os-arr"/>
+
+            <rect x="280" y="100" width="160" height="70" class="nitb-os-accent-box"/>
+            <text x="360" y="124" class="nitb-os-head" text-anchor="middle">OS assistant role</text>
+            <text x="360" y="142" class="nitb-os-muted" text-anchor="middle">one holder at a time</text>
+            <text x="360" y="158" class="nitb-os-muted" text-anchor="middle">(Gemini, or None)</text>
+
+            <line x1="440" y1="135" x2="490" y2="135" class="nitb-os-arr"/>
+
+            <rect x="490" y="100" width="110" height="70" class="nitb-os-accent-box"/>
+            <text x="545" y="122" class="nitb-os-text" text-anchor="middle">Gemini</text>
+            <text x="545" y="138" class="nitb-os-muted" text-anchor="middle">(now)</text>
+            <text x="545" y="158" class="nitb-os-strike" text-anchor="middle">Google Assistant</text>
+
+            <text x="310" y="232" class="nitb-os-muted">Three inputs &#x2192; one role &#x2192; one model. The slot was always there; the holder is new.</text>
+        </svg>
+
+        <h2>The Introduction</h2>
+
+        <p>The transition was confirmed as a roadmap step in late
+            2025, after an earlier 2024 target was missed.
+            <a href="https://9to5google.com/2025/12/19/google-assistant-gemini-2026/" target="_blank" rel="noopener">Google announced in December 2025</a>
+            that the full sunset of Google Assistant on mobile would
+            land in March 2026, with the work continuing across Wear
+            OS, Android Auto, Google TV and Google Home. The rollout
+            is not a single launch event; it is a slow displacement,
+            device-class by device-class, with a hard deadline at the
+            end.</p>
+
+        <p>For users this means three different experiences. On a
+            Pixel 10 the assistant has been Gemini from day one. On
+            most other eligible Android phones it has been switched
+            over by system update, with or without a clear
+            notification. On devices below the eligibility line,
+            classic Assistant continues to work until the standalone
+            service retires, after which those devices will have no
+            current Google assistant at all, unless they are
+            replaced.</p>
+
+        <p>The brief signed when a phone was bought said "smart
+            assistant". It did not say which one, and it did not
+            promise that the answer would not change.</p>
+
+        <h2>The Mechanics</h2>
+
+        <p>A digital assistant on Android is not a special
+            application; it is a role. The operating system exposes a
+            hook (the "assistant role"), and exactly one application
+            at a time is the holder. When a user long-presses the home
+            button, says the wake word, or when a third-party app
+            calls the assistant intent, the OS routes the call to the
+            holder.</p>
+
+        <p>Until 2024, the holder was Google Assistant. As of the
+            rollout described above, on every eligible device, the
+            holder is Gemini. The same long-press, the same "Hey
+            Google", the same downstream apps; a different programme
+            at the other end.</p>
+
+        <p>On Pixel-class hardware,
+            <a href="https://blog.google/products/gemini/gemini-nano-pixel-10-updates/" target="_blank" rel="noopener">Gemini Nano runs on the device</a>
+            for part of the work. Gemini Nano is a small foundation
+            model designed to run locally, and it powers a number of
+            system features the user may not know are powered by a
+            model at all (more on those below). For anything heavier,
+            the call leaves the phone and goes to Google's cloud,
+            where a larger model decides what to do with what was
+            said. The line between "handled locally" and "sent to the
+            cloud" is set by Google; the user interface does not
+            display it.</p>
+
+        <svg viewBox="0 0 620 240" aria-label="A diagram of how a Pixel-class device routes assistant requests. A spoken request arrives at the device, where Gemini Nano runs on-device for a slice of the work; a routing decision, set by Google, sends anything heavier to a larger Gemini model in Google Cloud. The legend notes that the user interface does not display where the boundary lies." role="img" style="max-width:620px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-rt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-rt-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-rt-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-rt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-rt-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nitb-rt-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .nitb-rt-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#nitb-rt-arrow); }
+                .nitb-rt-dashed { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+            </style>
+            <defs>
+                <marker id="nitb-rt-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="310" y="22" class="nitb-rt-title" text-anchor="middle">Pixel-Class Routing: Local Slice, Cloud Remainder</text>
+
+            <rect x="20" y="60" width="120" height="50" class="nitb-rt-box"/>
+            <text x="80" y="80" class="nitb-rt-text" text-anchor="middle">spoken request</text>
+            <text x="80" y="96" class="nitb-rt-muted" text-anchor="middle">microphone</text>
+
+            <line x1="140" y1="85" x2="200" y2="85" class="nitb-rt-arr"/>
+
+            <rect x="200" y="50" width="160" height="120" class="nitb-rt-accent-box"/>
+            <text x="280" y="72" class="nitb-rt-head" text-anchor="middle">routing decision</text>
+            <text x="280" y="92" class="nitb-rt-muted" text-anchor="middle">set by Google</text>
+            <text x="280" y="115" class="nitb-rt-muted" text-anchor="middle">not displayed in UI</text>
+            <rect x="225" y="128" width="110" height="32" class="nitb-rt-box"/>
+            <text x="280" y="148" class="nitb-rt-text" text-anchor="middle">Gemini Nano (local)</text>
+
+            <line x1="360" y1="70" x2="450" y2="70" class="nitb-rt-arr"/>
+            <line x1="360" y1="145" x2="450" y2="145" class="nitb-rt-dashed"/>
+
+            <rect x="450" y="50" width="150" height="50" class="nitb-rt-accent-box"/>
+            <text x="525" y="72" class="nitb-rt-text" text-anchor="middle">larger Gemini</text>
+            <text x="525" y="88" class="nitb-rt-muted" text-anchor="middle">Google Cloud</text>
+
+            <rect x="450" y="125" width="150" height="40" class="nitb-rt-box"/>
+            <text x="525" y="145" class="nitb-rt-muted" text-anchor="middle">stays on device</text>
+            <text x="525" y="158" class="nitb-rt-muted" text-anchor="middle">(small slice)</text>
+
+            <text x="310" y="200" class="nitb-rt-muted" text-anchor="middle">"Handled locally" is a decision made by Google for each request, not a setting the user sees.</text>
+            <text x="310" y="216" class="nitb-rt-muted" text-anchor="middle">Where the boundary lies on any given utterance is not in the brief.</text>
+        </svg>
+
+        <h2>The System-App Integration</h2>
+
+        <p>The point worth stating, because the assistant slot is
+            only the visible edge of the change, is that Gemini Nano
+            is woven into the Pixel system apps, not just behind the
+            assistant role. Each of these is, in isolation, a
+            legitimate feature. The cumulative point is that the
+            language model is now a Pixel platform service, with
+            system apps for phone calls, messages and voice recording
+            wired into it. The slot is not the only place the model
+            lives. It is just the most obvious one.</p>
+
+        <svg viewBox="0 0 620 280" aria-label="A diagram of four Pixel system apps powered by Gemini Nano on-device. From Messages, Magic Compose drafts suggested replies with style variants formal, excited and chill, without an internet connection. From Phone, Call Notes records a call and produces a written summary, and Scam Detection analyses calls in real time for fraud-script patterns. From Pixel Recorder, automatic summaries are produced, including three-bullet summaries for recordings longer than thirty minutes. All four arrows converge on Gemini Nano running on-device on Pixel-class hardware. The legend notes that the model is woven into system apps, not only the assistant slot." role="img" style="max-width:620px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-sys-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-sys-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-sys-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-sys-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-sys-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nitb-sys-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .nitb-sys-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#nitb-sys-arrow); }
+            </style>
+            <defs>
+                <marker id="nitb-sys-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="310" y="22" class="nitb-sys-title" text-anchor="middle">Gemini Nano in the Pixel System Apps</text>
+
+            <rect x="20" y="50" width="180" height="65" class="nitb-sys-box"/>
+            <text x="110" y="70" class="nitb-sys-head" text-anchor="middle">Magic Compose</text>
+            <text x="110" y="86" class="nitb-sys-muted" text-anchor="middle">Google Messages</text>
+            <text x="110" y="102" class="nitb-sys-muted" text-anchor="middle">Formal / Excited / Chill</text>
+
+            <rect x="20" y="130" width="180" height="65" class="nitb-sys-box"/>
+            <text x="110" y="150" class="nitb-sys-head" text-anchor="middle">Call Notes</text>
+            <text x="110" y="166" class="nitb-sys-muted" text-anchor="middle">Phone (Pixel-exclusive)</text>
+            <text x="110" y="182" class="nitb-sys-muted" text-anchor="middle">written call summaries</text>
+
+            <rect x="420" y="50" width="180" height="65" class="nitb-sys-box"/>
+            <text x="510" y="70" class="nitb-sys-head" text-anchor="middle">Recorder Summaries</text>
+            <text x="510" y="86" class="nitb-sys-muted" text-anchor="middle">Pixel Recorder</text>
+            <text x="510" y="102" class="nitb-sys-muted" text-anchor="middle">3-bullet for &#x2265;30 min</text>
+
+            <rect x="420" y="130" width="180" height="65" class="nitb-sys-box"/>
+            <text x="510" y="150" class="nitb-sys-head" text-anchor="middle">Scam Detection</text>
+            <text x="510" y="166" class="nitb-sys-muted" text-anchor="middle">Phone (live)</text>
+            <text x="510" y="182" class="nitb-sys-muted" text-anchor="middle">fraud-script patterns</text>
+
+            <line x1="200" y1="82" x2="280" y2="220" class="nitb-sys-arr"/>
+            <line x1="200" y1="162" x2="290" y2="225" class="nitb-sys-arr"/>
+            <line x1="420" y1="82" x2="340" y2="220" class="nitb-sys-arr"/>
+            <line x1="420" y1="162" x2="330" y2="225" class="nitb-sys-arr"/>
+
+            <rect x="220" y="225" width="180" height="40" class="nitb-sys-accent-box"/>
+            <text x="310" y="245" class="nitb-sys-text" text-anchor="middle">Gemini Nano on-device</text>
+            <text x="310" y="259" class="nitb-sys-muted" text-anchor="middle">Pixel-class hardware</text>
+        </svg>
+
+        <h2>The Architectural Contrast: iOS 27</h2>
+
+        <p>The same vendor's model lands very differently on the
+            other major mobile platform, and the comparison is the
+            privacy story.</p>
+
+        <p>iOS 27, due in autumn 2026, takes the opposite
+            architectural path.
+            <a href="https://www.macrumors.com/2026/05/05/ios-27-third-party-chatbots-apple-intelligence/" target="_blank" rel="noopener">Gemini ships on iOS as a sandboxed extension</a>
+            at the application layer, in a new "Extensions" framework
+            Apple introduced after a public partnership with Google
+            in early 2026. Three properties matter. The extension is
+            opt-in: it does not appear in any assistant role unless
+            the user enables it. It is isolated from system hooks: it
+            cannot become the slot, because iOS does not expose the
+            slot to extensions. It is invoked only when the user
+            explicitly calls it; the wake word, the home gesture and
+            the system microphone all remain Apple's.</p>
+
+        <p>The privacy implication is structural rather than
+            rhetorical. A sandboxed extension can be revoked by the
+            user, audited by the platform, and constrained by
+            permissions on a fine-grained basis. A model installed
+            into the slot inherits the slot: the microphone access,
+            the default-app reach, the assistant intent routed to it
+            by every app on the system.</p>
+
+        <svg viewBox="0 0 620 320" aria-label="A side-by-side comparison of how Gemini is installed on Android and on iOS 27. On Android, Gemini sits inside the OS assistant role and inherits all three system inputs: the wake word, the long-press of the home button, and the assistant intent. On iOS 27, Gemini sits outside the system hook as a sandboxed extension at the application layer, invoked only when the user explicitly calls it, with the wake word, the home gesture and the system microphone all kept by the operating system. The legend notes that a sandbox can be revoked and audited, while a model in the slot inherits the slot." role="img" style="max-width:620px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-cmp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-cmp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-cmp-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-cmp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nitb-cmp-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .nitb-cmp-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#nitb-cmp-arrow); }
+                .nitb-cmp-block { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+            </style>
+            <defs>
+                <marker id="nitb-cmp-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="310" y="22" class="nitb-cmp-title" text-anchor="middle">Same Model, Two Architectures</text>
+
+            <text x="155" y="48" class="nitb-cmp-head" text-anchor="middle">Android: in the slot</text>
+            <rect x="20" y="60" width="270" height="200" class="nitb-cmp-box"/>
+            <text x="155" y="80" class="nitb-cmp-muted" text-anchor="middle">OS layer</text>
+
+            <rect x="40" y="92" width="100" height="32" class="nitb-cmp-box"/>
+            <text x="90" y="112" class="nitb-cmp-muted" text-anchor="middle">wake word</text>
+            <rect x="160" y="92" width="110" height="32" class="nitb-cmp-box"/>
+            <text x="215" y="112" class="nitb-cmp-muted" text-anchor="middle">home gesture</text>
+            <rect x="40" y="132" width="230" height="32" class="nitb-cmp-box"/>
+            <text x="155" y="152" class="nitb-cmp-muted" text-anchor="middle">assistant intent (any app)</text>
+
+            <line x1="90" y1="164" x2="135" y2="190" class="nitb-cmp-arr"/>
+            <line x1="215" y1="164" x2="175" y2="190" class="nitb-cmp-arr"/>
+            <line x1="155" y1="164" x2="155" y2="190" class="nitb-cmp-arr"/>
+
+            <rect x="60" y="190" width="190" height="48" class="nitb-cmp-accent-box"/>
+            <text x="155" y="212" class="nitb-cmp-text" text-anchor="middle">Gemini in OS slot</text>
+            <text x="155" y="228" class="nitb-cmp-muted" text-anchor="middle">inherits microphone + reach</text>
+
+            <text x="465" y="48" class="nitb-cmp-head" text-anchor="middle">iOS 27: sandboxed</text>
+            <rect x="330" y="60" width="270" height="200" class="nitb-cmp-box"/>
+            <text x="465" y="80" class="nitb-cmp-muted" text-anchor="middle">OS layer (kept by Apple)</text>
+
+            <rect x="350" y="92" width="100" height="32" class="nitb-cmp-box"/>
+            <text x="400" y="112" class="nitb-cmp-muted" text-anchor="middle">wake word</text>
+            <rect x="470" y="92" width="110" height="32" class="nitb-cmp-box"/>
+            <text x="525" y="112" class="nitb-cmp-muted" text-anchor="middle">home gesture</text>
+            <rect x="350" y="132" width="230" height="32" class="nitb-cmp-box"/>
+            <text x="465" y="152" class="nitb-cmp-muted" text-anchor="middle">system microphone</text>
+
+            <line x1="400" y1="164" x2="445" y2="184" class="nitb-cmp-block"/>
+            <line x1="525" y1="164" x2="485" y2="184" class="nitb-cmp-block"/>
+            <line x1="465" y1="164" x2="465" y2="184" class="nitb-cmp-block"/>
+
+            <rect x="370" y="184" width="190" height="32" class="nitb-cmp-box"/>
+            <text x="465" y="204" class="nitb-cmp-muted" text-anchor="middle">no slot exposed to extensions</text>
+
+            <rect x="370" y="222" width="190" height="32" class="nitb-cmp-accent-box"/>
+            <text x="465" y="242" class="nitb-cmp-text" text-anchor="middle">Gemini extension (opt-in)</text>
+
+            <text x="310" y="278" class="nitb-cmp-muted" text-anchor="middle">A sandbox can be revoked and audited.</text>
+            <text x="310" y="294" class="nitb-cmp-muted" text-anchor="middle">A model in the slot inherits the slot.</text>
+        </svg>
+
+        <h2>A Note on Architecture and Business</h2>
+
+        <p>The architecture follows the business, and the business is
+            visible in the published filings. These observations are
+            not accusations; they are descriptions of where each
+            company makes its money, as reported to their respective
+            regulators.</p>
+
+        <p><a href="https://www.sec.gov/Archives/edgar/data/0000320193/000032019325000077/a8-kex991q4202509272025.htm" target="_blank" rel="noopener">Apple's FY2025 revenue</a>
+            was approximately 74 per cent hardware and 26 per cent
+            services; the device is the customer-facing product, the
+            privacy of the data on it is a marketing surface, a
+            regulatory consideration and a business asset.
+            <a href="https://www.sec.gov/Archives/edgar/data/0001652044/000165204425000091/goog-20250930.htm" target="_blank" rel="noopener">Alphabet's 2025 revenue</a>
+            was approximately three quarters advertising (Google
+            Search around 224 billion and YouTube around 40 billion
+            US dollars), with cloud as the third major segment at
+            roughly 14.57 per cent; the advertising placement is the
+            customer-facing product, and the data the placement is
+            targeted against is operational input.</p>
+
+        <p>The implementations of the same model on the two platforms
+            sit at the two ends of that spectrum, and they sit there
+            for reasons their respective shareholders can read in the
+            same documents. The architectural choice of where to
+            install a foundation model, in the slot or beside it, in
+            the operating system or on top of it, is the kind of
+            choice that follows from those numbers, not the kind of
+            choice that contradicts them. That is the only point this
+            section makes.</p>
+
+        <svg viewBox="0 0 620 230" aria-label="A revenue-mix spectrum diagram. Apple FY2025 is shown as about 74 per cent hardware and 26 per cent services, with services margin above 70 per cent. Alphabet 2025 is shown as about three quarters advertising (Google Search and YouTube combined, about 224 and 40 billion US dollars respectively), with cloud at about 14.57 per cent. The two ends of the spectrum are labelled the device is the product and the placement is the product. The legend notes that the architectural choice of where to install Gemini sits at the end of the spectrum that matches each vendor's filings." role="img" style="max-width:620px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-rev-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-rev-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-rev-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-rev-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-rev-bar-hw { fill: var(--accent); opacity: 0.35; }
+                .nitb-rev-bar-sv { fill: var(--accent); opacity: 0.7; }
+                .nitb-rev-bar-ad { fill: var(--accent); opacity: 0.7; }
+                .nitb-rev-bar-cl { fill: var(--accent); opacity: 0.35; }
+                .nitb-rev-bar-ot { fill: var(--muted); opacity: 0.3; }
+                .nitb-rev-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="310" y="22" class="nitb-rev-title" text-anchor="middle">Where the Money Comes From (Same Filings)</text>
+
+            <text x="60" y="50" class="nitb-rev-head">Apple FY2025</text>
+            <rect x="60" y="60" width="500" height="28" class="nitb-rev-box"/>
+            <rect x="60" y="60" width="370" height="28" class="nitb-rev-bar-hw"/>
+            <rect x="430" y="60" width="130" height="28" class="nitb-rev-bar-sv"/>
+            <text x="245" y="79" class="nitb-rev-text" text-anchor="middle">hardware ~74%</text>
+            <text x="495" y="79" class="nitb-rev-text" text-anchor="middle">services ~26%</text>
+            <text x="60" y="102" class="nitb-rev-muted">device is the product &#x2022; services margin &gt;70% &#x2022; privacy is a marketing surface</text>
+
+            <text x="60" y="138" class="nitb-rev-head">Alphabet 2025</text>
+            <rect x="60" y="148" width="500" height="28" class="nitb-rev-box"/>
+            <rect x="60" y="148" width="375" height="28" class="nitb-rev-bar-ad"/>
+            <rect x="435" y="148" width="73" height="28" class="nitb-rev-bar-cl"/>
+            <rect x="508" y="148" width="52" height="28" class="nitb-rev-bar-ot"/>
+            <text x="247" y="167" class="nitb-rev-text" text-anchor="middle">advertising ~75%</text>
+            <text x="471" y="167" class="nitb-rev-text" text-anchor="middle">cloud ~15%</text>
+            <text x="534" y="167" class="nitb-rev-muted" text-anchor="middle">other</text>
+            <text x="60" y="190" class="nitb-rev-muted">placement is the product &#x2022; the data the placement is targeted against is operational input</text>
+
+            <text x="310" y="216" class="nitb-rev-muted" text-anchor="middle">Sandbox vs slot: an architectural choice that sits at the end of the spectrum that matches each filing.</text>
+        </svg>
+
+        <h2>The Risk</h2>
+
+        <p>A new assistant in the slot is not a breach and it is not
+            a leak. The microphone access was already there; the
+            assistant role was already there; the user agreed, at
+            some abstract point in the past, that their phone would
+            have an assistant. What changed is who is at the other
+            end of all of that.</p>
+
+        <p>The risk worth naming, in plain terms, is exposure
+            asymmetry. Voice input that used to be answered by a
+            search agent is now answered by a language model with
+            different defaults about what it stores, what it
+            summarises and what it forwards to third-party tools
+            (extensions, the Gemini app on iOS, integrated services
+            on Android). A reasonable user, having bought a phone,
+            would expect to be asked before a different programme
+            answers their microphone. The brief said "smart
+            assistant". The execution says "model".</p>
+
+        <p>That distinction is not pedantry. A search agent's job is
+            to route a query to a known endpoint. A language model's
+            job is to interpret the query, decide what data is
+            relevant, decide which extensions or external tools to
+            call, and produce a coherent answer. The decisions are
+            made on the user's behalf, with privacy defaults set by
+            the vendor, on data the user did not explicitly classify.
+            None of this is in itself wrongdoing. All of it is in
+            scope for the question "what is this thing doing with
+            what I said".</p>
+
+        <h2>How to See It</h2>
+
+        <p>Three steps, under a minute, on a current Android
+            device:</p>
+
+        <p><strong>One. Settings &#x2192; Apps &#x2192; Default apps
+            &#x2192; Digital assistant app.</strong> This is the OS
+            role. The options listed there are the assistants the OS
+            will route the long-press, the wake word and the
+            assistant intent to. If classic Google Assistant is still
+            installed, "Digital assistant from Google" appears; if it
+            is not, the choice is Gemini or None.</p>
+
+        <p><strong>Two. App management &#x2192; Gemini &#x2192;
+            Disable + Force Stop.</strong> Gemini ships as a system
+            app on most devices, which means it cannot be
+            uninstalled in the ordinary sense; it can, however, be
+            disabled, and Force Stop ends any background work it was
+            doing. If the assistant role is set to None and Gemini is
+            disabled, the phone has no active assistant.</p>
+
+        <p><strong>Three. Samsung path:</strong> Settings &#x2192;
+            Apps &#x2192; Choose default apps &#x2192; Assistant app.
+            The same role, under Samsung's menu layout.</p>
+
+        <p>For the Pixel-only inline features (Magic Compose, Call
+            Notes, Recorder Summaries, Scam Detection) the relevant
+            settings are per-app: open Settings &#x2192; Apps
+            &#x2192; choose Messages, Phone or Recorder, and review
+            the AI-feature toggles and Permissions for each.</p>
+
+        <p>Trade-off, stated plainly: if the role is None and Gemini
+            is disabled, the long-press of the home button does
+            nothing and "Hey Google" does nothing. The phone
+            otherwise works normally. The inline system-app features
+            remain available unless explicitly turned off in their
+            respective apps.</p>
+
+        <svg viewBox="0 0 620 270" aria-label="An awareness-path diagram with three numbered steps. Step one: Settings, Apps, Default apps, Digital assistant app, then choose Gemini or None. Step two: App management, Gemini, Disable plus Force Stop, noting that the app cannot be uninstalled on most devices but can be stopped. Step three: Samsung path Settings, Apps, Choose default apps, Assistant app. A note records the trade-off that with None set the long-press and the wake word do nothing, and the phone otherwise works normally." role="img" style="max-width:620px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-aw-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-aw-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-aw-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-aw-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-aw-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nitb-aw-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .nitb-aw-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#nitb-aw-arrow); }
+            </style>
+            <defs>
+                <marker id="nitb-aw-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="310" y="22" class="nitb-aw-title" text-anchor="middle">Three Taps to See Your Own Slot</text>
+
+            <rect x="20" y="50" width="585" height="50" class="nitb-aw-accent-box"/>
+            <text x="38" y="72" class="nitb-aw-head">1.</text>
+            <text x="62" y="72" class="nitb-aw-text">Settings &#x2192; Apps &#x2192; Default apps &#x2192; Digital assistant app</text>
+            <text x="62" y="90" class="nitb-aw-muted">choose Gemini, or None (no holder), or Digital assistant from Google if still present</text>
+
+            <line x1="312" y1="100" x2="312" y2="115" class="nitb-aw-arr"/>
+
+            <rect x="20" y="120" width="585" height="50" class="nitb-aw-accent-box"/>
+            <text x="38" y="142" class="nitb-aw-head">2.</text>
+            <text x="62" y="142" class="nitb-aw-text">App management &#x2192; Gemini &#x2192; Disable + Force Stop</text>
+            <text x="62" y="160" class="nitb-aw-muted">cannot be uninstalled on most devices, but can be stopped</text>
+
+            <line x1="312" y1="170" x2="312" y2="185" class="nitb-aw-arr"/>
+
+            <rect x="20" y="190" width="585" height="50" class="nitb-aw-box"/>
+            <text x="38" y="212" class="nitb-aw-head">3.</text>
+            <text x="62" y="212" class="nitb-aw-text">Samsung: Settings &#x2192; Apps &#x2192; Choose default apps &#x2192; Assistant app</text>
+            <text x="62" y="230" class="nitb-aw-muted">same role, different menu</text>
+
+            <text x="310" y="260" class="nitb-aw-muted" text-anchor="middle">With None set, long-press and "Hey Google" do nothing. The phone otherwise works normally.</text>
+        </svg>
+
+        <h2>Coda</h2>
+
+        <p>This episode is about an OS-level change of who is at the
+            other end of the assistant role, made silently on a
+            published schedule, on a population of devices the size
+            of a continent. None of it is a breach. None of it is
+            hidden. All of it can be checked in three taps and
+            decided on the user's own terms.</p>
+
+        <blockquote>
+            <p>The OS used to ask before changing your browser. It
+                did not ask before changing the model behind your
+                microphone. The looking is not difficult. It just
+                has to start.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>How to see it on your own phone, in three
+                steps:</strong></p>
+            <ul>
+                <li><strong>Settings &#x2192; Apps &#x2192; Default
+                    apps &#x2192; Digital assistant app.</strong>
+                    Pick "Digital assistant from Google" if classic
+                    Assistant is still installed, or None for no
+                    holder at all.</li>
+                <li><strong>App management &#x2192; Gemini &#x2192;
+                    Disable + Force Stop.</strong> Cannot be
+                    uninstalled on most devices, but can be
+                    stopped.</li>
+                <li><strong>Samsung path:</strong> Settings
+                    &#x2192; Apps &#x2192; Choose default apps
+                    &#x2192; Assistant app.</li>
+            </ul>
+            <p>Trade-off: with None set, the long-press and "Hey
+                Google" do nothing. The phone keeps working. The
+                Pixel-only inline features (Magic Compose in
+                Messages, Call Notes, Recorder Summaries, Scam
+                Detection) run on Gemini Nano on-device and can be
+                audited per app in Settings &#x2192; Apps &#x2192;
+                [the app] &#x2192; Permissions.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

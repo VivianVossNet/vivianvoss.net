@@ -1,0 +1,622 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Open Is Not Owned &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A great deal of procurement language at the moment treats open source as a sovereignty answer. Open and owned are not the same word. They overlap in places. They diverge in others, and the divergences tend to fall precisely where procurement assumes they do not. A licence is not a deed of ownership; it is a statement of conditions. Permissive licences move ownership cleanly. GPL keeps the code open, but the licence absorbs the surrounding code. AGPL is the honest middle. SSPL is not OSI-recognised. The xz backdoor (CVE-2024-3094) reminds us that open is not audited. The Linux Foundation's US registration reaches Linux kernel governance. The CLOUD Act and Schrems II codify the European stake. Bow 1 of 3 on European software sovereignty.">
+{( endslot )}
+
+{( slot canonical )}/blog/open-is-not-owned{( endslot )}
+
+{( slot og-title )}Open Is Not Owned &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}IT Philosophy, the first of three on European software sovereignty. A licence is not a deed of ownership, it is a statement of conditions; the question worth asking is which conditions move ownership towards the receiver and which conditions hold it elsewhere. The licence landscape needs three shelves rather than two: permissive (BSD, MIT, Apache 2.0) lets the receiver do anything; copyleft (GPLv2, GPLv3, LGPL, EUPL-1.2) requires distribution of modified versions under the same licence; network copyleft (AGPLv3) extends the requirement to hosted services. SSPL (MongoDB 2018, Elastic 2021) extends the requirement to surrounding management software and is therefore not OSI-recognised as open source. GPL keeps the code open but the licence absorbs surrounding code; FreeBSD 10.0 (January 2014) migrated from GCC to Clang precisely because GPLv3 did not allow a uniformly permissive base. AGPL is the honest middle: reciprocity for the program itself, no absorption of surrounding code. The xz backdoor (CVE-2024-3094, CVSS 10.0) discovered by Andres Freund in March 2024 after a multi-year campaign by a maintainer named Jia Tan reminds us that open is not audited; permissive licensing makes audit possible, it does not make audit happen. In October 2024 the Linux kernel removed approximately eleven maintainers from a particular jurisdiction subject to expanded US sanctions; the Linux Foundation is US-registered and that registration reaches kernel governance. The CLOUD Act (2018) and Schrems II (2020) codify the European stake. A licence is a permission slip; sovereignty is the practice of using it through reproducible local build, audit and signing, and continuous re-receipt. This piece sets the question; the architectural layer is next Sunday, the silicon layer the Sunday after.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Open Is Not Owned",
+    "datePublished": "2026-06-07",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/open-is-not-owned",
+    "description": "IT Philosophy, the first of three on European software sovereignty. A great deal of procurement language at the moment treats open source as a sovereignty answer; the reasoning runs that proprietary cloud providers are foreign-jurisdiction firms, open source is by contrast open, therefore open source is sovereign. The conclusion is louder than the premises warrant. Open and owned are not the same word; they overlap in places, they diverge in others, and where they diverge tends to be precisely where procurement assumes they do not. The question is being asked across multiple jurisdictions: France's Interministerial Digital Directorate (DINUM) announced in April 2026 a migration of its own workstations from Windows to Linux, with a directive to all ministries to formalise plans for eliminating extra-European dependencies by autumn; Huawei launched its HarmonyOS PC line in May 2025 after the company's Windows licence was withdrawn under US sanctions; India has produced BharOS through IIT Madras and government sponsorship; China's procurement directives now favour domestic ISA work at the chip layer. A licence is not a deed of ownership, it is a statement of conditions. The licence landscape needs three shelves rather than two. Permissive licences (BSD 2-Clause, BSD 3-Clause, MIT, Apache 2.0) let anyone build on the code, fork it, ship it, sell it and combine it with other code under any licence at all; original authors retain attribution. Copyleft licences (GPLv2, GPLv3, LGPL) let anyone receive and modify the code but require that any distribution of the modified version arrives under the same licence; the receiver does not own what they build with it in the unrestricted sense, they hold it under the conditions the original author set, in perpetuity. Network copyleft licences (AGPLv3) extend copyleft to the case where the modified version runs as a service rather than being distributed as a binary; Section 13 closes what is sometimes called the SaaS loophole of classical GPL. The Server Side Public Licence (SSPL), introduced by MongoDB in 2018 and adopted by Elastic in 2021, extends AGPL's network clause to require open-sourcing of the entire surrounding management stack; the Open Source Initiative declines to recognise SSPL as open source, citing field-of-use discrimination, so SSPL is a fourth shelf that does not behave like the other three. The European Union Public Licence (EUPL-1.2) sits in the copyleft family and is OSI-approved; it exists in part because the EU wanted a Union-grounded licence with cross-Member-State legal certainty in twenty-three languages. GPL keeps the code open, it does not return it to the receiver: every downstream version remains under GPL, the original author's licensing choice propagates indefinitely, and a European entity that needs to take a piece of GPL code and integrate it with proprietary or commercially-sensitive surrounding code finds that GPL has decided the licensing of the surrounding code as well, because the licence absorbs. A useful demonstration is FreeBSD's compiler migration: FreeBSD 10.0 (January 2014) moved its base system from GCC to Clang; the technical case existed but was not decisive, the decisive factor was that GCC had moved to GPLv3 and a coherent permissive base could not host a copyleft compiler whose conditions would leak outwards. AGPL is the honest middle: if you modify this code and use it to serve users over a network, the users have a right to your modifications; it does not require you to share user data, internal management software, or anything outside the modified program itself, which is exactly what tipped SSPL out of the OSI classification. The xz incident reminds us that open is not audited: in March 2024 a Microsoft engineer named Andres Freund was profiling SSH connections, noticed unusual CPU time inside liblzma, and discovered a backdoor (CVE-2024-3094, CVSS 10.0) inserted by a maintainer operating under the name Jia Tan after a multi-year social-engineering campaign that began in 2021; the backdoor was discovered by one person's curiosity, not by the audit infrastructure of the open-source ecosystem, because permissive licensing makes audit possible, it does not make audit happen. In October 2024 the Linux kernel project removed approximately eleven maintainers from a particular jurisdiction subject to expanded US sanctions; the change appeared on the kernel mailing list as compliance requirements, Linus Torvalds confirmed it shortly afterwards and declined to reverse it; the specific jurisdiction is not the point, the point is that the Linux Foundation is registered in the United States and US sanctions reach the operations of US-registered organisations, so whichever jurisdiction comes under expanded US legal pressure next has the same exposure to the same mechanism. The CLOUD Act (March 2018) permits US law enforcement to compel US-based service providers to hand over data regardless of where that data is stored; Schrems II (Court of Justice of the European Union, Case C-311/18, July 2020) held that US surveillance law under FISA Section 702 and Executive Order 12333 does not meet the proportionality standard required by EU law and invalidated the EU-US Privacy Shield. These create a strong reason for European public services to prefer software stacks they can host, modify and audit locally; the same reasoning runs in Beijing, in New Delhi, in Moscow, in Brasilia, with the relevant counterpart jurisdiction differing in each case. A licence is a permission slip; sovereignty is the practice of using the permission, which consists of reproducible local build, audit and signing, and continuous re-receipt. A receiver who owns the licence but does not own the build infrastructure does not own the result; a receiver who owns the build infrastructure but runs it on someone else's silicon has only moved the question down a layer. This piece sets the question; the architectural layer is next Sunday, the silicon layer the Sunday after.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-06-07">7 June 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Open Is Not Owned</h1>
+        <p class="vv-article-meta"><em>The licence is the ownership
+            question. IT Philosophy &#x22A3; European Software
+            Sovereignty, 1 of 3.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">licensing</span>
+            <span class="vv-pill">law</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <h2>The Question That Is Rarely Asked Clearly</h2>
+
+        <p>A great deal of procurement language at the moment speaks
+            of <em>open source</em> as a sovereignty answer. The
+            reasoning runs roughly like this. Proprietary cloud
+            providers are foreign-jurisdiction firms. Open source
+            is, by contrast, <em>open</em>. Therefore open source is
+            sovereign.</p>
+
+        <p>The conclusion is louder than the premises warrant.
+            <em>Open</em> and <em>owned</em> are not the same word.
+            They overlap in places. They diverge in others. Where
+            they diverge tends to be precisely where procurement
+            assumes they do not.</p>
+
+        <p>Europe is, at the moment, the most visible case in the
+            Western press. France's Interministerial Digital
+            Directorate (DINUM) announced in April 2026 a migration
+            of its own workstations from Windows to Linux, with a
+            directive to all ministries to formalise plans for
+            eliminating extra-European dependencies by autumn. That
+            is a serious commitment in scale and visibility. It is
+            also not the only one. Huawei launched its HarmonyOS PC
+            line in May 2025 after the company's Windows licence
+            was withdrawn under US sanctions. India has produced
+            BharOS through IIT Madras and government sponsorship.
+            China's procurement directives now favour domestic ISA
+            work (Loongson, RISC-V derivatives) at the chip layer.
+            The question is being asked across multiple
+            jurisdictions; the reasoning, where it goes wrong, goes
+            wrong in similar ways.</p>
+
+        <blockquote>
+            <p>A licence is not a deed of ownership. It is a
+                statement of conditions. The question worth asking
+                is: which conditions move ownership towards you, and
+                which conditions hold it elsewhere?</p>
+        </blockquote>
+
+        <h2>Two Families of Licence, Plus a Fourth Shelf</h2>
+
+        <p>For the discussion to be useful, the licence landscape
+            needs three shelves rather than two.</p>
+
+        <p><strong>Permissive licences</strong> (BSD 2-Clause, BSD
+            3-Clause, MIT, Apache 2.0) let anyone build on the code,
+            fork it, ship it, sell it, and combine it with other
+            code under any licence at all. The original code's
+            authors retain attribution. Everything else is the
+            receiver's to do with as they wish.</p>
+
+        <p><strong>Copyleft licences</strong> (GPLv2, GPLv3, LGPL)
+            let anyone receive the code and modify it, but require
+            that any distribution of the modified version arrives
+            under the same licence. The receiver does not own what
+            they build with it in the unrestricted sense; they hold
+            it under the conditions the original author set, in
+            perpetuity.</p>
+
+        <p><strong>Network copyleft licences</strong> (AGPLv3)
+            extend copyleft to the case where the modified version
+            runs as a service rather than being distributed as a
+            binary.
+            <a href="https://en.wikipedia.org/wiki/Server_Side_Public_License" target="_blank" rel="noopener">AGPL Section 13</a>
+            closes what is sometimes called the <em>SaaS
+            loophole</em> of classical GPL.</p>
+
+        <p>The Server Side Public License (SSPL), introduced by
+            MongoDB in 2018 and adopted by Elastic in 2021, extends
+            AGPL's network clause to require open-sourcing of the
+            entire surrounding management stack.
+            <a href="https://lwn.net/Articles/844016/" target="_blank" rel="noopener">The Open Source Initiative declines to recognise SSPL</a>
+            as open source, citing field-of-use discrimination.
+            Whether that decision is right is a separate question.
+            The practical effect is a fourth shelf that does not
+            behave like the other three.</p>
+
+        <p>The European Union Public Licence (EUPL-1.2) sits in the
+            copyleft family and is OSI-approved. It exists in part
+            because the EU wanted a Union-grounded licence with
+            cross-Member-State legal certainty in twenty-three
+            languages.</p>
+
+        <svg viewBox="0 0 640 320" aria-label="A diagram of four licence shelves. Shelf one is permissive (BSD, MIT, Apache 2.0): the receiver may build, fork, ship, sell and relicense freely. Shelf two is copyleft (GPLv2, GPLv3, LGPL, EUPL-1.2): modified distributions must arrive under the same licence. Shelf three is network copyleft (AGPLv3): the same applies when the modified version is served over a network, closing the SaaS loophole. Shelf four is SSPL (MongoDB 2018, Elastic 2021): extends the requirement to the entire surrounding management stack, OSI declines to recognise it as open source. The legend notes that EUPL exists for cross-Member-State legal certainty in twenty-three languages." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .lic-sh-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-sh-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-sh-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-sh-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-sh-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .lic-sh-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .lic-sh-warn { fill: none; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 3; rx: 4; }
+            </style>
+            <text x="320" y="22" class="lic-sh-title" text-anchor="middle">Four Shelves, Not Two</text>
+
+            <rect x="20" y="50" width="140" height="240" class="lic-sh-accent-box"/>
+            <text x="90" y="72" class="lic-sh-head" text-anchor="middle">Permissive</text>
+            <text x="90" y="92" class="lic-sh-text" text-anchor="middle">BSD 2/3-Clause</text>
+            <text x="90" y="108" class="lic-sh-text" text-anchor="middle">MIT</text>
+            <text x="90" y="124" class="lic-sh-text" text-anchor="middle">Apache 2.0</text>
+            <text x="90" y="156" class="lic-sh-muted" text-anchor="middle">build, fork, ship,</text>
+            <text x="90" y="170" class="lic-sh-muted" text-anchor="middle">sell, relicense</text>
+            <text x="90" y="184" class="lic-sh-muted" text-anchor="middle">attribution stays</text>
+            <text x="90" y="244" class="lic-sh-muted" text-anchor="middle" font-style="italic">ownership</text>
+            <text x="90" y="258" class="lic-sh-muted" text-anchor="middle" font-style="italic">transfers cleanly</text>
+
+            <rect x="170" y="50" width="140" height="240" class="lic-sh-accent-box"/>
+            <text x="240" y="72" class="lic-sh-head" text-anchor="middle">Copyleft</text>
+            <text x="240" y="92" class="lic-sh-text" text-anchor="middle">GPLv2 / GPLv3</text>
+            <text x="240" y="108" class="lic-sh-text" text-anchor="middle">LGPL</text>
+            <text x="240" y="124" class="lic-sh-text" text-anchor="middle">EUPL-1.2</text>
+            <text x="240" y="156" class="lic-sh-muted" text-anchor="middle">modify freely</text>
+            <text x="240" y="170" class="lic-sh-muted" text-anchor="middle">distribute under</text>
+            <text x="240" y="184" class="lic-sh-muted" text-anchor="middle">same licence</text>
+            <text x="240" y="244" class="lic-sh-muted" text-anchor="middle" font-style="italic">conditions</text>
+            <text x="240" y="258" class="lic-sh-muted" text-anchor="middle" font-style="italic">propagate</text>
+
+            <rect x="320" y="50" width="140" height="240" class="lic-sh-accent-box"/>
+            <text x="390" y="72" class="lic-sh-head" text-anchor="middle">Network Copyleft</text>
+            <text x="390" y="92" class="lic-sh-text" text-anchor="middle">AGPLv3</text>
+            <text x="390" y="124" class="lic-sh-muted" text-anchor="middle">Section 13</text>
+            <text x="390" y="156" class="lic-sh-muted" text-anchor="middle">closes the</text>
+            <text x="390" y="170" class="lic-sh-muted" text-anchor="middle">SaaS loophole</text>
+            <text x="390" y="184" class="lic-sh-muted" text-anchor="middle">on the program</text>
+            <text x="390" y="244" class="lic-sh-muted" text-anchor="middle" font-style="italic">reciprocity,</text>
+            <text x="390" y="258" class="lic-sh-muted" text-anchor="middle" font-style="italic">not absorption</text>
+
+            <rect x="470" y="50" width="150" height="240" class="lic-sh-warn"/>
+            <text x="545" y="72" class="lic-sh-head" text-anchor="middle">SSPL</text>
+            <text x="545" y="92" class="lic-sh-text" text-anchor="middle">MongoDB 2018</text>
+            <text x="545" y="108" class="lic-sh-text" text-anchor="middle">Elastic 2021</text>
+            <text x="545" y="140" class="lic-sh-muted" text-anchor="middle">extends to the</text>
+            <text x="545" y="154" class="lic-sh-muted" text-anchor="middle">surrounding stack</text>
+            <text x="545" y="184" class="lic-sh-muted" text-anchor="middle">field-of-use</text>
+            <text x="545" y="198" class="lic-sh-muted" text-anchor="middle">discrimination</text>
+            <text x="545" y="244" class="lic-sh-muted" text-anchor="middle" font-style="italic">not recognised</text>
+            <text x="545" y="258" class="lic-sh-muted" text-anchor="middle" font-style="italic">by OSI</text>
+        </svg>
+
+        <h2>The GPL Cul-de-Sac</h2>
+
+        <p>GPL keeps the code open. It does not return it to you.</p>
+
+        <p>What GPL guarantees is that every downstream version of
+            the code remains under GPL. The original author's
+            licensing choice propagates indefinitely. This is its
+            virtue in one reading and its cul-de-sac in another. A
+            European entity that needs to take a piece of GPL code,
+            integrate it with proprietary or commercially-sensitive
+            surrounding code, and ship a product, finds that GPL
+            has decided the licensing of the surrounding code as
+            well. The licence absorbs.</p>
+
+        <p>A useful demonstration of this point is FreeBSD's
+            compiler migration.
+            <a href="https://www.osnews.com/story/25947/freebsd-clang-replacing-gcc-in-the-base-system/" target="_blank" rel="noopener">FreeBSD 10.0, released in January 2014, moved its base system from GCC to Clang</a>.
+            The technical case existed but was not decisive on its
+            own. The decisive factor was that GCC had moved to
+            GPLv3. FreeBSD wished to ship a base system whose
+            licence terms were uniformly permissive for downstream
+            re-use. GPLv3 did not allow that. So the tree was
+            rebuilt.</p>
+
+        <p>That migration is not anti-GPL polemic. It is an
+            architectural fact. A coherent permissive base required
+            a permissive compiler. The presence of a copyleft
+            compiler in the base would have leaked copyleft
+            conditions outwards. FreeBSD's developers concluded that
+            the cost of staying on GCC was higher than the cost of
+            switching. They switched.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A diagram of how a licence absorbs versus transfers ownership. On the permissive side, a permissive component sits inside a stack of surrounding code; the surrounding code retains whatever licence it had, and ownership transfers cleanly to the receiver. On the copyleft side, a GPL component sits inside the same stack but the licence reaches outwards through the linking boundary and re-licences the surrounding code; ownership inherits conditions. The FreeBSD 10 migration is annotated as the architectural fact: a permissive base could not host a GPLv3 compiler without leaking conditions outwards." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .lic-ab-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-ab-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-ab-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-ab-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-ab-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .lic-ab-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .lic-ab-fill { fill: var(--accent); opacity: 0.12; rx: 4; }
+            </style>
+            <text x="320" y="22" class="lic-ab-title" text-anchor="middle">Permissive Transfers. Copyleft Absorbs.</text>
+
+            <text x="155" y="48" class="lic-ab-head" text-anchor="middle">Permissive</text>
+            <rect x="20" y="60" width="270" height="180" class="lic-ab-accent-box"/>
+            <text x="155" y="84" class="lic-ab-muted" text-anchor="middle">surrounding code keeps its own licence</text>
+            <rect x="40" y="100" width="230" height="60" class="lic-ab-box"/>
+            <text x="155" y="124" class="lic-ab-text" text-anchor="middle">your stack</text>
+            <text x="155" y="146" class="lic-ab-muted" text-anchor="middle">commercial, proprietary, mixed</text>
+            <rect x="100" y="180" width="110" height="40" class="lic-ab-accent-box"/>
+            <text x="155" y="204" class="lic-ab-text" text-anchor="middle">permissive lib</text>
+            <text x="155" y="232" class="lic-ab-muted" text-anchor="middle" font-style="italic">ownership transfers</text>
+
+            <text x="485" y="48" class="lic-ab-head" text-anchor="middle">Copyleft (GPLv3)</text>
+            <rect x="350" y="60" width="270" height="180" class="lic-ab-accent-box"/>
+            <rect x="350" y="60" width="270" height="180" class="lic-ab-fill"/>
+            <text x="485" y="84" class="lic-ab-muted" text-anchor="middle">licence reaches outward through linking</text>
+            <rect x="370" y="100" width="230" height="60" class="lic-ab-box"/>
+            <text x="485" y="124" class="lic-ab-text" text-anchor="middle">your stack &#x2192; absorbed</text>
+            <text x="485" y="146" class="lic-ab-muted" text-anchor="middle">surrounding code re-licensed under GPL</text>
+            <rect x="430" y="180" width="110" height="40" class="lic-ab-accent-box"/>
+            <text x="485" y="204" class="lic-ab-text" text-anchor="middle">GPL lib</text>
+            <text x="485" y="232" class="lic-ab-muted" text-anchor="middle" font-style="italic">conditions propagate</text>
+
+            <text x="320" y="270" class="lic-ab-muted" text-anchor="middle">FreeBSD 10.0 (January 2014) rebuilt the toolchain on Clang because a permissive base cannot host a GPLv3 compiler.</text>
+        </svg>
+
+        <p>For a European sovereignty discussion, the analogous
+            question is: which licence allows the receiver to build
+            a coherent local stack, host it, modify it, and not be
+            required to re-licence everything that touches it?
+            Permissive licences answer <em>yes</em> without
+            conditions. AGPL answers <em>yes for hosted services,
+            provided you publish the modifications</em>. GPL answers
+            <em>yes for the GPL component; anything that links to it
+            must also be GPL</em>. The three answers are not
+            equivalent.</p>
+
+        <h2>The Honest Middle of AGPL</h2>
+
+        <p>There is a temptation in any sovereignty discussion to
+            treat permissive licensing as obviously correct and
+            copyleft as obviously wrong. That would be tidy but
+            inaccurate.</p>
+
+        <p>AGPL is the honest middle. It says: if you modify this
+            code and use it to serve users over a network, the
+            users have a right to your modifications. It does not
+            require you to share user data, internal management
+            software, or anything outside the modified program
+            itself. It closes the specific gap that classical GPL
+            leaves open and stops there.</p>
+
+        <p>The structural difference between AGPL and SSPL is
+            exactly this. SSPL extends the requirement to
+            surrounding management and hosting software, which is
+            what tipped it out of OSI's open-source classification.
+            AGPL keeps the requirement on the program itself.</p>
+
+        <p>For European public services that build on open code and
+            run as networked offerings, AGPL is a defensible licence
+            choice. It says, plainly: you may use this, and what
+            you build on top is your code; but the modifications to
+            <em>this</em> code, when used as a service, return to
+            the commons. That is reciprocity, not absorption.</p>
+
+        <h2>The xz Evidence: Open Is Not Audited</h2>
+
+        <p>In March 2024, a Microsoft engineer named Andres Freund
+            was profiling SSH connections on his development machine
+            and noticed an unusual amount of CPU time spent inside
+            <em>liblzma</em>. He investigated, and
+            <a href="https://en.wikipedia.org/wiki/XZ_Utils_backdoor" target="_blank" rel="noopener">discovered a sophisticated backdoor in the xz/liblzma compression library</a>,
+            assigned CVE-2024-3094 with a CVSS score of 10.0.</p>
+
+        <p>The backdoor had been inserted by a maintainer operating
+            under the name <em>Jia Tan</em>, after a multi-year
+            social engineering campaign that began in 2021. The
+            campaign pressured the original maintainer into ceding
+            maintainer privileges. Once granted, the new maintainer
+            introduced the backdoor in version 5.6.0, where it
+            persisted into 5.6.1.</p>
+
+        <p>xz/liblzma is open source. Anyone could read the code.
+            The backdoor was discovered, in the end, by a
+            PostgreSQL developer noticing SSH latency on a single
+            machine. Not by the audit infrastructure of the
+            open-source ecosystem. By one person's curiosity.</p>
+
+        <svg viewBox="0 0 640 240" aria-label="A timeline of the xz/liblzma backdoor incident. In 2021 a multi-year social-engineering campaign begins under the name Jia Tan, pressuring the original maintainer of xz/liblzma. Around 2023 maintainer privileges are ceded. In early 2024 a backdoor is introduced in xz 5.6.0 and 5.6.1, assigned CVE-2024-3094 with a CVSS score of 10.0. On 29 March 2024 Andres Freund discovers the backdoor while profiling SSH connections and noticing unusual CPU time inside liblzma. The legend notes that the discovery was one person's curiosity, not the audit infrastructure." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .xz-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .xz-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .xz-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .xz-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .xz-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .xz-tl-tick { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+                .xz-tl-dot { fill: var(--accent); }
+            </style>
+            <text x="320" y="22" class="xz-tl-title" text-anchor="middle">xz / liblzma: Open, But Not Audited</text>
+
+            <line x1="40" y1="140" x2="600" y2="140" class="xz-tl-axis"/>
+
+            <circle cx="80" cy="140" r="5" class="xz-tl-dot"/>
+            <line x1="80" y1="140" x2="80" y2="90" class="xz-tl-tick"/>
+            <text x="80" y="84" class="xz-tl-head" text-anchor="middle">2021</text>
+            <text x="80" y="158" class="xz-tl-text" text-anchor="middle">campaign begins</text>
+            <text x="80" y="172" class="xz-tl-muted" text-anchor="middle">"Jia Tan"</text>
+
+            <circle cx="240" cy="140" r="5" class="xz-tl-dot"/>
+            <line x1="240" y1="140" x2="240" y2="108" class="xz-tl-tick"/>
+            <text x="240" y="102" class="xz-tl-head" text-anchor="middle">~2023</text>
+            <text x="240" y="158" class="xz-tl-text" text-anchor="middle">privileges ceded</text>
+            <text x="240" y="172" class="xz-tl-muted" text-anchor="middle">pressure works</text>
+
+            <circle cx="400" cy="140" r="5" class="xz-tl-dot"/>
+            <line x1="400" y1="140" x2="400" y2="90" class="xz-tl-tick"/>
+            <text x="400" y="84" class="xz-tl-head" text-anchor="middle">early 2024</text>
+            <text x="400" y="158" class="xz-tl-text" text-anchor="middle">backdoor lands</text>
+            <text x="400" y="172" class="xz-tl-muted" text-anchor="middle">xz 5.6.0 / 5.6.1</text>
+            <text x="400" y="186" class="xz-tl-muted" text-anchor="middle">CVE-2024-3094 (10.0)</text>
+
+            <circle cx="560" cy="140" r="5" class="xz-tl-dot"/>
+            <line x1="560" y1="140" x2="560" y2="108" class="xz-tl-tick"/>
+            <text x="560" y="102" class="xz-tl-head" text-anchor="middle">29 Mar 2024</text>
+            <text x="560" y="158" class="xz-tl-text" text-anchor="middle">Andres Freund</text>
+            <text x="560" y="172" class="xz-tl-muted" text-anchor="middle">SSH CPU spike</text>
+            <text x="560" y="186" class="xz-tl-muted" text-anchor="middle">in liblzma</text>
+
+            <text x="320" y="222" class="xz-tl-muted" text-anchor="middle">Discovered by one engineer's curiosity. Not by audit infrastructure.</text>
+        </svg>
+
+        <p>The lesson is not that open source failed. The lesson is
+            that <em>open</em> and <em>audited</em> are different
+            words, and that a great many sovereignty arguments
+            assume the second when they say the first. Permissive
+            licensing makes audit <em>possible</em>. It does not
+            make audit <em>happen</em>.</p>
+
+        <p>For European sovereignty arguments, this is not an
+            abstract point. If you depend on open-source code that
+            you do not audit, you are dependent on whoever is
+            auditing it, or, more typically, on luck. The xz
+            incident is one data point. There will be others.</p>
+
+        <h2>The Linux Maintainer Adjustment</h2>
+
+        <p>In October 2024, the Linux kernel project
+            <a href="https://therecord.media/linus-torvalds-russian-linux-kernel-maintainers-removed" target="_blank" rel="noopener">removed approximately eleven maintainers from a particular jurisdiction</a>
+            that had recently come under expanded US sanctions. The
+            change appeared on the kernel mailing list under the
+            formulation <em>compliance requirements</em>.
+            <a href="https://www.theregister.com/2024/10/23/linus_torvalds_affirms_expulsion_of/" target="_blank" rel="noopener">Linus Torvalds confirmed it shortly afterwards</a>
+            and declined to reverse it.</p>
+
+        <p>The specific jurisdiction in that particular month is not
+            the point of this piece. The point is that the lever
+            exists, it can be applied, and on that occasion it was.
+            The Linux Foundation is registered in the United States,
+            and US sanctions reach the operations of US-registered
+            organisations. Whichever jurisdiction comes under
+            expanded US legal pressure next has the same exposure to
+            the same mechanism. Huawei's earlier experience with
+            the Entity List in 2019, which led directly to
+            HarmonyOS as a self-developed operating system, is the
+            same lever applied at a different layer of the stack.</p>
+
+        <p>This is not a moral judgement on any particular decision.
+            Each decision may well have been the only one available
+            within the constraints. It is a structural
+            observation. The Linux kernel's governance is
+            administered through a US-registered foundation, and is
+            therefore subject to US legal reach. That is a fact
+            about the location of the upstream, not about the
+            quality of the code, and not about the merits of any
+            party in any open conflict.</p>
+
+        <p>A licence that is permissive cuts this knot, in practice.
+            A receiver who pulls a permissive codebase, builds it
+            locally, and maintains a local tree is not bound by the
+            upstream's jurisdictional reach. They have the code.
+            They may continue to build it. The upstream's
+            relationship with any single state does not propagate to
+            them.</p>
+
+        <p>A GPL codebase places this differently. The receiver may
+            build and modify, but their modifications are governed
+            by the same licence. The relationship with the upstream
+            is not severed by the act of forking. Permissive
+            licensing makes ownership transfer cleanly. Copyleft
+            licensing makes it inherit conditions.</p>
+
+        <h2>The Legal-Jurisdictional Stake</h2>
+
+        <p>The European stake in this question is the most
+            thoroughly codified in the Western press, which makes
+            Europe a useful working example. It is not the only
+            region facing the same shape of question.</p>
+
+        <p><a href="https://en.wikipedia.org/wiki/CLOUD_Act" target="_blank" rel="noopener">The CLOUD Act, passed in March 2018</a>,
+            permits US law enforcement to compel US-based service
+            providers to hand over data, regardless of where that
+            data is stored. US-based providers operating data
+            centres in Frankfurt, Dublin, or Paris are subject to
+            it. Their European subsidiaries are subject to it as
+            well, through their corporate connection to the US
+            parent.</p>
+
+        <p>The Court of Justice of the European Union's
+            <a href="https://iapp.org/news/a/the-schrems-ii-decision-eu-us-data-transfers-in-question" target="_blank" rel="noopener"><em>Schrems II</em> ruling of July 2020 (Case C-311/18)</a>
+            held that US surveillance law under FISA Section 702 and
+            Executive Order 12333 does not meet the proportionality
+            standard required by EU law, and invalidated the EU-US
+            Privacy Shield framework on that basis.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A diagram of jurisdictional reach into a software stack. A stack of three layers is shown: at the top, the licence layer (Linux Foundation, US-registered); in the middle, the data layer (a US-headquartered cloud provider with data centres in Frankfurt, Dublin, Paris); at the bottom, the receiver (European public service). Two arrows from outside reach in: the CLOUD Act of 2018 reaches the data layer through the US parent, regardless of where data is stored; the Linux Foundation's US registration reaches the licence layer through sanctions on the operations of US-registered organisations. The Schrems II ruling of 2020 is annotated as the European response. The legend notes that the same reasoning runs in Beijing, New Delhi, Moscow, Brasilia with the relevant counterpart jurisdiction differing." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .lic-jx-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-jx-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-jx-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-jx-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-jx-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .lic-jx-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .lic-jx-arr { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#lic-jx-arrow); }
+                .lic-jx-block { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3; fill: none; }
+            </style>
+            <defs>
+                <marker id="lic-jx-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="lic-jx-title" text-anchor="middle">The Stack, and Where the Lever Reaches</text>
+
+            <rect x="200" y="50" width="240" height="50" class="lic-jx-accent-box"/>
+            <text x="320" y="72" class="lic-jx-head" text-anchor="middle">licence layer</text>
+            <text x="320" y="88" class="lic-jx-muted" text-anchor="middle">Linux Foundation (US-registered)</text>
+
+            <rect x="200" y="110" width="240" height="50" class="lic-jx-accent-box"/>
+            <text x="320" y="132" class="lic-jx-head" text-anchor="middle">data layer</text>
+            <text x="320" y="148" class="lic-jx-muted" text-anchor="middle">US provider, EU data centres</text>
+
+            <rect x="200" y="170" width="240" height="50" class="lic-jx-accent-box"/>
+            <text x="320" y="192" class="lic-jx-head" text-anchor="middle">receiver</text>
+            <text x="320" y="208" class="lic-jx-muted" text-anchor="middle">European public service</text>
+
+            <text x="40" y="68" class="lic-jx-text">US sanctions</text>
+            <text x="40" y="84" class="lic-jx-muted">(Oct 2024: 11 maintainers)</text>
+            <line x1="120" y1="76" x2="195" y2="76" class="lic-jx-arr"/>
+
+            <text x="40" y="132" class="lic-jx-text">CLOUD Act (2018)</text>
+            <text x="40" y="148" class="lic-jx-muted">regardless of storage</text>
+            <line x1="135" y1="138" x2="195" y2="138" class="lic-jx-arr"/>
+
+            <text x="475" y="132" class="lic-jx-text">Schrems II (2020)</text>
+            <text x="475" y="148" class="lic-jx-muted">Case C-311/18</text>
+            <line x1="600" y1="138" x2="475" y2="138" class="lic-jx-block"/>
+
+            <text x="320" y="250" class="lic-jx-muted" text-anchor="middle">The same shape applies in Beijing, New Delhi, Moscow, Brasilia, with the counterpart jurisdiction differing.</text>
+            <text x="320" y="266" class="lic-jx-muted" text-anchor="middle">The principle is not specific to Europe; the codification is.</text>
+        </svg>
+
+        <p>These two legal facts do not converge on a single
+            recommendation. They do create a strong reason for
+            European public services and infrastructure providers to
+            prefer software stacks they can host, modify, and audit
+            locally, without external jurisdictional reach. The
+            same reasoning runs in Beijing, in New Delhi, in
+            Moscow, in Brasilia, with the relevant counterpart
+            jurisdiction differing in each case. The principle is
+            not specific to Europe; the codification is.</p>
+
+        <p>The EUPL exists in this context. It is a copyleft licence
+            with explicit EU-grounded legal interpretation, intended
+            to give European deployers legal certainty under their
+            own law rather than under foreign law. It is one
+            defensible answer for European public-sector code.
+            Permissive licences are another. India's BharOS, China's
+            HarmonyOS, and similar projects answer the same
+            question from different angles. The choice is real, not
+            merely stylistic.</p>
+
+        <h2>The Practice That Gives a Licence Meaning</h2>
+
+        <p>A licence is a permission slip. A permission slip is not,
+            by itself, sovereignty. Sovereignty is the practice of
+            using the permission.</p>
+
+        <p>The practical layer consists of three things.</p>
+
+        <p><strong>Reproducible local build.</strong> The receiver
+            compiles the code from source in a known environment,
+            without reliance on upstream-provided binaries. This is
+            what <em>take ownership</em> means at the build level.
+            It is also what makes audit and modification
+            possible.</p>
+
+        <p><strong>Audit and signing.</strong> Someone who knows the
+            code reviews it. Someone with cryptographic standing
+            signs the build artefacts. The two together make the
+            deployment defensible.</p>
+
+        <p><strong>Continuous re-receipt.</strong> Upstream changes
+            are pulled, reviewed, and integrated; the local tree
+            does not freeze. Sovereignty does not mean refusing all
+            upstream input. It means being the one who decides what
+            to accept.</p>
+
+        <svg viewBox="0 0 640 220" aria-label="A triangle of three sovereignty practices. Reproducible local build at the top: compile from source in a known environment, no upstream binaries. Audit and signing on the lower left: someone who knows the code reviews it, someone with cryptographic standing signs the build artefacts. Continuous re-receipt on the lower right: upstream changes are pulled, reviewed and integrated, the local tree does not freeze. The legend notes that the three practices are licence-agnostic in principle but easier under permissive licensing." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .lic-pr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-pr-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-pr-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-pr-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lic-pr-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .lic-pr-line { stroke: var(--border); stroke-width: 1; fill: none; }
+            </style>
+            <text x="320" y="22" class="lic-pr-title" text-anchor="middle">Three Practices, Without Which the Licence Buys Rather Little</text>
+
+            <line x1="320" y1="60" x2="160" y2="180" class="lic-pr-line"/>
+            <line x1="320" y1="60" x2="480" y2="180" class="lic-pr-line"/>
+            <line x1="160" y1="180" x2="480" y2="180" class="lic-pr-line"/>
+
+            <rect x="220" y="50" width="200" height="50" class="lic-pr-box"/>
+            <text x="320" y="72" class="lic-pr-head" text-anchor="middle">Reproducible Build</text>
+            <text x="320" y="88" class="lic-pr-muted" text-anchor="middle">from source, known env</text>
+
+            <rect x="40" y="165" width="200" height="50" class="lic-pr-box"/>
+            <text x="140" y="186" class="lic-pr-head" text-anchor="middle">Audit + Signing</text>
+            <text x="140" y="201" class="lic-pr-muted" text-anchor="middle">review + cryptographic standing</text>
+
+            <rect x="400" y="165" width="200" height="50" class="lic-pr-box"/>
+            <text x="500" y="186" class="lic-pr-head" text-anchor="middle">Continuous Re-receipt</text>
+            <text x="500" y="201" class="lic-pr-muted" text-anchor="middle">deciding what to accept</text>
+        </svg>
+
+        <p>These three practices are licence-agnostic in principle.
+            In practice, they are easier under permissive licensing
+            and harder under copyleft, because permissive licensing
+            does not generate licence-compatibility friction at the
+            integration boundary.</p>
+
+        <h2>The Limit</h2>
+
+        <p>This piece argues that a licence is not by itself
+            ownership, and that permissive licences (BSD, MIT,
+            Apache 2.0) and AGPL move ownership most cleanly to the
+            receiver under conditions a European context tends to
+            care about.</p>
+
+        <p>It would be dishonest, however, to leave it there. The
+            licence layer is the layer with the most words and the
+            most procurement documents. It is not the layer with the
+            most consequences.</p>
+
+        <blockquote>
+            <p>A receiver who owns the licence, but does not own
+                the build infrastructure, does not own the result.
+                A receiver who owns the build infrastructure, but
+                runs it on someone else's silicon, has only moved
+                the ownership question down a layer. A receiver who
+                reviews the source, but does not have the
+                institutional muscle to maintain a local fork
+                through multiple upstream major versions, has
+                obtained an option they cannot exercise.</p>
+        </blockquote>
+
+        <p>This piece sets the question. It does not answer the
+            architectural question of how a coherent local stack is
+            even shaped, or the hardware question of where
+            ownership stops being negotiable at all. Those are the
+            next two Sundays.</p>
+
+        <aside class="vv-aside">
+            <p><strong>Coming Sundays:</strong></p>
+            <ul>
+                <li><strong>The Single Tree (14 June).</strong> Why
+                    FreeBSD's coherent base system is forkable in a
+                    way that a Linux distribution is not, and what
+                    the corporate kernel-commit share actually
+                    describes.</li>
+                <li><strong>The Layer You Cannot Fork (21 June).</strong>
+                    The honest limit of every sovereignty claim.
+                    Microcode, firmware, the layer below the
+                    operating system, where the discussion above
+                    this line ends.</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

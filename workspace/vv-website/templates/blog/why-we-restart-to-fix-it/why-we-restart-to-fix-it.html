@@ -1,0 +1,589 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Why We Restart to Fix It &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="The pager has gone off. Memory on the auth service is climbing. You SSH in, see nothing in particular, run kubectl delete pod. Memory is fresh, the alert clears, nobody asks what was wrong. The restart has two parents: a consumer-electronics tradition with no language for diagnosis, and a 1986 Erlang architecture from Ericsson that built the supervisor tree. We kept the crash and left the supervisor in Stockholm. WhatsApp runs over a billion users on fifty engineers with this model. FreeBSD has init, rc.d, dtrace, ktrace, procstat, core dumps. The restart is available; rarely the first reach, because the system speaks. The question is the one we did not write down.">
+{( endslot )}
+
+{( slot canonical )}/blog/why-we-restart-to-fix-it{( endslot )}
+
+{( slot og-title )}Why We Restart to Fix It &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}On Second Thought Episode 10. The pager goes off, memory on the auth service is climbing, you kubectl delete pod, the graph flattens, nobody asks what was wrong. The restart reflex has two parents and we kept only one. The consumer tradition (a device with no language to be asked has only its power switch) was reasonable for its hardware; the Stockholm tradition was built to replace it. In 1986 at Ericsson, Joe Armstrong, Robert Virding and Mike Williams began Erlang for telephone exchanges that could not go down; its showcase, the AXD301 switch, is most often cited at nine-nines reliability (the figure is contested, the architecture is not). Armstrong called it let it crash, which reads as a slogan but is a contract: each process is isolated and cannot corrupt another, every worker has a supervisor delivered the crash as a message, every supervisor has a written strategy (one-for-one, one-for-all, rest-for-one) and an escalation limit. A failure is data, handled by a rule written before the outage. What we kept was the crash. What we left in Stockholm was the supervisor. Kubernetes liveness probes are, honestly read, a contract that the orchestrator rotates the symptoms while the cause goes unexamined; self-healing is accurate in the sense that a person taking paracetamol every four hours has a self-healing headache. WhatsApp serves over a billion users on around fifty engineers, on Erlang, on the supervisor architecture from Stockholm. FreeBSD's init and rc.d use the same model: explicit start, dependency, recovery; with dtrace, ktrace, procstat, fstat and post-mortem core dumps the system is willing to speak. The reboot is available; rarely the first reach. The question we did not write down: was the restart the answer, or the moment the question got dropped?{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Why We Restart to Fix It",
+    "datePublished": "2026-05-31",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/why-we-restart-to-fix-it",
+    "description": "On Second Thought Episode 10. The pager goes off, memory on the auth service is climbing, the on-call engineer SSHs in, observes nothing in particular, runs kubectl delete pod, the pod comes back, memory is fresh, the alert clears and nobody asks what was wrong. The runbook for half the world's incidents has three steps and only the last one matters: have you tried turning it off and on again. The reflex has two parents, and we kept only one. The first is the consumer-electronics tradition (a device with no language to be asked has only its power switch); it was honest about its limits and reasonable for the hardware of its time. The second was built deliberately to replace it. In 1986 at Ericsson's Computer Science Laboratory in Stockholm, Joe Armstrong, Robert Virding and Mike Williams began work on Erlang, a language for telephone exchanges that could not go down; the showcase AXD301 ATM switch runs on roughly two million lines of Erlang and is the system most often cited for nine-nines reliability (the figure is contested, the architecture is not). Armstrong's principle, on the surface, looked exactly like the consumer tradition: terminate the bad process; he called it let it crash, and the phrase has done more damage to the idea than any critic could. Read as a slogan it sounds like the Sky+ box; read as architecture it is the opposite. Three properties make it architecture: processes are isolated (an Erlang process has its own heap and message queue, shares nothing mutable with any other, and a crash takes itself with it and nothing else); every worker has a supervisor (a specific process defined in OTP, the standard Erlang library, to which crashes are delivered as messages); the supervisor decides according to a written strategy with names (one-for-one restarts only the crashed worker, one-for-all restarts all siblings, rest-for-one restarts the crashed worker and any later in the dependency order) and an escalation limit (when the maximum restart frequency is exceeded the supervisor itself crashes and the failure escalates one level up the tree). A failure is data, handled by a rule written years before the outage. Let it crash, in its proper form, is not have you tried turning it off and on again; it is we have already decided what to do when this fails and we wrote it down. What we kept of let-it-crash is the let-it-crash. What we left in Stockholm is the supervisor. So the restart is the diagnosis: pod returns, alert clears, day shipped; a memory leak, file-descriptor exhaustion, lock contention, a downstream throttled queue each leave the same heartbeat-recovery signature on a dashboard and need a different fix, and the restart erases the question that distinguishes them. The structural cost: Kubernetes liveness and readiness probes are, honestly read, a contract that the orchestrator rotates the symptoms while the cause goes unexamined; there is no concept in the standard flow of capturing the dying process's state, preserving the crash for inspection, asking why before the next pod is scheduled. Self-healing is accurate in the sense that a person who takes paracetamol every four hours has a self-healing headache. The institutional cost: a team that restarts to fix gets good at restarting and never gets good at diagnosing; the post-incident review adds a command to the runbook, the collective intuition shifts from what is this system actually doing to what sequence of recovery steps clears the current alert. There is software in operation that does not work this way. WhatsApp serves over a billion users with around fifty engineers, on Erlang, on the Stockholm supervisor architecture; the engineers spend the day writing the rules under which the boxes manage themselves. In the unixoid tradition the FreeBSD base provides the operator's half of the same picture: init and rc.d use explicit start, explicit dependency, explicit recovery; when a service misbehaves the operator has dtrace to follow what the kernel and user-space code are actually doing, ktrace to record system calls, procstat and fstat to read what a process is holding, post-mortem core dumps that survive the crash, and a kernel willing to say what process held what lock at what time. The reboot is available, on FreeBSD as everywhere else; it is rarely the first reach, because the system is willing to speak and the operator has been trained to listen. The honest question is not whether to keep the restart; the runbooks have it for a reason. The question is the one we did not write down: in a system that fails, was the restart the answer, or the moment the question got dropped? A restart, on second thought, is not a tool. It is a measurement. It tells you, with some precision, how much of the cause you decided you could afford to leave unknown.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-31">31 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Why We Restart to Fix It</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">kubernetes</span>
+            <span class="vv-pill">devops</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>On Second Thought</em> &#x22A3; Episode 10</p>
+
+        <p>The pager has gone off. Memory on the auth service is
+            climbing in a way it should not be. You SSH in, you
+            observe nothing in particular, you <code>kubectl delete
+            pod</code>. The pod comes back, memory is fresh, the
+            graph flattens. The on-call channel returns to silence.
+            Nobody asks what was wrong.</p>
+
+        <p>This is the tenth episode of <em>On Second Thought</em>,
+            a series about the daily routines we perform without ever
+            quite deciding to. Today's routine is the one that runs
+            at the top of half the world's incident response: when
+            the machine misbehaves, restart it. Have you tried
+            turning it off and on again. The line is a joke, until
+            it is a runbook, until it is the production strategy,
+            until it is the only debugging step we still know.</p>
+
+        <h2>The Axiom</h2>
+
+        <p>The reflex is universal. A stuck container, a frozen
+            browser tab, a JVM that has been ruminating on a class
+            loader for forty minutes, a Kafka consumer that fell off
+            a partition, a connection pool that quietly stopped
+            reaping idle handles. The runbook for half the world's
+            incidents has three steps, and the first two are
+            window-dressing for the third. We accept this as the
+            natural response to a system that fails, in the same way
+            we accept that traffic jams are simply the price of
+            having cars. On second thought, both deserve a second
+            thought.</p>
+
+        <p>The strange thing is not that we restart. Restart is, in
+            the right architecture, a perfectly reasonable response
+            to a particular class of fault. The strange thing is that
+            the restart has become the diagnosis, and that we have
+            built an entire generation of platforms around the
+            assumption that it would.</p>
+
+        <svg viewBox="0 0 640 200" aria-label="A linear flow diagram of the modern restart reflex. A pager fires; the on-call engineer SSHs in; the engineer observes nothing in particular; runs kubectl delete pod; the pod returns and memory is fresh; the alert clears; nobody asks what was wrong. The last step is highlighted in accent colour to mark the question that was never asked." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-rx-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-rx-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-rx-accent { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-rx-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-rx-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-rx-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ost-rx-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ost-rx-arrow); }
+            </style>
+            <defs>
+                <marker id="ost-rx-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="ost-rx-title" text-anchor="middle">The Restart Reflex, End to End</text>
+
+            <rect x="10" y="60" width="92" height="44" class="ost-rx-box"/>
+            <text x="56" y="80" class="ost-rx-text" text-anchor="middle">pager fires</text>
+            <text x="56" y="96" class="ost-rx-muted" text-anchor="middle">memory climbing</text>
+            <line x1="102" y1="82" x2="120" y2="82" class="ost-rx-arr"/>
+
+            <rect x="120" y="60" width="92" height="44" class="ost-rx-box"/>
+            <text x="166" y="80" class="ost-rx-text" text-anchor="middle">ssh in</text>
+            <text x="166" y="96" class="ost-rx-muted" text-anchor="middle">observe nothing</text>
+            <line x1="212" y1="82" x2="230" y2="82" class="ost-rx-arr"/>
+
+            <rect x="230" y="60" width="120" height="44" class="ost-rx-accent-box"/>
+            <text x="290" y="80" class="ost-rx-accent" text-anchor="middle">kubectl delete pod</text>
+            <text x="290" y="96" class="ost-rx-muted" text-anchor="middle">the diagnosis</text>
+            <line x1="350" y1="82" x2="368" y2="82" class="ost-rx-arr"/>
+
+            <rect x="368" y="60" width="92" height="44" class="ost-rx-box"/>
+            <text x="414" y="80" class="ost-rx-text" text-anchor="middle">pod returns</text>
+            <text x="414" y="96" class="ost-rx-muted" text-anchor="middle">memory fresh</text>
+            <line x1="460" y1="82" x2="478" y2="82" class="ost-rx-arr"/>
+
+            <rect x="478" y="60" width="92" height="44" class="ost-rx-box"/>
+            <text x="524" y="80" class="ost-rx-text" text-anchor="middle">alert clears</text>
+            <text x="524" y="96" class="ost-rx-muted" text-anchor="middle">graph flattens</text>
+
+            <line x1="524" y1="104" x2="524" y2="130" class="ost-rx-arr"/>
+
+            <rect x="200" y="130" width="240" height="48" class="ost-rx-accent-box"/>
+            <text x="320" y="151" class="ost-rx-accent" text-anchor="middle">nobody asks what was wrong</text>
+            <text x="320" y="167" class="ost-rx-muted" text-anchor="middle">the question that was never written down</text>
+
+            <line x1="478" y1="148" x2="445" y2="148" class="ost-rx-arr"/>
+        </svg>
+
+        <h2>The Origin</h2>
+
+        <p>The reflex has two parents, and we mostly inherited only
+            one of them.</p>
+
+        <p>The first is the consumer-electronics tradition, codified
+            in
+            <a href="https://www.youtube.com/watch?v=rksCTVFtjM4" target="_blank" rel="noopener">The IT Crowd's catchphrase</a>
+            but older than the show. A
+            Sky+ box from 2004, a Windows laptop, a wireless router:
+            a device that has wandered into an unknown state can be
+            returned to a known one only by power-cycling it, because
+            the device offers no language in which to be asked where
+            it had gone wrong. The assumption was reasonable for the
+            hardware of its time. It was honest about its limits: the
+            only legible interface to the device's interior was the
+            off switch.</p>
+
+        <p>The second tradition is the one engineers built
+            deliberately to replace the first, and it is the one we
+            mostly forgot.</p>
+
+        <p>In 1986, at Ericsson's Computer Science Laboratory in
+            Stockholm,
+            <a href="https://dl.acm.org/doi/10.1145/1238844.1238850" target="_blank" rel="noopener">Joe Armstrong, Robert Virding and Mike Williams began work on what became Erlang</a>,
+            a language for the kinds of telephone exchanges that
+            simply could not be allowed to go down. The constraint
+            was not academic. A switch that dropped calls cost
+            regulatory fines and lost contracts. A switch that ran
+            for a year between reboots was the point. The output of
+            that work, the AXD301 ATM switch, runs on roughly two
+            million lines of Erlang and is the system most often
+            cited for "nine nines" of reliability: on the order of 31
+            milliseconds of downtime per year. The figure is
+            contested in the way every figure of that shape is
+            contested; whether the measurement was apples-to-apples,
+            whether it included planned maintenance, whether the
+            operational data was systematically collected. The
+            architecture that produced it, however, is uncontested,
+            and it is the architecture that matters here.</p>
+
+        <p>Armstrong's principle, on the surface, looked exactly like
+            the consumer tradition: when a process gets into a bad
+            state, terminate it. He called it
+            <a href="https://erlang.org/download/armstrong_thesis_2003.pdf" target="_blank" rel="noopener">"let it crash"</a>,
+            and the phrase has done more damage to the idea than any
+            critic could. Read as a slogan it sounds like the Sky+
+            box: when in doubt, kill it. Read as architecture, it is
+            the opposite.</p>
+
+        <svg viewBox="0 0 640 290" aria-label="A comparison of the two parents of the restart reflex. On the consumer side, a Sky+ box, a Windows laptop and a wireless router each lead to a single response, the power button, with the legend no language to be asked. On the Stockholm side, a worker process leads to a crash message delivered to a supervisor process, which consults a written strategy with three named options (one-for-one, one-for-all, rest-for-one) and an escalation limit that propagates the failure up the tree, with the legend a failure is data. An arrow at the bottom marks what we inherited from the consumer parent and a separate arrow marks what we left in Stockholm." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-par-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-par-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-par-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-par-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-par-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-par-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ost-par-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ost-par-arrow); }
+                .ost-par-faint { stroke: var(--muted); stroke-width: 1; fill: none; marker-end: url(#ost-par-arrow-faint); }
+            </style>
+            <defs>
+                <marker id="ost-par-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+                <marker id="ost-par-arrow-faint" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--muted)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="ost-par-title" text-anchor="middle">Two Parents. We Kept One.</text>
+
+            <text x="155" y="48" class="ost-par-head" text-anchor="middle">Consumer Tradition</text>
+            <rect x="20" y="60" width="270" height="180" class="ost-par-box"/>
+
+            <rect x="40" y="78" width="100" height="30" class="ost-par-box"/>
+            <text x="90" y="98" class="ost-par-muted" text-anchor="middle">Sky+ box (2004)</text>
+
+            <rect x="40" y="116" width="100" height="30" class="ost-par-box"/>
+            <text x="90" y="136" class="ost-par-muted" text-anchor="middle">Windows laptop</text>
+
+            <rect x="40" y="154" width="100" height="30" class="ost-par-box"/>
+            <text x="90" y="174" class="ost-par-muted" text-anchor="middle">wireless router</text>
+
+            <line x1="140" y1="93" x2="190" y2="155" class="ost-par-arr"/>
+            <line x1="140" y1="131" x2="190" y2="160" class="ost-par-arr"/>
+            <line x1="140" y1="169" x2="190" y2="165" class="ost-par-arr"/>
+
+            <rect x="190" y="140" width="90" height="40" class="ost-par-accent-box"/>
+            <text x="235" y="164" class="ost-par-text" text-anchor="middle">power button</text>
+            <text x="155" y="208" class="ost-par-muted" text-anchor="middle">no language to be asked</text>
+            <text x="155" y="224" class="ost-par-muted" text-anchor="middle">honest about its limits</text>
+
+            <text x="485" y="48" class="ost-par-head" text-anchor="middle">Stockholm Tradition (Erlang, 1986)</text>
+            <rect x="350" y="60" width="270" height="180" class="ost-par-box"/>
+
+            <rect x="370" y="78" width="100" height="30" class="ost-par-box"/>
+            <text x="420" y="98" class="ost-par-muted" text-anchor="middle">worker process</text>
+
+            <line x1="420" y1="108" x2="420" y2="128" class="ost-par-arr"/>
+            <text x="498" y="122" class="ost-par-muted">crash as message</text>
+
+            <rect x="370" y="128" width="100" height="30" class="ost-par-accent-box"/>
+            <text x="420" y="148" class="ost-par-text" text-anchor="middle">supervisor</text>
+
+            <line x1="420" y1="158" x2="420" y2="178" class="ost-par-arr"/>
+            <text x="498" y="172" class="ost-par-muted">written strategy</text>
+
+            <rect x="370" y="178" width="220" height="48" class="ost-par-accent-box"/>
+            <text x="480" y="196" class="ost-par-muted" text-anchor="middle">one-for-one &#x2022; one-for-all &#x2022; rest-for-one</text>
+            <text x="480" y="212" class="ost-par-muted" text-anchor="middle">escalation limit &#x2192; up the tree</text>
+            <text x="485" y="232" class="ost-par-muted" text-anchor="middle" font-style="italic">a failure is data</text>
+
+            <text x="155" y="262" class="ost-par-muted" text-anchor="middle">&#x25B2; What we inherited.</text>
+            <text x="485" y="262" class="ost-par-muted" text-anchor="middle">&#x25B2; What we left in Stockholm.</text>
+        </svg>
+
+        <p>Three properties make it architecture.</p>
+
+        <p>First, processes are isolated. An Erlang process is not a
+            thread, and not a coroutine; it has its own heap, its
+            own message queue, and shares nothing mutable with any
+            other process. When one crashes, it cannot corrupt the
+            state of another, because there is no shared state to
+            corrupt. A crash takes itself with it and nothing else.</p>
+
+        <p>Second, every worker has a supervisor. The supervisor is
+            not a vague concept; it is a specific process, with a
+            specific role, defined in
+            <a href="https://www.erlang.org/doc/system/design_principles.html" target="_blank" rel="noopener">OTP, the standard Erlang library</a>.
+            When a worker crashes, the crash is delivered to its
+            supervisor as a message. The supervisor decides what to
+            do.</p>
+
+        <p>Third, the supervisor decides according to a written
+            strategy. The strategies have names: one-for-one (restart
+            only the crashed worker), one-for-all (restart all
+            siblings), rest-for-one (restart the crashed worker and
+            any later in the dependency order). Every supervisor has
+            a maximum restart frequency, and when the frequency is
+            exceeded, the supervisor itself crashes, which delivers
+            the failure to its supervisor, one level up. A failure
+            escalates a tree, not a runbook. The rule that handles it
+            was written years before the outage.</p>
+
+        <svg viewBox="0 0 640 320" aria-label="An OTP supervisor tree. At the top a top supervisor sits, with two child supervisors beneath it. The left child supervisor has three workers and a one-for-one restart strategy: only the crashed worker is restarted. The right child supervisor has three workers and a one-for-all strategy: when one crashes all siblings are restarted. A dashed escalation path runs upward from a failed child supervisor to the top supervisor when the restart frequency is exceeded. The legend notes that a failure is a message, not an alarm, and that the rule was written before the outage." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-sup-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-sup-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-sup-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-sup-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-sup-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-sup-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ost-sup-line { stroke: var(--border); stroke-width: 1; fill: none; }
+                .ost-sup-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ost-sup-arrow); }
+                .ost-sup-esc { stroke: var(--accent); stroke-width: 1.2; stroke-dasharray: 4 3; fill: none; marker-end: url(#ost-sup-arrow); }
+            </style>
+            <defs>
+                <marker id="ost-sup-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="ost-sup-title" text-anchor="middle">OTP Supervisor Tree</text>
+
+            <rect x="240" y="40" width="160" height="40" class="ost-sup-accent-box"/>
+            <text x="320" y="60" class="ost-sup-head" text-anchor="middle">top supervisor</text>
+            <text x="320" y="74" class="ost-sup-muted" text-anchor="middle">rest-for-one</text>
+
+            <line x1="320" y1="80" x2="160" y2="115" class="ost-sup-line"/>
+            <line x1="320" y1="80" x2="480" y2="115" class="ost-sup-line"/>
+
+            <rect x="80" y="115" width="160" height="40" class="ost-sup-accent-box"/>
+            <text x="160" y="135" class="ost-sup-head" text-anchor="middle">supervisor A</text>
+            <text x="160" y="149" class="ost-sup-muted" text-anchor="middle">one-for-one</text>
+
+            <rect x="400" y="115" width="160" height="40" class="ost-sup-accent-box"/>
+            <text x="480" y="135" class="ost-sup-head" text-anchor="middle">supervisor B</text>
+            <text x="480" y="149" class="ost-sup-muted" text-anchor="middle">one-for-all</text>
+
+            <line x1="160" y1="155" x2="96" y2="190" class="ost-sup-line"/>
+            <line x1="160" y1="155" x2="160" y2="190" class="ost-sup-line"/>
+            <line x1="160" y1="155" x2="224" y2="190" class="ost-sup-line"/>
+
+            <rect x="66" y="190" width="60" height="34" class="ost-sup-box"/>
+            <text x="96" y="210" class="ost-sup-text" text-anchor="middle">worker</text>
+            <rect x="130" y="190" width="60" height="34" class="ost-sup-accent-box"/>
+            <text x="160" y="210" class="ost-sup-text" text-anchor="middle">worker &#x2620;</text>
+            <rect x="194" y="190" width="60" height="34" class="ost-sup-box"/>
+            <text x="224" y="210" class="ost-sup-text" text-anchor="middle">worker</text>
+            <text x="160" y="243" class="ost-sup-muted" text-anchor="middle">only the crashed worker restarts</text>
+
+            <line x1="480" y1="155" x2="416" y2="190" class="ost-sup-line"/>
+            <line x1="480" y1="155" x2="480" y2="190" class="ost-sup-line"/>
+            <line x1="480" y1="155" x2="544" y2="190" class="ost-sup-line"/>
+
+            <rect x="386" y="190" width="60" height="34" class="ost-sup-accent-box"/>
+            <text x="416" y="210" class="ost-sup-text" text-anchor="middle">worker &#x21BB;</text>
+            <rect x="450" y="190" width="60" height="34" class="ost-sup-accent-box"/>
+            <text x="480" y="210" class="ost-sup-text" text-anchor="middle">worker &#x2620;</text>
+            <rect x="514" y="190" width="60" height="34" class="ost-sup-accent-box"/>
+            <text x="544" y="210" class="ost-sup-text" text-anchor="middle">worker &#x21BB;</text>
+            <text x="480" y="243" class="ost-sup-muted" text-anchor="middle">all siblings restart together</text>
+
+            <path d="M 480 115 Q 540 95 540 70 Q 540 50 400 50" class="ost-sup-esc"/>
+            <text x="565" y="98" class="ost-sup-muted" text-anchor="middle">escalation</text>
+            <text x="565" y="112" class="ost-sup-muted" text-anchor="middle">limit exceeded</text>
+
+            <text x="320" y="285" class="ost-sup-muted" text-anchor="middle">A crash is delivered as a message, not noticed as an alarm.</text>
+            <text x="320" y="301" class="ost-sup-muted" text-anchor="middle">The rule that handles it was written years before the outage.</text>
+        </svg>
+
+        <p>Let it crash, in its proper form, is not "have you tried
+            turning it off and on again." It is "we have already
+            decided what to do when this fails, and we wrote it
+            down." The restart is the same gesture. The contract
+            underneath is wholly different.</p>
+
+        <h2>The Cost</h2>
+
+        <p>What we kept of let-it-crash is the let-it-crash. What we
+            left in Stockholm is the supervisor.</p>
+
+        <p>The first cost lands daily. Restart is the diagnosis. The
+            pod comes back, the alert clears, the day is shipped.
+            The cause of the alert is not investigated, because
+            nothing in the response made room for investigation: the
+            runbook said restart, the restart worked, the page
+            closed. A memory leak, a file-descriptor exhaustion, a
+            lock contention, a queue backing up because a downstream
+            service is throttling, each leaves the same
+            heartbeat-recovery signature on a dashboard, and each
+            needs a different fix. The restart erases the question
+            that distinguishes them. The bug remains exactly as
+            resident in the code as it was before the pager went
+            off, with the small refinement that the team is now
+            slightly more trained to ignore it.</p>
+
+        <svg viewBox="0 0 640 290" aria-label="A diagram of four different failure causes that produce the same heartbeat-recovery signature on a Kubernetes liveness probe. Memory leak, file-descriptor exhaustion, lock contention and a downstream throttled queue each lead through an OOM, deadlock or hang to the same liveness-probe failure and the same orchestrator response, killing and replacing the pod. The legend notes that the probe cannot distinguish causes, and that each cause needs a different fix." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-sig-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-sig-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-sig-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-sig-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-sig-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-sig-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ost-sig-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ost-sig-arrow); }
+            </style>
+            <defs>
+                <marker id="ost-sig-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="ost-sig-title" text-anchor="middle">Four Different Causes, One Heartbeat-Recovery Signature</text>
+
+            <rect x="10" y="50" width="160" height="34" class="ost-sig-box"/>
+            <text x="90" y="71" class="ost-sig-text" text-anchor="middle">memory leak</text>
+
+            <rect x="10" y="94" width="160" height="34" class="ost-sig-box"/>
+            <text x="90" y="115" class="ost-sig-text" text-anchor="middle">file-descriptor exhaustion</text>
+
+            <rect x="10" y="138" width="160" height="34" class="ost-sig-box"/>
+            <text x="90" y="159" class="ost-sig-text" text-anchor="middle">lock contention</text>
+
+            <rect x="10" y="182" width="160" height="34" class="ost-sig-box"/>
+            <text x="90" y="200" class="ost-sig-text" text-anchor="middle">downstream throttled</text>
+            <text x="90" y="212" class="ost-sig-muted" text-anchor="middle">queue backing up</text>
+
+            <line x1="170" y1="67" x2="240" y2="125" class="ost-sig-arr"/>
+            <line x1="170" y1="111" x2="240" y2="130" class="ost-sig-arr"/>
+            <line x1="170" y1="155" x2="240" y2="138" class="ost-sig-arr"/>
+            <line x1="170" y1="199" x2="240" y2="145" class="ost-sig-arr"/>
+
+            <rect x="240" y="110" width="160" height="50" class="ost-sig-accent-box"/>
+            <text x="320" y="132" class="ost-sig-head" text-anchor="middle">liveness probe fails</text>
+            <text x="320" y="148" class="ost-sig-muted" text-anchor="middle">same dashboard signature</text>
+
+            <line x1="400" y1="135" x2="450" y2="135" class="ost-sig-arr"/>
+
+            <rect x="450" y="110" width="180" height="50" class="ost-sig-accent-box"/>
+            <text x="540" y="132" class="ost-sig-head" text-anchor="middle">kill + replace pod</text>
+            <text x="540" y="148" class="ost-sig-muted" text-anchor="middle">cause not captured</text>
+
+            <text x="320" y="245" class="ost-sig-muted" text-anchor="middle">The probe is a contract that the orchestrator rotates the symptoms.</text>
+            <text x="320" y="261" class="ost-sig-muted" text-anchor="middle">Each cause needs a different fix. The restart treats them as one.</text>
+            <text x="320" y="277" class="ost-sig-muted" text-anchor="middle" font-style="italic">Self-healing, in the paracetamol sense.</text>
+        </svg>
+
+        <p>The second cost is structural. We have built whole
+            platforms on the assumption. Kubernetes liveness and
+            readiness probes are, in the honest reading, a contract
+            that the orchestrator will rotate the symptoms while the
+            cause goes unexamined. A pod that fails its liveness
+            check is killed and replaced. There is no concept, in the
+            standard Kubernetes flow, of capturing the dying
+            process's state, of preserving the crash for later
+            inspection, of asking why before the next pod is
+            scheduled. "Self-healing" is the marketing term for this,
+            and it is accurate in the sense that a person who takes
+            paracetamol every four hours has a self-healing
+            headache. The symptom keeps disappearing. The cause has
+            not been touched.</p>
+
+        <p>The third cost is institutional. A team that restarts to
+            fix gets very good at restarting and never gets good at
+            diagnosing. The post-incident review produces a runbook
+            with an additional command. The runbook is consulted next
+            time the pager goes off; the additional command is
+            added; the team's collective intuition about the system
+            shifts from "what is this system actually doing" to "what
+            sequence of recovery steps clears the current alert". In
+            the worst case, the only conjecture anybody had about why
+            the alert ever fired leaves quietly with the last
+            engineer who maintained the service, and the new on-call
+            rotation inherits the runbook but not the model.</p>
+
+        <p>The fourth cost is the one this series exists to point at:
+            we have stopped expecting our systems to be debuggable.
+            The restart was a shortcut, originally; we took it
+            because diagnosing the live system was hard, and the
+            restart was cheap, and the bug was small. We then built
+            more software on top of that shortcut, and more on top
+            of that, until "you cannot reasonably diagnose this in
+            production" stopped being an embarrassment and started
+            being a feature description.</p>
+
+        <h2>The Question</h2>
+
+        <p>There is software in operation that does not work this
+            way, and the alternative is older and quieter than the
+            current default.</p>
+
+        <p><a href="https://highscalability.com/how-whatsapp-grew-to-nearly-500-million-users-11000-cores-an/" target="_blank" rel="noopener">WhatsApp serves north of a billion users with around fifty engineers</a>.
+            Its backend is Erlang. The supervisor model from
+            Stockholm runs the company's production. Crashes happen.
+            They are caught by their supervisors. The strategies are
+            written. The escalation tree handles the rest. The
+            engineers do not spend their day power-cycling boxes;
+            they spend it writing the rules under which the boxes
+            manage themselves. It is a small, deliberate team
+            operating a system that, by every comparable measure,
+            ought to require many times its size to keep running. The
+            supervisor architecture is why.</p>
+
+        <p>In the unixoid tradition, the FreeBSD base provides the
+            operator's half of the same picture.
+            <a href="https://docs.freebsd.org/en/books/handbook/config/#configtuning-rcd" target="_blank" rel="noopener"><code>init</code> and <code>rc.d</code></a>
+            use the same model that Stockholm did: explicit start,
+            explicit dependency, explicit recovery. A service has a
+            script that says how it starts, what must be up before it
+            starts, and what to do when it dies. When a service on a
+            FreeBSD machine misbehaves, the operator has
+            <a href="https://docs.freebsd.org/en/books/handbook/dtrace/" target="_blank" rel="noopener"><code>dtrace</code></a>
+            to follow what the kernel and user-space code are
+            actually doing, <code>ktrace</code> to record system
+            calls for later inspection, <code>procstat</code> and
+            <code>fstat</code> to read what a process is holding,
+            post-mortem core dumps that survive the crash and can be
+            examined at leisure, and a kernel that will, with some
+            precision, tell you what process held what lock at what
+            time. The reboot is available, on FreeBSD as everywhere
+            else. It is rarely the first reach, because the system is
+            willing to speak, and the operator has been trained to
+            listen.</p>
+
+        <svg viewBox="0 0 640 290" aria-label="A comparison of operator surfaces on Kubernetes and on FreeBSD when a service misbehaves. On the Kubernetes side, the single visible response is kubectl delete pod, with the legend that the cause is not captured. On the FreeBSD side, the operator has dtrace, ktrace, procstat, fstat and a core dump available, each producing a different kind of evidence, with the legend that the reboot is available but rarely the first reach because the system speaks." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-stk-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-stk-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-stk-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-stk-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-stk-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-stk-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="ost-stk-title" text-anchor="middle">When the Service Misbehaves, What Does the Operator Have?</text>
+
+            <text x="155" y="48" class="ost-stk-head" text-anchor="middle">Kubernetes (default)</text>
+            <rect x="20" y="60" width="270" height="200" class="ost-stk-box"/>
+
+            <rect x="60" y="120" width="190" height="50" class="ost-stk-accent-box"/>
+            <text x="155" y="142" class="ost-stk-text" text-anchor="middle">kubectl delete pod</text>
+            <text x="155" y="158" class="ost-stk-muted" text-anchor="middle">the only reach</text>
+
+            <text x="155" y="200" class="ost-stk-muted" text-anchor="middle">cause not captured</text>
+            <text x="155" y="216" class="ost-stk-muted" text-anchor="middle">probe rotates symptom</text>
+            <text x="155" y="232" class="ost-stk-muted" text-anchor="middle">runbook gains a line</text>
+            <text x="155" y="250" class="ost-stk-muted" text-anchor="middle" font-style="italic">the diagnosis becomes the runbook</text>
+
+            <text x="485" y="48" class="ost-stk-head" text-anchor="middle">FreeBSD base</text>
+            <rect x="350" y="60" width="270" height="200" class="ost-stk-box"/>
+
+            <rect x="370" y="78" width="100" height="32" class="ost-stk-accent-box"/>
+            <text x="420" y="98" class="ost-stk-text" text-anchor="middle">dtrace</text>
+
+            <rect x="500" y="78" width="100" height="32" class="ost-stk-accent-box"/>
+            <text x="550" y="98" class="ost-stk-text" text-anchor="middle">ktrace</text>
+
+            <rect x="370" y="118" width="100" height="32" class="ost-stk-accent-box"/>
+            <text x="420" y="138" class="ost-stk-text" text-anchor="middle">procstat</text>
+
+            <rect x="500" y="118" width="100" height="32" class="ost-stk-accent-box"/>
+            <text x="550" y="138" class="ost-stk-text" text-anchor="middle">fstat</text>
+
+            <rect x="370" y="158" width="230" height="32" class="ost-stk-accent-box"/>
+            <text x="485" y="178" class="ost-stk-text" text-anchor="middle">core dump (post-mortem)</text>
+
+            <text x="485" y="208" class="ost-stk-muted" text-anchor="middle">what process held what lock when</text>
+            <text x="485" y="226" class="ost-stk-muted" text-anchor="middle">reboot available, rarely the first reach</text>
+            <text x="485" y="248" class="ost-stk-muted" text-anchor="middle" font-style="italic">the system is willing to speak</text>
+        </svg>
+
+        <p>So the honest question is not whether to keep the restart.
+            The runbooks have it for a reason and they are not
+            foolish. The restart, in a supervisor architecture, is a
+            perfectly normal recovery step. The question is the one
+            we did not write down: in a system that fails, was the
+            restart the answer, or the moment the question got
+            dropped?</p>
+
+        <blockquote>
+            <p>A restart, on second thought, is not a tool. It is a
+                measurement. It tells you, with some precision, how
+                much of the cause you decided you could afford to
+                leave unknown.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The lineage, the showcase, the
+                architecture:</strong></p>
+            <ul>
+                <li><strong>1986</strong> Joe Armstrong, Robert
+                    Virding, Mike Williams at Ericsson begin
+                    Erlang</li>
+                <li><strong>1998</strong> Erlang open-sourced; OTP
+                    supervisor model documented</li>
+                <li><strong>2003</strong> Armstrong's PhD,
+                    <em>Making Reliable Distributed Systems in the
+                    Presence of Software Errors</em></li>
+                <li><strong>AXD301</strong> ATM switch, around two
+                    million lines of Erlang, often cited at nine
+                    nines (the figure is contested; the architecture
+                    is not)</li>
+                <li><strong>WhatsApp</strong> over a billion users on
+                    around fifty engineers, Erlang/OTP backend</li>
+            </ul>
+            <p>Isolated processes; written restart strategies
+                (one-for-one, one-for-all, rest-for-one) with
+                escalation limits; failure as data, handled by a rule
+                written before the outage.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

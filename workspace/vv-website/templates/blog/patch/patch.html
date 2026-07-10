@@ -1,0 +1,487 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}patch &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A maintainer sends you a fix. Not a branch, not a pull request, not an invitation to fetch from a remote. A text file with plus signs and minus signs and a few lines of context around them. You type one command, and your tree is current. The format that taught the world to ship a change in a dozen lines arrived in 1985, written by a man who would invent Perl two years later. Larry Wall posted patch 1.3 to mod.sources on 8 May 1985 from NASA's Jet Propulsion Laboratory. Wayne Davison's unidiff followed in August 1990. Forty-one years later every code review still speaks unified diff. A format becomes universal when it is small enough to be a sentence.">
+{( endslot )}
+
+{( slot canonical )}/blog/patch{( endslot )}
+
+{( slot og-title )}patch &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Technical Beauty Episode 38. A maintainer sends you a fix; not as a branch on a server, not as a pull request awaiting a token, not as an invitation to fetch a remote you have not heard of, but a text file with plus signs and minus signs and a few lines of plain context around them, attached to an email or pasted into an issue. You drop it onto your tree, type one command, and your code is current. No credentials, no network, no infrastructure. The format that taught the world to ship a change in a dozen lines arrived in 1985, written by a man who would invent Perl two years later. A patch is a recipe, not a snapshot; it does not contain the new file, it contains the change that turns the old file into the new one, which is the reason a fix to a million-line codebase can travel as twenty lines of email. The vocabulary is small: a header naming source and destination paths, hunks with their own little headers (the line ranges in the old and new versions), context lines space-prefixed, deletions minus-prefixed, additions plus-prefixed; the context is what allows the apply tool to find the right place in the file even when the surrounding code has drifted by a few lines. The daily idiom is two commands: diff -u original modified greater-than change.patch to make one, patch -p1 less-than change.patch to apply it; -u for unified format (the one git diff produces today), -p1 to strip one leading directory from the recorded paths. When a hunk does not fit cleanly the tool tries line-fuzz, a small tolerance for context drift; if it still cannot it writes the rejected hunk to a .rej file beside the target, plainly, where you can see what did not take. Honest about its limits, that. FreeBSD ships patch in base at /usr/bin/patch, BSD-licensed, descended directly from Larry Wall's original source line; OpenBSD, NetBSD and macOS carry the same lineage. GNU patch is a separate fork from the same root, GPL-licensed; both implementations remain interoperable, which is the kind of compatibility one only gets when a format is small and honest. Larry Wall posted patch 1.3 to mod.sources on 8 May 1985, from NASA's Jet Propulsion Laboratory in Pasadena; Perl was still two years away. Wayne Davison posted unidiff to comp.sources.misc in August 1990, compressing the same information by roughly a quarter; Richard Stallman folded unidiff support into GNU diff 1.15 in January 1991, the patch tool learned to read it shortly after, and the unified format has been the lingua franca ever since. Forty-one years later, every code review on the planet still speaks unified diff, and patch -p1 still applies a hunk written before some of the reviewers were born. A format becomes universal when it is small enough to be a sentence. Wall's was.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "patch",
+    "datePublished": "2026-06-02",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/patch",
+    "description": "Technical Beauty Episode 38. A maintainer sends you a fix; not as a branch on a server somewhere, not as a pull request awaiting your authentication token, not as an invitation to fetch a remote you have not heard of, but a text file with plus signs and minus signs and a few lines of plain context around them, attached to an email or pasted into an issue. You drop it onto your tree, type one command, and your code is current; no credentials, no network, no infrastructure. The format that taught the world to ship a change in a dozen lines arrived in 1985, written by a man who would invent Perl two years later. It is, by some distance, the smallest unit of code distribution in widespread use, and it is the format every modern code-review tool, every commit, every diff in your terminal still speaks. A patch is a recipe, not a snapshot. It does not contain the new file; it contains the change that turns the old file into the new one, which is the reason a fix to a million-line codebase can travel as twenty lines of email. The file header names the source and destination paths; each hunk has its own little header (the line ranges in the old and new versions, written @@ minus 42 comma 7 plus 42 comma 9 @@), followed by the lines themselves: a few lines of context, each prefixed with a space; the lines to remove, each prefixed with a minus sign; the lines to add, each prefixed with a plus sign; and a few more lines of context to close. The context is what allows the apply tool to find the right place in the file even when the surrounding code has drifted by a few lines since the patch was generated. That is the entire vocabulary. The whole standard fits on a page, and it has carried every code change in every open-source project for the better part of four decades. In daily use the idiom is two commands: diff -u original modified greater-than change.patch to make a patch, patch -p1 less-than change.patch to apply it. The -u flag tells diff to use the unified format (the one every modern tool produces); the -p1 flag tells patch to strip one leading directory from the recorded paths, which is how you make a patch generated against a/src/main.c apply to src/main.c in your tree. A handful of further flags carry the rest of the daily work: patch -R to reverse the patch, patch --dry-run to check without writing, patch -i for an explicit input file. When a hunk does not fit cleanly, the tool tries to apply it with line-fuzz, a small tolerance that allows context lines to be a little wrong on the theory that the file has drifted but not changed beyond recognition; if even that fails, it writes the rejected hunk to a .rej file beside the target, plainly, in the original format. You can read the reject, edit by hand, and try again. The tool is honest about its limits, and it tells you exactly what it could not do; beauty, here, includes telling the truth about failure. FreeBSD ships patch in the base system at /usr/bin/patch, BSD-licensed, descended directly from Larry Wall's original source line; OpenBSD and NetBSD carry the same lineage, and macOS does too. GNU patch, part of the GNU project and licensed under the GPL, is a separate fork from the same root; it has grown some extra extensions over the years but the on-disk format both tools read and write is the same. A patch produced by git diff on one machine applies on any machine with either implementation. That interoperability after forty years is not an accident; it is what one gets when the format is small enough to specify completely and honestly. Larry Wall posted patch 1.3 to the mod.sources newsgroup on 8 May 1985, from his desk at NASA's Jet Propulsion Laboratory in Pasadena; he had already written rn, the news reader, the year before, and Perl was still two years away. Wall's patch borrowed the diff output that the BSD diff(1) tool already produced (in the older context-diff format) and turned it from a thing humans read into a thing programs apply; that move, treating diff output as a machine-readable changeset rather than a human report, is the conceptual reduction the rest of the story rests on. In August 1990, Wayne Davison posted unidiff to comp.sources.misc, volume 14: a new format that interleaved deletions and insertions into a single block, sharing the context between them, and saved roughly a quarter of the bytes on a typical patch. Richard Stallman folded unidiff support into GNU diff 1.15 in January 1991, the patch tool learned to read it shortly after, and the unified format has been the lingua franca ever since; git produces it, GitHub shows it, every code-review tool speaks it. The two implementations alive today (the BSD line carried in FreeBSD, OpenBSD, NetBSD and macOS; the GNU fork in the GNU project's repositories) both descend from Wall's 1985 source, and both remain interoperable to this day. The format is so small that two independent maintainer lines have kept it stable for forty-one years without drifting. The standard worth keeping is the one small enough to be a sentence. Wall wrote one in 1985, Davison sharpened it in 1990, every modern code review still depends on it, and a patch -p1 less-than fix.diff from a 1986 manual still works on a 2026 FreeBSD installation. That is the kind of compatibility one earns by writing a small, honest format and then leaving it alone.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-06-02">2 June 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>patch</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">devops</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x22A3; Episode 38</p>
+
+        <p>A maintainer sends you a fix. Not as a branch on a server
+            somewhere, not as a pull request awaiting your
+            authentication token, not as an invitation to fetch a
+            remote you have not heard of. A text file, attached to
+            an email or pasted into an issue, with plus signs and
+            minus signs and a few lines of plain context around
+            them. You drop it onto your tree, type one command, and
+            your code is current. No credentials, no network, no
+            infrastructure.</p>
+
+        <p>The format that taught the world to ship a change in a
+            dozen lines arrived in 1985, written by a man who would
+            invent Perl two years later. It is, by some distance,
+            the smallest unit of code distribution in widespread
+            use, and it is the format every modern code-review tool,
+            every commit, every diff in your terminal still
+            speaks.</p>
+
+        <h2>The Format</h2>
+
+        <p>A patch is a recipe, not a snapshot. It does not contain
+            the new file; it contains the change that turns the old
+            file into the new one. That is the whole conceptual
+            move, and it is the reason a fix to a million-line
+            codebase can travel as twenty lines of email.</p>
+
+        <svg viewBox="0 0 640 220" aria-label="A diagram contrasting two ways to ship a change. On the left a snapshot box labelled new file shows the entire content of the modified file. On the right a recipe box labelled patch shows only the few lines that change, with plus and minus prefixes and surrounding context. The snapshot has weight, the recipe a few lines. The legend notes that a recipe travels as twenty lines of email." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-rs-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-rs-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-rs-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-rs-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-rs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-rs-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tb-rs-fill { fill: var(--muted); opacity: 0.18; }
+            </style>
+            <text x="320" y="22" class="tb-rs-title" text-anchor="middle">Recipe, Not Snapshot</text>
+
+            <text x="155" y="48" class="tb-rs-head" text-anchor="middle">Snapshot (whole file)</text>
+            <rect x="20" y="60" width="270" height="130" class="tb-rs-box"/>
+            <rect x="34" y="74" width="242" height="100" class="tb-rs-fill"/>
+            <text x="155" y="98" class="tb-rs-muted" text-anchor="middle">every line, again</text>
+            <text x="155" y="116" class="tb-rs-muted" text-anchor="middle">every byte, again</text>
+            <text x="155" y="148" class="tb-rs-text" text-anchor="middle">a million lines</text>
+            <text x="155" y="166" class="tb-rs-muted" text-anchor="middle">to ship a one-line fix</text>
+
+            <text x="485" y="48" class="tb-rs-head" text-anchor="middle">Recipe (patch)</text>
+            <rect x="350" y="60" width="270" height="130" class="tb-rs-box"/>
+            <text x="365" y="86" class="tb-rs-muted">--- a/src/main.c</text>
+            <text x="365" y="100" class="tb-rs-muted">+++ b/src/main.c</text>
+            <text x="365" y="118" class="tb-rs-muted">@@ -42,5 +42,5 @@</text>
+            <text x="365" y="134" class="tb-rs-muted">&#xA0;&#xA0;before();</text>
+            <text x="365" y="148" class="tb-rs-text" fill="var(--accent)">-&#xA0;return -1;</text>
+            <text x="365" y="162" class="tb-rs-text" fill="var(--accent)">+&#xA0;return 0;</text>
+            <text x="365" y="176" class="tb-rs-muted">&#xA0;&#xA0;after();</text>
+        </svg>
+
+        <p>The file header names the source and destination paths.
+            Each hunk in the file is a small unit of change with its
+            own little header (the line ranges in the old and new
+            versions: <code>@@ -42,7 +42,9 @@</code>), followed by
+            the lines themselves: a few lines of context, each
+            prefixed with a space; the lines to remove, each
+            prefixed with <code>-</code>; the lines to add, each
+            prefixed with <code>+</code>; and a few more lines of
+            context to close. The context is what allows the apply
+            tool to find the right place in the file even if the
+            surrounding code has drifted by a few lines since the
+            patch was generated.</p>
+
+        <svg viewBox="0 0 640 320" aria-label="An anatomy diagram of a single unified-diff hunk. The header rows are highlighted: minus-minus-minus a-slash-src-slash-main.c at the top, plus-plus-plus b-slash-src-slash-main.c below it. Then the hunk-range header @@ minus 42 comma 7 plus 42 comma 9 @@ marks where the hunk applies. Below the range header, three context lines space-prefixed; two deletion lines minus-prefixed; four addition lines plus-prefixed; three more context lines to close. Each region is annotated: paths, hunk range, leading context, deletions, additions, trailing context. The legend notes that the whole vocabulary fits on a page." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-an-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-an-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-an-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-an-mono { font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; fill: var(--text); font-size: 11px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .tb-an-monodel { font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .tb-an-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-an-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-an-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tb-an-arr { stroke: var(--accent); stroke-width: 1; fill: none; marker-end: url(#tb-an-arrow); }
+            </style>
+            <defs>
+                <marker id="tb-an-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="tb-an-title" text-anchor="middle">Anatomy of a Hunk</text>
+
+            <rect x="60" y="50" width="380" height="240" class="tb-an-box"/>
+
+            <rect x="68" y="58" width="364" height="36" class="tb-an-accent-box"/>
+            <text x="80" y="74" class="tb-an-mono">--- a/src/main.c</text>
+            <text x="80" y="89" class="tb-an-mono">+++ b/src/main.c</text>
+
+            <rect x="68" y="100" width="364" height="22" class="tb-an-accent-box"/>
+            <text x="80" y="116" class="tb-an-mono">@@ -42,7 +42,9 @@</text>
+
+            <text x="80" y="138" class="tb-an-mono">&#xA0;&#xA0;init();</text>
+            <text x="80" y="152" class="tb-an-mono">&#xA0;&#xA0;configure();</text>
+            <text x="80" y="166" class="tb-an-mono">&#xA0;&#xA0;before();</text>
+
+            <text x="80" y="184" class="tb-an-monodel">-&#xA0;if (n &lt; 0) return -1;</text>
+            <text x="80" y="198" class="tb-an-monodel">-&#xA0;return n;</text>
+
+            <text x="80" y="216" class="tb-an-monodel">+&#xA0;if (n &lt; 0) {</text>
+            <text x="80" y="230" class="tb-an-monodel">+&#xA0;&#xA0;&#xA0;log("negative input");</text>
+            <text x="80" y="244" class="tb-an-monodel">+&#xA0;&#xA0;&#xA0;return -1;</text>
+            <text x="80" y="258" class="tb-an-monodel">+&#xA0;}</text>
+
+            <text x="80" y="276" class="tb-an-mono">&#xA0;&#xA0;after();</text>
+
+            <line x1="440" y1="76" x2="475" y2="76" class="tb-an-arr"/>
+            <text x="478" y="80" class="tb-an-muted">paths</text>
+
+            <line x1="440" y1="111" x2="475" y2="111" class="tb-an-arr"/>
+            <text x="478" y="115" class="tb-an-muted">hunk range</text>
+
+            <line x1="440" y1="152" x2="475" y2="152" class="tb-an-arr"/>
+            <text x="478" y="156" class="tb-an-muted">context (space)</text>
+
+            <line x1="440" y1="190" x2="475" y2="190" class="tb-an-arr"/>
+            <text x="478" y="194" class="tb-an-muted">deletions (&#x2212;)</text>
+
+            <line x1="440" y1="228" x2="475" y2="228" class="tb-an-arr"/>
+            <text x="478" y="232" class="tb-an-muted">additions (+)</text>
+
+            <line x1="440" y1="271" x2="475" y2="271" class="tb-an-arr"/>
+            <text x="478" y="275" class="tb-an-muted">trailing context</text>
+
+            <text x="320" y="308" class="tb-an-muted" text-anchor="middle">The whole vocabulary fits on a page.</text>
+        </svg>
+
+        <p>That is the entire vocabulary. A header, hunks, plus and
+            minus and space. The whole standard fits on a page, and
+            it has carried every code change in every open-source
+            project for the better part of four decades.</p>
+
+        <h2>The Surface</h2>
+
+        <p>In daily use the idiom is two commands. Make a patch:</p>
+
+        <pre><code>diff -u original modified &gt; change.patch</code></pre>
+
+        <p>Apply a patch:</p>
+
+        <pre><code>patch -p1 &lt; change.patch</code></pre>
+
+        <p>The <code>-u</code> flag tells diff to use the unified
+            format, which is the one every modern tool produces. The
+            <code>-p1</code> flag tells patch to strip one leading
+            directory from the paths recorded in the file, which is
+            how you make a patch generated against
+            <code>a/src/main.c</code> apply to
+            <code>src/main.c</code> in your tree. The
+            leading-directory game is a convention that grew up
+            around how patches were generated against named source
+            trees and is, after thirty years, simply the gesture one
+            learns.</p>
+
+        <svg viewBox="0 0 640 220" aria-label="A diagram of how the -p flag strips leading path components. The recorded path a/src/main.c is shown with three path segments separated by slashes. Arrows point to where each -p level cuts: -p0 keeps the full path, -p1 strips a/ to leave src/main.c (highlighted as the daily convention), -p2 strips a/src/ to leave only main.c. The legend notes the convention grew up around how diffs were generated against named source trees." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-p-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-p-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-p-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-p-mono { font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; fill: var(--text); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-p-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-p-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-p-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tb-p-cut { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 3; fill: none; }
+            </style>
+            <text x="320" y="22" class="tb-p-title" text-anchor="middle">What -p1 Strips</text>
+
+            <text x="320" y="58" class="tb-p-head" text-anchor="middle">recorded path</text>
+
+            <text x="240" y="84" class="tb-p-mono" text-anchor="middle">a</text>
+            <text x="280" y="84" class="tb-p-mono" text-anchor="middle">/</text>
+            <text x="320" y="84" class="tb-p-mono" text-anchor="middle">src</text>
+            <text x="360" y="84" class="tb-p-mono" text-anchor="middle">/</text>
+            <text x="410" y="84" class="tb-p-mono" text-anchor="middle">main.c</text>
+
+            <line x1="260" y1="68" x2="260" y2="96" class="tb-p-cut"/>
+            <line x1="340" y1="68" x2="340" y2="96" class="tb-p-cut"/>
+
+            <text x="260" y="110" class="tb-p-muted" text-anchor="middle">-p1</text>
+            <text x="340" y="110" class="tb-p-muted" text-anchor="middle">-p2</text>
+
+            <rect x="20" y="130" width="180" height="60" class="tb-p-box"/>
+            <text x="110" y="150" class="tb-p-head" text-anchor="middle">-p0</text>
+            <text x="110" y="170" class="tb-p-text" text-anchor="middle">a/src/main.c</text>
+            <text x="110" y="184" class="tb-p-muted" text-anchor="middle">no stripping</text>
+
+            <rect x="220" y="130" width="200" height="60" class="tb-p-accent-box"/>
+            <text x="320" y="150" class="tb-p-head" text-anchor="middle">-p1 (the daily one)</text>
+            <text x="320" y="170" class="tb-p-text" text-anchor="middle">src/main.c</text>
+            <text x="320" y="184" class="tb-p-muted" text-anchor="middle">strip one segment</text>
+
+            <rect x="440" y="130" width="180" height="60" class="tb-p-box"/>
+            <text x="530" y="150" class="tb-p-head" text-anchor="middle">-p2</text>
+            <text x="530" y="170" class="tb-p-text" text-anchor="middle">main.c</text>
+            <text x="530" y="184" class="tb-p-muted" text-anchor="middle">strip two segments</text>
+        </svg>
+
+        <p>A handful of further flags carry most of the rest of the
+            daily work:</p>
+
+        <pre><code>patch -R &lt; change.patch              # reverse: undo the patch
+patch --dry-run -p1 &lt; change.patch    # check, do not write
+patch -p1 -i change.patch             # explicit input file</code></pre>
+
+        <p>When a hunk does not fit cleanly, the patch tool tries to
+            apply it with what it calls line-fuzz: it allows the
+            context lines to be a little wrong, within a small
+            tolerance, on the theory that the file has drifted but
+            not changed beyond recognition. If even that fails, it
+            writes the rejected hunk to a <code>.rej</code> file
+            beside the target, plainly, with the failing hunk in the
+            original format. You can read the reject, edit by hand,
+            and try again. The tool is honest about its limits, and
+            it tells you exactly what it could not do. Beauty, here,
+            includes telling the truth about failure.</p>
+
+        <svg viewBox="0 0 640 220" aria-label="A decision flow of how patch tries to apply a hunk. A hunk is read; if context matches exactly, the apply succeeds; if not, line-fuzz tolerates small drift and tries again; if even that fails, the rejected hunk is written to a .rej file beside the target. The legend notes that beauty includes telling the truth about failure." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-fz-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-fz-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-fz-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-fz-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-fz-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-fz-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tb-fz-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#tb-fz-arrow); }
+            </style>
+            <defs>
+                <marker id="tb-fz-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="tb-fz-title" text-anchor="middle">Apply, Fuzz, or Reject</text>
+
+            <rect x="10" y="60" width="130" height="50" class="tb-fz-box"/>
+            <text x="75" y="82" class="tb-fz-head" text-anchor="middle">read hunk</text>
+            <text x="75" y="98" class="tb-fz-muted" text-anchor="middle">from change.patch</text>
+
+            <line x1="140" y1="85" x2="180" y2="85" class="tb-fz-arr"/>
+
+            <rect x="180" y="60" width="150" height="50" class="tb-fz-accent-box"/>
+            <text x="255" y="82" class="tb-fz-head" text-anchor="middle">context matches?</text>
+            <text x="255" y="98" class="tb-fz-muted" text-anchor="middle">exact</text>
+
+            <line x1="330" y1="75" x2="370" y2="60" class="tb-fz-arr"/>
+            <line x1="330" y1="95" x2="370" y2="120" class="tb-fz-arr"/>
+
+            <rect x="370" y="40" width="160" height="40" class="tb-fz-accent-box"/>
+            <text x="450" y="65" class="tb-fz-head" text-anchor="middle">apply &#x2713;</text>
+
+            <rect x="370" y="105" width="160" height="50" class="tb-fz-accent-box"/>
+            <text x="450" y="127" class="tb-fz-head" text-anchor="middle">try with line-fuzz</text>
+            <text x="450" y="143" class="tb-fz-muted" text-anchor="middle">tolerate small drift</text>
+
+            <line x1="530" y1="130" x2="565" y2="130" class="tb-fz-arr"/>
+            <line x1="450" y1="155" x2="450" y2="180" class="tb-fz-arr"/>
+
+            <rect x="565" y="105" width="65" height="50" class="tb-fz-accent-box"/>
+            <text x="597" y="127" class="tb-fz-head" text-anchor="middle">apply</text>
+            <text x="597" y="143" class="tb-fz-muted" text-anchor="middle">&#x2713;</text>
+
+            <rect x="370" y="180" width="160" height="40" class="tb-fz-accent-box"/>
+            <text x="450" y="200" class="tb-fz-head" text-anchor="middle">write *.rej</text>
+            <text x="450" y="214" class="tb-fz-muted" text-anchor="middle">plainly, original format</text>
+        </svg>
+
+        <h2>On FreeBSD</h2>
+
+        <p>FreeBSD ships patch in the base system at
+            <code>/usr/bin/patch</code>, BSD-licensed, descended
+            directly from
+            <a href="https://man.freebsd.org/cgi/man.cgi?patch(1)" target="_blank" rel="noopener">Larry Wall's original source line</a>.
+            OpenBSD and NetBSD carry the same lineage; macOS does
+            too. The tool is simply present on a fresh install, no
+            package required.</p>
+
+        <p><a href="https://savannah.gnu.org/projects/patch" target="_blank" rel="noopener">GNU patch</a>,
+            part of the GNU project and licensed under the GPL, is a
+            separate fork from the same root. It has grown some
+            extra extensions over the years (additional file-name
+            heuristics, more flexible handling of edge cases) but
+            the on-disk format both tools read and write is the
+            same. A patch produced by <code>git diff</code> on one
+            machine applies on any machine with either
+            implementation. That interoperability after forty years
+            is not an accident; it is what one gets when the format
+            is small enough to specify completely and honestly.</p>
+
+        <p>This series prizes that property of FreeBSD's choices:
+            keep the lean BSD-licensed original in base, where it is
+            one of the few tools every engineer has on day one. The
+            GPL alternative is a <code>pkg install</code> away if
+            you need a specific extension. For the daily load, the
+            in-base tool is the whole tool.</p>
+
+        <h2>The Lineage</h2>
+
+        <p><a href="https://en.wikipedia.org/wiki/Patch_(Unix)" target="_blank" rel="noopener">Larry Wall posted patch 1.3 to the mod.sources newsgroup on 8 May 1985</a>,
+            from his desk at NASA's Jet Propulsion Laboratory in
+            Pasadena. He had already written
+            <code>rn</code>, the news reader, the year before;
+            <em>Perl</em> was still two years away. Wall's patch
+            borrowed the diff output that the BSD
+            <code>diff(1)</code> tool already produced (in the older
+            context-diff format) and turned it from a thing humans
+            read into a thing programs apply. That move, treating
+            diff output as a machine-readable changeset rather than
+            a human report, is the conceptual reduction the rest of
+            the story rests on.</p>
+
+        <p>The format Wall worked with then was the context diff:
+            each hunk listed several lines of context before and
+            after the change, with the old and new versions in
+            separate blocks. It worked, but it was verbose. In
+            August 1990,
+            <a href="https://en.wikipedia.org/wiki/Diff_(Unix)" target="_blank" rel="noopener">Wayne Davison posted unidiff to comp.sources.misc</a>,
+            volume 14: a new format that interleaved the deletions
+            and insertions into a single block, sharing the context
+            between them, and saved roughly a quarter of the bytes
+            on a typical patch. Richard Stallman folded unidiff
+            support into GNU diff 1.15 in January 1991, the patch
+            tool learned to read it shortly after, and the unified
+            format has been the lingua franca ever since. Git
+            produces it. GitHub shows it. Every code-review tool
+            you have used speaks it.</p>
+
+        <svg viewBox="0 0 640 240" aria-label="A timeline of the patch and unified-diff lineage from 1985 to 2026. Five labelled milestones along the axis: 1985 Larry Wall posts patch 1.3 to mod.sources from NASA JPL; 1987 Perl appears (two years after patch); 1990 Wayne Davison posts unidiff to comp.sources.misc; 1991 Richard Stallman folds unidiff into GNU diff 1.15; 2026 BSD patch in FreeBSD base and GNU patch still interoperable, forty-one years on. The legend notes that a 1986 patch -p1 still works on a 2026 FreeBSD installation." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-ln-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ln-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ln-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ln-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ln-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .tb-ln-tick { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+                .tb-ln-dot { fill: var(--accent); }
+            </style>
+            <text x="320" y="22" class="tb-ln-title" text-anchor="middle">A Forty-One-Year Lineage</text>
+
+            <line x1="40" y1="130" x2="600" y2="130" class="tb-ln-axis"/>
+
+            <circle cx="60" cy="130" r="5" class="tb-ln-dot"/>
+            <line x1="60" y1="130" x2="60" y2="80" class="tb-ln-tick"/>
+            <text x="60" y="74" class="tb-ln-head" text-anchor="middle">1985</text>
+            <text x="60" y="148" class="tb-ln-text" text-anchor="middle">patch 1.3</text>
+            <text x="60" y="162" class="tb-ln-muted" text-anchor="middle">Larry Wall</text>
+            <text x="60" y="174" class="tb-ln-muted" text-anchor="middle">NASA JPL</text>
+
+            <circle cx="180" cy="130" r="5" class="tb-ln-dot"/>
+            <line x1="180" y1="130" x2="180" y2="98" class="tb-ln-tick"/>
+            <text x="180" y="92" class="tb-ln-head" text-anchor="middle">1987</text>
+            <text x="180" y="148" class="tb-ln-text" text-anchor="middle">Perl</text>
+            <text x="180" y="162" class="tb-ln-muted" text-anchor="middle">two years later</text>
+
+            <circle cx="300" cy="130" r="5" class="tb-ln-dot"/>
+            <line x1="300" y1="130" x2="300" y2="80" class="tb-ln-tick"/>
+            <text x="300" y="74" class="tb-ln-head" text-anchor="middle">1990</text>
+            <text x="300" y="148" class="tb-ln-text" text-anchor="middle">unidiff</text>
+            <text x="300" y="162" class="tb-ln-muted" text-anchor="middle">Wayne Davison</text>
+            <text x="300" y="174" class="tb-ln-muted" text-anchor="middle">comp.sources.misc</text>
+
+            <circle cx="420" cy="130" r="5" class="tb-ln-dot"/>
+            <line x1="420" y1="130" x2="420" y2="98" class="tb-ln-tick"/>
+            <text x="420" y="92" class="tb-ln-head" text-anchor="middle">1991</text>
+            <text x="420" y="148" class="tb-ln-text" text-anchor="middle">GNU diff 1.15</text>
+            <text x="420" y="162" class="tb-ln-muted" text-anchor="middle">Stallman folds in</text>
+
+            <circle cx="570" cy="130" r="5" class="tb-ln-dot"/>
+            <line x1="570" y1="130" x2="570" y2="80" class="tb-ln-tick"/>
+            <text x="570" y="74" class="tb-ln-head" text-anchor="middle">2026</text>
+            <text x="570" y="148" class="tb-ln-text" text-anchor="middle">BSD + GNU</text>
+            <text x="570" y="162" class="tb-ln-muted" text-anchor="middle">still interoperable</text>
+            <text x="570" y="174" class="tb-ln-muted" text-anchor="middle">forty-one years on</text>
+
+            <text x="320" y="218" class="tb-ln-muted" text-anchor="middle">A 1986 patch -p1 still works on a 2026 FreeBSD installation.</text>
+        </svg>
+
+        <p>The two implementations alive today (the BSD line carried
+            in FreeBSD, OpenBSD, NetBSD and macOS; the GNU fork in
+            the GNU project's repositories) both descend from
+            Wall's 1985 source, and both remain interoperable to
+            this day.
+            <a href="http://bsdimp.blogspot.com/2020/08/a-35-year-old-bug-in-patch-found-in.html" target="_blank" rel="noopener">A bug found in 2020 by Warner Losh</a>,
+            while restoring 2.11BSD, traced a thirty-five-year-old
+            corner case in the original parsing and was triaged
+            identically against both lines. The format is so small
+            that two independent maintainer lines have kept it
+            stable for forty-one years without drifting.</p>
+
+        <blockquote>
+            <p>The standard worth keeping is the one small enough
+                to be a sentence. Wall wrote one in 1985, Davison
+                sharpened it in 1990, and every modern code review
+                still depends on it. A format becomes universal
+                when it is small enough to be a sentence. Wall's
+                was.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The patch toolkit and lineage:</strong></p>
+            <p><strong>Daily use:</strong></p>
+            <ul>
+                <li><code>diff -u original modified &gt; change.patch</code>
+                    &#x2014; unified diff</li>
+                <li><code>patch -p1 &lt; change.patch</code>
+                    &#x2014; apply, strip one leading path</li>
+                <li><code>patch -R &lt; change.patch</code>
+                    &#x2014; reverse a patch</li>
+                <li><code>patch --dry-run -p1 &lt; change.patch</code>
+                    &#x2014; preview without writing</li>
+                <li>Rejected hunks land in
+                    <code>&lt;file&gt;.rej</code></li>
+            </ul>
+            <p><strong>History:</strong></p>
+            <ul>
+                <li>Larry Wall, patch 1.3, mod.sources, 8 May 1985,
+                    NASA JPL</li>
+                <li>Two years before Perl (1987)</li>
+                <li>Wayne Davison's unidiff,
+                    <code>comp.sources.misc</code>, August 1990</li>
+                <li>GNU diff 1.15 with unidiff support, January
+                    1991</li>
+                <li>POSIX patch (XPG4 then POSIX)</li>
+            </ul>
+            <p><strong>Fair note:</strong> Wall wrote patch (the
+                tool); Davison created unidiff (the format). The
+                two travelled together but were posted five years
+                apart.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

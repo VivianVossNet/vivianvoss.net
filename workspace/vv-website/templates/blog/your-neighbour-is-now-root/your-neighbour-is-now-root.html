@@ -1,0 +1,354 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Your Neighbour Is Now Root &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="On a shared hosting server you share one machine with hundreds of strangers. This week it emerged that any one of them could become root, and on a shared server root over one account is root over all of them. CVE-2026-48172 is a flaw in the LiteSpeed cPanel plugin, which wires the LiteSpeed web server into cPanel and WHM. On 19 May 2026 cPanel pulled the plugin, stating it allowed unauthorized root access; LiteSpeed shipped a fix on 21 May; on 26 May CISA listed it as actively exploited, used as a zero-day before the patch existed. The function lsws.redisAble, reachable through the normal cPanel API by any logged-in customer, forgot to ask who was calling and ran as root (CWE-266). Shared hosting sells a boundary it does not enforce: hundreds of tenants share one kernel, one filesystem, one root, and the wall between them is plugin code and good manners. On FreeBSD the tenant boundary has a name, the jail, enforced in the kernel. You never chose the strangers on your server. This week, one of them could choose to be you.">
+{( endslot )}
+
+{( slot canonical )}/blog/your-neighbour-is-now-root{( endslot )}
+
+{( slot og-title )}Your Neighbour Is Now Root &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Wire Fire Episode 03. CVE-2026-48172, a flaw in the LiteSpeed cPanel plugin, let any logged-in shared-hosting customer become root. On 19 May 2026 cPanel pulled the plugin, citing unauthorized root access; LiteSpeed shipped a fix on 21 May; on 26 May CISA added it to the Known Exploited Vulnerabilities catalogue, confirming use as a zero-day before the patch existed. Rated 10.0 on CVSS v4.0. The function lsws.redisAble, reachable through the normal cPanel JSON API by any logged-in user, did not check who was calling and ran as root (CWE-266, incorrect privilege assignment); one customer, or one phished password, then held the host and every site on it. Versions 2.3 to 2.4.4 are affected; upgrade to 2.4.7 or remove the plugin. Shared hosting sells a boundary it does not enforce: hundreds of tenants share one kernel, one filesystem, one root, and the wall is plugin code and good manners. On FreeBSD the tenant boundary is the jail, enforced in the kernel. Your security boundary is not your account; it is the weakest account on the same machine. You never chose the strangers on your server. This week, one of them could choose to be you.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Your Neighbour Is Now Root",
+    "datePublished": "2026-05-28",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/your-neighbour-is-now-root",
+    "description": "Wire Fire Episode 03. CVE-2026-48172 is a flaw in the LiteSpeed cPanel plugin, the component that wires the LiteSpeed web server into cPanel and WHM, the control panel that runs a large share of the world's commercial shared hosting. On 19 May 2026 cPanel pulled the plugin through a nightly update, stating that the vulnerability allowed unauthorized root access to the server; on 21 May LiteSpeed shipped a fix (version 2.4.5, followed by 2.4.7 in WHM plugin 5.3.1.0); on 26 May CISA added CVE-2026-48172 to its Known Exploited Vulnerabilities catalogue, confirming it had been used as a zero-day in the wild before the patch existed. Rated 10.0 on CVSS v4.0 and 9.8 on v3.1. Every plugin version from 2.3 through 2.4.4 is affected. The mechanism: on a shared server every customer is an ordinary unprivileged user and root belongs to the host alone; the plugin exposed a function named lsws.redisAble, reachable through cPanel's standard JSON API by any logged-in customer, which did not check who was calling and ran with root's authority regardless (CWE-266, incorrect privilege assignment). Any customer, or any attacker who had phished a single customer's password, could hand it a script that ran as root, taking the whole machine: every other customer's files, databases, credentials and sites. No firewall breach, no kernel exploit, no physical access required. Exposure: upgrade to 2.4.7 or remove the plugin, grep logs for cpanel_jsonapi_func=redisAble, audit new accounts, restrict cPanel and WHM by source address; a hosting customer cannot patch this and must ask their provider. The pattern: shared hosting sells a boundary it does not enforce, hundreds of tenants sharing one kernel, one filesystem and one root, with the wall between them living in plugin code and good manners; the blast radius of one fumbled privilege check is the whole server. On FreeBSD the tenant boundary is the jail, kernel-enforced isolation in which a process cannot see the host or escalate to its root; the same idea underpins Linux containers and illumos zones. On shared hosting your security boundary is not your account, it is the weakest account on the same machine.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-28">28 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Your Neighbour Is Now Root</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">web</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Wire Fire</em> &#x276F;&#x276F;&#x276F;&#x276F; Episode 03</p>
+
+        <p>On a shared hosting server you share one machine with
+            hundreds of strangers. You have never met them. You did
+            not choose them. This week it emerged that, for a large
+            slice of the world's shared hosting, any one of them could
+            quietly become root, the all-powerful administrator
+            account, and on a shared server root over one account is
+            root over all of them. This is the situation, what it
+            means, and what to do about it.</p>
+
+        <h2>The Breach</h2>
+
+        <p>CVE-2026-48172 is a flaw in the LiteSpeed cPanel plugin:
+            the component that wires the LiteSpeed web server into
+            cPanel and WHM, the control panel that runs a large share
+            of the world's commercial shared hosting. The plugin is
+            the user-end piece that hundreds of customer accounts can
+            reach through the ordinary cPanel interface.</p>
+
+        <p>The timeline is short and worth stating precisely. On 19
+            May 2026, cPanel pulled the plugin from servers through a
+            nightly update, stating plainly that the vulnerability
+            "allowed unauthorized root access to the server". On 21
+            May, LiteSpeed shipped a fix, version 2.4.5, after which a
+            broader security review produced version 2.4.7, bundled in
+            the LiteSpeed WHM plugin 5.3.1.0. On 26 May, CISA added
+            CVE-2026-48172 to its Known Exploited Vulnerabilities
+            catalogue: confirmation that it had been used as a
+            zero-day, in the wild, before the patch existed.</p>
+
+        <svg viewBox="0 0 600 200" aria-label="A horizontal timeline of the cPanel LiteSpeed plugin incident. 19 May 2026: cPanel pulls the plugin through a nightly update, citing unauthorized root access to the server. 21 May: LiteSpeed ships a fix, version 2.4.5, later 2.4.7. 26 May: CISA adds CVE-2026-48172 to its Known Exploited Vulnerabilities catalogue, confirming use as a zero-day before the patch existed. A note records the rating: 10.0 on CVSS v4.0, the maximum. A shaded band before 21 May marks the window in which the flaw was exploited as a zero-day with no patch available." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wf-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .wf-tl-tick { stroke: var(--muted); stroke-width: 1; }
+                .wf-tl-dot { fill: var(--accent); }
+                .wf-tl-band { fill: var(--accent); opacity: 0.12; }
+            </style>
+            <text x="300" y="22" class="wf-tl-title" text-anchor="middle">Zero-Day First, Patch Second</text>
+
+            <rect x="90" y="118" width="190" height="14" class="wf-tl-band"/>
+            <text x="185" y="114" class="wf-tl-muted" text-anchor="middle" font-style="italic">exploited with no patch available</text>
+
+            <line x1="40" y1="138" x2="560" y2="138" class="wf-tl-axis"/>
+
+            <circle cx="100" cy="138" r="4" class="wf-tl-dot"/>
+            <line x1="100" y1="138" x2="100" y2="144" class="wf-tl-tick"/>
+            <text x="100" y="158" class="wf-tl-text" text-anchor="middle">19 May</text>
+            <text x="100" y="174" class="wf-tl-muted" text-anchor="middle">cPanel pulls plugin,</text>
+            <text x="100" y="186" class="wf-tl-muted" text-anchor="middle">"unauthorized root"</text>
+
+            <circle cx="280" cy="138" r="4" class="wf-tl-dot"/>
+            <line x1="280" y1="138" x2="280" y2="144" class="wf-tl-tick"/>
+            <text x="280" y="158" class="wf-tl-text" text-anchor="middle">21 May</text>
+            <text x="280" y="174" class="wf-tl-muted" text-anchor="middle">LiteSpeed fix,</text>
+            <text x="280" y="186" class="wf-tl-muted" text-anchor="middle">v2.4.5 (then 2.4.7)</text>
+
+            <circle cx="500" cy="138" r="4" class="wf-tl-dot"/>
+            <line x1="500" y1="138" x2="500" y2="144" class="wf-tl-tick"/>
+            <text x="500" y="158" class="wf-tl-text" text-anchor="middle">26 May</text>
+            <text x="500" y="174" class="wf-tl-muted" text-anchor="middle">CISA KEV:</text>
+            <text x="500" y="186" class="wf-tl-muted" text-anchor="middle">actively exploited</text>
+
+            <text x="300" y="60" class="wf-tl-muted" text-anchor="middle" font-style="italic">Rated 10.0 on CVSS v4.0, the maximum.</text>
+            <text x="300" y="74" class="wf-tl-muted" text-anchor="middle" font-style="italic">The number matters less than the phrase: unauthorized root access.</text>
+        </svg>
+
+        <p>The flaw is rated at the top of the scale: 10.0 on the CVSS
+            v4.0 system, 9.8 on the older v3.1. The number matters
+            less than the sentence cPanel used: unauthorized root
+            access. On a shared server, that is the worst sentence
+            there is.</p>
+
+        <h2>The Scope</h2>
+
+        <p>Every version of the plugin from 2.3 through 2.4.4 is
+            affected.</p>
+
+        <p>The exposed machines are shared hosting servers, and the
+            word "shared" is the whole story. On such a server,
+            hundreds of customer accounts, each a separate website, a
+            separate business, a separate owner, live side by side on
+            one operating system, under one kernel, with one root
+            account reserved for the host. They are kept apart not by
+            a hard wall but by the convention that each account stays
+            in its own lane.</p>
+
+        <p>This is not a niche stack. Exposure analysis of the
+            affected estate shows it spread across industry, retail
+            and media, with nearly half of all observed exposure
+            falling outside the top sectors entirely: the long tail of
+            small businesses, agencies and personal sites that is
+            precisely what shared hosting exists to serve. cPanel is
+            not an obscure tool. It is the default way a great deal of
+            the web is hosted.</p>
+
+        <h2>The Mechanism</h2>
+
+        <p>Here is the part that should change behaviour, in plain
+            terms.</p>
+
+        <p>On a shared server, every customer is an ordinary,
+            unprivileged user. Root, the account that can do anything
+            to the whole machine, belongs to the host alone. The
+            entire security model rests on customers never being able
+            to reach it.</p>
+
+        <p>The plugin exposed a function named
+            <code>lsws.redisAble</code>, reachable through cPanel's
+            standard JSON API by any logged-in customer. The function
+            had one fatal omission: it did not check who was calling.
+            It ran with root's authority regardless of which
+            unprivileged user invoked it. This is a textbook case of
+            what the security taxonomy calls incorrect privilege
+            assignment (CWE-266): code that runs with more power than
+            its caller was entitled to.</p>
+
+        <svg viewBox="0 0 600 250" aria-label="A flow diagram of the privilege-escalation mechanism. An ordinary unprivileged customer, or an attacker with one phished password, makes a normal cPanel JSON API call to the function lsws.redisAble. The function should check who is calling, but the check is missing. So the function runs the supplied script as root. From root, the attacker holds the whole machine: every other customer's files, databases, credentials and sites, not just their own slice. A note observes that no firewall breach, no kernel exploit and no physical access were required, only a normal account and a function that forgot to ask for identification at the door." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wf-mc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-mc-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-mc-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-mc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-mc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .wf-mc-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .wf-mc-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#wf-mc-arrow); }
+                .wf-mc-miss { stroke: var(--muted); stroke-width: 1.2; fill: none; stroke-dasharray: 4,3; }
+            </style>
+            <defs>
+                <marker id="wf-mc-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="wf-mc-title" text-anchor="middle">A Function That Forgot to Ask Who Was Calling</text>
+
+            <rect x="40" y="48" width="220" height="44" class="wf-mc-box"/>
+            <text x="150" y="68" class="wf-mc-head" text-anchor="middle">unprivileged customer</text>
+            <text x="150" y="84" class="wf-mc-muted" text-anchor="middle">or one phished password</text>
+
+            <line x1="260" y1="70" x2="340" y2="70" class="wf-mc-arr"/>
+            <text x="300" y="62" class="wf-mc-muted" text-anchor="middle">normal API call</text>
+
+            <rect x="340" y="48" width="220" height="44" class="wf-mc-box"/>
+            <text x="450" y="68" class="wf-mc-head" text-anchor="middle">lsws.redisAble</text>
+            <text x="450" y="84" class="wf-mc-muted" text-anchor="middle">via cPanel JSON API</text>
+
+            <line x1="450" y1="92" x2="450" y2="116" class="wf-mc-miss"/>
+            <text x="540" y="108" class="wf-mc-muted" text-anchor="end">missing: who is calling? (CWE-266)</text>
+
+            <rect x="340" y="116" width="220" height="44" class="wf-mc-accent-box"/>
+            <text x="450" y="136" class="wf-mc-head" text-anchor="middle">runs the script as root</text>
+            <text x="450" y="152" class="wf-mc-muted" text-anchor="middle">regardless of the caller</text>
+
+            <line x1="450" y1="160" x2="450" y2="184" class="wf-mc-arr"/>
+
+            <rect x="160" y="184" width="280" height="44" class="wf-mc-accent-box"/>
+            <text x="300" y="204" class="wf-mc-head" text-anchor="middle">the whole machine</text>
+            <text x="300" y="220" class="wf-mc-muted" text-anchor="middle">every site's files, databases, credentials, not just one slice</text>
+
+            <text x="300" y="244" class="wf-mc-muted" text-anchor="middle" font-style="italic">No firewall breach, no kernel exploit, no physical access. Just a normal call.</text>
+        </svg>
+
+        <p>The consequence is direct. Any customer on the server, or
+            any attacker who had phished or bought a single customer's
+            password, could ask that function to run a script of their
+            choosing. The script ran as root. From there, the attacker
+            held the entire machine: every other customer's files,
+            every database, every credential, every site. Not their
+            own slice. The whole server.</p>
+
+        <p>Note what was not required. No firewall breach. No kernel
+            exploit. No physical access. Just a normal account, a
+            normal API call, and a function that forgot to ask for
+            identification at the door.</p>
+
+        <h2>The Exposure</h2>
+
+        <p>If you operate cPanel with the LiteSpeed plugin in any
+            version from 2.3 to 2.4.4, treat this as urgent. Upgrade
+            to version 2.4.7 (delivered with WHM plugin 5.3.1.0 or
+            later), or remove the plugin entirely if you cannot patch
+            immediately. Then assume you may already have been
+            visited: search your logs for the tell-tale call with
+            <code>grep -rE "cpanel_jsonapi_func=redisAble"</code>,
+            investigate any matches, audit recently created accounts,
+            and restrict cPanel and WHM access to trusted source
+            addresses where you can.</p>
+
+        <p>If you are a hosting customer rather than an operator, here
+            is the uncomfortable truth: you cannot patch this. The
+            vulnerable code is not in your account; it is in the
+            machine your account sits on. Your only lever is to ask
+            your provider whether they have patched, and to treat the
+            answer as a real procurement question rather than a
+            formality.</p>
+
+        <p>On FreeBSD, the boundary this incident is missing has a
+            name: the <a href="/blog/the-jails-replacement">jail</a>.
+            A jail is kernel-enforced isolation. A process inside a
+            jail cannot see the host's processes, cannot touch files
+            outside its own root, and cannot escalate to the host's
+            root, because from inside the jail the host's root does
+            not exist to be reached. A shared hosting panel emulates
+            separation between tenants inside a single shared system,
+            using ownership rules and plugin logic. A jail enforces it
+            one level down, in the kernel, where a forgotten privilege
+            check in a plugin cannot reach. The same idea underpins
+            Linux containers and illumos zones; the point is not the
+            brand but the level at which the wall is built.</p>
+
+        <svg viewBox="0 0 600 250" aria-label="A comparison of two tenant-isolation models. On the left, shared hosting: one operating system, one kernel, one root account, with many customer accounts side by side, separated only by ownership rules, panel logic and plugin code. A broken privilege check in the plugin layer lets one account reach root and therefore every account. On the right, the FreeBSD jail model: each tenant runs in its own jail, a kernel-enforced boundary; a process inside a jail cannot see the host or escalate to the host's root, so a plugin fault inside one jail stays inside that jail. A note observes that a shared panel emulates separation inside one system, while a jail enforces it in the kernel." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wf-iso-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-iso-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-iso-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9.5px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-iso-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-iso-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .wf-iso-soft { fill: none; stroke: var(--muted); stroke-width: 1; rx: 3; stroke-dasharray: 3,2; }
+                .wf-iso-hard { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .wf-iso-root-bad { fill: var(--accent); opacity: 0.16; }
+            </style>
+            <text x="300" y="22" class="wf-iso-title" text-anchor="middle">Walls of Good Manners vs Walls of Kernel</text>
+
+            <text x="150" y="48" class="wf-iso-head" text-anchor="middle">Shared hosting</text>
+            <rect x="30" y="56" width="240" height="150" class="wf-iso-box"/>
+            <text x="150" y="72" class="wf-iso-muted" text-anchor="middle">one OS, one kernel, one root</text>
+            <rect x="45" y="82" width="64" height="34" class="wf-iso-soft"/>
+            <text x="77" y="103" class="wf-iso-muted" text-anchor="middle">site A</text>
+            <rect x="118" y="82" width="64" height="34" class="wf-iso-soft"/>
+            <text x="150" y="103" class="wf-iso-muted" text-anchor="middle">site B</text>
+            <rect x="191" y="82" width="64" height="34" class="wf-iso-soft"/>
+            <text x="223" y="103" class="wf-iso-muted" text-anchor="middle">site C</text>
+            <text x="150" y="134" class="wf-iso-muted" text-anchor="middle">walls = ownership + plugin code</text>
+            <rect x="80" y="148" width="140" height="34" class="wf-iso-root-bad"/>
+            <text x="150" y="169" class="wf-iso-text" text-anchor="middle">root (shared)</text>
+            <text x="150" y="198" class="wf-iso-muted" text-anchor="middle">one fumbled check &#x2192; every site</text>
+
+            <text x="450" y="48" class="wf-iso-head" text-anchor="middle">FreeBSD jails</text>
+            <rect x="330" y="56" width="240" height="150" class="wf-iso-box"/>
+            <text x="450" y="72" class="wf-iso-muted" text-anchor="middle">host kernel, host root (unreachable)</text>
+            <rect x="345" y="82" width="64" height="60" class="wf-iso-hard"/>
+            <text x="377" y="108" class="wf-iso-text" text-anchor="middle">jail A</text>
+            <text x="377" y="122" class="wf-iso-muted" text-anchor="middle">own root</text>
+            <rect x="418" y="82" width="64" height="60" class="wf-iso-hard"/>
+            <text x="450" y="108" class="wf-iso-text" text-anchor="middle">jail B</text>
+            <text x="450" y="122" class="wf-iso-muted" text-anchor="middle">own root</text>
+            <rect x="491" y="82" width="64" height="60" class="wf-iso-hard"/>
+            <text x="523" y="108" class="wf-iso-text" text-anchor="middle">jail C</text>
+            <text x="523" y="122" class="wf-iso-muted" text-anchor="middle">own root</text>
+            <text x="450" y="162" class="wf-iso-muted" text-anchor="middle">walls = the kernel</text>
+            <text x="450" y="182" class="wf-iso-muted" text-anchor="middle">a plugin fault stays inside its jail</text>
+            <text x="450" y="198" class="wf-iso-muted" text-anchor="middle">host root does not exist to be reached</text>
+        </svg>
+
+        <h2>The Pattern</h2>
+
+        <p>Shared hosting sells a boundary it does not enforce, and
+            that is the structural news under this week's headline.</p>
+
+        <p>Hundreds of tenants share one kernel, one filesystem and
+            one root. The separation between them lives in user
+            permissions, in panel logic and in plugin code, which is
+            to say it lives in software written by people, all of it
+            one mistake away from failing. When that mistake lands on
+            a privilege check, the blast radius is not the one account
+            that was compromised. It is every account on the machine.
+            The model works perfectly right up until any single
+            component fumbles, and then it fails completely, for
+            everyone at once.</p>
+
+        <p>For a decision-maker, the translation is direct and it
+            belongs in a procurement conversation, not a post-incident
+            one. On shared hosting, your security boundary is not your
+            own account and your own good practices. It is the weakest
+            account on the same server, managed by the least careful
+            neighbour you have never met. If the data you host would
+            genuinely hurt you to lose or to leak, the question is not
+            whether your password is strong. It is whether you are
+            sharing a kernel with strangers. Budget for real
+            isolation, a VPS, kernel-enforced containers, jails,
+            zones, or accept, consciously, that your neighbour is part
+            of your threat model.</p>
+
+        <blockquote>
+            <p>You never chose the strangers on your server. This
+                week, one of them could choose to be you. On shared
+                hosting your security boundary is not your account. It
+                is the weakest account on the same machine.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The flaw, the timeline, the check:</strong></p>
+            <ul>
+                <li><strong>Timeline</strong>: 19 May, cPanel pulls the LiteSpeed plugin via nightly update, citing "unauthorized root access"; 21 May, LiteSpeed ships a fix (v2.4.5); 26 May, CISA lists CVE-2026-48172 as actively exploited (CVSS v4.0: 10.0, the maximum; v3.1: 9.8)</li>
+                <li><strong>The mechanism</strong>: the <code>lsws.redisAble</code> function, reachable via the normal cPanel API, ran as root for any logged-in user (CWE-266, incorrect privilege assignment); one customer, or one phished password, then held the host and every site on it</li>
+                <li><strong>Exposure check</strong>: running plugin v2.3 to v2.4.4? Upgrade to v2.4.7 (WHM plugin 5.3.1.0+) or remove it; indicator: <code>grep -rE "cpanel_jsonapi_func=redisAble"</code> across your logs; audit new accounts; restrict cPanel/WHM access by source address. A customer cannot patch this. Ask your host whether they have</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

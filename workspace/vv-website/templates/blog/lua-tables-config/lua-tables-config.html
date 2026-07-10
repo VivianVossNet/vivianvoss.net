@@ -1,0 +1,582 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Lua Tables: The Configuration Format That Admits What It Is &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 1993, three engineers at PUC-Rio merged DEL and Sol into Lua to give Petrobras a single configuration language across heterogeneous machines. Lua was not born as a scripting language. It was born as a config language. Thirty-three years later, FreeBSD's boot loader reads /boot/lua/loader.lua, Neovim ships init.lua, OpenResty runs Cloudflare's edge, World of Warcraft's UI is Lua, and the Norway problem cannot occur.">
+{( endslot )}
+
+{( slot canonical )}/blog/lua-tables-config{( endslot )}
+
+{( slot og-title )}Lua Tables: The Configuration Format That Admits What It Is &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}By Design Episode 06. Lua tables: one construct that is array, hash, record, object and namespace at once. Default declarative; escape hatch opt-in. The Norway problem cannot occur because the language has no opinion about your country codes. FreeBSD boot loader, Neovim, OpenResty, Awesome WM, Wireshark, World of Warcraft, Roblox, Kong, HAProxy, Adobe Lightroom, Redis EVAL, pandoc. Configuration is code, even when it pretends not to be. Lua admits this from the start.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Lua Tables: The Configuration Format That Admits What It Is",
+    "datePublished": "2026-05-07",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/lua-tables-config",
+    "description": "By Design Episode 06. Roberto Ierusalimschy, Luiz Henrique de Figueiredo and Waldemar Celes merged DEL and Sol into Lua at PUC-Rio in 1993, originally to give Petrobras a portable configuration language. Lua's table is array, hash, record, object and namespace in one construct. Configuration files are data when treated as data and code only when the escape hatch is reached for. FreeBSD's boot loader has read /boot/lua/loader.lua since version 12 (2018), Neovim's init.lua became the recommended config in 0.5 (2021), Cloudflare's edge runs OpenResty, WoW's UI has been Lua since 2004. The Norway problem cannot occur. The honest format is the one that admits what it is.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-07">7 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Lua Tables: The Configuration Format That Admits What It Is</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">lua</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>By Design</em> &#x25A0; Episode 06</p>
+
+        <p>In 1993, three engineers at
+            <a href="https://www.tecgraf.puc-rio.br/" target="_blank" rel="noopener">PUC-Rio's
+            Tecgraf laboratory</a> had a problem. Petrobras, the
+            Brazilian oil company, ran software on every kind of
+            machine it owned, and the configuration files for that
+            software were a mess. The team had two existing prototypes:
+            DEL, a "data-entry language", and Sol, a "simple object
+            language" used as a configuration format.
+            <a href="https://www.lua.org/doc/hopl.pdf" target="_blank" rel="noopener">Roberto
+            Ierusalimschy, Luiz Henrique de Figueiredo and Waldemar
+            Celes</a> met in mid-1993 and concluded that the two
+            languages could be replaced by a single, more powerful one.
+            They named the result Lua: "moon" in Portuguese, because
+            Sol meant "sun" and the joke was difficult to resist.</p>
+
+        <p>Lua was not born as a scripting language. It was born as a
+            configuration language. The scripting came later, and the
+            table syntax that made the scripting language pleasant was
+            the same table syntax that had been designed for
+            configuration in the first place.</p>
+
+        <p>That is the entire foundation of the argument that follows.</p>
+
+        <h2>The Complaint</h2>
+
+        <p>The standard objection, voiced often since 2003 and still
+            occasionally in 2026, is that programming languages are
+            unsafe as configuration formats. They allow arbitrary code
+            execution. They allow infinite loops, which on a boot path
+            will lock you out of your own machine. They allow side
+            effects (file reads, network calls, time-dependent values)
+            that make configuration files non-reproducible. They cannot
+            be validated by external tools because the validator would
+            have to run the code. Configuration, the argument goes,
+            must be <em>declarative data</em>, not code.</p>
+
+        <p>The argument is not entirely wrong. The conclusion that
+            follows from it (reach for YAML) is.</p>
+
+        <h2>The Decision</h2>
+
+        <p>Lua has exactly one compound data structure: the table. A
+            table is, simultaneously, an array, a hash map, a record,
+            an object, and a namespace. The same <code>{ ... }</code>
+            construct does all five jobs, and any one table can mix
+            them.</p>
+
+        <p>A configuration file in Lua looks like this:</p>
+
+        <pre><code>opts = {
+  prompt   = "$ ",
+  history  = 1000,
+  plugins  = { "git", "ssh", "fzf" },
+  bindings = {
+    ["ctrl-r"] = "history-search",
+    ["ctrl-l"] = "clear-screen",
+  },
+}</code></pre>
+
+        <p>Three observations make this scheme remarkable.</p>
+
+        <p>First, the file is data. The shape on the page is the shape
+            in memory after loading. There is no parser layer between
+            what the user wrote and what the program reads.
+            <code>dofile("config.lua")</code> returns a table, and the
+            table is the configuration. Loading needs no library
+            because the language already loaded itself.</p>
+
+        <p>Second, the file is also code, but only when you ask it to
+            be. The same syntax that holds static values can also hold
+            variables, conditionals and function calls:</p>
+
+        <pre><code>local hostname = os.getenv("HOSTNAME") or "unknown"
+
+opts = {
+  prompt = hostname == "production" and "PROD$ " or "$ ",
+  log    = "/var/log/" .. hostname .. ".log",
+}</code></pre>
+
+        <p>The default form is declarative; the expressive form is
+            opt-in. You pay for the expressiveness only when you reach
+            for it. A Lua config that contains no functions, no loops
+            and no conditionals is, for all practical purposes,
+            indistinguishable from JSON. With trailing commas. And
+            comments.</p>
+
+        <p>Third, the format scales without changing format. A
+            twenty-line declarative table for a small tool, a
+            three-hundred-line nested configuration for a window
+            manager, a three-thousand-line plugin manifest for an
+            editor: all the same syntax, all the same loading
+            mechanism, all the same mental model. There is no point at
+            which "this configuration grew too complex for YAML, we
+            need to migrate to a programming language". The language
+            is already there.</p>
+
+        <p>These three properties cost the format the elegance of being
+            purely declarative. They bought the format everything
+            else.</p>
+
+        <svg viewBox="0 0 560 270" aria-label="A staircase of configuration formats by expressiveness. Step 1: env file, static key-value pairs only. Step 2: JSON, pure data, no comments. Step 3: TOML, hierarchical pure data with comments. Step 4: Lua tables, structured data with optional logic, escape hatch when needed. Step 5: a real programming language. The arrow climbing the staircase is labelled 'expressiveness'; an annotation reads that skipping levels produces the well-we-need-to-template-our-YAML moment, and the fix is rarely more YAML." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .lua-st-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .lua-st-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .lua-st-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .lua-st-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .lua-st-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .lua-st-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .lua-st-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#lua-st-arrow); }
+            </style>
+            <defs>
+                <marker id="lua-st-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="lua-st-title" text-anchor="middle">Pick the Smallest Expressiveness That Fits</text>
+
+            <rect x="40" y="220" width="100" height="30" class="lua-st-box"/>
+            <text x="90" y="240" class="lua-st-head" text-anchor="middle">.env</text>
+            <text x="90" y="260" class="lua-st-muted" text-anchor="middle">key = value</text>
+
+            <rect x="135" y="180" width="100" height="30" class="lua-st-box"/>
+            <text x="185" y="200" class="lua-st-head" text-anchor="middle">JSON</text>
+            <text x="185" y="220" class="lua-st-muted" text-anchor="middle">pure data, no comments</text>
+
+            <rect x="230" y="140" width="100" height="30" class="lua-st-box"/>
+            <text x="280" y="160" class="lua-st-head" text-anchor="middle">TOML</text>
+            <text x="280" y="180" class="lua-st-muted" text-anchor="middle">hier. data + comments</text>
+
+            <rect x="325" y="100" width="120" height="30" class="lua-st-accent"/>
+            <text x="385" y="120" class="lua-st-head" text-anchor="middle">Lua tables</text>
+            <text x="385" y="140" class="lua-st-muted" text-anchor="middle">data + opt-in logic</text>
+
+            <rect x="440" y="60" width="100" height="30" class="lua-st-box"/>
+            <text x="490" y="80" class="lua-st-head" text-anchor="middle">a real program</text>
+            <text x="490" y="100" class="lua-st-muted" text-anchor="middle">when you must</text>
+
+            <line x1="40" y1="50" x2="40" y2="250" class="lua-st-arr"/>
+            <text x="32" y="48" class="lua-st-muted" text-anchor="end">expressiveness</text>
+        </svg>
+
+        <h2>The Trade-Off</h2>
+
+        <p>The honest costs are real.</p>
+
+        <p><strong>Turing-completeness is a footgun.</strong> A
+            configuration mistake can lock the boot loader in an
+            infinite loop. A misplaced <code>while true do</code> in
+            <code>loader.lua</code> will keep your machine off until
+            you boot from rescue media. YAML cannot do this. JSON
+            cannot do this. The price of having an escape hatch is
+            that the escape hatch can be misused.</p>
+
+        <p><strong>The interpreter is not free.</strong> A statically
+            linked Lua 5.4 interpreter is around 270 kilobytes. For an
+            embedded system or a single-purpose CLI tool that already
+            wanted to read a YAML file, that is a real binary-size
+            cost. For anything larger than a router firmware, it is
+            rounding error.</p>
+
+        <p><strong>Schema validation is less mature.</strong> JSON
+            Schema has an ecosystem: code generators, IDE integration,
+            OpenAPI tooling, automated test fixtures. Lua-side
+            equivalents exist (<a href="https://luacheck.readthedocs.io/" target="_blank" rel="noopener">LuaCheck</a>,
+            the
+            <a href="https://teal-language.org/" target="_blank" rel="noopener">Teal language</a>,
+            Penlight assertions) but they are not universal. If your
+            stack already relies on JSON Schema for cross-team
+            contracts, Lua is a step back.</p>
+
+        <p><strong>Users must learn the format.</strong> A user editing
+            <code>init.lua</code> for the first time has to recognise
+            that a missing comma is a syntax error and that
+            <code>local</code> does not appear in JSON or YAML. The
+            learning curve is small but real, and projects that target
+            non-programmer end users (system administrators, content
+            editors, hobbyists) often choose YAML for that reason.</p>
+
+        <p>In return for those four costs, you get a format that
+            admits what it is, refuses to coerce strings into booleans
+            behind your back, scales from twenty lines to three
+            thousand without changing format, and has comments that
+            work.</p>
+
+        <p>That is, on balance, a rather good deal.</p>
+
+        <h2>The Proof</h2>
+
+        <p>The list of projects that have made this exact trade is
+            long, and the projects are unrelated to one another, and
+            the choice keeps being made.</p>
+
+        <p><strong>FreeBSD's boot loader.</strong> Lua entered FreeBSD
+            as a 2014 GSoC project mentored by Wojciech Koszek. It
+            became the
+            <a href="https://man.freebsd.org/cgi/man.cgi?query=loader_lua" target="_blank" rel="noopener">default
+            boot loader in FreeBSD 12 (December 2018)</a>, shipping
+            alongside the older FORTH-based loader as a fallback. In
+            <a href="https://www.freebsd.org/releases/13.0R/relnotes/" target="_blank" rel="noopener">FreeBSD
+            13 (April 2021)</a>, FORTH was removed entirely. The file
+            <code>/boot/lua/loader.lua</code> is what reads
+            <code>/boot/loader.conf</code>, draws the boot menu,
+            decides between kernels, and hands control to whatever you
+            boot. That is rather a lot of trust to place in a
+            "configuration language".</p>
+
+        <p><strong>Neovim.</strong> The fork of Vim that started in
+            2014 made Lua a first-class scripting and configuration
+            language from the start.
+            <a href="https://neovim.io/doc/user/lua-guide.html" target="_blank" rel="noopener">Neovim
+            0.5 (July 2021)</a> made <code>init.lua</code> the
+            recommended configuration entry point, supplanting
+            Vimscript. The plugin ecosystem followed within eighteen
+            months. The Vim community is, generally speaking, the
+            opposite of an early-adopter culture, and they switched.</p>
+
+        <p><strong>Awesome Window Manager.</strong>
+            <a href="https://awesomewm.org/" target="_blank" rel="noopener"><code>rc.lua</code>
+            has been the configuration file</a> since version 3.0 in
+            2008. The window manager is itself a Lua interpreter with
+            X11 bindings.</p>
+
+        <p><strong>Wireshark.</strong>
+            <a href="https://wiki.wireshark.org/Lua" target="_blank" rel="noopener">Protocol
+            dissectors are written in Lua</a>. The reasoning,
+            documented in the Wireshark wiki, is that a network
+            analyst diagnosing an unknown protocol at 02:00 should
+            not have to write C and recompile.</p>
+
+        <p><strong>OpenResty / nginx.</strong> Cloudflare's edge stack
+            runs on
+            <a href="https://openresty.org/" target="_blank" rel="noopener">OpenResty</a>,
+            an nginx variant with embedded Lua for request-handling
+            logic and configuration. Roughly twenty per cent of all
+            web traffic touches it.</p>
+
+        <p><strong>HAProxy.</strong>
+            <a href="https://www.haproxy.com/documentation/haproxy-runtime-api/reference/lua/" target="_blank" rel="noopener">Lua
+            scripting since version 1.6 in 2015</a>. Used for custom
+            routing logic that exceeds what the configuration language
+            can express on its own.</p>
+
+        <p><strong>Adobe Lightroom.</strong> Plugin scripting and
+            large parts of Lightroom's own user interface run on Lua.</p>
+
+        <p><strong>Redis.</strong>
+            <a href="https://redis.io/docs/latest/develop/interact/programmability/eval-intro/" target="_blank" rel="noopener">Server-side
+            scripting via <code>EVAL</code> since version 2.6 in
+            2012</a>.</p>
+
+        <p><strong>World of Warcraft.</strong> The
+            <a href="https://warcraft.wiki.gg/wiki/Lua" target="_blank" rel="noopener">entire
+            user-interface customisation system, from launch in
+            2004</a>, runs on Lua. There is a generation of programmers
+            whose first encounter with the language was a
+            <code>FrameXML.toc</code> file.</p>
+
+        <p><strong>Roblox.</strong> A
+            <a href="https://luau.org/" target="_blank" rel="noopener">Lua
+            dialect (Luau)</a> is the scripting and configuration
+            language for tens of millions of daily players' games and
+            game logic.</p>
+
+        <p><strong>Kong API Gateway.</strong>
+            <a href="https://docs.konghq.com/gateway/latest/plugin-development/" target="_blank" rel="noopener">Configuration
+            plugins are Lua modules</a>.</p>
+
+        <p><strong>pandoc.</strong>
+            <a href="https://pandoc.org/lua-filters.html" target="_blank" rel="noopener">Document
+            filters and writers are Lua scripts</a>.</p>
+
+        <p><strong>Conky, awesome, mpv, VLC, Vifm, Premake, Torch (the
+            original deep-learning library), TeX Live's LuaTeX,
+            NetBSD's ATF testing framework, Cisco IOS, Solaris's
+            DTrace front-end, the BBC iPlayer set-top boxes.</strong>
+            The list is genuinely long. It is also genuinely
+            heterogeneous. These are not projects that share a
+            community, a language family or a problem domain.</p>
+
+        <p>What they share is the same trade. They wanted configuration
+            files that scaled into structured logic when needed, that
+            did not lie about their type system, and that carried no
+            parser dependency. They picked Lua tables because Lua
+            tables are the cheapest format that meets all three
+            criteria.</p>
+
+        <svg viewBox="0 0 560 280" aria-label="A grid of seven cells naming where Lua runs in production. Embedded: FreeBSD loader.lua, routers, set-top boxes. Editors: Neovim init.lua, Awesome rc.lua. Web: OpenResty/Cloudflare, HAProxy, Kong. Games: World of Warcraft, Roblox, Civilization V/VI, Garry's Mod. Document: pandoc, LuaTeX. Diagnostics: Wireshark dissectors, Solaris DTrace. Database: Redis EVAL. The point: thirty-three years, unrelated communities, the same choice." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .lua-pr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .lua-pr-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .lua-pr-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .lua-pr-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .lua-pr-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="lua-pr-title" text-anchor="middle">Where Lua Runs, Quietly, in 2026</text>
+
+            <rect x="20" y="50" width="170" height="60" class="lua-pr-box"/>
+            <text x="105" y="70" class="lua-pr-head" text-anchor="middle">Embedded</text>
+            <text x="105" y="86" class="lua-pr-text" text-anchor="middle">FreeBSD loader.lua</text>
+            <text x="105" y="100" class="lua-pr-muted" text-anchor="middle">routers, set-top, IoT</text>
+
+            <rect x="200" y="50" width="170" height="60" class="lua-pr-box"/>
+            <text x="285" y="70" class="lua-pr-head" text-anchor="middle">Editors</text>
+            <text x="285" y="86" class="lua-pr-text" text-anchor="middle">Neovim init.lua</text>
+            <text x="285" y="100" class="lua-pr-muted" text-anchor="middle">Awesome rc.lua</text>
+
+            <rect x="380" y="50" width="160" height="60" class="lua-pr-box"/>
+            <text x="460" y="70" class="lua-pr-head" text-anchor="middle">Web edge</text>
+            <text x="460" y="86" class="lua-pr-text" text-anchor="middle">OpenResty, Kong,</text>
+            <text x="460" y="100" class="lua-pr-muted" text-anchor="middle">HAProxy, Cloudflare</text>
+
+            <rect x="20" y="120" width="170" height="60" class="lua-pr-box"/>
+            <text x="105" y="140" class="lua-pr-head" text-anchor="middle">Games</text>
+            <text x="105" y="156" class="lua-pr-text" text-anchor="middle">WoW, Roblox/Luau</text>
+            <text x="105" y="170" class="lua-pr-muted" text-anchor="middle">Civ V/VI, Garry's Mod</text>
+
+            <rect x="200" y="120" width="170" height="60" class="lua-pr-box"/>
+            <text x="285" y="140" class="lua-pr-head" text-anchor="middle">Document</text>
+            <text x="285" y="156" class="lua-pr-text" text-anchor="middle">pandoc filters</text>
+            <text x="285" y="170" class="lua-pr-muted" text-anchor="middle">LuaTeX, Lightroom</text>
+
+            <rect x="380" y="120" width="160" height="60" class="lua-pr-box"/>
+            <text x="460" y="140" class="lua-pr-head" text-anchor="middle">Diagnostics</text>
+            <text x="460" y="156" class="lua-pr-text" text-anchor="middle">Wireshark dissectors</text>
+            <text x="460" y="170" class="lua-pr-muted" text-anchor="middle">Solaris DTrace</text>
+
+            <rect x="200" y="190" width="170" height="60" class="lua-pr-box"/>
+            <text x="285" y="210" class="lua-pr-head" text-anchor="middle">Database</text>
+            <text x="285" y="226" class="lua-pr-text" text-anchor="middle">Redis EVAL</text>
+            <text x="285" y="240" class="lua-pr-muted" text-anchor="middle">since 2012</text>
+
+            <text x="280" y="270" class="lua-pr-muted" text-anchor="middle">Thirty-three years, unrelated communities, the same trade made repeatedly.</text>
+        </svg>
+
+        <h2>A Footnote on the Norway Problem</h2>
+
+        <p>YAML's most-cited footgun deserves a closer look, because
+            it illustrates the cost of a configuration format that
+            pretends to be data while behaving like a language.</p>
+
+        <p><a href="https://yaml.org/type/bool.html" target="_blank" rel="noopener">YAML 1.1</a>,
+            the most widely deployed version of the specification,
+            recognises the following strings as boolean literals
+            (case-insensitive): <code>y</code>, <code>Y</code>,
+            <code>yes</code>, <code>Yes</code>, <code>YES</code>,
+            <code>n</code>, <code>N</code>, <code>no</code>,
+            <code>No</code>, <code>NO</code>, <code>true</code>,
+            <code>True</code>, <code>TRUE</code>, <code>false</code>,
+            <code>False</code>, <code>FALSE</code>, <code>on</code>,
+            <code>On</code>, <code>ON</code>, <code>off</code>,
+            <code>Off</code>, <code>OFF</code>. The complete list runs
+            to about thirty entries.</p>
+
+        <p>The Norway problem is what happens when a configuration
+            file contains a list of country codes:</p>
+
+        <pre><code>countries:
+  - DE
+  - FR
+  - NO</code></pre>
+
+        <p>A YAML 1.1 parser reads <code>NO</code> as the boolean
+            <code>false</code>. If your application expects strings
+            and you have not explicitly quoted the entry, "Norway"
+            silently disappears from your country list. There is a
+            class of production bug,
+            <a href="https://hitchdev.com/strictyaml/why/implicit-typing-removed/" target="_blank" rel="noopener">well-documented
+            across many companies</a>, where customers in Norway found
+            themselves locked out of services because some
+            configuration pipeline had passed through a YAML 1.1
+            parser.</p>
+
+        <p><a href="https://yaml.org/spec/1.2.2/" target="_blank" rel="noopener">YAML 1.2</a>
+            (2009) narrowed the boolean grammar to <code>true</code>,
+            <code>True</code>, <code>TRUE</code>, <code>false</code>,
+            <code>False</code>, <code>FALSE</code>. However, the most
+            widely deployed YAML libraries, including the default load
+            mode of Python's PyYAML, continue to use 1.1 semantics for
+            backward compatibility. You can opt out, but you have to
+            know to.</p>
+
+        <svg viewBox="0 0 560 240" aria-label="A side-by-side comparison of the same data in YAML and Lua. The YAML version has three country codes including NO, which a YAML 1.1 parser reads as a boolean false; Norway disappears from the list. The Lua version has the same three codes as a table of strings; the language has no opinion about country codes and the list is preserved." role="img" style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .lua-no-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .lua-no-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .lua-no-code { font-family: ui-monospace, "JetBrains Mono", monospace; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .lua-no-out { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .lua-no-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .lua-no-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .lua-no-accent { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="280" y="22" class="lua-no-title" text-anchor="middle">Same Data, Two Type Tables</text>
+
+            <text x="140" y="50" class="lua-no-head" text-anchor="middle">YAML 1.1</text>
+            <text x="420" y="50" class="lua-no-head" text-anchor="middle">Lua</text>
+
+            <rect x="20" y="60" width="240" height="100" class="lua-no-box"/>
+            <text x="140" y="86" class="lua-no-code" text-anchor="middle">countries:</text>
+            <text x="140" y="106" class="lua-no-code" text-anchor="middle">  - DE</text>
+            <text x="140" y="122" class="lua-no-code" text-anchor="middle">  - FR</text>
+            <text x="140" y="138" class="lua-no-code" text-anchor="middle">  - NO</text>
+
+            <rect x="300" y="60" width="240" height="100" class="lua-no-accent"/>
+            <text x="420" y="116" class="lua-no-code" text-anchor="middle" xml:space="preserve">countries = { "DE", "FR", "NO" }</text>
+
+            <text x="140" y="184" class="lua-no-out" text-anchor="middle">parses as ["DE","FR", false ]</text>
+            <text x="140" y="200" class="lua-no-muted" text-anchor="middle">Norway silently removed</text>
+            <text x="140" y="214" class="lua-no-muted" text-anchor="middle">YAML 1.1 implicit boolean</text>
+
+            <text x="420" y="184" class="lua-no-out" text-anchor="middle">["DE","FR","NO"]</text>
+            <text x="420" y="200" class="lua-no-muted" text-anchor="middle">three strings, exactly three</text>
+            <text x="420" y="214" class="lua-no-muted" text-anchor="middle">no implicit type table</text>
+        </svg>
+
+        <p>The same line written as a Lua table:</p>
+
+        <pre><code>countries = { "DE", "FR", "NO" }</code></pre>
+
+        <p>is, unambiguously, a sequence of three strings. The language
+            has no opinion about your country codes. It has no opinion
+            about your version codes either: <code>version = "1.10"</code>
+            is a string of length four, <code>version = 1.10</code> is
+            a number. The user picked which they wrote and the
+            language honoured the choice. There is no implicit type
+            table to know.</p>
+
+        <p>This is what "admits what it is" means in practice. A
+            format that lies to you about its types saves you
+            keystrokes today and costs you incident hours later.</p>
+
+        <h2>The Principle</h2>
+
+        <p>Configuration is code, even when it pretends not to be.</p>
+
+        <p>YAML is a Turing-complete configuration language with
+            anchors (<code>&amp;</code>), aliases (<code>*</code>),
+            merge keys (<code>&lt;&lt;</code>), type coercion, custom
+            tags, and a specification long enough that real-world
+            parsers ship informal subsets of it. It is a programming
+            language in the costume of a markup format. The cost of
+            the costume is paid in subtle bugs that surface months
+            after the configuration was written and do not look like
+            programming bugs because the configuration "is just YAML".</p>
+
+        <p>Lua is a programming language honest enough to admit what
+            it is. The configuration table is just data when you
+            treat it as data, and becomes structured logic only at
+            the points where you reach for the escape hatch. The
+            expressiveness is opt-in, not opt-out. The format does
+            not pretend to be safer than it is.</p>
+
+        <p>There is a second-order point worth making. Format choice
+            signals intent. A team that picks YAML is signalling that
+            the configuration <em>is</em> data and the
+            Turing-complete behaviour is incidental. The cost of that
+            signal is the recurring small surprise that the language
+            does not actually behave like data. A team that picks Lua
+            is signalling that the configuration is, fundamentally,
+            code in a constrained style. The team is more likely to
+            write tests for it, reviewers are more likely to read it
+            like code, and the surprise budget is spent up front
+            instead of on a Tuesday in July.</p>
+
+        <p>The general lesson goes beyond Lua. Pick the smallest
+            amount of expressiveness that the configuration actually
+            requires:</p>
+
+        <ul>
+            <li>Static key/value pairs, no nesting: a <code>.env</code> file.</li>
+            <li>Pure data, no logic, no comments: JSON.</li>
+            <li>Hierarchical pure data with comments and ordering: TOML.</li>
+            <li>Structured data with optional logic, escape hatch when the configuration grows: Lua tables.</li>
+            <li>Anything beyond that: write a real program.</li>
+        </ul>
+
+        <p>Skipping levels is what creates the "well, we need to
+            template our YAML now" moment, which is the moment a
+            project realises it picked the wrong level of
+            expressiveness six months ago. The fix is rarely more
+            YAML.</p>
+
+        <h2>Closing</h2>
+
+        <p>Three engineers in Rio de Janeiro picked the right level
+            of expressiveness in 1993, for a Brazilian oil company
+            that needed configuration files that scaled. The format
+            they designed has since spent thirty-three years quietly
+            becoming the configuration language of choice for
+            projects that, for one reason or another, found
+            themselves wanting more than YAML and less than Python.</p>
+
+        <p>The escape hatch is opt-in. The default form is
+            declarative. The Norway problem cannot occur. Comments
+            work. Trailing commas work. Indentation does not matter.</p>
+
+        <p>The honest format is the one that does not lie about being
+            a language.</p>
+
+        <blockquote>
+            <p>1993, PUC-Rio Tecgraf: Roberto Ierusalimschy, Luiz
+                Henrique de Figueiredo and Waldemar Celes merge DEL
+                and Sol into Lua for Petrobras. Lua's table is array,
+                hash, record, object and namespace in one construct.
+                Default declarative; expressive form opt-in. FreeBSD
+                12 (December 2018): <code>/boot/lua/loader.lua</code>
+                becomes the default boot loader; FORTH removed in
+                FreeBSD 13. Neovim 0.5 (July 2021): <code>init.lua</code>
+                is the recommended config. OpenResty runs Cloudflare's
+                edge. Awesome WM, Wireshark, World of Warcraft (2004),
+                Roblox, Kong, HAProxy, Lightroom, Redis EVAL, pandoc.
+                The Norway problem cannot occur because Lua has no
+                opinion about your country codes. The honest format
+                is the one that admits what it is.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The trade, the short version:</strong></p>
+            <ul>
+                <li><strong>Origin:</strong> 1993, PUC-Rio Tecgraf, Roberto Ierusalimschy / Luiz Henrique de Figueiredo / Waldemar Celes. Sol (1992) was a configuration language for Petrobras; DEL was a data-entry language; Lua merged them. Lua = "moon" because Sol = "sun"</li>
+                <li><strong>One construct:</strong> the table. Array, hash, record, object and namespace at once. Same <code>{ ... }</code> syntax for all five</li>
+                <li><strong>Three properties:</strong> file is data (<code>dofile()</code> returns a table), file is also code only when reached for, format scales without changing format</li>
+                <li><strong>Honest costs:</strong> Turing-complete (a footgun on boot paths), ~270 KB interpreter, schema validation less mature than JSON Schema, users must learn the syntax</li>
+                <li><strong>FreeBSD:</strong> <code>/boot/lua/loader.lua</code> default since FreeBSD 12 (December 2018); FORTH removed in FreeBSD 13 (April 2021)</li>
+                <li><strong>Other proof:</strong> Neovim init.lua, Awesome rc.lua, Wireshark dissectors, OpenResty/Cloudflare edge, HAProxy, Kong, Adobe Lightroom, Redis EVAL, World of Warcraft (2004), Roblox/Luau, pandoc, LuaTeX, Solaris DTrace front-end</li>
+                <li><strong>Norway problem:</strong> YAML 1.1 parses <code>NO</code> as boolean false; PyYAML defaults to 1.1 semantics. In Lua, <code>"NO"</code> is a string. Always</li>
+                <li><strong>Staircase:</strong> .env &#x2192; JSON &#x2192; TOML &#x2192; Lua tables &#x2192; a real program. Skipping levels produces the "we need to template our YAML" moment. The fix is rarely more YAML</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,641 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Vault That Stays Open &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Open Microsoft Edge. The browser silently decrypts every saved password into process memory in cleartext, eagerly, at startup, and keeps the entire vault there for the rest of the session. Microsoft, in its own words, calls this 'by design'. Chrome, Brave, Opera, Vivaldi do not. Five minutes with Process Explorer, three lines of Group Policy, and one decision the user was never asked to make. Not in the Brief, Episode 02.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-vault-that-stays-open{( endslot )}
+
+{( slot og-title )}The Vault That Stays Open &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Microsoft Edge loads the entire saved password store into the msedge.exe process and decrypts it eagerly at launch. Cleartext credentials live in RAM until the browser is closed, regardless of whether the user has visited any of the corresponding sites in this session. Disclosed by Tom Joran Sonstebyseter Ronning at Palo Alto Networks Norway's BIG Bite of Tech, 29 April 2026. Chrome decrypts lazily and binds keys to the SYSTEM-level process via Application-Bound Encryption since 2024. Edge does neither. Microsoft calls the architecture 'by design'.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Vault That Stays Open",
+    "datePublished": "2026-05-09",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-vault-that-stays-open",
+    "description": "Microsoft Edge loads every saved password into msedge.exe at launch and keeps the cleartext vault in process memory for the entire session. Disclosed 29 April 2026 by Tom Joran Sonstebyseter Ronning. Microsoft calls the architecture 'by design'. Chrome since 2024 decrypts lazily and binds the keys to the authenticated process via Application-Bound Encryption; Edge does neither. The architecture is verifiable in five minutes with Process Explorer or System Informer, and disabled per machine via three settings or per estate via the Group Policy PasswordManagerEnabled = 0. Not in the Brief, Episode 02.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-09">9 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Vault That Stays Open</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">web</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Not in the Brief</em> &#x25A0; Episode 02</p>
+
+        <p>Open Microsoft Edge. Do nothing in particular: do not visit
+            your bank, do not visit your email, do not even open a new
+            tab. The browser, working diligently in the background and
+            without any prompt from you, has just unlocked every
+            password it has ever saved on your behalf, decrypted them
+            in one go, and laid the entire collection out as plain
+            ASCII inside the <code>msedge.exe</code> process. The
+            credentials for the site you have not visited since the
+            second lockdown sit there, fully readable, next to the
+            ones for the site you opened five minutes ago. They will
+            stay there until you close the browser.</p>
+
+        <p>This is not a bug. It is, in Microsoft's own words, a
+            design decision. The Edge team's response to a security
+            researcher's disclosure, reported across the press in late
+            April and early May 2026, contains the phrase that gives
+            this episode its title in spirit: the architecture
+            "balances performance, usability, and security", and the
+            company does not, on its own analysis, consider the
+            behaviour a defect to be fixed.</p>
+
+        <p>This is the second episode of <em>Not in the Brief</em>: a
+            series on the documented mechanics of software added to
+            your machine without you being asked. Episode 01 covered
+            the AI model your browser downloaded silently. Episode 02
+            covers the password vault your browser opens silently. The
+            same grammar; a different chamber of the same building.</p>
+
+        <h2>The Feature</h2>
+
+        <p>Edge's password manager is, on the surface, the standard
+            browser-built-in vault. You enter a credential on a site,
+            the browser offers to remember it, the next visit
+            autofills the field. That part is in the brief. The part
+            that is not in the brief is what happens between the
+            moment Edge launches and the moment any of those
+            credentials is actually needed.</p>
+
+        <p>When the browser starts, the saved credentials are pulled
+            from the encrypted store on disk and decrypted en bloc
+            into <code>msedge.exe</code>. The decryption is eager: it
+            does not wait for the user to visit a site, click into a
+            field, or use the autofill UI. It is complete: every
+            stored credential is decrypted, not only the ones for
+            domains the user happens to visit in this session. From
+            the end of the launch sequence until the browser exits,
+            the entire vault sits in cleartext inside the parent Edge
+            process.</p>
+
+        <p>If the user opens Edge for the morning, leaves it running
+            until lunch, then locks the workstation and walks to a
+            meeting, the vault is open the entire time. No active
+            session is required, no use of any saved password is
+            required, no interaction with the password manager UI is
+            required. The browser is running. The vault is open.</p>
+
+        <h2>The Introduction</h2>
+
+        <p>The behaviour was disclosed by security researcher Tom
+            J&oslash;ran S&oslash;nstebyseter R&oslash;nning at
+            <a href="https://www.cybernews.com/security/microsoft-edge-loads-cleartext-passwords-to-memory/" target="_blank" rel="noopener">Palo
+            Alto Networks Norway's "BIG Bite of Tech" event on 29
+            April 2026</a>, with a short demonstration video posted to
+            LinkedIn on 4 May. The video accumulated several thousand
+            engagements within hours and was picked up over the
+            following days by Cybernews, DarkReading, the SANS
+            Internet Storm Center, PCWorld, Security Magazine, Heise,
+            PC Gamer, Windows Central and a dozen smaller outlets. The
+            mechanics are reproducible: any reader can verify the
+            entire claim on their own machine in under five minutes,
+            with two free downloads and no exploit.</p>
+
+        <p>Microsoft's response, attributed to the Edge team via
+            media contacts and consistent across outlets, treats the
+            finding as an architectural statement rather than a
+            vulnerability. The reported wording is uniform: the
+            behaviour is "by design"; access to the affected memory
+            requires the device to be compromised at administrative
+            or SYSTEM level; the trade-off is between "performance,
+            usability, and security"; and the company does not
+            consider the matter a security issue requiring a fix. On
+            its own terms, that response is internally coherent. On
+            the terms of how credential-harvesting actually proceeds
+            in 2026, it is missing a fairly important wing of the
+            building.</p>
+
+        <h2>The Mechanics</h2>
+
+        <p>To understand why this design is unusual rather than
+            ordinary, one has to set it next to the other Chromium
+            browsers in the same room. Chrome, on which Edge is
+            technically based, takes two architectural steps that
+            Edge does not.</p>
+
+        <p>The first is laziness, used here in its precise technical
+            sense. Chrome's saved-credential store remains encrypted
+            in the user profile and stays that way in memory until a
+            particular credential is needed. Only at the moment of
+            autofill, password reveal, or password-manager UI use
+            does Chrome decrypt the relevant entry, and the cleartext
+            value lives in process memory only as long as the
+            operation requires. The vast majority of the vault is
+            encrypted at any given moment, including at any moment an
+            attacker with memory-read access happens to look.</p>
+
+        <p>The second is
+            <a href="https://security.googleblog.com/2024/07/improving-security-of-chrome-cookies-on.html" target="_blank" rel="noopener">Application-Bound
+            Encryption</a>, or ABE. Since mid-2024 Chrome has tied
+            the decryption keys for the Windows credential store to
+            the authenticated Chrome process running as SYSTEM. The
+            mechanism makes the keys non-portable: an attacker with
+            local administrator rights but without SYSTEM cannot
+            simply extract the keys and decrypt the vault outside
+            Chrome's own process tree. ABE is documented in Chrome's
+            security blog, shipped by default, and present in the
+            Chromium sources that Brave, Opera and Vivaldi inherit
+            from.</p>
+
+        <p>Edge takes neither step. Decryption is eager and complete
+            at launch. There is no equivalent of ABE. The credential
+            vault is opened against the user's Windows credentials
+            and the cleartext result lives in <code>msedge.exe</code>
+            without any further binding to the authenticated process.
+            Of the major Chromium-based browsers tested by R&oslash;nning
+            (Chrome, Edge, Brave, Opera, Vivaldi), Edge is the only
+            one with this architecture; the others all defer
+            decryption to the moment of use.</p>
+
+        <svg viewBox="0 0 600 320" aria-label="Architectural comparison of the saved-password store at browser launch. Chrome, Brave, Opera and Vivaldi keep the encrypted vault on disk and decrypt only the individual credential being filled, holding cleartext in process memory only for the duration of an autofill or reveal operation; Chrome additionally binds the decryption keys to the SYSTEM-level Chrome process via Application-Bound Encryption, making the keys non-portable across processes. Microsoft Edge decrypts the entire saved vault into msedge.exe at launch and keeps the cleartext credentials in process memory for the lifetime of the session, with no equivalent key-binding mechanism." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-arch-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .nitb-arch-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .nitb-arch-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .nitb-arch-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .nitb-arch-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nitb-arch-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="nitb-arch-title" text-anchor="middle">Saved-Password Store at Launch &#x2014; The Two Architectures</text>
+
+            <text x="160" y="52" class="nitb-arch-head" text-anchor="middle">Chrome &#x2022; Brave &#x2022; Opera &#x2022; Vivaldi</text>
+            <rect x="20" y="62" width="280" height="240" class="nitb-arch-box"/>
+            <text x="160" y="86" class="nitb-arch-text" text-anchor="middle">vault encrypted on disk</text>
+            <text x="160" y="104" class="nitb-arch-text" text-anchor="middle">on launch: nothing decrypted</text>
+            <text x="160" y="122" class="nitb-arch-text" text-anchor="middle">on autofill: one entry decrypted</text>
+            <text x="160" y="140" class="nitb-arch-text" text-anchor="middle">cleartext lives for the operation</text>
+            <text x="160" y="158" class="nitb-arch-text" text-anchor="middle">buffer wiped after use</text>
+            <text x="160" y="186" class="nitb-arch-head" text-anchor="middle">Chrome additionally:</text>
+            <text x="160" y="204" class="nitb-arch-text" text-anchor="middle">Application-Bound Encryption</text>
+            <text x="160" y="222" class="nitb-arch-text" text-anchor="middle">keys bound to SYSTEM-level process</text>
+            <text x="160" y="240" class="nitb-arch-text" text-anchor="middle">non-portable across processes</text>
+            <text x="160" y="276" class="nitb-arch-muted" text-anchor="middle">vault closed by default</text>
+            <text x="160" y="290" class="nitb-arch-muted" text-anchor="middle">opens for the second it is needed</text>
+
+            <text x="460" y="52" class="nitb-arch-head" text-anchor="middle">Microsoft Edge</text>
+            <rect x="320" y="62" width="260" height="240" class="nitb-arch-accent-box"/>
+            <text x="450" y="86" class="nitb-arch-text" text-anchor="middle">vault encrypted on disk</text>
+            <text x="450" y="104" class="nitb-arch-text" text-anchor="middle">on launch: ALL entries decrypted</text>
+            <text x="450" y="122" class="nitb-arch-text" text-anchor="middle">cleartext loaded into msedge.exe</text>
+            <text x="450" y="140" class="nitb-arch-text" text-anchor="middle">vault stays open for the session</text>
+            <text x="450" y="158" class="nitb-arch-text" text-anchor="middle">no per-credential encryption</text>
+            <text x="450" y="186" class="nitb-arch-head" text-anchor="middle">no ABE-equivalent:</text>
+            <text x="450" y="204" class="nitb-arch-text" text-anchor="middle">keys bound to user, not process</text>
+            <text x="450" y="222" class="nitb-arch-text" text-anchor="middle">vault sits in cleartext RAM</text>
+            <text x="450" y="240" class="nitb-arch-text" text-anchor="middle">until the browser is closed</text>
+            <text x="450" y="276" class="nitb-arch-muted" text-anchor="middle">vault open by default</text>
+            <text x="450" y="290" class="nitb-arch-muted" text-anchor="middle">stays open for the whole session</text>
+        </svg>
+
+        <p>It is worth being precise about what this means. The
+            difference is not "Edge encrypts at rest and Chrome does
+            not". Both encrypt at rest. Both have to decrypt to fill.
+            The difference is the lifetime of the cleartext window in
+            memory. For Chrome it is measured in milliseconds, per
+            credential, per use. For Edge it is measured in hours,
+            for the entire vault, for the whole session, regardless
+            of use.</p>
+
+        <svg viewBox="0 0 600 280" aria-label="Memory exposure of cleartext credentials over the duration of a browsing session. The horizontal axis represents time from browser launch to browser close; the vertical axis represents the proportion of saved credentials present in process memory in cleartext form. For Chrome and the other Chromium browsers without the Edge architecture, the line is at zero except for narrow spikes during autofill or password-reveal operations; the spikes touch one credential, briefly, before the buffer is zeroed. For Edge, the line jumps to one hundred per cent at launch and remains at one hundred per cent for the entire session." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-time-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .nitb-time-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .nitb-time-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .nitb-time-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .nitb-time-axis { stroke: var(--border); stroke-width: 1; }
+                .nitb-time-line-edge { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+                .nitb-time-line-chrome { stroke: var(--text); stroke-width: 1.6; fill: none; }
+                .nitb-time-swatch-edge { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+                .nitb-time-swatch-chrome { stroke: var(--text); stroke-width: 1.6; fill: none; }
+            </style>
+            <text x="300" y="22" class="nitb-time-title" text-anchor="middle">Cleartext Credentials in RAM &#x2014; A Session in Time</text>
+
+            <line x1="60" y1="180" x2="560" y2="180" class="nitb-time-axis"/>
+            <line x1="60" y1="60" x2="60" y2="180" class="nitb-time-axis"/>
+            <text x="50" y="65" class="nitb-time-muted" text-anchor="end">100%</text>
+            <text x="50" y="124" class="nitb-time-muted" text-anchor="end">50%</text>
+            <text x="50" y="184" class="nitb-time-muted" text-anchor="end">0%</text>
+            <text x="60" y="200" class="nitb-time-muted" text-anchor="middle">launch</text>
+            <text x="310" y="200" class="nitb-time-muted" text-anchor="middle">middle of session</text>
+            <text x="560" y="200" class="nitb-time-muted" text-anchor="middle">close</text>
+
+            <path d="M 60 180 L 80 180 L 80 60 L 540 60 L 540 180 L 560 180" class="nitb-time-line-edge"/>
+            <path d="M 60 180 L 150 180 L 150 80 L 155 80 L 155 180 L 280 180 L 280 80 L 285 80 L 285 180 L 430 180 L 430 80 L 435 80 L 435 180 L 540 180" class="nitb-time-line-chrome"/>
+
+            <line x1="80" y1="230" x2="110" y2="230" class="nitb-time-swatch-edge"/>
+            <text x="118" y="234" class="nitb-time-head">Edge &#x2014; vault open for the entire session</text>
+
+            <line x1="80" y1="250" x2="110" y2="250" class="nitb-time-swatch-chrome"/>
+            <text x="118" y="254" class="nitb-time-text">Chrome / Brave / Opera / Vivaldi &#x2014; brief spike per autofill, then back to zero</text>
+
+            <text x="300" y="274" class="nitb-time-muted" text-anchor="middle">The same vault. Two different lifetimes for the cleartext.</text>
+        </svg>
+
+        <h2>The Risk</h2>
+
+        <p>The Microsoft argument deserves to be stated fairly. It
+            runs as follows. Process-memory inspection requires
+            elevated privileges. If an attacker already has those
+            privileges, the device is already lost; cleartext
+            credentials in memory are a non-issue against an attacker
+            who can already read arbitrary memory. The architecture
+            therefore offers no extra attack surface to anyone who is
+            not already past the door.</p>
+
+        <p>The first half of that argument is true. The second half
+            is the part that does not survive contact with how
+            credential-harvesting actually works in 2026.</p>
+
+        <p>Process-memory inspection is the standard technique used
+            by credential-stealing malware. It is precisely the class
+            of access that
+            <a href="https://www.darkreading.com/cyber-risk/microsoft-edge-passwords-enterprise-risk" target="_blank" rel="noopener">routinely
+            succeeds</a> against three categories of machine where
+            the local-administrator versus SYSTEM distinction is more
+            than a footnote. Shared workstations in healthcare,
+            education, retail, and contact centres routinely give
+            multiple users administrative-equivalent rights on the
+            same desktop without granting SYSTEM; reading another
+            user's <code>msedge.exe</code> from a parallel session is
+            a documented path. Kiosk and unattended machines
+            (logged-in, unlocked, often left running for the whole
+            shift) have always been the canonical credential-harvest
+            target; "Edge stores everything decrypted whether or not
+            it is being used" is precisely the wrong design for them.
+            Forensic and incident-response tools that legitimately
+            read process memory, and the malware families that
+            imitate them, operate against the same address space; the
+            entire point of the lazy-decryption and ABE design that
+            other browsers ship is defence-in-depth against this
+            category.</p>
+
+        <svg viewBox="0 0 600 270" aria-label="Three real-world environments where process-memory inspection of a browser is a documented credential-harvesting path. Shared workstations in healthcare, education and retail give multiple users admin-equivalent rights on the same desktop without granting SYSTEM, so a parallel user session can read another user's msedge.exe. Kiosk and unattended machines stay logged in for the entire shift and present an open browser process for hours at a time. Forensic and incident-response tooling, and the malware families that mimic them, read arbitrary process memory as their core operating principle. In all three the lazy-decryption design that Chrome and the rest of the Chromium family ship is the specific defence; Edge does not implement it." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-risk-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .nitb-risk-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .nitb-risk-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .nitb-risk-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .nitb-risk-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nitb-risk-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="nitb-risk-title" text-anchor="middle">Where Memory-Inspection Already Wins</text>
+
+            <rect x="20" y="50" width="180" height="180" class="nitb-risk-box"/>
+            <text x="110" y="72" class="nitb-risk-head" text-anchor="middle">Shared workstation</text>
+            <text x="110" y="98" class="nitb-risk-text" text-anchor="middle">healthcare &#x2022; education</text>
+            <text x="110" y="116" class="nitb-risk-text" text-anchor="middle">retail &#x2022; contact centre</text>
+            <text x="110" y="142" class="nitb-risk-text" text-anchor="middle">multiple users on one box</text>
+            <text x="110" y="160" class="nitb-risk-text" text-anchor="middle">admin-equivalent rights</text>
+            <text x="110" y="178" class="nitb-risk-text" text-anchor="middle">no SYSTEM required</text>
+            <text x="110" y="208" class="nitb-risk-muted" text-anchor="middle">read parallel</text>
+            <text x="110" y="220" class="nitb-risk-muted" text-anchor="middle">user's msedge.exe</text>
+
+            <rect x="210" y="50" width="180" height="180" class="nitb-risk-box"/>
+            <text x="300" y="72" class="nitb-risk-head" text-anchor="middle">Kiosk &#x2022; Unattended</text>
+            <text x="300" y="98" class="nitb-risk-text" text-anchor="middle">logged-in for the shift</text>
+            <text x="300" y="116" class="nitb-risk-text" text-anchor="middle">unlocked for hours</text>
+            <text x="300" y="142" class="nitb-risk-text" text-anchor="middle">browser running</text>
+            <text x="300" y="160" class="nitb-risk-text" text-anchor="middle">vault open the whole time</text>
+            <text x="300" y="178" class="nitb-risk-text" text-anchor="middle">no user activity needed</text>
+            <text x="300" y="208" class="nitb-risk-muted" text-anchor="middle">classic harvest</text>
+            <text x="300" y="220" class="nitb-risk-muted" text-anchor="middle">target since the 90s</text>
+
+            <rect x="400" y="50" width="180" height="180" class="nitb-risk-accent-box"/>
+            <text x="490" y="72" class="nitb-risk-head" text-anchor="middle">Memory inspection</text>
+            <text x="490" y="98" class="nitb-risk-text" text-anchor="middle">forensic and IR tools</text>
+            <text x="490" y="116" class="nitb-risk-text" text-anchor="middle">malware that mimics them</text>
+            <text x="490" y="142" class="nitb-risk-text" text-anchor="middle">arbitrary process memory</text>
+            <text x="490" y="160" class="nitb-risk-text" text-anchor="middle">core operating principle</text>
+            <text x="490" y="178" class="nitb-risk-text" text-anchor="middle">defence: lazy + ABE</text>
+            <text x="490" y="208" class="nitb-risk-muted" text-anchor="middle">Chrome ships it</text>
+            <text x="490" y="220" class="nitb-risk-muted" text-anchor="middle">Edge does not</text>
+
+            <text x="300" y="258" class="nitb-risk-muted" text-anchor="middle">In none of these three is the device "already lost" in the sense Microsoft's argument requires.</text>
+        </svg>
+
+        <p>The deeper architectural observation is that the Microsoft
+            response is not, in fact, a defence of the architecture
+            against the threat model. It is a redefinition of the
+            threat model: "we accept that an admin-level attacker can
+            read these credentials, and we have decided that this is
+            the correct boundary". That is, in principle, a position
+            an engineering organisation may take. It is not the
+            position other browsers in the same Chromium family have
+            taken, and it is not the position the user reasonably
+            assumes when they enable a password manager. The brief,
+            on installing a browser-built-in vault, includes a
+            baseline expectation of "encrypted at rest, decrypted on
+            demand, minimised in memory". Edge, by design, has
+            decided to discard the third part of that expectation.</p>
+
+        <p>It is worth restating the company's own framing
+            generously: the Edge team describes the trade-off as one
+            between performance, usability and security. The
+            performance benefit, on 2026 hardware, is negligible: the
+            on-demand decryption of an individual password is a
+            microsecond operation. The usability benefit is
+            inferential: marginal autofill latency is the case being
+            made, though no published measurement seems to support
+            it. The security cost is the difference between a vault
+            that opens for the second it is needed and a vault that
+            opens for the whole session. That cost is real, it is
+            paid by every user of Edge with at least one saved
+            credential, and the user, on installing the browser, was
+            not invited to weigh the trade-off the design defends.</p>
+
+        <p>The scale of the choice is enterprise. Edge is the
+            default browser on Windows 11 and the mandated browser in
+            many corporate, healthcare, government and education
+            environments where Group Policy reduces user choice. The
+            architectural decision, in aggregate, applies to the
+            credential vaults of hundreds of millions of users by
+            virtue of deployment, not by individual request.</p>
+
+        <h2>How To See It</h2>
+
+        <p>The architecture is verifiable on any current Windows
+            machine running Edge with at least one saved password.
+            The procedure takes under five minutes and uses only the
+            standard Windows administrator role; there is no exploit
+            and no privileged tooling beyond the Microsoft Sysinternals
+            suite, which is a free Microsoft download.</p>
+
+        <ol>
+            <li><strong>Confirm a saved credential exists.</strong>
+                Open <code>edge://settings/profiles</code>, select
+                the profile, click "Passwords". A list of saved
+                sites should be visible. If the list is empty, save
+                a credential to a non-sensitive test account before
+                continuing &#x2014; a throwaway login on any test
+                page will do.</li>
+            <li><strong>Open a process inspector.</strong> Either
+                <a href="https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer" target="_blank" rel="noopener">Process
+                Explorer</a> from Microsoft Sysinternals or
+                <a href="https://systeminformer.sourceforge.io/" target="_blank" rel="noopener">System
+                Informer</a> (the open-source successor to Process
+                Hacker) will work. Locate the parent
+                <code>msedge.exe</code> process; Edge spawns multiple
+                children for tabs and renderers, but the parent is
+                the one with the highest memory footprint and the
+                longest uptime.</li>
+            <li><strong>Inspect the process strings.</strong> In
+                Process Explorer: right-click <code>msedge.exe</code>
+                &#x2192; Properties &#x2192; Strings tab &#x2192;
+                Memory radio button. In System Informer: right-click
+                the process &#x2192; Properties &#x2192; Memory tab
+                &#x2192; Strings. Search the resulting list for the
+                site URL of the saved credential. The cleartext
+                password value is typically visible in plain ASCII
+                within a few lines of the URL.</li>
+        </ol>
+
+        <p>The verification is reproducible without any exploit and
+            without any privileged tooling beyond the standard
+            Windows administrator role. The browser is operating
+            exactly as Microsoft has documented its architecture to
+            operate.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="The three-step verification path. First, confirm a saved credential exists in edge slash settings slash profiles. Second, open Process Explorer or System Informer and locate the parent msedge.exe process. Third, open the process strings or memory tab and search for the site URL; the cleartext password appears nearby." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-step-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .nitb-step-num { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 22px; font-weight: 700; }
+                .nitb-step-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .nitb-step-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .nitb-step-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .nitb-step-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nitb-step-arr { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#nitb-step-arr); }
+            </style>
+            <defs>
+                <marker id="nitb-step-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="nitb-step-title" text-anchor="middle">Five Minutes &#x2014; The Verification Path</text>
+
+            <rect x="20" y="50" width="170" height="130" class="nitb-step-box"/>
+            <text x="40" y="78" class="nitb-step-num">01</text>
+            <text x="105" y="100" class="nitb-step-head" text-anchor="middle">Confirm a credential</text>
+            <text x="105" y="124" class="nitb-step-text" text-anchor="middle">edge://settings/profiles</text>
+            <text x="105" y="142" class="nitb-step-text" text-anchor="middle">Passwords list visible</text>
+            <text x="105" y="166" class="nitb-step-muted" text-anchor="middle">save a test login if empty</text>
+
+            <line x1="190" y1="115" x2="220" y2="115" class="nitb-step-arr"/>
+
+            <rect x="220" y="50" width="170" height="130" class="nitb-step-box"/>
+            <text x="240" y="78" class="nitb-step-num">02</text>
+            <text x="305" y="100" class="nitb-step-head" text-anchor="middle">Open the inspector</text>
+            <text x="305" y="124" class="nitb-step-text" text-anchor="middle">Process Explorer</text>
+            <text x="305" y="142" class="nitb-step-text" text-anchor="middle">or System Informer</text>
+            <text x="305" y="166" class="nitb-step-muted" text-anchor="middle">find parent msedge.exe</text>
+
+            <line x1="390" y1="115" x2="420" y2="115" class="nitb-step-arr"/>
+
+            <rect x="420" y="50" width="170" height="130" class="nitb-step-box"/>
+            <text x="440" y="78" class="nitb-step-num">03</text>
+            <text x="505" y="100" class="nitb-step-head" text-anchor="middle">Read the strings</text>
+            <text x="505" y="124" class="nitb-step-text" text-anchor="middle">Properties &#x2192; Strings</text>
+            <text x="505" y="142" class="nitb-step-text" text-anchor="middle">search for the site URL</text>
+            <text x="505" y="166" class="nitb-step-muted" text-anchor="middle">password in cleartext</text>
+
+            <text x="300" y="208" class="nitb-step-muted" text-anchor="middle">No exploit. No SYSTEM. Standard administrator role on the same Windows session.</text>
+        </svg>
+
+        <h2>The Honest Mitigation</h2>
+
+        <p>The simpler answer, for the user who has now seen the
+            vault on their own screen, is to stop putting credentials
+            into Edge. Two recommendations stand out, and they are
+            recommendations the dedicated security community has been
+            making for several years independently of this disclosure.</p>
+
+        <p><a href="https://keepassxc.org/" target="_blank" rel="noopener">KeePassXC</a>
+            is an open-source, locally encrypted password manager
+            with a clean threat-model statement and explicit memory
+            hygiene: only the credential being filled is decrypted at
+            any given moment, and the decrypted buffer is zeroed
+            after the operation completes. The desktop application
+            ships with a browser extension for Edge, Chrome and
+            Firefox; autofill behaviour, from the user's point of
+            view, is identical to the browser-built-in.</p>
+
+        <p><a href="https://proton.me/pass" target="_blank" rel="noopener">Proton
+            Pass</a> is the comparable hosted option from the Swiss
+            company that publishes Proton Mail and Proton Drive,
+            audited, end-to-end encrypted, and with the same memory
+            hygiene posture in its desktop and browser clients. It is
+            a paid service; the free tier is functional. For users
+            unwilling or unable to host a local credential database,
+            Proton Pass occupies the same architectural slot as
+            KeePassXC with less administrative cost.</p>
+
+        <p>Disabling Edge's built-in password manager itself is a
+            two-line operation. For the individual user, navigate to
+            <code>edge://settings/passwords</code> and toggle off
+            "Offer to save passwords"; the existing entries can be
+            exported to CSV and imported into the chosen replacement.
+            For an enterprise estate, the Group Policy
+            <a href="https://learn.microsoft.com/en-us/deployedge/microsoft-edge-policies" target="_blank" rel="noopener"><code>PasswordManagerEnabled
+            = 0</code></a> disables the built-in store
+            organisation-wide, removes the autofill UI, and removes
+            the eager-decryption behaviour because there is nothing
+            for Edge to decrypt.</p>
+
+        <p>The honest qualification, and it should be made plainly:
+            any password manager that holds credentials in memory at
+            any time is, in some attack scenarios, also vulnerable to
+            memory inspection. The dedicated managers minimise the
+            window: they decrypt only the credential being filled,
+            then zero the buffer. The defence is not perfect; it is
+            the difference between a vault that opens for
+            milliseconds during one autofill and a vault that opens
+            for the entire browsing session. In the threat model that
+            actually shows up in incident response, that difference
+            is the entire point.</p>
+
+        <h2>A Note on Tone</h2>
+
+        <p>This article does not argue that the Edge team has been
+            dishonest. The architecture is openly documented; the
+            researcher's finding has been met with a documented
+            architectural rationale, which is what an engineering
+            organisation is supposed to do under disclosure. The
+            article argues that the rationale is wrong about the
+            threat model in the operational environments where Edge
+            is most heavily deployed, and that the user, on
+            installing a browser with a password manager, was not
+            given the chance to decline the trade-off the rationale
+            defends.</p>
+
+        <p>That is the entire grammar of <em>Not in the Brief</em>.
+            Software does many things. Some of them are in the
+            brief; some of them are not. The architecture is what it
+            is; the user's right to know is independent of whether
+            the vendor finds the question interesting.</p>
+
+        <h2>Closing</h2>
+
+        <p>A password manager built into a browser is, by
+            construction, a threat-model compromise: the convenience
+            of autofill at the cost of holding credentials inside a
+            process that also runs untrusted JavaScript, renders
+            attacker-controlled HTML, and exposes one of the largest
+            attack surfaces shipped to consumer machines. Different
+            browsers have made different compromises along the same
+            axis. Chrome chose lazy decryption and Application-Bound
+            Encryption. Brave, Opera and Vivaldi inherited that
+            shape. Edge chose neither, and named the choice a
+            design.</p>
+
+        <p>The user, in 2026, can now see the vault open on their
+            own screen in five minutes. The seeing changes the brief.
+            From now on, leaving credentials in Edge is a choice, not
+            an unconscious default. That is the part of awareness
+            this series exists for: not to alarm, but to make the
+            question visible.</p>
+
+        <p>The architecture answered the security question. It just
+            answered it in the wrong direction, and quietly. The vault
+            is open. You can close it.</p>
+
+        <blockquote>
+            <p>Microsoft Edge loads the entire saved password vault
+                into <code>msedge.exe</code> at launch and decrypts
+                every credential into process memory in cleartext.
+                The cleartext sits in RAM for the whole session,
+                regardless of whether any of those sites is visited.
+                Disclosed by Tom J&oslash;ran S&oslash;nstebyseter
+                R&oslash;nning at Palo Alto Networks Norway's "BIG
+                Bite of Tech", 29 April 2026; reproduced in five
+                minutes with Process Explorer or System Informer.
+                Microsoft's response: "by design", balancing
+                performance, usability and security; not classified
+                as a security issue. Chrome since 2024 decrypts
+                lazily and binds keys to the SYSTEM-level Chrome
+                process via Application-Bound Encryption; Brave,
+                Opera and Vivaldi inherit the lazy behaviour. Edge,
+                of the major Chromium family, is the only one with
+                this architecture. Mitigations: stop saving in Edge,
+                use KeePassXC or Proton Pass, disable per estate via
+                Group Policy <code>PasswordManagerEnabled = 0</code>.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The awareness path, the short version:</strong></p>
+            <ul>
+                <li><strong>The behaviour:</strong> Edge decrypts every
+                    saved password into <code>msedge.exe</code> at
+                    launch; cleartext stays in process memory for the
+                    full session, independent of any actual use of
+                    the credentials</li>
+                <li><strong>The disclosure:</strong> Tom J&oslash;ran
+                    S&oslash;nstebyseter R&oslash;nning, Palo Alto
+                    Networks Norway, "BIG Bite of Tech", 29 April
+                    2026; LinkedIn demonstration video 4 May 2026</li>
+                <li><strong>Microsoft's position:</strong> "by design";
+                    "performance, usability, security" trade-off; not
+                    classified as a security issue</li>
+                <li><strong>The comparison:</strong> Chrome (since
+                    2024) decrypts lazily and binds keys to the
+                    SYSTEM-level process via Application-Bound
+                    Encryption; Brave, Opera and Vivaldi inherit the
+                    lazy behaviour; Edge alone among the major
+                    Chromium browsers takes neither step</li>
+                <li><strong>Five minutes to see it:</strong>
+                    <code>edge://settings/profiles</code> &#x2192;
+                    Passwords (confirm a credential), open Process
+                    Explorer or System Informer (find parent
+                    <code>msedge.exe</code>), Properties &#x2192;
+                    Strings &#x2192; Memory (search for the site URL)</li>
+                <li><strong>Per-user mitigation:</strong> stop saving
+                    credentials in Edge; toggle off "Offer to save
+                    passwords" at <code>edge://settings/passwords</code>;
+                    move credentials to KeePassXC (local, open
+                    source) or Proton Pass (hosted, end-to-end
+                    encrypted)</li>
+                <li><strong>Per-estate mitigation:</strong> Group
+                    Policy <code>PasswordManagerEnabled = 0</code>
+                    disables the built-in store organisation-wide on
+                    Windows; equivalent profile keys exist on macOS
+                    and Linux</li>
+                <li><strong>Where the threat lives:</strong> shared
+                    workstations (healthcare, education, retail,
+                    contact centre), kiosk and unattended machines,
+                    forensic and IR memory inspection &#x2014; all
+                    environments where the local-admin versus SYSTEM
+                    distinction is precisely the boundary the
+                    Microsoft argument needs to ignore</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,616 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Screenshot Diary &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Open Windows 11 on a Copilot+ PC. Navigate to Settings, Privacy & security, Recall & snapshots. The switch is there. The feature is opt-in today. It was not opt-in when it was first shipped in May 2024, and the first version stored its snapshot database mostly in cleartext. Microsoft Recall captures snapshots at regular intervals, indexes them with a local AI model, and offers natural-language search across your past activity. Announced at Build May 2024, withdrawn June 2024 after Alexander Hagenah's TotalRecall extracted the database trivially, re-released April 2025 on a Virtualisation-Based Security Enclave with keys bound to the TPM and Windows Hello. In March 2026 Hagenah's TotalRecall Reloaded showed user-level code injecting into AIXHost.exe could read decrypted snapshots after Windows Hello unlock. Microsoft VP David Weston: 'consistent with intended protections', 'does not represent a bypass'. The vault door is titanium. The wall next to it is drywall.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-screenshot-diary{( endslot )}
+
+{( slot og-title )}The Screenshot Diary &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Not in the Brief Episode 03. Microsoft Recall captures snapshots of the Windows screen at regular intervals on Copilot+ PCs (40-TOPS NPU), indexes them with a local AI model and offers natural-language search across the user's past activity. Announced at Build May 2024 with default-on and mostly-cleartext storage; withdrawn June 2024 after Alexander Hagenah published TotalRecall; redesigned through late 2024; re-released April 2025 on a VBS Enclave with AES-256-GCM, TPM-bound keys and Windows Hello Enhanced Sign-In Security. The vault is genuinely strong. In March 2026 Hagenah's TotalRecall Reloaded showed an ordinary user-level program with no admin rights, no kernel exploit, can inject into AIXHost.exe (the timeline-rendering process) after Windows Hello unlock and read decrypted snapshots, OCR text and metadata. Microsoft VP David Weston: 'consistent with intended protections', 'does not represent a bypass'. The vault door is titanium. The wall next to it is drywall.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Screenshot Diary",
+    "datePublished": "2026-05-16",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-screenshot-diary",
+    "description": "Not in the Brief Episode 03. Documents Microsoft Recall on Copilot+ PCs (40-TOPS NPU requirement; OEMs Microsoft, Dell, HP, ASUS, Lenovo, Samsung): a continuous on-device screen-capture and natural-language search feature backed by a local AI model with OCR and semantic embedding indexing. Announced at Build May 2024 with default-on activation and mostly-cleartext storage; withdrawn in June 2024 after Alexander Hagenah's TotalRecall demonstrated trivial extraction; redesigned through late 2024; re-released April 2025 on a Virtualisation-Based Security (VBS) Enclave with AES-256-GCM at-rest encryption, TPM-bound keys and Windows Hello Enhanced Sign-In Security; setup dialog now defaults to disabled; managed devices have Recall removed by default. In March 2026 Hagenah's TotalRecall Reloaded showed an ordinary user-level program with no admin rights and no kernel exploit injecting into AIXHost.exe (the timeline-rendering process) after Windows Hello unlock, reading decrypted snapshots, OCR text and metadata directly from process memory. Microsoft VP David Weston's response: 'consistent with intended protections and existing controls', 'does not represent a bypass of a security boundary'. The opt-in default in the setup dialog is the result of public pressure rather than original design; the presence of the switch on every Copilot+ machine is the default that survived public review.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-16">16 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Screenshot Diary</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Not in the Brief</em> &#x22A3; Episode 03</p>
+
+        <p>Open Windows 11 on a Copilot+ PC. Navigate to Settings,
+            Privacy &amp; security, Recall &amp; snapshots. The switch
+            is there. The feature is opt-in today. It was not opt-in
+            when it was first shipped in May 2024, and the first
+            version stored its snapshot database mostly in cleartext
+            on disk. That part of the history is not in the brief any
+            more; it is part of the architecture's biography.</p>
+
+        <p>This is the third episode of <em>Not in the Brief</em>. The
+            first two looked at the browser layer:
+            <a href="/blog/the-browser-brought-its-own-ai">Chrome's local AI model that any web page can call without a permission prompt</a>,
+            and
+            <a href="/blog/the-vault-that-stays-open">Edge's password vault that decrypts itself eagerly at launch</a>
+            and leaves the cleartext in memory for the session. The
+            third looks at the operating-system layer, where Microsoft
+            built a feature that records the screen continuously,
+            indexes the recording with a local AI model, and offers
+            natural-language search across the user's past activity.</p>
+
+        <p>The feature is called Recall. The architecture is genuinely
+            interesting. The history of how it arrived at the current
+            architecture is more interesting still.</p>
+
+        <h2>The Feature</h2>
+
+        <p>Recall takes snapshots of whatever is on the screen at
+            regular intervals, stores them encrypted on the local
+            disk, and applies a local AI model to extract text (OCR)
+            and semantic embeddings from each snapshot. The user can
+            then open Recall and type a natural-language query: "find
+            the page about cloud egress costs I read last Tuesday",
+            "show me the email about the meeting on Friday", "what
+            was that diagram I saw three weeks ago". Recall returns
+            matching snapshots from the user's own past activity,
+            with the timeline scrubbable in either direction.</p>
+
+        <p>The capability is, technically, a real piece of work.
+            On-device OCR over a continuous screen capture, with
+            semantic embedding indexing fast enough for natural-language
+            query, on the user's laptop without a cloud round-trip,
+            is the kind of thing that would have been a research
+            paper five years ago. The neural-processing-unit (NPU)
+            hardware on Copilot+ PCs makes it tractable. NPUs rated
+            at 40 trillion operations per second or higher are the
+            hardware threshold; the major laptop manufacturers
+            (Microsoft, Dell, HP, ASUS, Lenovo, Samsung) ship
+            Copilot+ models across most of their current portfolios.</p>
+
+        <p>What the feature produces, when enabled, is a continuous
+            catalogue of what appeared on the screen. Every email
+            read, every document edited, every page browsed, every
+            video frame paused at, every chat window left open, every
+            banking session, every medical-record viewer, every
+            private message: indexed and queryable in natural
+            language. The catalogue is held on the user's own disk,
+            by software the user did not write, and addressed by a
+            query interface the user did not specify.</p>
+
+        <h2>The Introduction</h2>
+
+        <p>The feature was announced at Microsoft Build in May 2024.
+            The original design was:</p>
+
+        <ul>
+            <li><strong>Default on.</strong> Recall would activate on every Copilot+ PC at first run. No setup prompt, no consent dialog. The user would receive a notification informing them the feature was active</li>
+            <li><strong>Storage in cleartext, mostly.</strong> Snapshots and the searchable index database were stored on the local disk in a SQLite database that was, in the words of the security researchers who looked at it, "mostly cleartext". The OCR text was unencrypted; the snapshots themselves were not deeply protected against an attacker with access to the user account</li>
+            <li><strong>No additional authentication for access.</strong> Once a user was logged in, any process running in the user's context could read the Recall database</li>
+        </ul>
+
+        <p>The security community, predictably, did not love this.
+            Researcher
+            <a href="https://www.pcgamer.com/software/security/cybersecurity-experts-raise-the-alarm-over-windows-recall-again-the-vault-door-is-titanium-the-wall-next-to-it-is-drywall/" target="_blank" rel="noopener">Alexander Hagenah</a>,
+            based in Zurich, published a proof-of-concept tool called
+            TotalRecall in June 2024 that extracted the Recall
+            database trivially, ran SQL queries on the OCR text, and
+            demonstrated that an attacker who could exfiltrate a
+            small SQLite file from a target machine could have a
+            complete searchable history of the target's recent screen
+            activity. The story moved from the security press to the
+            mainstream press within days.</p>
+
+        <p>Microsoft, to its credit, did not double down on the first
+            design. The feature was withdrawn from the Copilot+ launch
+            in June 2024. The company announced a redesign through
+            summer 2024, missed an October 2024 release window, and
+            shipped a redesigned preview to Windows Insiders in
+            November 2024. The redesigned feature reached general
+            availability on Copilot+ PCs in April 2025.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A horizontal timeline of the Recall introduction. May 2024: announced at Microsoft Build with default-on and mostly-cleartext storage. June 2024: withdrawn after Alexander Hagenah's TotalRecall demonstrated trivial extraction. November 2024: redesigned preview ships to Windows Insiders. April 2025: general availability with VBS Enclave, AES-256-GCM, TPM-bound keys and Windows Hello. March 2026: Hagenah's TotalRecall Reloaded reads decrypted snapshots from AIXHost.exe after Windows Hello unlock. April 2026: Microsoft VP David Weston's response: consistent with intended protections, does not represent a bypass." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .nitb-tl-tick { stroke: var(--muted); stroke-width: 1; }
+                .nitb-tl-dot { fill: var(--accent); }
+            </style>
+            <text x="300" y="22" class="nitb-tl-title" text-anchor="middle">Twenty-Three Months of Architecture, in Public</text>
+
+            <line x1="30" y1="140" x2="570" y2="140" class="nitb-tl-axis"/>
+
+            <circle cx="55" cy="140" r="4" class="nitb-tl-dot"/>
+            <line x1="55" y1="140" x2="55" y2="146" class="nitb-tl-tick"/>
+            <text x="55" y="160" class="nitb-tl-text" text-anchor="middle">May 2024</text>
+            <text x="55" y="176" class="nitb-tl-muted" text-anchor="middle">Build announce</text>
+            <text x="55" y="188" class="nitb-tl-muted" text-anchor="middle">default on,</text>
+            <text x="55" y="200" class="nitb-tl-muted" text-anchor="middle">mostly cleartext</text>
+
+            <circle cx="155" cy="140" r="4" class="nitb-tl-dot"/>
+            <line x1="155" y1="140" x2="155" y2="146" class="nitb-tl-tick"/>
+            <text x="155" y="160" class="nitb-tl-text" text-anchor="middle">Jun 2024</text>
+            <text x="155" y="176" class="nitb-tl-muted" text-anchor="middle">withdrawn after</text>
+            <text x="155" y="188" class="nitb-tl-muted" text-anchor="middle">Hagenah's</text>
+            <text x="155" y="200" class="nitb-tl-muted" text-anchor="middle">TotalRecall</text>
+
+            <circle cx="265" cy="140" r="4" class="nitb-tl-dot"/>
+            <line x1="265" y1="140" x2="265" y2="146" class="nitb-tl-tick"/>
+            <text x="265" y="160" class="nitb-tl-text" text-anchor="middle">Nov 2024</text>
+            <text x="265" y="176" class="nitb-tl-muted" text-anchor="middle">redesigned</text>
+            <text x="265" y="188" class="nitb-tl-muted" text-anchor="middle">preview to</text>
+            <text x="265" y="200" class="nitb-tl-muted" text-anchor="middle">Insiders</text>
+
+            <circle cx="370" cy="140" r="4" class="nitb-tl-dot"/>
+            <line x1="370" y1="140" x2="370" y2="146" class="nitb-tl-tick"/>
+            <text x="370" y="160" class="nitb-tl-text" text-anchor="middle">Apr 2025</text>
+            <text x="370" y="176" class="nitb-tl-muted" text-anchor="middle">GA: VBS Enclave,</text>
+            <text x="370" y="188" class="nitb-tl-muted" text-anchor="middle">TPM, Hello,</text>
+            <text x="370" y="200" class="nitb-tl-muted" text-anchor="middle">opt-in default</text>
+
+            <circle cx="475" cy="140" r="4" class="nitb-tl-dot"/>
+            <line x1="475" y1="140" x2="475" y2="146" class="nitb-tl-tick"/>
+            <text x="475" y="160" class="nitb-tl-text" text-anchor="middle">Mar 2026</text>
+            <text x="475" y="176" class="nitb-tl-muted" text-anchor="middle">TotalRecall</text>
+            <text x="475" y="188" class="nitb-tl-muted" text-anchor="middle">Reloaded reads</text>
+            <text x="475" y="200" class="nitb-tl-muted" text-anchor="middle">AIXHost.exe</text>
+
+            <circle cx="555" cy="140" r="4" class="nitb-tl-dot"/>
+            <line x1="555" y1="140" x2="555" y2="146" class="nitb-tl-tick"/>
+            <text x="555" y="160" class="nitb-tl-text" text-anchor="middle">Apr 2026</text>
+            <text x="555" y="176" class="nitb-tl-muted" text-anchor="middle">Weston:</text>
+            <text x="555" y="188" class="nitb-tl-muted" text-anchor="middle">"not a</text>
+            <text x="555" y="200" class="nitb-tl-muted" text-anchor="middle">bypass"</text>
+
+            <text x="300" y="62" class="nitb-tl-muted" text-anchor="middle" font-style="italic">The opt-in default is the result of public pressure,</text>
+            <text x="300" y="76" class="nitb-tl-muted" text-anchor="middle" font-style="italic">not of original design.</text>
+        </svg>
+
+        <p>The redesign is, by the standards of what the original
+            feature was, a real change in architecture. It is the
+            second draft, and the second draft is the one that ships.
+            The first draft is the one that survives in the
+            architecture's biography, however, because the decision
+            to ship a continuous screen-capture catalogue by default
+            with mostly-cleartext storage was a deliberate decision
+            by a large and competent engineering organisation. The
+            second draft did not unmake the first decision. It
+            rewrote the storage layer.</p>
+
+        <h2>The Mechanics</h2>
+
+        <p>The post-redesign architecture splits cleanly into two
+            halves: the vault, and what happens after the vault has
+            been opened. Both halves are important.</p>
+
+        <h2>The Vault</h2>
+
+        <p>The architecture, as documented by Microsoft on the
+            <a href="https://blogs.windows.com/windowsexperience/2024/09/27/update-on-recall-security-and-privacy-architecture/" target="_blank" rel="noopener">Windows Experience Blog</a>
+            and
+            <a href="https://learn.microsoft.com/en-us/windows/client-management/manage-recall" target="_blank" rel="noopener">Microsoft Learn</a>,
+            rests on four pillars.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="The four pillars of the post-redesign Recall vault. First: a Virtualisation-Based Security Enclave whose memory is invisible to the rest of Windows including the kernel running outside it. Second: AES-256-GCM encryption at rest with per-record keys, applied to both the snapshot store and the vector index. Third: keys sealed against the device's Trusted Platform Module, so that removing the disk from the machine yields nothing decryptable. Fourth: Windows Hello Enhanced Sign-In Security gating any access through a biometric or PIN, with the authorised session subject to timeout and re-authorisation." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-v-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-v-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-v-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-v-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-v-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="nitb-v-title" text-anchor="middle">The Four Pillars Inside the Vault</text>
+
+            <rect x="40" y="50" width="260" height="76" class="nitb-v-accent-box"/>
+            <text x="60" y="72" class="nitb-v-head">1 &#x25A0; VBS Enclave</text>
+            <text x="60" y="92" class="nitb-v-muted">virtualised execution context;</text>
+            <text x="60" y="106" class="nitb-v-muted">memory invisible to the rest of Windows,</text>
+            <text x="60" y="120" class="nitb-v-muted">including the kernel running outside it</text>
+
+            <rect x="310" y="50" width="250" height="76" class="nitb-v-accent-box"/>
+            <text x="330" y="72" class="nitb-v-head">2 &#x25A0; AES-256-GCM at rest</text>
+            <text x="330" y="92" class="nitb-v-muted">snapshots and vector index encrypted</text>
+            <text x="330" y="106" class="nitb-v-muted">with per-record keys; Snapshot Store</text>
+            <text x="330" y="120" class="nitb-v-muted">on disk fully encrypted at idle</text>
+
+            <rect x="40" y="138" width="260" height="76" class="nitb-v-accent-box"/>
+            <text x="60" y="160" class="nitb-v-head">3 &#x25A0; TPM-bound keys</text>
+            <text x="60" y="180" class="nitb-v-muted">unlocking material sealed against</text>
+            <text x="60" y="194" class="nitb-v-muted">the device's TPM; removing the disk</text>
+            <text x="60" y="208" class="nitb-v-muted">yields nothing decryptable</text>
+
+            <rect x="310" y="138" width="250" height="76" class="nitb-v-accent-box"/>
+            <text x="330" y="160" class="nitb-v-head">4 &#x25A0; Windows Hello</text>
+            <text x="330" y="180" class="nitb-v-muted">Enhanced Sign-In Security; biometric</text>
+            <text x="330" y="194" class="nitb-v-muted">or PIN gates the enclave's release;</text>
+            <text x="330" y="208" class="nitb-v-muted">session timeout, re-authorisation</text>
+        </svg>
+
+        <p>Inside that envelope, the vault is solid. The keys are
+            unreachable from outside the enclave. The data on disk is
+            unreadable without the TPM. The unlock requires a
+            biometric or PIN. The original cleartext-database
+            criticism is, on the current architecture, no longer
+            accurate. Microsoft did the engineering work and the
+            engineering work is good.</p>
+
+        <p>That is the part of the story that ends with "the vault is
+            solid".</p>
+
+        <h2>The Wall</h2>
+
+        <p>The other part of the story is what happens after
+            authentication. The Recall timeline, once the user has
+            authenticated with Windows Hello and the enclave has
+            decrypted the relevant snapshots, has to actually show
+            the snapshots on the screen. Showing the snapshots
+            requires that decrypted pixel data, decrypted OCR text
+            and decrypted metadata leave the enclave and enter
+            ordinary Windows processes that render UI to the user.</p>
+
+        <p>The process that does the rendering is called
+            <code>AIXHost.exe</code>. It runs in the user's session
+            at ordinary user privilege. It is not inside the VBS
+            Enclave. The decrypted snapshot content lives inside its
+            address space for as long as the timeline is open.</p>
+
+        <p>In March 2026, Alexander Hagenah, the same researcher who
+            built the 2024 TotalRecall tool, published a successor
+            called
+            <a href="https://www.theverge.com/report/912101/microsoft-windows-recall-new-security-concerns-response" target="_blank" rel="noopener">TotalRecall Reloaded</a>.
+            The new tool:</p>
+
+        <ul>
+            <li>Runs as an ordinary user, with no administrative privileges, no kernel exploit, and no privilege escalation</li>
+            <li>Does not attempt to break the VBS Enclave or extract any keys from it</li>
+            <li>Does not bypass Windows Hello in any meaningful sense; the tool requires that the legitimate user has already authenticated</li>
+            <li>Injects into <code>AIXHost.exe</code>, the Recall timeline-rendering process, after the legitimate user has authenticated with Windows Hello</li>
+            <li>Reads decrypted screenshots, OCR text, and metadata directly from <code>AIXHost.exe</code>'s address space, for as long as the timeline is open</li>
+        </ul>
+
+        <p>In Hagenah's summary: "The vault door is titanium. The
+            wall next to it is drywall."</p>
+
+        <svg viewBox="0 0 600 280" aria-label="A diagram of the trust boundary. On the left, the vault: the VBS Enclave, AES-256-GCM-encrypted snapshot store, TPM-bound keys, Windows Hello gate. Inside the vault, the strong protections are listed. To the right of the vault, after the Windows Hello unlock, the decrypted content flows into the AIXHost.exe process in the user's session at ordinary user privilege. From AIXHost.exe, an arrow labelled 'user-level injection, no admin' connects to a small TotalRecall Reloaded box that reads the decrypted snapshots, OCR text and metadata from process memory. A boundary line between the enclave and AIXHost.exe is marked as the trust boundary." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-w-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-w-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-w-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-w-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-w-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .nitb-w-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .nitb-w-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#nitb-w-arrow); }
+                .nitb-w-bound { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4,3; fill: none; }
+            </style>
+            <defs>
+                <marker id="nitb-w-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="nitb-w-title" text-anchor="middle">Vault &amp; Wall: the Trust Boundary Diagram</text>
+
+            <rect x="40" y="48" width="240" height="180" class="nitb-w-accent-box"/>
+            <text x="160" y="68" class="nitb-w-head" text-anchor="middle">The Vault</text>
+            <text x="160" y="86" class="nitb-w-muted" text-anchor="middle">VBS Enclave</text>
+            <text x="160" y="100" class="nitb-w-muted" text-anchor="middle">AES-256-GCM at rest</text>
+            <text x="160" y="114" class="nitb-w-muted" text-anchor="middle">TPM-bound keys</text>
+            <text x="160" y="128" class="nitb-w-muted" text-anchor="middle">Windows Hello gate</text>
+            <rect x="80" y="148" width="160" height="60" class="nitb-w-box"/>
+            <text x="160" y="170" class="nitb-w-text" text-anchor="middle">Encrypted</text>
+            <text x="160" y="184" class="nitb-w-text" text-anchor="middle">Snapshot Store</text>
+            <text x="160" y="200" class="nitb-w-muted" text-anchor="middle">unreadable at idle</text>
+
+            <line x1="300" y1="48" x2="300" y2="228" class="nitb-w-bound"/>
+            <text x="300" y="42" class="nitb-w-muted" text-anchor="middle">trust boundary &#x2014; Windows Hello</text>
+
+            <line x1="280" y1="138" x2="340" y2="138" class="nitb-w-arr"/>
+            <text x="310" y="130" class="nitb-w-muted" text-anchor="middle">decrypted</text>
+
+            <rect x="340" y="60" width="220" height="80" class="nitb-w-box"/>
+            <text x="450" y="82" class="nitb-w-head" text-anchor="middle">AIXHost.exe</text>
+            <text x="450" y="100" class="nitb-w-muted" text-anchor="middle">user-session, ordinary privilege</text>
+            <text x="450" y="114" class="nitb-w-muted" text-anchor="middle">renders the Recall timeline</text>
+            <text x="450" y="128" class="nitb-w-muted" text-anchor="middle">decrypted content in memory</text>
+
+            <line x1="450" y1="140" x2="450" y2="170" class="nitb-w-arr"/>
+            <text x="500" y="158" class="nitb-w-muted">read</text>
+
+            <rect x="340" y="170" width="220" height="60" class="nitb-w-box"/>
+            <text x="450" y="192" class="nitb-w-head" text-anchor="middle">TotalRecall Reloaded</text>
+            <text x="450" y="208" class="nitb-w-muted" text-anchor="middle">user-level injection, no admin,</text>
+            <text x="450" y="222" class="nitb-w-muted" text-anchor="middle">no kernel exploit, no key extraction</text>
+
+            <text x="300" y="252" class="nitb-w-muted" text-anchor="middle" font-style="italic">"The vault door is titanium. The wall next to it is drywall." (Hagenah, 2026)</text>
+            <text x="300" y="268" class="nitb-w-muted" text-anchor="middle" font-style="italic">Microsoft (Weston): "consistent with intended protections, does not represent a bypass."</text>
+        </svg>
+
+        <p>Microsoft's response, attributed to David Weston, Corporate
+            Vice President for Microsoft Security, was published in
+            The Verge and other outlets in April 2026. The position is
+            consistent: the demonstrated access pattern is "consistent
+            with intended protections and existing controls, and does
+            not represent a bypass of a security boundary or
+            unauthorised access to data". In other words, the
+            architecture is functioning as designed; the
+            decrypted-after-Hello content is, by design, accessible to
+            processes running in the authenticated user's session;
+            Microsoft is not classifying this as a vulnerability.</p>
+
+        <p>That is, on its own terms, an internally coherent position.
+            The enclave is for key material and at-rest encryption;
+            once the user has authorised access, the data is by
+            design in the user's session and shares the user's threat
+            surface. The position is defensible.</p>
+
+        <p>It is also incomplete in the way that the entire
+            architecture, taken as a system, has been incomplete
+            since the beginning: the design is correct from the
+            inside out, and silent on the brief.</p>
+
+        <h2>A Note on the Other Side of the Stack</h2>
+
+        <p>Recall is a Windows feature. On a Unix-style operating
+            system such as FreeBSD or any Linux distribution, the
+            equivalent does not exist; there is no system service
+            that continuously captures the screen, indexes it with a
+            local AI model, and exposes a natural-language search
+            interface across the user's past activity. The capability
+            is not there because nobody on the kernel or base-system
+            side built it. A screen recorder can be installed
+            (<code>pkg install ffmpeg</code> on FreeBSD will give the
+            user the building blocks), but installing it is an
+            explicit act, the daemon is named, and the captured
+            content sits in a file the user named in a directory the
+            user chose. The architectural difference matters for the
+            awareness question: on a Unix system, the absence of
+            capture is the default; on a Copilot+ Windows machine,
+            the presence of capture is the default and the user's
+            choice is whether to switch it on.</p>
+
+        <h2>The Risk</h2>
+
+        <p>The architectural risk has two layers. The first is the
+            post-authentication accessibility problem demonstrated by
+            TotalRecall Reloaded: a user who is running malicious
+            software (an installed application that turned hostile, a
+            compromised browser extension, an unfortunate click on a
+            phishing link) and who authenticates to Recall is, on the
+            current architecture, exposing decrypted snapshot content
+            to that software. This is, on Microsoft's stated threat
+            model, working as intended. It is also, on any reasonable
+            user expectation, not the trade-off the user signed up
+            for when they clicked "Yes, save snapshots".</p>
+
+        <p>The second layer is structural, and it is the more
+            important one.</p>
+
+        <h2>What Recall Actually Catalogues</h2>
+
+        <p>The feature, where enabled, produces a third-party
+            catalogue of every second on the user's own machine.
+            Three properties of that catalogue are worth stating in
+            full:</p>
+
+        <svg viewBox="0 0 600 240" aria-label="Three properties of what Recall actually catalogues, where enabled. First: continuous capture, at machine cadence, of everything visually present on the screen; not a list of files the user chose to save. Second: queried by software the user did not write; the user owns the disk, not the index format, the query interface or the integration surface. Third: no context distinction by default; banking sessions, medical-record viewers, holiday photos and recipe sites are treated identically; the user must enumerate exceptions." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nitb-c-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-c-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-c-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-c-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .nitb-c-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="nitb-c-title" text-anchor="middle">Three Properties of the Catalogue</text>
+
+            <rect x="40" y="50" width="520" height="56" class="nitb-c-accent-box"/>
+            <text x="60" y="72" class="nitb-c-head">1 &#x25A0; Continuous capture, at machine cadence</text>
+            <text x="60" y="90" class="nitb-c-muted">every page read long enough, every document edited, every video paused, every chat left open</text>
+
+            <rect x="40" y="116" width="520" height="56" class="nitb-c-accent-box"/>
+            <text x="60" y="138" class="nitb-c-head">2 &#x25A0; Queried by software the user did not write</text>
+            <text x="60" y="156" class="nitb-c-muted">user owns the disk; index format, query interface and integration surface owned by Microsoft</text>
+
+            <rect x="40" y="182" width="520" height="56" class="nitb-c-accent-box"/>
+            <text x="60" y="204" class="nitb-c-head">3 &#x25A0; No context distinction by default</text>
+            <text x="60" y="222" class="nitb-c-muted">banking sessions, medical-record viewers, holiday photos, recipe sites &#x2014; exclusions are enumerated by the user</text>
+        </svg>
+
+        <p>The opt-in switch is the consent record. The presence of
+            the switch, on every Copilot+ machine, is the default
+            that survived public review. Consider what that means:
+            the engineering case for the feature, after extensive
+            public scrutiny, was strong enough that the company
+            concluded the right answer was to ship the feature opt-in
+            on every supported machine rather than not ship it at
+            all. The history is in the brief. The decision is in the
+            brief. The user, in 2026, encounters the result of that
+            decision as a Settings switch.</p>
+
+        <h2>What the User Actually Signed Up For</h2>
+
+        <p>Consider a user who buys a Copilot+ laptop in 2026. They
+            unbox it, run the Windows setup, and at some point during
+            setup they see a Recall dialog. The dialog says, in
+            essence, "Recall captures snapshots of your screen so you
+            can search later. Do you want to enable it?" The default
+            option is "Not now". The user clicks "Not now" or "Yes".
+            The dialog goes away.</p>
+
+        <p>The user has now made one of two choices: opt in to
+            Recall, or not. Both choices are documented and have a
+            consent record. Neither choice involved being told that:</p>
+
+        <ul>
+            <li>The opt-in dialog defaults to disabled because the first design did not default to disabled, and the first design's default was changed only after public outcry</li>
+            <li>The Recall switch is present on the machine whether or not the user has heard of the feature; the existence of the option is itself the default that survived public review</li>
+            <li>The post-authentication threat model accepts that decrypted content lives in user-session processes that can be read by other user-session code. This is by design; the boundary ends at Windows Hello</li>
+            <li>What is captured is everything visually present on the screen, by default, indexed by software the user did not write, in a format the user does not own</li>
+        </ul>
+
+        <p>None of those facts are hidden. Microsoft has published all
+            of them. They are in the brief, if one is willing to read
+            Microsoft Learn end to end. They are not in the brief in
+            the practical sense: the user, on installing the
+            operating system, was not given a chance to weigh them
+            against the convenience benefit.</p>
+
+        <p>The architecture is what it is. The point of awareness is
+            to know that it is what it is.</p>
+
+        <h2>How to See It</h2>
+
+        <p>The verification path is straightforward on any current
+            Copilot+ PC.</p>
+
+        <p><strong>Settings, Privacy &amp; security, Recall &amp;
+            snapshots.</strong> The master switch lives here. If the
+            toggle is off, no snapshots are being saved and the
+            database is empty. If the toggle is on, snapshots are
+            being captured at the configured interval (default
+            approximately every few seconds when activity is
+            detected). The same page exposes the storage cap (how
+            much disk Recall is allowed to use) and the retention
+            horizon (how far back snapshots are kept).</p>
+
+        <p><strong>The Recall app, in-app Settings, exclusions.</strong>
+            Per-app and per-website exclusions are configured here.
+            Browsers in private/incognito mode are automatically
+            excluded from snapshots, by design. Passwords and
+            credit-card fields are likewise automatically masked.
+            Other categories of sensitive content (medical record
+            viewers, banking apps, internal corporate tools) the user
+            must exclude manually.</p>
+
+        <p><strong>Group Policy, on Pro/Enterprise editions.</strong>
+            Open Group Policy Editor (<code>gpedit.msc</code>).
+            Navigate to User Configuration, Administrative Templates,
+            Windows Components, Windows AI. The policy "Turn off
+            saving snapshots for Windows" disables the
+            snapshot-saving capability across the user's session,
+            irrespective of the user's per-machine choice. The
+            corresponding registry value is
+            <code>HKCU\Software\Policies\Microsoft\Windows\WindowsAI\DisableAIDataAnalysis</code>
+            (DWORD, value 1).</p>
+
+        <p><strong>Intune / MDM, on managed devices.</strong> The
+            WindowsAI configuration service provider exposes the same
+            setting under
+            <code>./User/Vendor/MSFT/Policy/Config/WindowsAI/DisableAIDataAnalysis</code>.
+            Managed devices have Recall disabled and the feature
+            removed by default; the policy is the explicit setting if
+            a managed device administrator wants to confirm the
+            disabled state.</p>
+
+        <p><strong>Forensic confirmation.</strong> If the master
+            switch is off and the policy is enabled, the Recall
+            database directory (typically under
+            <code>%LOCALAPPDATA%\CoreAIPlatform.00\UKP</code>) should
+            be empty or absent. If snapshots have been captured, the
+            directory contains encrypted files; their content cannot
+            be read without the user's Windows Hello authentication.</p>
+
+        <p>The honest qualification: even with Recall disabled, a
+            Copilot+ PC has the capability to enable it at any time.
+            The hardware is on the machine. The software is on the
+            machine. The decision is the user's, or the device
+            administrator's, or in some configurations, anyone who
+            can persuade either of them to enable the toggle.</p>
+
+        <h2>The Pattern Across the Series</h2>
+
+        <p>Three episodes in, the pattern is starting to come into
+            focus. The browser layer (Chrome with local AI, Edge with
+            cleartext password vault) and the operating-system layer
+            (Recall) all share a structural quality: a feature was
+            added to the user's machine, the user's consent was
+            obtained or assumed at a level that does not match the
+            depth of the feature, and the architectural boundary that
+            the vendor describes as sufficient does not match the
+            boundary the user reasonably assumed.</p>
+
+        <p>In all three cases the company is, by its own terms,
+            correct. Chrome's local model is local; it does not
+            exfiltrate. Edge's password vault is, by Microsoft's
+            threat model, secure against attackers who do not already
+            have administrative access. Recall's enclave is, by
+            Microsoft's threat model, secure against attackers who
+            cannot defeat Windows Hello. In all three cases the user,
+            by their own reasonable terms, was not told that this
+            was the trade-off the vendor was making.</p>
+
+        <p>The series is not arguing that the features should not
+            exist. The features are real, useful, and in some
+            respects represent genuine engineering progress. The
+            series is arguing that the consent record and the
+            architecture should match the brief, and that where they
+            do not match, the user should be told.</p>
+
+        <p>The looking is the entire point. Once a user has looked,
+            the choice becomes theirs.</p>
+
+        <h2>Closing</h2>
+
+        <p>The diary is on every Copilot+ PC shipped today. On most
+            of them, the cover is closed and the diary is empty; the
+            user has chosen not to open it. On a growing number of
+            them, the user has clicked "Yes, save snapshots" without
+            quite understanding that this opens a continuously
+            updating searchable record of everything that has
+            appeared on their screen, kept under a vault door that is
+            genuinely strong and a wall next to the vault that is, on
+            Hagenah's evidence, drywall.</p>
+
+        <blockquote>
+            <p>That is an architecture. It is also, by every
+                available record, an opt-in architecture, achieved
+                through public pressure rather than by original
+                design. The history is part of the brief now. The
+                looking, as the series keeps saying, is not
+                difficult. It just has to start.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>How to see it, in five minutes:</strong></p>
+            <ul>
+                <li><strong>Settings, Privacy &amp; security, Recall &amp; snapshots</strong>: master switch, storage cap, retention horizon</li>
+                <li><strong>Recall app, Settings, exclusions</strong>: per-app and per-website exclusions; private browsing and password / credit-card fields automatically excluded</li>
+                <li><strong>Group Policy</strong>: User Configuration &#x2192; Administrative Templates &#x2192; Windows Components &#x2192; Windows AI &#x2192; "Turn off saving snapshots for Windows" &#x2192; Enabled (registry: <code>HKCU\Software\Policies\Microsoft\Windows\WindowsAI\DisableAIDataAnalysis = 1</code>)</li>
+                <li><strong>Intune CSP</strong>: <code>./User/Vendor/MSFT/Policy/Config/WindowsAI/DisableAIDataAnalysis = 1</code></li>
+                <li><strong>Forensic path</strong>: <code>%LOCALAPPDATA%\CoreAIPlatform.00\UKP</code> &#x2014; empty or absent when Recall is disabled</li>
+            </ul>
+            <p><strong>Trade-off</strong>: opt-in gives you natural-language search over your past activity. Leaving it off keeps the diary closed.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

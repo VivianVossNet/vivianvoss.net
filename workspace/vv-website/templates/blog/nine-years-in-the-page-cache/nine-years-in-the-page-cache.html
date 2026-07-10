@@ -1,0 +1,616 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Nine Years in the Page Cache &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A four-byte write, three optimisations, and a kernel that forgot the layer beneath. CVE-2026-31431, named Copy Fail, lets an unprivileged local user become root on every Linux machine running a kernel from the last nine years. The exploit fits in 732 bytes of Python. It does not race. It does not crash. The flaw is the meeting of three correct decisions taken by three different teams fifteen years apart: the AF_ALG socket interface, the AEAD splice support of 2015, the in-place optimisation of 2017, and the authencesn scratch write that has been there since 2011. The four-byte primitive corrupts the page-cache copy of any file the user can read. The classical target is /usr/bin/su. On-disk integrity tools see nothing. The container boundary does not stop it; it was never designed to.">
+{( endslot )}
+
+{( slot canonical )}/blog/nine-years-in-the-page-cache{( endslot )}
+
+{( slot og-title )}Nine Years in the Page Cache &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Security Review, Friday 12 June 2026. A four-byte write, three optimisations, and a kernel that forgot the layer beneath. CVE-2026-31431, named Copy Fail, was disclosed by Theori on 29 April 2026; the Linux kernel security team triaged and patched the flaw in eight days. The exploit lets an unprivileged local user become root on Ubuntu 24.04, Amazon Linux 2023, Red Hat Enterprise Linux 10.1, SUSE 16, Debian, Fedora, Arch and any distribution shipping a kernel from the last nine years. It fits in 732 bytes of Python. It does not race. It does not crash. The component is the authencesn template inside the Linux kernel crypto subsystem, exposed to userspace through the algif_aead module of the AF_ALG socket interface (in the tree since 2010). The exploit opens an AF_ALG socket, splices a file the user can read into the socket as the input buffer, and asks the kernel to perform an AEAD operation; since 2015 AF_ALG has supported AEAD splicing which holds direct references to the kernel's cached pages, and since 2017 (changeset 72548b093ee3) an in-place optimisation lets AEAD reuse the same scatterlist for input and output; inside authencesn (present since 2011 to support IPsec Extended Sequence Numbers) a four-byte scratch write lands inside a kmap_local_page mapping of the spliced file's page-cache page, giving a deterministic four-byte primitive against any file the user can read. The classical target is /usr/bin/su: the on-disk binary is unchanged, the page-cache copy that gets executed is corrupted, file-integrity tools (Tripwire, AIDE, EDR host integrity) compare disk hashes and see nothing. Because the page cache is shared between containers and the host, a process inside a container can corrupt the host's cached binaries; the container boundary does not stop this, it was never designed to. Three correct decisions, three different teams, fifteen years apart, meeting at a seam no single review could have seen. On FreeBSD, the equivalent scenario does not arise in the same form: kernel cryptography is exposed through /dev/crypto (no AF_ALG-equivalent splice path); Capsicum (FreeBSD 9, 2012) narrows the attacker corridor structurally before any specific bug is reached; jails are a kernel-native primitive rather than a daemon-mediated arrangement of namespaces. The recommendation that follows is not patch and move on; it is check the seams.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Nine Years in the Page Cache",
+    "datePublished": "2026-06-12",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/nine-years-in-the-page-cache",
+    "description": "Security Review, Friday 12 June 2026. On 29 April 2026 a researcher at Theori published the details of a Linux kernel flaw that lets an unprivileged local user become root. The full exploit, written in standard Python, fits in roughly 732 bytes. It does not race. It does not crash. It runs on Ubuntu 24.04, Amazon Linux 2023, Red Hat Enterprise Linux 10.1, SUSE 16, Debian, Fedora, Arch and any distribution shipping a kernel from the last nine years. The flaw has a name: Copy Fail. This is not the story of a single bug; it is the story of three correct decisions, taken by three different teams, fifteen years apart, that happened to meet in the page cache. The official entry is CVE-2026-31431, CVSS v3.1 score 7.8 (High); the kernel security team was notified on 23 March 2026, the mainline patch landed on 1 April 2026, the CVE was assigned on 22 April, Theori disclosed publicly on 29 April; eight days from report to patch. The component is the authencesn template inside the Linux kernel crypto subsystem, exposed to userspace through the algif_aead module of the AF_ALG socket interface. AF_ALG is the socket family that lets unprivileged programs ask the kernel to perform cryptographic operations on their behalf; it has been there since 2010 and is genuinely useful. The exploit chain: the attacker opens an AF_ALG socket, splices a file they can read into the socket as the input buffer, and asks the kernel to perform an AEAD operation. Since 2015 AF_ALG has supported AEAD splicing, and the splice mechanism holds direct references to the kernel's cached pages of the spliced file rather than copying their contents. In 2017 a performance commit (changeset 72548b093ee3) introduced an in-place optimisation: rather than copying input bytes to a separate output buffer, the AEAD operation could now reuse the same scatterlist for both. Inside the authencesn template (present since 2011 to support IPsec Extended Sequence Numbers), there is a small piece of housekeeping that briefly writes four bytes into the destination buffer as scratch space. In isolation, none of these three decisions is wrong: the authencesn scratch write was correct in its original AEAD context, the AF_ALG AEAD splice support of 2015 was bounded by an out-of-place design, the 2017 in-place optimisation was a legitimate performance win in the kernel's own cryptographic paths. But once all three were in the tree at the same time, the path opened. The four-byte scratch write of authencesn, walking past its expected buffer in the in-place case, lands inside a kmap_local_page mapping of the spliced file's page cache page. The attacker chooses the file, chooses (through splice offset, splice length and assoclen) which four bytes get written, and chooses the value to write through bytes four to seven of the AAD. The result is a deterministic four-byte primitive against the kernel's in-memory copy of any file the user can read. The classical target is /usr/bin/su. The on-disk binary is, in any sane setup, owned by root and not writable by the user; the in-memory copy held by the page cache, however, is what gets executed when the user runs the program. Corrupt the in-memory copy carefully, and the next invocation of su becomes an instruction in the attacker's favour. The disk file remains untouched. The page is never marked dirty. Standard file-integrity tooling (Tripwire, AIDE, the host-based integrity layer of every modern EDR) compares disk hashes and sees nothing. Because the page cache is shared between containers and the host, a process inside a container with the right local privileges can corrupt the host's cached binaries; the container boundary does not stop this, it was never designed to. The Microsoft Security Response Center writeup is unusually direct about the cloud impact, and CERT-EU Advisory 2026-005 recommends disabling algif_aead until the patched kernel has reached every node. The current patch picture as of 12 June 2026: Arch, Fedora and Amazon Linux on patched kernels, with Ubuntu, SUSE and Red Hat closing in; Debian's stable line is the slowest, which is consistent with Debian's general posture and not in this instance a criticism. The pattern: composite vulnerabilities of this kind do not have a single author; they emerge where responsibility lines cross. A kernel of two hundred and fifty thousand commits per year is maintained by hundreds of subsystem stewards; each is excellent within their own remit; the gaps between remits are where the seams sit. Container isolation on Linux is a curated arrangement of kernel namespaces and seccomp filters and capability drops, not a kernel-native partition; the page cache is below all of those abstractions. A 2025 LKML patch series titled Document the deprecation of AF_ALG proposes that new use cases should prefer userspace cryptography libraries; the conversation is unresolved, the interface is still in the tree, and Copy Fail has now given the conversation a rather sharper outline. The BSD angle. The first observation is the crypto interface: FreeBSD exposes kernel cryptography to userspace through /dev/crypto, a device node, not a socket family; there is no AF_ALG-equivalent splice path; the OpenCrypto framework, descended from OpenBSD's OCF, was built in a different idiom. The second is Capsicum: FreeBSD's capability-mode sandbox lets a process explicitly relinquish access to global namespaces and operate only on file descriptors with explicitly granted capabilities; Capsicum was added to FreeBSD 9 in 2012 and is now in active use by base-system tools such as tcpdump, dhclient, auditdistd, kdump, ctld and iscsid. The third is jails: containerisation in FreeBSD is a kernel-native primitive, not a daemon-mediated arrangement of namespaces; there is no privileged daemon to compromise; VNET gives each jail an independent network stack as a kernel subsystem, not as an external CNI plugin. None of this is a guarantee against every vulnerability (FreeBSD has had jail-relevant CVEs and will have more) but the shape of the boundary is different, and the same composite primitive does not, as far as one can see, have an equivalent path. The Copy Fail patch should land everywhere it has not already landed; by the time this piece is read, most production fleets will be on patched kernels and the immediate operational question will be a familiar one: did our automation roll the kernel update through every node, including the awkward ones? But the longer point is the structural observation. Three correct decisions, three different teams, fifteen years apart, meeting at a seam no single review could have seen. The recommendation that follows from that observation is not patch and move on; it is check the seams. Wherever responsibility crosses team boundaries in the stack you maintain, fifteen years from now will be 2041. The most one can do is make the seams as narrow as the architecture will tolerate, and keep an eye on which interfaces are quietly being deprecated by their own maintainers. One rather hopes the next nine years are a little duller in this regard than the last.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-06-12">12 June 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Nine Years in the Page Cache</h1>
+        <p class="vv-article-meta"><em>Security Review &#x22A3; A
+            four-byte write, three optimisations, and a kernel that
+            forgot the layer beneath.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>On 29 April, a researcher at the security firm Theori
+            published the details of a Linux kernel flaw that lets
+            an unprivileged local user become root. The full
+            exploit, written in standard Python, fits in roughly
+            seven hundred and thirty-two bytes. It does not race. It
+            does not crash. It runs on Ubuntu 24.04, on Amazon
+            Linux 2023, on Red Hat Enterprise Linux 10.1, on SUSE
+            16, on Debian, on Fedora, on Arch &#x2014; on any
+            distribution shipping a kernel from the last nine years.
+            The flaw has a name. It is called <em>Copy Fail</em>,
+            and one rather hopes it will be the last name of its
+            kind for a while.</p>
+
+        <p>This is not, however, the story of a single bug. It is
+            the story of three correct decisions, taken by three
+            different teams, fifteen years apart, that happened to
+            meet in the page cache.</p>
+
+        <h2>The Breach</h2>
+
+        <p>The official entry is
+            <a href="https://nvd.nist.gov/vuln/detail/CVE-2026-31431" target="_blank" rel="noopener">CVE-2026-31431</a>.
+            The CVSS v3.1 score is 7.8, which the registry
+            classifies as High; in operational terms it means local
+            privilege escalation on every Linux machine an attacker
+            can already log in to as an ordinary user, and on every
+            container sharing a host kernel with one. The kernel
+            security team was notified on 23 March 2026 and the
+            mainline patch landed on 1 April. The CVE was assigned
+            on 22 April, and Theori disclosed publicly on 29 April.
+            Eight days from report to patch is, by any reasonable
+            benchmark, fast.</p>
+
+        <p>The component is the <code>authencesn</code> template
+            inside the Linux kernel crypto subsystem, exposed to
+            userspace through the <code>algif_aead</code> module of
+            the AF_ALG socket interface. AF_ALG is the socket family
+            that lets unprivileged programs ask the kernel to
+            perform cryptographic operations on their behalf. It
+            has been there since 2010, and it is genuinely useful:
+            it gives userland access to kernel-accelerated
+            cryptography without the userland needing to embed a
+            crypto library of its own.</p>
+
+        <p>The exploit chain is short enough to describe in one
+            paragraph. The attacker opens an AF_ALG socket,
+            splices a file they can read (any file readable by the
+            current user) into the socket as the input buffer, and
+            asks the kernel to perform an AEAD operation. Since
+            2015, AF_ALG has supported AEAD splicing, and the
+            splice mechanism holds direct references to the
+            kernel's cached pages of the spliced file rather than
+            copying their contents. In 2017, a performance commit
+            (the kernel changeset is <code>72548b093ee3</code>)
+            introduced an in-place optimisation: rather than copying
+            input bytes to a separate output buffer, the AEAD
+            operation could now reuse the same scatterlist for
+            both. And inside the authencesn template &#x2014;
+            present since 2011 to support IPsec Extended Sequence
+            Numbers &#x2014; there is a small piece of housekeeping
+            that briefly writes four bytes into the destination
+            buffer as scratch space.</p>
+
+        <svg viewBox="0 0 640 320" aria-label="A timeline showing how three independent kernel commits across fifteen years compose into Copy Fail. In 2010 AF_ALG is added to give userspace access to kernel cryptography. In 2011 the authencesn template is added with a small four-byte scratch write to support IPsec Extended Sequence Numbers. In 2015 AF_ALG gains AEAD splice support, which holds direct references to cached file pages. In 2017 the in-place optimisation lets AEAD reuse one scatterlist for input and output (changeset 72548b093ee3). In 2026 the composition is disclosed as CVE-2026-31431 and patched in eight days. The legend notes that each decision was correct in isolation; the seam is in their composition." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cf-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .cf-tl-tick { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+                .cf-tl-dot { fill: var(--accent); }
+            </style>
+            <text x="320" y="22" class="cf-tl-title" text-anchor="middle">Three Correct Decisions, Fifteen Years Apart</text>
+
+            <line x1="40" y1="170" x2="600" y2="170" class="cf-tl-axis"/>
+
+            <circle cx="70" cy="170" r="5" class="cf-tl-dot"/>
+            <line x1="70" y1="170" x2="70" y2="60" class="cf-tl-tick"/>
+            <text x="70" y="54" class="cf-tl-head" text-anchor="middle">2010</text>
+            <text x="70" y="74" class="cf-tl-text" text-anchor="middle">AF_ALG</text>
+            <text x="70" y="90" class="cf-tl-muted" text-anchor="middle">socket family</text>
+            <text x="70" y="104" class="cf-tl-muted" text-anchor="middle">for crypto</text>
+
+            <circle cx="180" cy="170" r="5" class="cf-tl-dot"/>
+            <line x1="180" y1="170" x2="180" y2="100" class="cf-tl-tick"/>
+            <text x="180" y="94" class="cf-tl-head" text-anchor="middle">2011</text>
+            <text x="180" y="114" class="cf-tl-text" text-anchor="middle">authencesn</text>
+            <text x="180" y="130" class="cf-tl-muted" text-anchor="middle">4-byte scratch</text>
+            <text x="180" y="144" class="cf-tl-muted" text-anchor="middle">for IPsec ESN</text>
+
+            <circle cx="320" cy="170" r="5" class="cf-tl-dot"/>
+            <line x1="320" y1="170" x2="320" y2="60" class="cf-tl-tick"/>
+            <text x="320" y="54" class="cf-tl-head" text-anchor="middle">2015</text>
+            <text x="320" y="74" class="cf-tl-text" text-anchor="middle">AEAD splice</text>
+            <text x="320" y="90" class="cf-tl-muted" text-anchor="middle">direct refs to</text>
+            <text x="320" y="104" class="cf-tl-muted" text-anchor="middle">cached pages</text>
+
+            <circle cx="460" cy="170" r="5" class="cf-tl-dot"/>
+            <line x1="460" y1="170" x2="460" y2="100" class="cf-tl-tick"/>
+            <text x="460" y="94" class="cf-tl-head" text-anchor="middle">2017</text>
+            <text x="460" y="114" class="cf-tl-text" text-anchor="middle">in-place opt</text>
+            <text x="460" y="130" class="cf-tl-muted" text-anchor="middle">72548b093ee3</text>
+            <text x="460" y="144" class="cf-tl-muted" text-anchor="middle">one scatterlist</text>
+
+            <circle cx="580" cy="170" r="6" class="cf-tl-dot"/>
+            <line x1="580" y1="170" x2="580" y2="60" class="cf-tl-tick"/>
+            <text x="580" y="54" class="cf-tl-head" text-anchor="middle">2026</text>
+            <text x="580" y="74" class="cf-tl-text" text-anchor="middle">Copy Fail</text>
+            <text x="580" y="90" class="cf-tl-muted" text-anchor="middle">CVE-2026-31431</text>
+            <text x="580" y="104" class="cf-tl-muted" text-anchor="middle">patch in 8 days</text>
+
+            <text x="320" y="230" class="cf-tl-head" text-anchor="middle">Each decision was correct in isolation.</text>
+            <text x="320" y="252" class="cf-tl-muted" text-anchor="middle">The seam is in their composition: the 2017 in-place optimisation made the 2011 four-byte scratch write</text>
+            <text x="320" y="266" class="cf-tl-muted" text-anchor="middle">land inside the kmap_local_page mapping of a page the 2015 splice support had pinned from the page cache.</text>
+            <text x="320" y="296" class="cf-tl-muted" text-anchor="middle" font-style="italic">Composite vulnerabilities do not have a single author. They emerge where responsibility lines cross.</text>
+        </svg>
+
+        <p>In isolation, none of these three decisions is wrong. The
+            authencesn scratch write was correct in its original
+            AEAD context, where the destination buffer was the
+            caller's own memory. The AF_ALG AEAD splice support of
+            2015 was bounded by an out-of-place design that kept
+            input and output separated. The 2017 in-place
+            optimisation was a legitimate performance win in the
+            kernel's own cryptographic paths.</p>
+
+        <p>But once all three were in the tree at the same time,
+            the path opened. The four-byte scratch write of
+            authencesn, walking past its expected buffer in the
+            in-place case, lands inside a
+            <code>kmap_local_page</code> mapping of the spliced
+            file's page cache page. The attacker chooses the file,
+            chooses (through splice offset, splice length, and
+            <code>assoclen</code>) which four bytes get written, and
+            chooses the value to write through bytes four to seven
+            of the AAD. The result is a deterministic four-byte
+            primitive against the kernel's in-memory copy of any
+            file the user can read.</p>
+
+        <svg viewBox="0 0 640 320" aria-label="A six-step exploit-chain diagram. Step one: an attacker holds an ordinary local user shell. Step two: they open an AF_ALG socket, the kernel crypto socket family. Step three: they splice any user-readable file (such as /usr/bin/su) into the socket as the input buffer. Step four: they request an AEAD operation; the 2017 in-place optimisation makes input and output share a scatterlist. Step five: the authencesn four-byte scratch write lands inside the kmap_local_page mapping of the spliced file's page-cache page. Step six: the attacker now has a deterministic four-byte write primitive against the in-memory copy of any file the user can read. The legend notes that the disk file is never touched and the page is never marked dirty." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cf-ex-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-ex-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-ex-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-ex-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-ex-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cf-ex-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .cf-ex-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#cf-ex-arrow); }
+            </style>
+            <defs>
+                <marker id="cf-ex-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="cf-ex-title" text-anchor="middle">The Exploit Chain, in 732 Bytes of Python</text>
+
+            <rect x="20" y="50" width="180" height="56" class="cf-ex-accent-box"/>
+            <text x="34" y="68" class="cf-ex-head">1.</text>
+            <text x="56" y="68" class="cf-ex-head">ordinary user</text>
+            <text x="36" y="86" class="cf-ex-muted">a shell, no special privilege</text>
+            <text x="36" y="100" class="cf-ex-muted">inside a container or on host</text>
+
+            <line x1="200" y1="78" x2="220" y2="78" class="cf-ex-arr"/>
+
+            <rect x="220" y="50" width="180" height="56" class="cf-ex-accent-box"/>
+            <text x="234" y="68" class="cf-ex-head">2.</text>
+            <text x="256" y="68" class="cf-ex-head">open AF_ALG socket</text>
+            <text x="236" y="86" class="cf-ex-muted">algif_aead module</text>
+            <text x="236" y="100" class="cf-ex-muted">crypto family, since 2010</text>
+
+            <line x1="400" y1="78" x2="420" y2="78" class="cf-ex-arr"/>
+
+            <rect x="420" y="50" width="200" height="56" class="cf-ex-accent-box"/>
+            <text x="434" y="68" class="cf-ex-head">3.</text>
+            <text x="456" y="68" class="cf-ex-head">splice file into socket</text>
+            <text x="436" y="86" class="cf-ex-muted">/usr/bin/su, any readable file</text>
+            <text x="436" y="100" class="cf-ex-muted">held by ref, not copied (2015)</text>
+
+            <line x1="520" y1="106" x2="520" y2="130" class="cf-ex-arr"/>
+
+            <rect x="420" y="130" width="200" height="56" class="cf-ex-accent-box"/>
+            <text x="434" y="148" class="cf-ex-head">4.</text>
+            <text x="456" y="148" class="cf-ex-head">request AEAD op</text>
+            <text x="436" y="166" class="cf-ex-muted">in-place opt (2017)</text>
+            <text x="436" y="180" class="cf-ex-muted">input and output share scatterlist</text>
+
+            <line x1="420" y1="158" x2="400" y2="158" class="cf-ex-arr"/>
+
+            <rect x="220" y="130" width="180" height="56" class="cf-ex-accent-box"/>
+            <text x="234" y="148" class="cf-ex-head">5.</text>
+            <text x="256" y="148" class="cf-ex-head">authencesn scratch</text>
+            <text x="236" y="166" class="cf-ex-muted">4-byte write (since 2011)</text>
+            <text x="236" y="180" class="cf-ex-muted">lands in kmap_local_page</text>
+
+            <line x1="220" y1="158" x2="200" y2="158" class="cf-ex-arr"/>
+
+            <rect x="20" y="130" width="180" height="56" class="cf-ex-accent-box"/>
+            <text x="34" y="148" class="cf-ex-head">6.</text>
+            <text x="56" y="148" class="cf-ex-head">4-byte primitive</text>
+            <text x="36" y="166" class="cf-ex-muted">deterministic, attacker-chosen</text>
+            <text x="36" y="180" class="cf-ex-muted">offset and value</text>
+
+            <rect x="40" y="220" width="560" height="80" class="cf-ex-accent-box"/>
+            <text x="320" y="244" class="cf-ex-head" text-anchor="middle">Result: write any 4 bytes to any offset of any file the user can read &#x2014; in the page cache.</text>
+            <text x="320" y="266" class="cf-ex-muted" text-anchor="middle">Disk file is never touched. Page is never marked dirty. No write goes to storage.</text>
+            <text x="320" y="284" class="cf-ex-muted" text-anchor="middle" font-style="italic">It does not race. It does not crash. It just works.</text>
+        </svg>
+
+        <p>The classical target is <code>/usr/bin/su</code>. The
+            on-disk binary is, in any sane setup, owned by root and
+            not writable by the user. The in-memory copy held by
+            the page cache, however, is what gets executed when the
+            user runs the program. Corrupt the in-memory copy
+            carefully, and the next invocation of <code>su</code>
+            becomes an instruction in the attacker's favour. The
+            disk file remains untouched. The page is never marked
+            dirty. Standard file-integrity tooling &#x2014;
+            Tripwire, AIDE, the host-based integrity layer of every
+            modern EDR &#x2014; compares disk hashes and sees
+            nothing.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A diagram comparing the on-disk binary with the in-memory page cache copy of /usr/bin/su. On disk, the binary is owned by root, has the correct hash, integrity tools see it as unchanged. In the page cache, the in-memory copy is the one actually executed; the Copy Fail primitive corrupts a few bytes there, the page is never marked dirty, no write reaches disk, file-integrity tools (Tripwire, AIDE, EDR host integrity) compare disk hashes and report all-clear. The next invocation of su executes the corrupted in-memory copy. The legend notes that the disk is the receipt, the page cache is the cinema." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cf-pc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-pc-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-pc-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-pc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-pc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cf-pc-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .cf-pc-fill { fill: var(--accent); opacity: 0.18; rx: 4; }
+                .cf-pc-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#cf-pc-arrow); }
+                .cf-pc-block { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3; fill: none; }
+            </style>
+            <defs>
+                <marker id="cf-pc-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="cf-pc-title" text-anchor="middle">Where /usr/bin/su Actually Lives</text>
+
+            <text x="155" y="48" class="cf-pc-head" text-anchor="middle">On disk</text>
+            <rect x="20" y="60" width="270" height="180" class="cf-pc-accent-box"/>
+            <text x="155" y="86" class="cf-pc-text" text-anchor="middle">/usr/bin/su</text>
+            <text x="155" y="106" class="cf-pc-muted" text-anchor="middle">owned by root</text>
+            <text x="155" y="124" class="cf-pc-muted" text-anchor="middle">not writable by user</text>
+            <text x="155" y="142" class="cf-pc-muted" text-anchor="middle">correct sha256</text>
+            <text x="155" y="170" class="cf-pc-text" text-anchor="middle">Tripwire &#x2713; &#xA0; AIDE &#x2713;</text>
+            <text x="155" y="188" class="cf-pc-text" text-anchor="middle">EDR &#x2713; &#xA0; auditd &#x2713;</text>
+            <text x="155" y="218" class="cf-pc-muted" text-anchor="middle" font-style="italic">all clear; the receipt</text>
+
+            <text x="485" y="48" class="cf-pc-head" text-anchor="middle">In the page cache</text>
+            <rect x="350" y="60" width="270" height="180" class="cf-pc-accent-box"/>
+            <rect x="350" y="60" width="270" height="180" class="cf-pc-fill"/>
+            <text x="485" y="86" class="cf-pc-text" text-anchor="middle">in-memory copy</text>
+            <text x="485" y="106" class="cf-pc-muted" text-anchor="middle">the one actually executed</text>
+            <text x="485" y="124" class="cf-pc-muted" text-anchor="middle">4 bytes corrupted by Copy Fail</text>
+            <text x="485" y="142" class="cf-pc-muted" text-anchor="middle">page not marked dirty</text>
+            <text x="485" y="170" class="cf-pc-text" text-anchor="middle">next su run &#x2192;</text>
+            <text x="485" y="188" class="cf-pc-text" text-anchor="middle">attacker's instruction</text>
+            <text x="485" y="218" class="cf-pc-muted" text-anchor="middle" font-style="italic">the cinema</text>
+
+            <text x="320" y="266" class="cf-pc-muted" text-anchor="middle">Integrity tools watch the receipt. The cinema is where the show plays.</text>
+        </svg>
+
+        <p>There is one further detail. Because the page cache is
+            shared between containers and the host, a process
+            inside a container with the right local privileges can
+            corrupt the host's cached binaries. The container
+            boundary does not stop this; it was never designed to.
+            The Microsoft Security Response Center's writeup of
+            <em>Copy Fail</em> is unusually direct about the cloud
+            impact, and CERT-EU's
+            <a href="https://cert.europa.eu/publications/security-advisories/2026-005/" target="_blank" rel="noopener">Advisory 2026-005</a>
+            recommends the disabling of <code>algif_aead</code>
+            until the patched kernel has reached every node
+            &#x2014; which, given the breadth of affected
+            distributions, may be a longer week than anyone
+            wanted.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A diagram of how the shared page cache crosses container boundaries on Linux. The host kernel sits at the bottom, with the page cache as a single layer on top of it. Three containers (A, B and C) sit above and each holds its own application; all three containers and the host share the same page cache. A compromised process inside container B reaches into the page cache and corrupts a cached binary that container A and the host both read. The legend notes that container isolation on Linux is a curated arrangement of namespaces, seccomp filters and capability drops, not a kernel-native partition. The page cache is below all of those abstractions." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cf-ct-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-ct-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-ct-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-ct-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-ct-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cf-ct-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .cf-ct-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#cf-ct-arrow); }
+            </style>
+            <defs>
+                <marker id="cf-ct-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="cf-ct-title" text-anchor="middle">The Boundary the Container Does Not Defend</text>
+
+            <rect x="20" y="50" width="160" height="60" class="cf-ct-box"/>
+            <text x="100" y="74" class="cf-ct-head" text-anchor="middle">Container A</text>
+            <text x="100" y="92" class="cf-ct-muted" text-anchor="middle">workload</text>
+
+            <rect x="200" y="50" width="160" height="60" class="cf-ct-accent-box"/>
+            <text x="280" y="74" class="cf-ct-head" text-anchor="middle">Container B</text>
+            <text x="280" y="92" class="cf-ct-muted" text-anchor="middle">compromised (local user)</text>
+
+            <rect x="380" y="50" width="160" height="60" class="cf-ct-box"/>
+            <text x="460" y="74" class="cf-ct-head" text-anchor="middle">Container C</text>
+            <text x="460" y="92" class="cf-ct-muted" text-anchor="middle">workload</text>
+
+            <rect x="560" y="50" width="70" height="60" class="cf-ct-box"/>
+            <text x="595" y="74" class="cf-ct-head" text-anchor="middle">host</text>
+            <text x="595" y="92" class="cf-ct-muted" text-anchor="middle">tools</text>
+
+            <line x1="100" y1="110" x2="100" y2="138" class="cf-ct-arr"/>
+            <line x1="280" y1="110" x2="280" y2="138" class="cf-ct-arr"/>
+            <line x1="460" y1="110" x2="460" y2="138" class="cf-ct-arr"/>
+            <line x1="595" y1="110" x2="595" y2="138" class="cf-ct-arr"/>
+
+            <rect x="20" y="140" width="610" height="60" class="cf-ct-accent-box"/>
+            <text x="320" y="164" class="cf-ct-head" text-anchor="middle">shared page cache (one per host kernel)</text>
+            <text x="320" y="182" class="cf-ct-muted" text-anchor="middle">below namespaces &#x2022; below seccomp &#x2022; below capability drops &#x2022; below cgroups</text>
+
+            <line x1="320" y1="200" x2="320" y2="226" class="cf-ct-arr"/>
+
+            <rect x="20" y="226" width="610" height="40" class="cf-ct-box"/>
+            <text x="320" y="250" class="cf-ct-text" text-anchor="middle">host kernel &#x2014; one kernel for every container above it</text>
+        </svg>
+
+        <p>The current patch picture, as of the morning this piece
+            is being written, has Arch, Fedora and Amazon Linux on
+            patched kernels, with Ubuntu, SUSE and Red Hat closing
+            in; Debian's stable line is the slowest, which is
+            consistent with Debian's general posture and not, in
+            this instance, a criticism. The kernel mailing list has
+            been busy and the maintainers have been, as ever,
+            exemplary.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>It is tempting, when a flaw of this severity surfaces,
+            to look for someone to be cross with. There is rarely
+            anyone. The Linux kernel crypto subsystem is maintained
+            by careful people who review each patch within the
+            boundary of their own subsystem. The authencesn
+            maintainer of 2011 was correct. The AF_ALG maintainer
+            of 2015 was correct. The performance maintainer of 2017
+            was correct. Each of them did the engineering due
+            diligence the moment asked of them. None of them was in
+            a position to see the patch fifteen years from now that
+            would turn their decision into a four-byte primitive.</p>
+
+        <p>This is the structural observation. Composite
+            vulnerabilities of this kind do not have a single
+            author. They emerge where responsibility lines cross. A
+            kernel of two hundred and fifty thousand commits per
+            year is maintained by hundreds of subsystem stewards;
+            each is excellent within their own remit; the gaps
+            between remits are where the seams sit. And the seams,
+            on occasion, show.</p>
+
+        <p>The cross-container aspect is the second seam. Container
+            isolation on Linux is, as the
+            orchestrator-without-orchestrators essays of the last
+            decade have noted, a curated arrangement of kernel
+            namespaces and seccomp filters and capability drops,
+            not a kernel-native partition. The page cache is below
+            all of those abstractions, which is precisely why this
+            particular primitive crosses container boundaries.
+            None of the container runtimes is at fault &#x2014;
+            they cannot constrain what the kernel does not
+            partition.</p>
+
+        <p>The Linux kernel community has, in fact, been having a
+            quiet conversation about AF_ALG itself. A 2025 LKML
+            patch series titled
+            <a href="https://lore.kernel.org/lkml/" target="_blank" rel="noopener"><em>Document the deprecation of AF_ALG</em></a>
+            proposes &#x2014; in the trademark restraint of kernel
+            English &#x2014; that new use cases should prefer
+            userspace cryptography libraries. The conversation is
+            unresolved, the interface is still in the tree, and
+            Copy Fail has now given the conversation a rather
+            sharper outline.</p>
+
+        <h2>The Limit</h2>
+
+        <p>Honesty asks for a few qualifications.</p>
+
+        <p>The 2017 in-place optimisation was technically sound.
+            The performance numbers were real and the review at the
+            time was thorough. The patch did exactly what its
+            commit message said it did. The flaw is not in any one
+            of the three decisions; it is in their composition.</p>
+
+        <p>FreeBSD has its own CVEs. The src-tree security
+            advisories &#x2014; the FreeBSD-SA series &#x2014; are
+            a public record one can consult without flinching. Some
+            of them are awkward; one or two are embarrassing. The
+            FreeBSD security team does not pretend otherwise, and
+            neither does anyone who has done a fair amount of
+            FreeBSD work. The point of what follows in the next
+            section is not that one operating system is safer than
+            another. The point is that composite vulnerabilities
+            want composite responsibility models, and the two
+            stacks have chosen different shapes of
+            responsibility.</p>
+
+        <p>And there is one further limit worth noting. The Linux
+            kernel security team triaged and patched Copy Fail in
+            eight days. Whatever one thinks of the structural
+            model, the responsiveness of the people inside it
+            deserves the editorial credit it does not always
+            receive. Where the seams do show, the seams get
+            sewn.</p>
+
+        <h2>The BSD Angle</h2>
+
+        <p>A reader curious about how the same problem looks in a
+            different kernel finds three things in FreeBSD.</p>
+
+        <p>The first is the crypto interface. FreeBSD exposes
+            kernel cryptography to userspace through
+            <code>/dev/crypto</code>, a device node, not a socket
+            family. There is no AF_ALG-equivalent splice path. The
+            OpenCrypto framework, descended from OpenBSD's OCF,
+            was built in a different idiom; the in-place AEAD
+            optimisation as deployed in the Linux kernel does not
+            exist there in the same form. This is a strict
+            observation about architectural shape, not a claim
+            about absolute safety.</p>
+
+        <p>The second is Capsicum. FreeBSD's capability-mode
+            sandbox lets a process explicitly relinquish access to
+            global namespaces and operate only on file descriptors
+            with explicitly granted capabilities. A program that
+            does not need a kernel-crypto facility never opens it;
+            a program that opens it explicitly carries a capability
+            that other processes cannot. The attacker corridor is
+            narrowed structurally before any specific bug is
+            reached.
+            <a href="https://docs.freebsd.org/en/books/handbook/security/#security-capsicum" target="_blank" rel="noopener">Capsicum was added to FreeBSD 9 in 2012</a>
+            and is now in active use by base-system tools such as
+            <code>tcpdump</code>, <code>dhclient</code>,
+            <code>auditdistd</code>, <code>kdump</code>,
+            <code>ctld</code>, <code>iscsid</code> and several
+            others. It is, in a quiet way, the kind of capability
+            hygiene that composite vulnerabilities benefit
+            from.</p>
+
+        <p>The third is jails. Containerisation in FreeBSD is a
+            kernel-native primitive, not a daemon-mediated
+            arrangement of namespaces. There is no privileged
+            daemon to compromise. Page-cache sharing across jail
+            boundaries is structurally different; VNET gives each
+            jail an independent network stack as a kernel
+            subsystem, not as an external CNI plugin. None of this
+            is a guarantee against every vulnerability &#x2014;
+            FreeBSD has had jail-relevant CVEs and will have more
+            &#x2014; but the shape of the boundary is different,
+            and the same composite primitive does not, as far as
+            one can see, have an equivalent path.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A side-by-side comparison of the Linux and FreeBSD attack surface for this class of vulnerability. On the Linux side, kernel crypto is exposed through the AF_ALG socket interface with the algif_aead module; isolation is a curated arrangement of namespaces, seccomp filters and capability drops; the page cache is shared across containers and the host. On the FreeBSD side, kernel crypto is exposed through the /dev/crypto device node with no AF_ALG-equivalent splice path; Capsicum (FreeBSD 9, 2012) lets processes relinquish access to global namespaces; jails are a kernel-native primitive with VNET for per-jail network stacks. The legend notes that the same composite primitive does not have an equivalent path on FreeBSD." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cf-cmp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-cmp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-cmp-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-cmp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .cf-cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .cf-cmp-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="cf-cmp-title" text-anchor="middle">Two Kernels, Two Shapes of Attack Surface</text>
+
+            <text x="155" y="48" class="cf-cmp-head" text-anchor="middle">Linux</text>
+            <rect x="20" y="60" width="270" height="200" class="cf-cmp-accent-box"/>
+            <text x="36" y="84" class="cf-cmp-text">crypto via AF_ALG socket</text>
+            <text x="36" y="100" class="cf-cmp-muted">algif_aead, splice + in-place</text>
+            <text x="36" y="128" class="cf-cmp-text">isolation via namespaces +</text>
+            <text x="36" y="144" class="cf-cmp-text">seccomp + capability drops</text>
+            <text x="36" y="160" class="cf-cmp-muted">curated arrangement, not partition</text>
+            <text x="36" y="188" class="cf-cmp-text">shared page cache</text>
+            <text x="36" y="204" class="cf-cmp-muted">across containers and host</text>
+            <text x="155" y="240" class="cf-cmp-muted" text-anchor="middle" font-style="italic">composite path opens</text>
+
+            <text x="485" y="48" class="cf-cmp-head" text-anchor="middle">FreeBSD</text>
+            <rect x="350" y="60" width="270" height="200" class="cf-cmp-accent-box"/>
+            <text x="366" y="84" class="cf-cmp-text">crypto via /dev/crypto</text>
+            <text x="366" y="100" class="cf-cmp-muted">no AF_ALG splice path</text>
+            <text x="366" y="128" class="cf-cmp-text">Capsicum capability sandbox</text>
+            <text x="366" y="144" class="cf-cmp-text">in tcpdump, dhclient, kdump, &#x2026;</text>
+            <text x="366" y="160" class="cf-cmp-muted">corridor narrowed structurally</text>
+            <text x="366" y="188" class="cf-cmp-text">jails + VNET</text>
+            <text x="366" y="204" class="cf-cmp-muted">kernel-native, no privileged daemon</text>
+            <text x="485" y="240" class="cf-cmp-muted" text-anchor="middle" font-style="italic">equivalent path does not arise</text>
+        </svg>
+
+        <p>On FreeBSD, the equivalent scenario does not arise in
+            the same form because the parts that compose it are
+            not present in the same arrangement. That is the honest
+            version of the comparison.</p>
+
+        <h2>The Point</h2>
+
+        <p>There is no real disagreement that the Copy Fail patch
+            should land everywhere it has not already landed. By
+            the time this piece is published, most readers'
+            production fleets will be on patched kernels, and the
+            immediate operational question will be a familiar one:
+            did our automation roll the kernel update through every
+            node, including the awkward ones?</p>
+
+        <p>But the longer point is not that one. It is the
+            structural observation. Three correct decisions, taken
+            by three different teams, fifteen years apart, meeting
+            at a seam that no single review could have seen. The
+            recommendation that follows from that observation is
+            not "patch and move on". It is <strong>check the
+            seams</strong>.</p>
+
+        <blockquote>
+            <p>Wherever responsibility crosses team boundaries in
+                the stack you maintain, fifteen years from now will
+                be 2041. A kernel patch you accept this afternoon
+                may, in 2041, sit alongside two other patches
+                accepted by two other teams in two other years.
+                None of you will be in a position to see it. The
+                most one can do is make the seams as narrow as the
+                architecture will tolerate, and keep an eye on
+                which interfaces are quietly being deprecated by
+                their own maintainers.</p>
+        </blockquote>
+
+        <p>One rather hopes the next nine years are a little duller
+            in this regard than the last.</p>
+
+        <aside class="vv-aside">
+            <p><strong>References:</strong></p>
+            <ul>
+                <li>Xint Security, <em>Copy Fail: 732 Bytes to Root
+                    on Linux</em>, technical write-up, 30 April
+                    2026.</li>
+                <li>NIST National Vulnerability Database,
+                    <em>CVE-2026-31431 Detail</em>, public entry,
+                    retrieved 12 June 2026.</li>
+                <li>Tenable Research, <em>Copy Fail
+                    (CVE-2026-31431): Frequently Asked
+                    Questions</em>, blog post, 1 May 2026.</li>
+                <li>Microsoft Security Response Center,
+                    <em>CVE-2026-31431: Copy Fail Vulnerability
+                    Enables Linux Root Privilege Escalation Across
+                    Cloud Environments</em>, 1 May 2026.</li>
+                <li>CERT-EU, <em>Security Advisory 2026-005: High
+                    Vulnerability in the Linux Kernel ("Copy
+                    Fail")</em>, 1 May 2026.</li>
+                <li>Linux Kernel Mailing List,
+                    <em>[PATCH] crypto: af_alg &#x2014; Document
+                    the deprecation of AF_ALG</em>, discussion
+                    thread, 2025.</li>
+                <li>FreeBSD Handbook, <em>Capsicum: Capability and
+                    Sandboxing</em>, chapter on security.</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

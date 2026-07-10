@@ -1,0 +1,660 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Why We Containerise Everything &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A new service. README, then Dockerfile. Within the hour, the team is debating the registry, orchestrator, sidecar and helm chart. Nobody quite remembers when this became the second decision. The container is the unit of thought, not merely a deployment artefact. Three currents converged: isolation (Poul-Henning Kamp's FreeBSD Jails 1999, reproduced less coherently as Linux namespaces 2006-2008, wrapped in a daemon as Docker 2013), org-shape (Scrum's sprint-shaped teams meeting Conway's law from 1968), and runtime (Node.js single-threaded since 2009 needing more containers to find more cores). The bill: image bloat, supply chain, daemon overhead, network tax, and Conway becoming a contract. The retreat is documented: Amazon Prime Video at 90 per cent cost reduction, Segment at 140 services to one, Istio's own control plane merged back into a single binary. The alternatives have been quietly working all along.">
+{( endslot )}
+
+{( slot canonical )}/blog/why-we-containerise-everything{( endslot )}
+
+{( slot og-title )}Why We Containerise Everything &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}On Second Thought Episode 08. The container is the unit of thought now, not merely a deployment artefact. Three currents converged. Isolation: Poul-Henning Kamp wrote Jails for FreeBSD in 1999 as a single coherent abstraction with no daemon; Linux reproduced it less coherently as eight separate namespaces from 2006 to 2008; Docker (2013) wrapped the arrangement in a brand. Org-shape: Scrum codified 1995 to 2001 produced sprint-shaped teams; Conway 1968 explained that sprint-shaped teams produce service-shaped architecture; the container became the envelope. Runtime: Node.js 2009 was single-threaded by design, and multi-core hardware required multi-container deployment. The bill arrives in four layers: image bloat (node:22 over a gigabyte; 50 MB application in a 1 GB image), the supply chain travelling with the image, dockerd above 5 GB at 183 containers, and a network call costing one thousand times a function call. The retreat is documented (Amazon Prime Video, Segment, Istio, 37signals). The alternatives have been quietly working: FreeBSD Jails, Capsicum, pledge, unveil, Go and Rust finding their own cores.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Why We Containerise Everything",
+    "datePublished": "2026-05-17",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/why-we-containerise-everything",
+    "description": "On Second Thought Episode 08. The reflex is universal: every new service ships in its own container. The container is now the unit of thought, not merely a deployment artefact. Three currents converged. Isolation: Poul-Henning Kamp's FreeBSD Jails (1999, FreeBSD 4.0 in March 2000) provided kernel-native isolation with no daemon, one coherent abstraction; Solaris Zones (2004), Linux namespaces and cgroups (2006 to 2008, eight separate namespaces), LXC (2008), Docker (2013) reproduced the technique with progressively less coherence and more advertising. Org-shape: Scrum codified between 1995 and 2001 split organisations into sprint-shaped teams; Melvin Conway's 1968 paper had explained in advance that software mirrors its organisation's communication structure; the container became the natural envelope. Runtime: Node.js (Ryan Dahl, 2009) was single-threaded by design and multi-core hardware required multi-container deployment. The cost arrives in four layers: image bloat (node:22 over a gigabyte for a 50 MB application), supply chain (the May 2026 npm wave reached 172 packages, 403 versions, ~518 million cumulative downloads), daemon overhead (dockerd above 5 GB at 183 containers), and network tax (a function call ~1 microsecond, a network call between services ~1-5 milliseconds). The retreat is documented: Amazon Prime Video returned video monitoring to a monolith for ~90 per cent cost reduction; Segment consolidated 140 services into one; Istio quietly merged its own control plane back into a single binary; 37signals left AWS and recouped hardware inside year one. The alternatives have been quietly working: FreeBSD Jails, Capsicum, OpenBSD pledge and unveil, Go and Rust finding their own cores. The honest question is whether isolation, runtime split and team split were ever the same question.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-17">17 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Why We Containerise Everything</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">docker</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">kubernetes</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>On Second Thought</em> &#x262F; Episode 08</p>
+
+        <p>A new service is started. The README is written, then the
+            Dockerfile. Within the hour the team is discussing the
+            registry, the orchestrator, the sidecar and the Helm
+            chart. Nobody quite remembers when this became the second
+            decision after the first commit. The container is the
+            unit; everything else is paperwork.</p>
+
+        <p>This essay is about how the second decision became the
+            first one.</p>
+
+        <h2>The Axiom</h2>
+
+        <p>The reflex is universal. Every new service ships in its
+            own container. "Where does this run?" has one answer
+            now: in its container. The container is no longer a
+            deployment artefact but the unit of thought. Architecture
+            diagrams are drawn in rectangles labelled with image
+            names. Job postings list Docker and Kubernetes alongside
+            the programming language, as if they were peers of equal
+            weight.</p>
+
+        <p>The reflex is so well-trained that the question "could
+            this run as a single process on a host" sounds almost
+            rude. It sounds, to a sprint-shaped team in 2026, the way
+            "could we just use a CSV file" sounds to a database team.
+            Technically defensible, professionally suspect.</p>
+
+        <p>That feeling is the topic.</p>
+
+        <h2>The Origin</h2>
+
+        <p>Three currents converged. None of them, on its own,
+            demanded that everything be containerised. Their
+            convergence did.</p>
+
+        <svg viewBox="0 0 600 280" aria-label="Three currents converging into one default. The first stream, labelled Isolation, carries the milestones Jails 1999, Solaris Zones 2004, Linux namespaces 2006 to 2008, Docker 2013. The second stream, labelled Org-shape, carries Conway 1968 and Scrum 1995 to 2001. The third stream, labelled Runtime, carries Node.js 2009 and its single-threaded event loop. The three streams merge into a single dense box at the centre labelled 'containerise everything', with a small note observing that none of the three alone demanded it; together they made a workaround feel like architecture." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-cv-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-cv-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-cv-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-cv-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-cv-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ost-cv-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ost-cv-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#ost-cv-arrow); }
+            </style>
+            <defs>
+                <marker id="ost-cv-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="ost-cv-title" text-anchor="middle">Three Currents, One Default</text>
+
+            <rect x="20" y="50" width="170" height="90" class="ost-cv-box"/>
+            <text x="105" y="70" class="ost-cv-head" text-anchor="middle">Isolation</text>
+            <text x="105" y="90" class="ost-cv-muted" text-anchor="middle">Jails 1999 (PHK, FreeBSD)</text>
+            <text x="105" y="104" class="ost-cv-muted" text-anchor="middle">Solaris Zones 2004</text>
+            <text x="105" y="118" class="ost-cv-muted" text-anchor="middle">Linux namespaces 2006&#x2013;08</text>
+            <text x="105" y="132" class="ost-cv-muted" text-anchor="middle">Docker 2013</text>
+
+            <rect x="215" y="50" width="170" height="90" class="ost-cv-box"/>
+            <text x="300" y="70" class="ost-cv-head" text-anchor="middle">Org-shape</text>
+            <text x="300" y="90" class="ost-cv-muted" text-anchor="middle">Conway's law 1968</text>
+            <text x="300" y="104" class="ost-cv-muted" text-anchor="middle">Scrum codified 1995&#x2013;2001</text>
+            <text x="300" y="118" class="ost-cv-muted" text-anchor="middle">sprint-shaped teams</text>
+            <text x="300" y="132" class="ost-cv-muted" text-anchor="middle">want service-shaped arch.</text>
+
+            <rect x="410" y="50" width="170" height="90" class="ost-cv-box"/>
+            <text x="495" y="70" class="ost-cv-head" text-anchor="middle">Runtime</text>
+            <text x="495" y="90" class="ost-cv-muted" text-anchor="middle">Node.js 2009 (Ryan Dahl)</text>
+            <text x="495" y="104" class="ost-cv-muted" text-anchor="middle">single-threaded event loop</text>
+            <text x="495" y="118" class="ost-cv-muted" text-anchor="middle">multi-core requires</text>
+            <text x="495" y="132" class="ost-cv-muted" text-anchor="middle">multi-container deployment</text>
+
+            <line x1="105" y1="140" x2="240" y2="190" class="ost-cv-arr"/>
+            <line x1="300" y1="140" x2="300" y2="190" class="ost-cv-arr"/>
+            <line x1="495" y1="140" x2="360" y2="190" class="ost-cv-arr"/>
+
+            <rect x="210" y="190" width="180" height="44" class="ost-cv-accent-box"/>
+            <text x="300" y="210" class="ost-cv-head" text-anchor="middle">containerise everything</text>
+            <text x="300" y="226" class="ost-cv-muted" text-anchor="middle">unit of thought, not just deployment</text>
+
+            <text x="300" y="258" class="ost-cv-muted" text-anchor="middle" font-style="italic">None alone demanded it. Together they made a workaround feel like architecture.</text>
+        </svg>
+
+        <h2>The Isolation Current</h2>
+
+        <p>The isolation question was answered, rather elegantly, in
+            1999. Poul-Henning Kamp, working for R&amp;D Associates in
+            Denmark, needed safe multi-tenancy on a single FreeBSD
+            host. The traditional Unix answer was <code>chroot</code>,
+            which constrains the filesystem view but not much else: a
+            determined process inside a chroot can still see other
+            processes, bind privileged ports, manipulate the network
+            stack, and find its way out through any number of
+            documented escapes. Kamp wrote Jails: kernel-native
+            isolation that confined not only the filesystem view but
+            the process namespace, the network stack, the user IDs,
+            and the system calls available. He published the paper
+            <a href="https://papers.freebsd.org/2000/phk-jails/" target="_blank" rel="noopener">"Jails: Confining the omnipotent root"</a>
+            at SANE 2000 and shipped the implementation in
+            <a href="/blog/the-jails-replacement">FreeBSD 4.0</a> in
+            March of the same year.</p>
+
+        <p>The design has aged extraordinarily well. No daemon, no
+            image layers, no registry, no orchestrator. The kernel
+            handles isolation directly. A jail starts in milliseconds
+            because it is, fundamentally, a process. A FreeBSD host
+            can comfortably run a thousand jails on four gigabytes of
+            RAM, because the additional memory per jail is essentially
+            zero: they share the base system.</p>
+
+        <p>The pattern was reproduced, less coherently. Solaris Zones
+            (2004) followed similar principles, with a more elaborate
+            administrative wrapping. Linux gained namespaces and
+            cgroups between 2006 and 2008, but the design choice was
+            the opposite of Jails: rather than a single coherent
+            abstraction, Linux split isolation into eight separate
+            namespace types (mount, UTS, IPC, PID, network, user,
+            cgroup, time), each introduced in a different kernel
+            release, each requiring the caller to compose them
+            correctly. The user namespace in particular has produced
+            a long sequence of CVEs, several of them giving container
+            escape to unprivileged users, because the abstraction
+            crosses the kernel privilege boundary in ways the
+            original FreeBSD design carefully avoided.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A horizontal timeline of the isolation primitives. 1999: Poul-Henning Kamp writes Jails for FreeBSD; one coherent abstraction, no daemon. 2000: Jails ship in FreeBSD 4.0 in March. 2004: Solaris Zones follow with similar principles. 2006 to 2008: Linux gains eight separate namespace types and cgroups. 2008: LXC composes the Linux namespaces into something resembling Jails. 2013: Docker wraps LXC and then libcontainer, ships a daemon, a CLI, an image format and a registry, and gives the whole arrangement a brand." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .ost-tl-tick { stroke: var(--muted); stroke-width: 1; }
+                .ost-tl-dot { fill: var(--accent); }
+            </style>
+            <text x="300" y="22" class="ost-tl-title" text-anchor="middle">Isolation, Twenty-Five Years of It</text>
+
+            <line x1="40" y1="130" x2="560" y2="130" class="ost-tl-axis"/>
+
+            <circle cx="70" cy="130" r="4" class="ost-tl-dot"/>
+            <line x1="70" y1="130" x2="70" y2="136" class="ost-tl-tick"/>
+            <text x="70" y="150" class="ost-tl-text" text-anchor="middle">1999</text>
+            <text x="70" y="166" class="ost-tl-muted" text-anchor="middle">Jails written</text>
+            <text x="70" y="178" class="ost-tl-muted" text-anchor="middle">(Poul-Henning</text>
+            <text x="70" y="190" class="ost-tl-muted" text-anchor="middle">Kamp, FreeBSD)</text>
+
+            <circle cx="180" cy="130" r="4" class="ost-tl-dot"/>
+            <line x1="180" y1="130" x2="180" y2="136" class="ost-tl-tick"/>
+            <text x="180" y="150" class="ost-tl-text" text-anchor="middle">2004</text>
+            <text x="180" y="166" class="ost-tl-muted" text-anchor="middle">Solaris Zones</text>
+            <text x="180" y="178" class="ost-tl-muted" text-anchor="middle">similar principles,</text>
+            <text x="180" y="190" class="ost-tl-muted" text-anchor="middle">more administration</text>
+
+            <circle cx="300" cy="130" r="4" class="ost-tl-dot"/>
+            <line x1="300" y1="130" x2="300" y2="136" class="ost-tl-tick"/>
+            <text x="300" y="150" class="ost-tl-text" text-anchor="middle">2006&#x2013;08</text>
+            <text x="300" y="166" class="ost-tl-muted" text-anchor="middle">Linux namespaces</text>
+            <text x="300" y="178" class="ost-tl-muted" text-anchor="middle">+ cgroups; eight</text>
+            <text x="300" y="190" class="ost-tl-muted" text-anchor="middle">separate types</text>
+
+            <circle cx="410" cy="130" r="4" class="ost-tl-dot"/>
+            <line x1="410" y1="130" x2="410" y2="136" class="ost-tl-tick"/>
+            <text x="410" y="150" class="ost-tl-text" text-anchor="middle">2008</text>
+            <text x="410" y="166" class="ost-tl-muted" text-anchor="middle">LXC composes</text>
+            <text x="410" y="178" class="ost-tl-muted" text-anchor="middle">the namespaces</text>
+            <text x="410" y="190" class="ost-tl-muted" text-anchor="middle">into a tool</text>
+
+            <circle cx="520" cy="130" r="4" class="ost-tl-dot"/>
+            <line x1="520" y1="130" x2="520" y2="136" class="ost-tl-tick"/>
+            <text x="520" y="150" class="ost-tl-text" text-anchor="middle">2013</text>
+            <text x="520" y="166" class="ost-tl-muted" text-anchor="middle">Docker wraps it,</text>
+            <text x="520" y="178" class="ost-tl-muted" text-anchor="middle">adds a daemon,</text>
+            <text x="520" y="190" class="ost-tl-muted" text-anchor="middle">brands it</text>
+
+            <text x="300" y="68" class="ost-tl-muted" text-anchor="middle" font-style="italic">The technique was twenty-five years old by the time the world learnt to spell its name,</text>
+            <text x="300" y="82" class="ost-tl-muted" text-anchor="middle" font-style="italic">and considerably more careful in the original.</text>
+        </svg>
+
+        <p>LXC (2008) composed the Linux namespaces into something
+            resembling Jails. Docker (2013) wrapped LXC, then
+            replaced it with libcontainer, and gave the resulting
+            pattern a brand, a CLI, an image format, a registry, and
+            the marketing budget to make all of it the new normal.
+            The technique was twenty-five years old by the time the
+            world learnt to spell its name, and considerably more
+            careful in the original.</p>
+
+        <p>This is the first current. The Jails version of it would
+            have produced a useful tool. The Linux version of it,
+            less coherent, more error-prone, dependent on a daemon,
+            would have produced something more or less the same,
+            given enough time to absorb the operational lessons.
+            Neither alone would have produced "containerise
+            everything".</p>
+
+        <h2>The Org-Shape Current</h2>
+
+        <p>The second current came from a different room entirely.
+            Scrum was codified between 1995 (Sutherland and
+            Schwaber's OOPSLA paper) and 2001 (the
+            <a href="https://agilemanifesto.org/" target="_blank" rel="noopener">Agile Manifesto</a>).
+            It split the organisation into sprint-shaped teams: own
+            backlog, own velocity, own deploy. The unit of
+            organisational existence became the team that fits in a
+            standup.</p>
+
+        <p>Melvin Conway, in 1968, had described the consequence in
+            advance:
+            <a href="https://www.melconway.com/Home/Committees_Paper.html" target="_blank" rel="noopener">any organisation that designs a system</a>
+            will produce a design whose structure is a copy of the
+            organisation's communication structure. Sprint-shaped
+            teams want service-shaped architecture. Each team needs
+            its own deployable, its own release cadence, its own
+            runtime, its own database, because anything shared
+            becomes a synchronisation point and synchronisation
+            points slow down sprints.</p>
+
+        <p>The container became the natural envelope. One service per
+            team. One team per container. The Dockerfile became the
+            contract between team and platform. Conway's law,
+            originally a description of how organisations leak into
+            their architecture, became a contract: the architecture
+            <em>is</em> the org chart, rendered in YAML.</p>
+
+        <p>This is the second current. It does not require
+            containers, technically. It requires a deployment
+            boundary that matches the team boundary. Containers
+            happened to be the available boundary.</p>
+
+        <h2>The Runtime Current</h2>
+
+        <p>The third current came from a third room. Node.js was
+            released in 2009 by Ryan Dahl. The runtime was
+            single-threaded by design: one event loop, asynchronous
+            I/O, no shared-memory concurrency. For the use cases
+            Dahl had in mind, that was a feature: server-side I/O
+            without the threading complexity of Apache or Java.</p>
+
+        <p>Multi-core hardware did not fit the runtime. A box with
+            eight cores running Node.js could, at best, see one of
+            them. The fix was not to redesign the runtime. The fix
+            was to start more processes. Cluster mode in Node.js,
+            then process supervisors, then containers, then
+            container orchestrators. The entire cloud-native
+            scheduling stack absorbed, in part, a workaround for a
+            runtime that did not know what to do with a second
+            core.</p>
+
+        <p>The same logic applied to Python (the GIL), to Ruby
+            (likewise), and to a generation of interpreted languages
+            whose concurrency story ended at the process boundary.
+            The container became the only practical unit of
+            multi-core deployment for languages designed before
+            multi-core was assumed.</p>
+
+        <p>This is the third current. It does not, on its own,
+            require containerisation. It requires multiple processes.
+            Containers happened to be how teams already did that.</p>
+
+        <h2>The Convergence</h2>
+
+        <p>Three currents, one architecture. Each could have produced
+            something modest on its own: a useful isolation tool, a
+            team-deployment boundary, a multi-process runtime
+            strategy. Together, they produced the default that
+            "everything ships in a container" and the secondary
+            default that "everything needs an orchestrator to
+            schedule the containers". By the time anyone thought to
+            question the convergence, the convergence had become the
+            architecture, the curriculum, the conference circuit, and
+            the hiring funnel.</p>
+
+        <p>The honest description of what the three currents
+            produced, taken together, is a stack of workarounds
+            presented as architecture. The isolation current produced
+            a useful primitive, then Linux reproduced it less
+            carefully, then Docker wrapped the result in a daemon
+            nobody asked for. The org-shape current produced a
+            deployment-boundary requirement that pre-existing tooling
+            happened to satisfy, badly. The runtime current produced
+            a multi-process strategy because the runtime could not be
+            fixed in the place that needed fixing. Each layer answers
+            the layer beneath it, and each layer needs the next layer
+            to answer back. None of the three currents, alone,
+            demanded a stack of any height. Together, they make a
+            workaround feel like architecture.</p>
+
+        <h2>The Cost</h2>
+
+        <p>The bill arrives in four layers, each justified by the
+            previous.</p>
+
+        <svg viewBox="0 0 600 280" aria-label="A stack of four cost layers. Top: image bloat, where the convenient default node:22 exceeds a gigabyte and the application is one to five per cent of the bytes moved. Second: the supply chain travelling with every image, demonstrated by the May 2026 npm wave reaching 172 packages and ~518M cumulative downloads. Third: daemon overhead, with dockerd documented above five gigabytes at 183 containers. Fourth: network tax, where a function call costs about one microsecond and a network call costs one to five milliseconds, so ten services pay thirty milliseconds before business logic begins." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-cs-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-cs-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-cs-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-cs-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-cs-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ost-cs-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="300" y="22" class="ost-cs-title" text-anchor="middle">The Bill, in Four Layers</text>
+
+            <rect x="40" y="50" width="520" height="50" class="ost-cs-accent-box"/>
+            <text x="60" y="72" class="ost-cs-head">1 &#x25A0; Image bloat</text>
+            <text x="60" y="90" class="ost-cs-muted">node:22-alpine ~150 MB; node:22 &gt; 1 GB. A 50 MB application ships in a 1 GB image: 95% is build tools and unpatched CVEs</text>
+
+            <rect x="40" y="110" width="520" height="50" class="ost-cs-box"/>
+            <text x="60" y="132" class="ost-cs-head">2 &#x25A0; The supply chain travels with the image</text>
+            <text x="60" y="150" class="ost-cs-muted">May 2026: 172 npm/PyPI packages, 403 versions, ~518M downloads compromised in 48 hours; inherited by every container pulled</text>
+
+            <rect x="40" y="170" width="520" height="50" class="ost-cs-box"/>
+            <text x="60" y="192" class="ost-cs-head">3 &#x25A0; Daemon overhead</text>
+            <text x="60" y="210" class="ost-cs-muted">dockerd documented above 5 GB at 183 containers. Jails have no daemon; the runtime competes with itself</text>
+
+            <rect x="40" y="220" width="520" height="50" class="ost-cs-box"/>
+            <text x="60" y="242" class="ost-cs-head">4 &#x25A0; Network tax</text>
+            <text x="60" y="260" class="ost-cs-muted">function call ~1 &#x00B5;s, network call 1&#x2013;5 ms (~1,000&#x00D7;); ten services pay 30 ms before business logic begins</text>
+        </svg>
+
+        <p>A minimal Node.js container image, based on Alpine Linux,
+            is around 150 megabytes. The convenient default,
+            <code>node:22</code> without the <code>-alpine</code>
+            qualifier, exceeds a gigabyte. Most of the gigabyte is
+            build tools the application will not need at runtime:
+            compilers, package managers, debug symbols, full GNU
+            userland. Every unused package is, in security terms, an
+            unpatched CVE waiting for someone to notice. The
+            application itself is a footnote in its own deployment.
+            A 50-megabyte Node.js service ships in a 1-gigabyte
+            image, which is then pushed to a registry, pulled to
+            nodes, cached, layered, garbage-collected and replicated.
+            The application is one to five per cent of the bytes
+            moved.</p>
+
+        <p>The gigabyte travels with its
+            <a href="/blog/wire-fire-npm-is-on-fire">npm tree</a>.
+            Every container that runs Node.js carries hundreds of
+            transitive dependencies that the runtime, by design,
+            loads at full privilege at start-up. The container's
+            promise of reproducibility delivers, with the same
+            fidelity, a reproducible attack surface. In spring 2026
+            this stopped being theoretical. A six-week wave of
+            supply-chain compromises ran through npm: the
+            <code>axios</code> incident in March, attributed to
+            Sapphire Sleet at roughly 100 million weekly downloads;
+            the SAP-namespace mini-Shai-Hulud in late April; the
+            TanStack mini-Shai-Hulud in mid-May, reaching 84 versions
+            in the first wave and spreading within 48 hours to 172
+            packages and 403 versions across npm and PyPI, totalling
+            around 518 million cumulative downloads. Every container
+            pulled in that window inherited the blast radius.</p>
+
+        <p>Docker requires a persistent daemon, <code>dockerd</code>,
+            which mediates between the container CLI and the kernel
+            isolation primitives. The daemon is not free. A
+            documented case on Docker's own forums shows
+            <code>dockerd</code> consuming over five gigabytes of
+            virtual memory while supervising 183 containers. The
+            runtime that supervises the containers competes with the
+            containers for the same memory budget. The deeper
+            architectural point is that the daemon is structurally
+            unnecessary. FreeBSD Jails do not have a daemon. The
+            kernel handles isolation directly; the CLI talks to the
+            kernel; there is nothing in between to keep alive.</p>
+
+        <p>A function call within a single process costs roughly one
+            microsecond. A network call between two services in the
+            same datacentre, even on a fast network, costs one to
+            five milliseconds: about a factor of one thousand more
+            expensive. The cost is mostly fixed: DNS resolution, TCP
+            handshake, TLS, JSON serialisation and parsing. Chain ten
+            services in a typical microservices request graph and the
+            request has paid thirty milliseconds of pure
+            infrastructure latency before any business logic
+            executes.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A bar comparison of call costs. A function call within a single process costs about one microsecond, drawn as an almost-invisible bar at the left. A network call between two services in the same datacentre costs one to five milliseconds, drawn as a long bar roughly a thousand times the length. Annotation: ten services in a chain pay thirty milliseconds of pure infrastructure latency before business logic begins." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-lat-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-lat-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-lat-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-lat-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-lat-bar-good { fill: var(--accent); opacity: 0.85; }
+                .ost-lat-bar-bad { fill: var(--muted); opacity: 0.55; }
+            </style>
+            <text x="300" y="22" class="ost-lat-title" text-anchor="middle">Function Call vs Network Call</text>
+
+            <text x="40" y="64" class="ost-lat-head">Function call (same process)</text>
+            <rect x="40" y="72" width="4" height="22" class="ost-lat-bar-good"/>
+            <text x="60" y="89" class="ost-lat-text">~1 &#x00B5;s</text>
+
+            <text x="40" y="128" class="ost-lat-head">Network call (same datacentre)</text>
+            <rect x="40" y="136" width="500" height="22" class="ost-lat-bar-bad"/>
+            <text x="550" y="153" class="ost-lat-text" text-anchor="end">1&#x2013;5 ms (~1,000&#x00D7;)</text>
+
+            <text x="300" y="192" class="ost-lat-muted" text-anchor="middle">Ten services in a chain: ~30 ms of pure infrastructure latency before business logic begins.</text>
+            <text x="300" y="206" class="ost-lat-muted" text-anchor="middle" font-style="italic">Cloud-native benchmarks: +140% p99 latency, +300% memory, +260% network I/O vs the monolith.</text>
+        </svg>
+
+        <p>The latency the architecture introduced required service
+            meshes to manage. Istio became the most prominent
+            example: a control plane plus sidecar proxies that handle
+            routing, retries, circuit breaking, observability and
+            authentication between services. Istio's sidecar adds
+            approximately 2.5 milliseconds of latency at p90, costs
+            around 0.20 vCPU and 60 megabytes of RAM per proxy. Ten
+            services with two proxies per hop consume four vCPU and
+            over a gigabyte of memory for routing alone, paid before
+            the application does anything. Istio itself, telling on
+            the architecture, quietly merged its own control plane
+            from microservices back into a single binary in 2023. The
+            microservices framework concluded that microservices were
+            the wrong shape for its own implementation. The lesson
+            did not generalise.</p>
+
+        <p>The deepest cost is not bytes or milliseconds. It is that
+            sprint-shaped teams produce service-shaped architecture
+            and never see another shape. The container makes the org
+            chart load-bearing. Reorganising the team now requires
+            reorganising the system. Conway's law, originally a
+            description, became a contract. When the team is split,
+            the service is split. When the service is split, the
+            runtime is split. When the runtime is split, the
+            orchestrator becomes necessary. When the orchestrator
+            becomes necessary, the platform team becomes necessary.
+            The architecture is no longer designed; it is grown, in
+            the shape of the standups.</p>
+
+        <h2>The Retreat, Documented</h2>
+
+        <p>Before the alternatives, the retreat. Documented, and
+            rarely cited.</p>
+
+        <p><a href="https://www.primevideotech.com/video-streaming/scaling-up-the-prime-video-audio-video-monitoring-service-and-reducing-costs-by-90" target="_blank" rel="noopener">Amazon Prime Video</a>
+            published, in 2023, an account of moving their video
+            monitoring service from a distributed microservices
+            architecture, deployed on AWS Lambda and Step Functions,
+            back to a monolithic application running on EC2. The
+            reported cost reduction was approximately ninety per
+            cent. The article was written by the engineers who did
+            the work and approved by Amazon. The Hacker News thread
+            that followed contained the predictable defences ("they
+            were using Lambda wrong", "they should have used
+            containers properly"), which rather illustrated the
+            point: the alternatives to the distributed default were
+            treated as misconfiguration of the default, not as
+            legitimate alternatives.</p>
+
+        <p>Segment, the customer data platform now part of Twilio,
+            <a href="https://segment.com/blog/goodbye-microservices/" target="_blank" rel="noopener">consolidated 140 microservices into a single monolith in 2017</a>.
+            Their engineering blog described the operational burden
+            of the distributed version as untenable: testing went
+            from hours to milliseconds, deployments simplified,
+            on-call load dropped. Istio, as noted, consolidated its
+            own control plane. 37signals (Basecamp, HEY) left AWS
+            entirely in 2023, returning to on-premises hardware
+            running their own stack with reported savings of around
+            seven million dollars over five years; hardware recouped
+            inside a year.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="Four documented retreats from the containerised microservices default. Amazon Prime Video moved its video monitoring service from Lambda and Step Functions to a monolith on EC2 in 2023 for an approximate ninety per cent cost reduction. Segment consolidated 140 microservices into a single monolith in 2017. Istio quietly merged its own control plane back into a single binary in 2023. 37signals left AWS entirely in 2023, hardware recouped inside year one, around seven million dollars saved across five years." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ost-r-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-r-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-r-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-r-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ost-r-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="ost-r-title" text-anchor="middle">Four Documented Retreats</text>
+
+            <rect x="20" y="50" width="270" height="70" class="ost-r-accent-box"/>
+            <text x="155" y="72" class="ost-r-head" text-anchor="middle">Amazon Prime Video (2023)</text>
+            <text x="155" y="92" class="ost-r-muted" text-anchor="middle">video monitoring: Lambda + Step Functions</text>
+            <text x="155" y="106" class="ost-r-muted" text-anchor="middle">to monolith on EC2 &#x2014; ~90% cost reduction</text>
+
+            <rect x="310" y="50" width="270" height="70" class="ost-r-accent-box"/>
+            <text x="445" y="72" class="ost-r-head" text-anchor="middle">Segment (2017)</text>
+            <text x="445" y="92" class="ost-r-muted" text-anchor="middle">140 microservices to one monolith</text>
+            <text x="445" y="106" class="ost-r-muted" text-anchor="middle">tests hours &#x2192; ms, on-call load dropped</text>
+
+            <rect x="20" y="128" width="270" height="70" class="ost-r-accent-box"/>
+            <text x="155" y="150" class="ost-r-head" text-anchor="middle">Istio (2023)</text>
+            <text x="155" y="170" class="ost-r-muted" text-anchor="middle">control plane merged back</text>
+            <text x="155" y="184" class="ost-r-muted" text-anchor="middle">into a single binary</text>
+
+            <rect x="310" y="128" width="270" height="70" class="ost-r-accent-box"/>
+            <text x="445" y="150" class="ost-r-head" text-anchor="middle">37signals (2023)</text>
+            <text x="445" y="170" class="ost-r-muted" text-anchor="middle">left AWS, ~$7M / 5 y savings</text>
+            <text x="445" y="184" class="ost-r-muted" text-anchor="middle">hardware recouped inside year one</text>
+        </svg>
+
+        <p>The pattern is consistent. Teams reach the operational and
+            financial ceiling of the distributed default and quietly
+            walk back. The walk-back is presented in each case as an
+            exception, not as evidence about the default.</p>
+
+        <h2>The Alternatives</h2>
+
+        <p>The alternatives have been quietly working all along.</p>
+
+        <p>On FreeBSD: Jails provide kernel-native process isolation
+            with no daemon, no image layers, no registry, no
+            orchestrator. They start in milliseconds because they are
+            processes. <a href="/blog/capsicum-vs-seccomp">Capsicum</a>
+            (FreeBSD 9.0, 2012) provides capability-based isolation
+            at the process boundary: a process can voluntarily
+            restrict its own access to specific file descriptors,
+            syscalls, and resources, granted where it earns its keep.
+            The combination is what process isolation looks like when
+            designed by people who think about the kernel for a
+            living.</p>
+
+        <p>On OpenBSD:
+            <a href="https://man.openbsd.org/pledge.2" target="_blank" rel="noopener">pledge</a>
+            (5.9, 2015) lets a process declare which syscall
+            categories it will use and the kernel will kill it if it
+            tries to use any others. <code>unveil</code> (6.4, 2018)
+            lets a process declare which filesystem paths it can see,
+            narrowing the filesystem view to exactly the paths the
+            application needs. The pair is what process-level
+            least-privilege looks like when implemented by people who
+            consider security a property of the operating system
+            rather than a layer above it.</p>
+
+        <p>On the runtime side: Go and Rust use all CPU cores by
+            default, ship as single static binaries of one to fifteen
+            megabytes, and require no orchestrator to find a second
+            thread. A Go binary running on FreeBSD inside a jail is,
+            structurally, what containerised microservices were
+            trying to be: isolated, lightweight, fast to start,
+            simple to deploy.</p>
+
+        <p>None of these are new. The point is not that one stack is
+            correct. The point is that the convergence of three
+            currents produced a default that none of the three
+            currents, individually, demanded.</p>
+
+        <h2>The Question</h2>
+
+        <p>The default arrived, in practice, on a marketing budget.
+            Docker (the company) raised over 270 million dollars in
+            venture funding. The Cloud Native Computing Foundation,
+            the body that stewards Kubernetes, lists more than 200
+            corporate members, several of them with platform
+            businesses whose strategy depends on the container being
+            the unit of deployment. The conferences, the
+            certifications, the cloud-native landscape diagram with
+            its hundreds of competing logos: each is a piece of
+            advertisement that pays for itself by reinforcing the
+            architecture. The technical case for containerising
+            everything has rarely been the loudest case in the room.
+            The case won the room on advertisement, not on parts
+            removed.</p>
+
+        <p>The alternatives quoted above did not arrive on similar
+            budgets. FreeBSD's marketing department is, generously,
+            the FreeBSD Foundation's annual report. The OpenBSD
+            project's marketing department is Theo de Raadt's
+            mailing-list voice. Go and Rust each had corporate
+            sponsors, but neither sponsor sold a cloud orchestrator
+            that depended on the runtime being too weak to find its
+            own cores. The alternatives are not better-marketed; they
+            are differently funded, which is most of the explanation
+            for why they sound, in 2026, like nostalgia.</p>
+
+        <p>Conway's law can be read forwards or backwards. Forwards:
+            organisational structure shapes architecture. Backwards:
+            architecture shapes which organisational structures
+            remain possible. A sprint-shaped team will produce
+            service-shaped architecture; service-shaped architecture,
+            once built, will tend to enforce sprint-shaped teams. The
+            cycle is reinforcing.</p>
+
+        <p>The honest question is not which orchestrator. It is
+            whether the isolation question, the runtime question and
+            the team question were ever the same question. They
+            became the same question because the same default
+            answered all three. The default arrived without a vote.</p>
+
+        <p>What if isolation were a property of a process, granted
+            where it earns its keep, rather than a shipping container
+            we wrap around everything we no longer wish to think
+            about? What if the runtime knew its own cores? What if
+            the team shape did not need to be the system shape?</p>
+
+        <blockquote>
+            <p>The Dockerfile is so reflexive that the alternatives
+                feel like nostalgia. Twenty-five years of working
+                alternatives suggest the nostalgia is misplaced. They
+                are simply the path not taken, still running, still
+                patient, still answering the question the convergence
+                forgot was three.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Three currents, retreat, alternative:</strong></p>
+            <ul>
+                <li><strong>Isolation, already solved</strong>: FreeBSD Jails (Poul-Henning Kamp, 1999, FreeBSD 4.0); Solaris Zones (2004); Linux namespaces and cgroups (2006&#x2013;2008); Docker (2013, the brand, not the technique)</li>
+                <li><strong>Org-shape</strong>: Scrum codified 1995 to 2001; Conway 1968 explained in advance that organisations design systems mirroring their communication structures</li>
+                <li><strong>Runtime</strong>: Node.js single-threaded event loop, 2009; multi-core requires multi-container deployment</li>
+                <li><strong>The retreat</strong>: Amazon Prime Video at ~90% cost reduction returning to a monolith (2023); Segment consolidating 140 services into one (2017); Istio merging its own control plane back into a single binary</li>
+                <li><strong>The alternative</strong>: FreeBSD Capsicum (9.0, 2012); OpenBSD pledge (2015), unveil (2018); Go and Rust with native multi-core, single static binary, no orchestrator required</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

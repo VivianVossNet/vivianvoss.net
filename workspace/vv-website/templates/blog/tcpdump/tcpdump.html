@@ -1,0 +1,459 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}tcpdump &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="tcpdump is a thin command-line filter on top of three decades of careful layering. Van Jacobson, Craig Leres and Steven McCanne wrote it in 1988 at Lawrence Berkeley Laboratory. In 1992 McCanne and Jacobson published 'The BSD Packet Filter', winning Best Student Paper at USENIX Winter 1993 and rearranging how every serious network tool would be built for the next thirty years. Wireshark, Zeek, snort, suricata, nmap, ngrep and the entire pcap-based observability ecosystem all sit on libpcap, which sits on BPF, which still sits in the kernel of every BSD and Linux machine in production. eBPF, the Linux feature that everyone has rather suddenly noticed in 2024, is BPF with new opcodes and a verifier; the lineage runs back to the same paper.">
+{( endslot )}
+
+{( slot canonical )}/blog/tcpdump{( endslot )}
+
+{( slot og-title )}tcpdump &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Technical Beauty Episode 35. tcpdump is the thin tool one types at three in the morning. Underneath: libpcap, the library that ate the observability world; under that, BPF, the in-kernel pseudo-machine McCanne and Jacobson published in 1992. Filter compiles once in userspace, ships into the kernel, runs there; packets that fail the predicate never cross the boundary. Up to a hundred times faster than Sun's NIT on the same hardware. Wireshark, Zeek, snort, suricata, nmap, ngrep and tshark are all libpcap consumers. eBPF (Alexei Starovoitov, 2014) is the same architecture with a wider register file and a verifier. The same man who gave the world TCP congestion control gave it the architecture every network tool sits on.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "tcpdump",
+    "datePublished": "2026-05-12",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/tcpdump",
+    "description": "Technical Beauty Episode 35. tcpdump (Van Jacobson, Craig Leres, Steven McCanne at LBL, 1988) is a thin command-line filter on top of libpcap, on top of BPF. McCanne and Jacobson's 1992 paper 'The BSD Packet Filter' (USENIX Winter 1993, Best Student Paper) replaced Sun's NIT stack-based filter with a register-based in-kernel pseudo-machine; measured up to 20x faster than its predecessor and up to 100x faster than NIT on the same hardware. libpcap, factored out around 1995, is the capture library every serious network tool uses: Wireshark, tshark, dumpcap, Zeek, snort, suricata, nmap, ngrep, dsniff. eBPF (Alexei Starovoitov, Linux 3.18, December 2014) extended the same architecture with a wider register file and a verifier; it is what powers most contemporary Linux observability. The technical beauty is the layering, not the tool.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-12">12 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>tcpdump</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x2726; Episode 35</p>
+
+        <p>You have typed <code>tcpdump -ni em0 'tcp port 443'</code>
+            at three in the morning, with a customer on the phone, and
+            watched the lines scroll past in a small green miracle.
+            The command was unremarkable. The thing that made it
+            possible to type at three in the morning has been quietly
+            doing the work for thirty-seven years.</p>
+
+        <p>The point of this episode is not that <code>tcpdump</code>
+            is a useful command, which one rather hopes the reader
+            already knew. The point is that <code>tcpdump</code> is a
+            thin tool sitting on a thoughtfully layered architecture,
+            and the layering is the technical beauty. The thing the
+            network engineer types is the surface. The thing that
+            makes the surface work has not needed to be replaced since
+            1992.</p>
+
+        <h2>A Short Origin Story</h2>
+
+        <p><code>tcpdump</code> was written in 1988 by Van Jacobson,
+            Craig Leres and Steven McCanne at the Network Research
+            Group of
+            <a href="https://en.wikipedia.org/wiki/Lawrence_Berkeley_National_Laboratory" target="_blank" rel="noopener">Lawrence Berkeley Laboratory</a>.
+            The same Van Jacobson who, the year before, had published
+            <a href="https://ee.lbl.gov/papers/congavoid.pdf" target="_blank" rel="noopener">"Congestion Avoidance and Control"</a>
+            at SIGCOMM '88, the paper that fixed the Internet by
+            introducing slow start, fast retransmit, and the
+            congestion-window heuristics that keep TCP from collapsing
+            under load. <code>tcpdump</code> came out of the same
+            research programme: in order to understand what TCP was
+            actually doing on the wire, the researchers needed a tool
+            that could watch it, and the existing tools (Sun's Network
+            Interface Tap among them) were not up to the task.</p>
+
+        <p>The first version of <code>tcpdump</code> borrowed code
+            from Sun's <code>etherfind</code> and was rewritten over
+            time by McCanne, who eventually replaced the underlying
+            packet-capture mechanism with something new. That
+            something new became the BSD Packet Filter.</p>
+
+        <h2>The BSD Packet Filter</h2>
+
+        <p>In December 1992, McCanne and Jacobson wrote a paper
+            titled
+            <a href="https://www.tcpdump.org/papers/bpf-usenix93.pdf" target="_blank" rel="noopener">"The BSD Packet Filter: A New Architecture for User-level Packet Capture"</a>.
+            It was presented at the USENIX Winter 1993 Conference in
+            San Diego, where it won the Best Student Paper award. It
+            is, by any measure, one of the most quietly consequential
+            systems papers of the 1990s.</p>
+
+        <p>The problem the paper addressed was simple. Packet capture
+            had been done in userspace, with the kernel copying every
+            packet across the system-call boundary and userspace then
+            filtering it. On busy networks, this was crushingly
+            expensive: most of the packets would be discarded by the
+            userspace filter anyway, and the kernel had paid the cost
+            of copying them in vain. Sun's Network Interface Tap (NIT)
+            improved on this by evaluating a stack-based filter
+            expression inside the kernel, but the evaluator itself was
+            slow.</p>
+
+        <p>BPF replaced the stack-based evaluator with a register-based
+            pseudo-machine: a tiny instruction set running on a few
+            virtual registers, optimised for predicate evaluation. A
+            <code>tcpdump</code> filter expression like
+            <code>tcp port 443</code> is compiled by libpcap, in
+            userspace, into a short BPF program. The program is
+            uploaded to the kernel once, at the start of the capture
+            session, and the kernel then runs it on every packet
+            arriving on the chosen interface. Packets that pass the
+            filter are copied to userspace; packets that fail are
+            dropped on the floor. The paper measured BPF as up to
+            twenty times faster than its predecessor's filter, and up
+            to a hundred times faster than NIT overall on the same
+            hardware.</p>
+
+        <svg viewBox="0 0 600 280" aria-label="Two architectures of packet capture compared. On the left, the older NIT model: packets enter the kernel, every packet is copied across the system-call boundary into userspace, and userspace then evaluates the filter, discarding most of what it just received. On the right, the BPF model published by McCanne and Jacobson in 1992: the filter expression is compiled once in userspace into a BPF program, uploaded to the kernel, and evaluated there on each incoming packet; only packets that pass the predicate are copied to userspace. The 1993 paper measured the BPF approach at up to a hundred times faster than NIT on the same hardware." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-bpf-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tb-bpf-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .tb-bpf-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .tb-bpf-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tb-bpf-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .tb-bpf-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .tb-bpf-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#tb-bpf-arrow); }
+                .tb-bpf-arr-muted { stroke: var(--muted); stroke-width: 1.2; fill: none; marker-end: url(#tb-bpf-arrow-muted); }
+                .tb-bpf-bound { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4,3; fill: none; }
+            </style>
+            <defs>
+                <marker id="tb-bpf-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+                <marker id="tb-bpf-arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--muted)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="tb-bpf-title" text-anchor="middle">Two Ways to Filter a Packet, 1991 and 1992</text>
+
+            <text x="140" y="48" class="tb-bpf-head" text-anchor="middle">Before BPF (NIT)</text>
+            <rect x="60" y="58" width="160" height="28" class="tb-bpf-box"/>
+            <text x="140" y="76" class="tb-bpf-text" text-anchor="middle">wire</text>
+            <line x1="140" y1="86" x2="140" y2="100" class="tb-bpf-arr-muted"/>
+            <rect x="60" y="100" width="160" height="28" class="tb-bpf-box"/>
+            <text x="140" y="118" class="tb-bpf-text" text-anchor="middle">kernel: copy every packet</text>
+            <line x1="40" y1="138" x2="240" y2="138" class="tb-bpf-bound"/>
+            <text x="245" y="142" class="tb-bpf-muted">syscall boundary</text>
+            <line x1="140" y1="142" x2="140" y2="158" class="tb-bpf-arr-muted"/>
+            <rect x="60" y="158" width="160" height="28" class="tb-bpf-box"/>
+            <text x="140" y="176" class="tb-bpf-text" text-anchor="middle">userspace: filter</text>
+            <line x1="140" y1="186" x2="140" y2="202" class="tb-bpf-arr-muted"/>
+            <rect x="60" y="202" width="160" height="28" class="tb-bpf-box"/>
+            <text x="140" y="220" class="tb-bpf-text" text-anchor="middle">discard most of it</text>
+            <text x="140" y="256" class="tb-bpf-muted" text-anchor="middle">every packet pays the boundary</text>
+            <text x="140" y="270" class="tb-bpf-muted" text-anchor="middle">slow on busy interfaces</text>
+
+            <text x="460" y="48" class="tb-bpf-head" text-anchor="middle">BPF, 1992</text>
+            <rect x="380" y="58" width="160" height="28" class="tb-bpf-accent-box"/>
+            <text x="460" y="76" class="tb-bpf-text" text-anchor="middle">wire</text>
+            <line x1="460" y1="86" x2="460" y2="100" class="tb-bpf-arr"/>
+            <rect x="380" y="100" width="160" height="36" class="tb-bpf-accent-box"/>
+            <text x="460" y="116" class="tb-bpf-text" text-anchor="middle">kernel runs BPF program</text>
+            <text x="460" y="128" class="tb-bpf-muted" text-anchor="middle">drop if predicate fails</text>
+            <line x1="360" y1="146" x2="560" y2="146" class="tb-bpf-bound"/>
+            <text x="365" y="150" class="tb-bpf-muted" text-anchor="end">syscall boundary</text>
+            <line x1="460" y1="150" x2="460" y2="166" class="tb-bpf-arr"/>
+            <rect x="380" y="166" width="160" height="28" class="tb-bpf-accent-box"/>
+            <text x="460" y="184" class="tb-bpf-text" text-anchor="middle">userspace: only matches</text>
+            <line x1="460" y1="194" x2="460" y2="210" class="tb-bpf-arr"/>
+            <rect x="380" y="210" width="160" height="28" class="tb-bpf-accent-box"/>
+            <text x="460" y="228" class="tb-bpf-text" text-anchor="middle">tcpdump prints</text>
+            <text x="460" y="256" class="tb-bpf-muted" text-anchor="middle">filter compiled once, runs in-kernel</text>
+            <text x="460" y="270" class="tb-bpf-muted" text-anchor="middle">up to 100x faster than NIT</text>
+        </svg>
+
+        <p>The architecture is unusual for a few reasons. The
+            pseudo-machine is small, simple and verifiable: a kernel
+            can inspect a BPF program before running it and reject
+            anything that loops or reaches outside its bounds. The
+            filter compiler lives in userspace, where it can be
+            replaced or improved without touching the kernel. The
+            boundary between userspace and kernel runs through the
+            filter, not around it, which keeps both halves small.</p>
+
+        <h2>libpcap, the Library That Ate the World</h2>
+
+        <p>Around the same time, the LBL group extracted the
+            packet-capture interface from <code>tcpdump</code> into a
+            separate library: <code>libpcap</code>. The library
+            handles the platform-specific business of opening a
+            capture device, compiling filter expressions into BPF
+            programs, reading packets back from the kernel, and
+            parsing the capture-file format. On FreeBSD, OpenBSD,
+            NetBSD and macOS it uses the BPF device directly. On
+            Linux, where the BPF device historically did not exist, it
+            uses an equivalent kernel mechanism
+            (<code>PF_PACKET</code>, more recently extended via eBPF)
+            and presents the same API to userland.</p>
+
+        <p>The decision to factor <code>libpcap</code> out of
+            <code>tcpdump</code> is the move that made the rest of the
+            story possible. By 1995 or so, every serious network tool
+            that wanted to capture packets was using
+            <code>libpcap</code> instead of writing its own capture
+            code. The list grew steadily.</p>
+
+        <svg viewBox="0 0 600 320" aria-label="A diagram of the three-layer architecture, with the descendants drawn out at the top. At the bottom: the BSD Packet Filter, the in-kernel pseudo-machine, McCanne and Jacobson 1992. Above it: libpcap, the userspace library, factored out of tcpdump around 1995. Above libpcap, a tier of consumers: tcpdump itself, Wireshark, tshark, dumpcap, Zeek, snort, suricata, nmap, ngrep, dsniff. To the side, eBPF (Alexei Starovoitov, Linux 3.18, December 2014) extending BPF with a wider register file and a verifier, branching out to bpftrace, bcc and Cilium." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-st-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tb-st-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .tb-st-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .tb-st-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tb-st-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .tb-st-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .tb-st-line { stroke: var(--accent); stroke-width: 1; fill: none; }
+                .tb-st-line-muted { stroke: var(--muted); stroke-width: 1; fill: none; }
+            </style>
+            <text x="300" y="22" class="tb-st-title" text-anchor="middle">Three Layers, Thirty Years of Descendants</text>
+
+            <rect x="60" y="60" width="80" height="24" class="tb-st-box"/>
+            <text x="100" y="76" class="tb-st-muted" text-anchor="middle">tcpdump</text>
+            <rect x="148" y="60" width="80" height="24" class="tb-st-box"/>
+            <text x="188" y="76" class="tb-st-muted" text-anchor="middle">Wireshark</text>
+            <rect x="236" y="60" width="80" height="24" class="tb-st-box"/>
+            <text x="276" y="76" class="tb-st-muted" text-anchor="middle">tshark</text>
+            <rect x="324" y="60" width="80" height="24" class="tb-st-box"/>
+            <text x="364" y="76" class="tb-st-muted" text-anchor="middle">Zeek</text>
+            <rect x="412" y="60" width="80" height="24" class="tb-st-box"/>
+            <text x="452" y="76" class="tb-st-muted" text-anchor="middle">snort</text>
+            <rect x="500" y="60" width="80" height="24" class="tb-st-box"/>
+            <text x="540" y="76" class="tb-st-muted" text-anchor="middle">suricata</text>
+
+            <rect x="60" y="92" width="80" height="24" class="tb-st-box"/>
+            <text x="100" y="108" class="tb-st-muted" text-anchor="middle">nmap</text>
+            <rect x="148" y="92" width="80" height="24" class="tb-st-box"/>
+            <text x="188" y="108" class="tb-st-muted" text-anchor="middle">ngrep</text>
+            <rect x="236" y="92" width="80" height="24" class="tb-st-box"/>
+            <text x="276" y="108" class="tb-st-muted" text-anchor="middle">dsniff</text>
+            <rect x="324" y="92" width="80" height="24" class="tb-st-box"/>
+            <text x="364" y="108" class="tb-st-muted" text-anchor="middle">dumpcap</text>
+            <rect x="412" y="92" width="168" height="24" class="tb-st-box"/>
+            <text x="496" y="108" class="tb-st-muted" text-anchor="middle">+ commercial forensics</text>
+
+            <line x1="320" y1="120" x2="320" y2="142" class="tb-st-line"/>
+            <rect x="120" y="142" width="400" height="40" class="tb-st-accent-box"/>
+            <text x="320" y="162" class="tb-st-head" text-anchor="middle">libpcap (1995)</text>
+            <text x="320" y="176" class="tb-st-muted" text-anchor="middle">capture API, filter compiler, .pcap file format</text>
+
+            <line x1="320" y1="182" x2="320" y2="204" class="tb-st-line"/>
+            <rect x="120" y="204" width="400" height="40" class="tb-st-accent-box"/>
+            <text x="320" y="224" class="tb-st-head" text-anchor="middle">BSD Packet Filter (1992)</text>
+            <text x="320" y="238" class="tb-st-muted" text-anchor="middle">in-kernel pseudo-machine, register-based, verifiable</text>
+
+            <line x1="520" y1="224" x2="560" y2="280" class="tb-st-line-muted"/>
+            <rect x="440" y="260" width="160" height="40" class="tb-st-box"/>
+            <text x="520" y="278" class="tb-st-head" text-anchor="middle">eBPF (2014)</text>
+            <text x="520" y="292" class="tb-st-muted" text-anchor="middle">Starovoitov, Linux 3.18</text>
+
+            <text x="80" y="280" class="tb-st-muted">bpftrace, bcc, Cilium are eBPF consumers; lineage runs back to BPF.</text>
+        </svg>
+
+        <p>The list. <code>tshark</code> and Wireshark and
+            <code>dumpcap</code>. Zeek (formerly Bro, also originally
+            from LBL). <code>snort</code> and <code>suricata</code>
+            for intrusion detection. <code>nmap</code> for port
+            scanning. <code>ngrep</code> and <code>dsniff</code>. The
+            entire pcap-based observability ecosystem, from open
+            source to commercial network forensics. One does rather
+            get the impression nobody else has bothered to revisit the
+            problem, which is, in software, the highest compliment a
+            piece of work can receive.</p>
+
+        <p>The library's <code>.pcap</code> capture-file format became
+            the de facto standard for sharing packet captures between
+            tools. A <code>.pcap</code> file recorded by
+            <code>tcpdump</code> on a FreeBSD machine in 1996 can
+            still be opened by Wireshark on a Linux laptop in 2026.
+            Few file formats from the early 1990s have aged as
+            well.</p>
+
+        <h2>On FreeBSD</h2>
+
+        <p><code>tcpdump</code> and <code>libpcap</code> live in the
+            FreeBSD base system; the kernel provides BPF under
+            <a href="https://man.freebsd.org/cgi/man.cgi?query=bpf" target="_blank" rel="noopener"><code>/dev/bpfN</code></a>.
+            No ports, no packages, no plugin model. Capturing packets
+            on a fresh FreeBSD installation is as immediate as
+            <code>tcpdump -ni em0</code>. The same is true on OpenBSD
+            and NetBSD.</p>
+
+        <pre><code>tcpdump -ni em0 'tcp port 443'
+tcpdump -ni em0 'host 10.0.0.5 and not port 22'
+tcpdump -ni em0 -w session.pcap 'port 443'</code></pre>
+
+        <p>Compact enough for a terminal, structured enough for
+            <code>awk</code> and <code>grep</code>, composable by
+            being text on standard output. The man page is, by
+            network-tooling standards, frightfully short.</p>
+
+        <p>On a FreeBSD host, the relationship between the tool, the
+            library and the kernel device is openly inspectable. The
+            userland source for <code>tcpdump</code> lives under
+            <code>/usr/src/contrib/tcpdump</code>. <code>libpcap</code>
+            lives under <code>/usr/src/contrib/libpcap</code>. The BPF
+            kernel device is in <code>sys/net/bpf.c</code>. The whole
+            stack, from the filter language the operator types to the
+            in-kernel pseudo-machine that evaluates it, is one
+            repository away from any administrator who wants to
+            understand what is happening on their machine.</p>
+
+        <h2>The Linux Branch</h2>
+
+        <p>Linux did not have BPF in the original sense. It had
+            <code>libpcap</code> ported over <code>PF_PACKET</code>,
+            which worked but did not have the same kernel-level filter
+            mechanism. Through the 2000s, the Linux kernel slowly grew
+            its own filter mechanism, originally called Linux Socket
+            Filtering, structurally borrowed from BPF (and explicitly
+            credited as such in the kernel documentation).</p>
+
+        <p>In December 2014, Alexei Starovoitov extended this
+            mechanism into what is now called
+            <a href="https://docs.kernel.org/networking/filter.html" target="_blank" rel="noopener">eBPF</a>:
+            a wider register file, new instructions, a verifier in the
+            kernel, and the ability to attach BPF programs to kernel
+            events other than packet capture (system calls,
+            tracepoints, kprobes). eBPF is what powers a great deal of
+            contemporary Linux observability tooling: <code>bcc</code>,
+            <code>bpftrace</code>, the entire Cilium networking stack,
+            much of modern container observability. The Linux feature
+            that everyone has rather suddenly noticed in 2024 is BPF
+            with new opcodes and a verifier. The lineage runs back to
+            the same 1993 paper.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A timeline from 1987 to 2026. 1988: SIGCOMM Congestion Avoidance and Control by Van Jacobson. 1988: tcpdump written at LBL by Jacobson, Leres and McCanne. 1992 December: 'The BSD Packet Filter' paper by McCanne and Jacobson, presented at USENIX Winter 1993 in San Diego, Best Student Paper. 1995: libpcap factored out of tcpdump. 1999: tcpdump.org founded by Michael Richardson and Bill Fenner. 2014 December: eBPF (Alexei Starovoitov, Linux 3.18). 2026: same three-layer architecture, same .pcap file format, every modern network tool sits on it." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tb-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .tb-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .tb-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tb-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .tb-tl-tick { stroke: var(--muted); stroke-width: 1; }
+                .tb-tl-dot { fill: var(--accent); }
+            </style>
+            <text x="300" y="22" class="tb-tl-title" text-anchor="middle">Thirty-Eight Years on One Architecture</text>
+
+            <line x1="30" y1="160" x2="570" y2="160" class="tb-tl-axis"/>
+
+            <circle cx="55" cy="160" r="4" class="tb-tl-dot"/>
+            <line x1="55" y1="160" x2="55" y2="166" class="tb-tl-tick"/>
+            <text x="55" y="180" class="tb-tl-text" text-anchor="middle">1988</text>
+            <text x="55" y="194" class="tb-tl-muted" text-anchor="middle">SIGCOMM</text>
+            <text x="55" y="206" class="tb-tl-muted" text-anchor="middle">Congestion Control</text>
+
+            <circle cx="140" cy="160" r="4" class="tb-tl-dot"/>
+            <line x1="140" y1="160" x2="140" y2="166" class="tb-tl-tick"/>
+            <text x="140" y="180" class="tb-tl-text" text-anchor="middle">1988</text>
+            <text x="140" y="194" class="tb-tl-muted" text-anchor="middle">tcpdump at LBL</text>
+            <text x="140" y="206" class="tb-tl-muted" text-anchor="middle">Jacobson, Leres, McCanne</text>
+
+            <circle cx="240" cy="160" r="4" class="tb-tl-dot"/>
+            <line x1="240" y1="160" x2="240" y2="166" class="tb-tl-tick"/>
+            <text x="240" y="180" class="tb-tl-text" text-anchor="middle">Dec 1992</text>
+            <text x="240" y="194" class="tb-tl-muted" text-anchor="middle">BPF paper</text>
+            <text x="240" y="206" class="tb-tl-muted" text-anchor="middle">USENIX, Best Student</text>
+
+            <circle cx="320" cy="160" r="4" class="tb-tl-dot"/>
+            <line x1="320" y1="160" x2="320" y2="166" class="tb-tl-tick"/>
+            <text x="320" y="180" class="tb-tl-text" text-anchor="middle">~1995</text>
+            <text x="320" y="194" class="tb-tl-muted" text-anchor="middle">libpcap factored</text>
+            <text x="320" y="206" class="tb-tl-muted" text-anchor="middle">out of tcpdump</text>
+
+            <circle cx="395" cy="160" r="4" class="tb-tl-dot"/>
+            <line x1="395" y1="160" x2="395" y2="166" class="tb-tl-tick"/>
+            <text x="395" y="180" class="tb-tl-text" text-anchor="middle">1999</text>
+            <text x="395" y="194" class="tb-tl-muted" text-anchor="middle">tcpdump.org</text>
+            <text x="395" y="206" class="tb-tl-muted" text-anchor="middle">Richardson, Fenner</text>
+
+            <circle cx="485" cy="160" r="4" class="tb-tl-dot"/>
+            <line x1="485" y1="160" x2="485" y2="166" class="tb-tl-tick"/>
+            <text x="485" y="180" class="tb-tl-text" text-anchor="middle">Dec 2014</text>
+            <text x="485" y="194" class="tb-tl-muted" text-anchor="middle">eBPF</text>
+            <text x="485" y="206" class="tb-tl-muted" text-anchor="middle">Starovoitov, 3.18</text>
+
+            <circle cx="555" cy="160" r="4" class="tb-tl-dot"/>
+            <line x1="555" y1="160" x2="555" y2="166" class="tb-tl-tick"/>
+            <text x="555" y="180" class="tb-tl-text" text-anchor="middle">2026</text>
+            <text x="555" y="194" class="tb-tl-muted" text-anchor="middle">same architecture</text>
+            <text x="555" y="206" class="tb-tl-muted" text-anchor="middle">same .pcap format</text>
+
+            <text x="300" y="78" class="tb-tl-muted" text-anchor="middle" font-style="italic">A two-page architecture decision, made by two researchers,</text>
+            <text x="300" y="92" class="tb-tl-muted" text-anchor="middle" font-style="italic">underpinning the next thirty years of network tooling.</text>
+        </svg>
+
+        <p>It is worth pausing on this. A two-page architecture
+            decision made by two researchers at LBL in 1992,
+            originally to make <code>tcpdump</code> fast enough to
+            capture packets on a busy Ethernet, is the foundation of
+            more or less every modern observability story being
+            written in 2026. The thing the engineer types still looks
+            the same. The cleverness underneath has been quietly
+            extended and re-extended for three decades.</p>
+
+        <h2>The Point</h2>
+
+        <p>The technical beauty of <code>tcpdump</code> is not the
+            tool. The tool is small. The technical beauty is the way
+            the responsibilities are split.</p>
+
+        <p>The user types a filter expression and reads a one-line
+            summary per packet, because that is what the operator's
+            brain can hold at three in the morning. The library
+            compiles the expression and parses the bytes, because that
+            is the bit where the format details live. The kernel runs
+            the filter and drops everything else, because that is the
+            bit where performance matters. Each layer does the one
+            thing it is in the best position to do, and the boundaries
+            between them are clean enough that the layers can be
+            replaced independently. eBPF replaced the kernel layer;
+            the others stayed where they were.</p>
+
+        <p>A man who had also given the world TCP congestion control
+            wrote, with two LBL colleagues, the tool every network
+            engineer reaches for first and the architecture every
+            serious network tool sits on. One rather suspects he knew
+            what the kernel was actually for.</p>
+
+        <blockquote>
+            <p>The technical beauty is not the tool. The tool is
+                small. The beauty is the layering: filter language at
+                the surface, compiler in userspace, register-based
+                pseudo-machine in the kernel. Each layer does the one
+                thing it is in the best position to do, and the
+                boundaries between them are clean enough that thirty
+                years and one major Linux extension later, the surface
+                still looks the same.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The three layers, the dates, the descendants:</strong></p>
+            <ul>
+                <li><strong>The layers</strong>: <code>tcpdump</code> (userspace tool, filter language, one line per packet); <code>libpcap</code> (compiles the filter, manages the capture session, defines the <code>.pcap</code> file format); BPF (in-kernel pseudo-machine, filters before copy to userspace)</li>
+                <li><strong>The origins</strong>: <code>tcpdump</code>, written by Van Jacobson, Craig Leres and Steven McCanne at Lawrence Berkeley Laboratory in 1988; the BPF paper, McCanne and Jacobson, USENIX Winter 1993 in San Diego, Best Student Paper; <code>tcpdump.org</code> founded by Michael Richardson and Bill Fenner in 1999, where the project still lives</li>
+                <li><strong>The reach</strong> (all on <code>libpcap</code>): Wireshark, <code>tshark</code>, <code>dumpcap</code>; Zeek (formerly Bro), <code>snort</code>, <code>suricata</code>; <code>nmap</code>, <code>ngrep</code>, <code>dsniff</code>; most modern observability and IDS stacks</li>
+                <li><strong>The descendant</strong>: eBPF, Alexei Starovoitov, Linux 3.18 (December 2014), extending BPF with a wider register file, new instructions, a verifier, and attachment points beyond packet capture (system calls, tracepoints, kprobes); same paper's lineage</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

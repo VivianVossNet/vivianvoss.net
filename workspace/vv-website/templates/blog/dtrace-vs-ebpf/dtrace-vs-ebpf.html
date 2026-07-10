@@ -1,0 +1,493 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}DTrace vs eBPF &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A production server is slow. The senior engineer wants to know which syscall is blocking, on which thread, for how long, without restarting the service. On FreeBSD one types a dtrace one-liner and the kernel answers. Linux took the scenic route to the same answer. Bryan Cantrill, Mike Shapiro and Adam Leventhal designed DTrace at Sun Microsystems in 2003. Solaris 10 shipped it in January 2005. John Birrell ported it to FreeBSD; it landed in 7.1-RELEASE on 6 January 2009. Linux could not adopt DTrace upstream because the GPL absorbs every licence it touches; the CDDL accepts coexistence, the GPL does not. The workaround was a ground-up rebuild on a substrate that had existed since 1992. Alexei Starovoitov and Daniel Borkmann generalised BPF into eBPF, merged in Linux 3.18 on 7 December 2014. BCC arrived in 2015. Brendan Gregg announced bpftrace as DTrace 2.0 for Linux in October 2018. The shape was always the same; the journey was a great deal longer.">
+{( endslot )}
+
+{( slot canonical )}/blog/dtrace-vs-ebpf{( endslot )}
+
+{( slot og-title )}DTrace vs eBPF &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The Unix Way Episode 17. DTrace was designed at Sun in 2003 by Bryan Cantrill, Mike Shapiro and Adam Leventhal, shipped in Solaris 10 in January 2005, ported to FreeBSD by John Birrell and landed in 7.1-RELEASE on 6 January 2009; the script language was deliberately Turing-incomplete so the compiler could prove safety before loading. Linux could not adopt DTrace upstream because the GPL absorbs every licence it touches; the CDDL accepts coexistence, the GPL does not. The rebuild started from a substrate that had existed since 1992: McCanne and Jacobson's Berkeley Packet Filter. Alexei Starovoitov and Daniel Borkmann generalised it into eBPF, merged in Linux 3.18 on 7 December 2014; BCC arrived in 2015; Brendan Gregg announced bpftrace as DTrace 2.0 for Linux in October 2018, fifteen years after the original. The shape was always the same; the journey was a great deal longer.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "DTrace vs eBPF",
+    "datePublished": "2026-05-18",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/dtrace-vs-ebpf",
+    "description": "The Unix Way Episode 17. DTrace as the canonical answer to in-production tracing, designed at Sun by Bryan Cantrill, Mike Shapiro and Adam Leventhal in 2003, generally available in Solaris 10 from January 2005, ported to FreeBSD by John Birrell in 7.1-RELEASE on 6 January 2009. The principle: instrument any kernel or userland probe with zero overhead when disabled and minimal overhead when enabled, with a deliberately Turing-incomplete script language so the compiler can prove every probe terminates within bounded time and memory. The Linux licence wall: DTrace was released under the CDDL, a file-level weak copyleft that accepts coexistence with any other licence; the GPL is strong copyleft and demands that any combined work be relicensed to GPL. The asymmetry is structural; the block was in the GPL's design, not the CDDL's behaviour. The Linux rebuild: BPF was already there (McCanne and Jacobson, Berkeley, 1992); Alexei Starovoitov and Daniel Borkmann generalised it into eBPF, merged in Linux 3.18 on 7 December 2014; BCC by Brenden Blanco at IO Visor arrived in 2015; bpftrace by Alastair Robertson, announced by Brendan Gregg as 'DTrace 2.0 for Linux' in October 2018. The bridge figure is Brendan Gregg himself, co-author of the 2011 DTrace book with Jim Mauro at Sun/Joyent and of the 2019 BPF Performance Tools book at Netflix. The shape was always the same; the journey was a great deal longer.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-18">18 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>DTrace vs eBPF</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">licensing</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25C6; Episode 17</p>
+
+        <p>A production server is slow. The senior engineer wants to
+            know which syscall is blocking, on which thread, for how
+            long, without restarting the service. The honest answer
+            in 2026 is: that question has had a clean answer on
+            Solaris and FreeBSD since the mid-2000s, and a clean
+            answer on Linux since 2018. The fifteen-year gap is the
+            story.</p>
+
+        <h2>FreeBSD: DTrace, in Base Since 2009</h2>
+
+        <p>Bryan Cantrill, Mike Shapiro and Adam Leventhal designed
+            <a href="/blog/dtrace">DTrace</a> at Sun Microsystems
+            beginning in 2001 and shipped a working implementation in
+            November 2003. Their USENIX 2004 paper,
+            <a href="https://www.usenix.org/legacy/event/usenix04/tech/general/cantrill.html" target="_blank" rel="noopener">"Dynamic Instrumentation of Production Systems"</a>,
+            is still the canonical reference. Solaris 10 made DTrace
+            generally available in January 2005.</p>
+
+        <p>The principle was rather radical for its time. Existing
+            tracing tools (<code>truss</code>, <code>strace</code>,
+            <code>ptrace</code>) interposed on the traced process;
+            they either stopped it at each syscall or used signals to
+            interrupt it, and either way the act of measurement
+            disturbed what was being measured. DTrace took the
+            opposite approach: instrument the kernel itself with
+            passive probes, fire the probes only when armed, and
+            never block the path of the traced code. The cost of an
+            unarmed probe was zero; the cost of an armed probe was a
+            small constant.</p>
+
+        <p>To make this safe in production, the team did something
+            rather elegant: they made the DTrace script language
+            deliberately Turing-incomplete. No unbounded loops, no
+            recursion, no dynamic memory allocation in the probe
+            action. The compiler could prove that every probe
+            terminated within a bounded time and consumed a bounded
+            amount of memory before loading it into the kernel. A
+            misused script could not crash production; it would be
+            rejected at compile time or terminate cleanly at the
+            bound.</p>
+
+        <p>DTrace was released under the
+            <a href="https://en.wikipedia.org/wiki/Common_Development_and_Distribution_License" target="_blank" rel="noopener">Common Development and Distribution License (CDDL)</a>
+            as part of OpenSolaris in 2005. John Birrell of the
+            FreeBSD project ported DTrace to FreeBSD, where it landed
+            in
+            <a href="https://www.freebsd.org/releases/7.1R/announce/" target="_blank" rel="noopener">7.1-RELEASE on 6 January 2009</a>.
+            The port covered the kernel provider, the userland USDT
+            (User-Statically-Defined-Tracing) probes, and the full D
+            script language. On a modern FreeBSD host, the number of
+            installed probes runs into the tens of thousands; one
+            enumerates them with <code>dtrace -l</code>.</p>
+
+        <p>A complete one-liner that counts open syscalls by
+            process:</p>
+
+        <pre><code>dtrace -n 'syscall::open*:entry { @[execname] = count(); }'</code></pre>
+
+        <p>Press Control-D and DTrace prints a histogram. The traced
+            processes did not pause; the production load did not
+            skip; the open call observed was the actual open call,
+            not a replay.</p>
+
+        <h2>Linux: The Licence Wall</h2>
+
+        <p>The Linux kernel could not adopt DTrace upstream. The
+            structural cause is worth naming clearly, because the
+            popular framing reverses it.</p>
+
+        <p>The CDDL is a file-level weak copyleft licence: it
+            requires that CDDL files remain CDDL, but it does not
+            demand that other files in the same project be
+            relicensed. CDDL accepts coexistence with files under any
+            other licence. The GPL is strong copyleft: any work that
+            links GPL code must, as a whole, be distributed under
+            GPL. The GPL does not accept coexistence with any licence
+            that is not itself GPL.</p>
+
+        <p>The two are not symmetric. The CDDL would have accepted
+            Linux as a neighbour without conditions. The GPL cannot
+            accept any neighbour that does not relicense itself to
+            GPL. The block was not in the CDDL's behaviour; it was in
+            the GPL's design. One could equally describe the GPL as a
+            licence that absorbs every other licence it touches.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="Two licence shapes compared. On the left, the CDDL coexistence model: a small box labelled CDDL surrounded by other-licence boxes, each free to keep its own licence; a label notes that CDDL accepts coexistence with any other licence at the file level. On the right, the GPL absorption model: a large box labelled GPL surrounding smaller boxes that all turn GPL on contact; a label notes that the GPL requires the combined work to be distributed under GPL. A small annotation observes that the asymmetry is structural and that the block was in the GPL's design, not the CDDL's behaviour." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-lic-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-lic-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-lic-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-lic-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-lic-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uw-lic-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="uw-lic-title" text-anchor="middle">Two Licence Shapes, One Asymmetry</text>
+
+            <text x="155" y="48" class="uw-lic-head" text-anchor="middle">CDDL: coexistence</text>
+            <rect x="100" y="56" width="110" height="40" class="uw-lic-accent-box"/>
+            <text x="155" y="80" class="uw-lic-text" text-anchor="middle">CDDL files</text>
+            <rect x="30" y="106" width="80" height="28" class="uw-lic-box"/>
+            <text x="70" y="124" class="uw-lic-muted" text-anchor="middle">GPL file</text>
+            <rect x="115" y="106" width="80" height="28" class="uw-lic-box"/>
+            <text x="155" y="124" class="uw-lic-muted" text-anchor="middle">BSD file</text>
+            <rect x="200" y="106" width="80" height="28" class="uw-lic-box"/>
+            <text x="240" y="124" class="uw-lic-muted" text-anchor="middle">MIT file</text>
+            <text x="155" y="158" class="uw-lic-muted" text-anchor="middle">each file keeps its own licence;</text>
+            <text x="155" y="172" class="uw-lic-muted" text-anchor="middle">the project as a whole works</text>
+
+            <text x="445" y="48" class="uw-lic-head" text-anchor="middle">GPL: absorption</text>
+            <rect x="320" y="56" width="250" height="78" class="uw-lic-accent-box"/>
+            <text x="445" y="78" class="uw-lic-text" text-anchor="middle">GPL boundary</text>
+            <rect x="340" y="92" width="68" height="32" class="uw-lic-box"/>
+            <text x="374" y="112" class="uw-lic-muted" text-anchor="middle">becomes GPL</text>
+            <rect x="416" y="92" width="68" height="32" class="uw-lic-box"/>
+            <text x="450" y="112" class="uw-lic-muted" text-anchor="middle">becomes GPL</text>
+            <rect x="492" y="92" width="68" height="32" class="uw-lic-box"/>
+            <text x="526" y="112" class="uw-lic-muted" text-anchor="middle">becomes GPL</text>
+            <text x="445" y="158" class="uw-lic-muted" text-anchor="middle">any neighbour that does not relicense</text>
+            <text x="445" y="172" class="uw-lic-muted" text-anchor="middle">to GPL cannot be combined</text>
+
+            <text x="300" y="208" class="uw-lic-muted" text-anchor="middle" font-style="italic">The block was not in the CDDL's behaviour. It was in the GPL's design.</text>
+            <text x="300" y="222" class="uw-lic-muted" text-anchor="middle" font-style="italic">Sun would not relicense DTrace; the Linux kernel could not absorb it. So Linux rebuilt.</text>
+        </svg>
+
+        <p>This was not a hypothetical. Sun (and later Oracle) made
+            clear that DTrace would not be relicensed to GPL. The
+            Linux community concluded that the integration of DTrace
+            into the mainline kernel was not legally possible without
+            the GPL's claim on the combined work being honoured,
+            which Sun would not do. A loadable kernel module port
+            from Oracle has existed for some years, but it requires
+            a CDDL kernel module to be loaded into a GPL kernel, a
+            configuration that most distributions decline to ship out
+            of caution about the GPL's reach.</p>
+
+        <p>The Linux answer was therefore not a port. The Linux
+            answer was a rebuild, starting from a substrate that had
+            existed since 1992.</p>
+
+        <h2>Linux: eBPF, Built From BPF</h2>
+
+        <p>Steven McCanne and Van Jacobson at Lawrence Berkeley
+            Laboratory introduced BPF, the
+            <a href="/blog/tcpdump">Berkeley Packet Filter</a>, in
+            1992 (the design was first described at USENIX in 1993).
+            BPF was originally a small in-kernel virtual machine used
+            by <code>tcpdump</code> to filter packets without copying
+            every packet up to userland. The kernel ran a small
+            bytecode program against each packet header; only
+            matching packets were forwarded. The design was simple,
+            fast and provably safe: the bytecode was bounded and
+            could not loop unboundedly.</p>
+
+        <p>For two decades BPF remained a packet-filter substrate.
+            Then, in 2013-2014, Alexei Starovoitov (then at PLUMgrid,
+            now Meta) and Daniel Borkmann (then at Cisco, now
+            Isovalent) rewrote it. The result was eBPF: a more
+            general virtual machine with a register-based instruction
+            set, broader data types, kernel-side maps for state, and
+            verifier guarantees borrowed in spirit from DTrace. The
+            eBPF rework was accepted by David Miller into the
+            networking tree in March 2014 and shipped in
+            <a href="https://docs.kernel.org/networking/filter.html" target="_blank" rel="noopener">Linux 3.18 on 7 December 2014</a>.</p>
+
+        <p>The verifier is the safety-critical piece. Before loading,
+            the kernel walks every possible path of the eBPF program
+            and proves that the program terminates, that all memory
+            accesses are bounded, that all pointers are valid for
+            their context, that no loop runs unboundedly. The proof
+            is, on its terms, more elaborate than DTrace's
+            Turing-incomplete language because eBPF chose a more
+            powerful instruction set. The result is the same in
+            production: a misused script cannot crash the kernel.</p>
+
+        <p>User-facing tracing tools came in the years that followed.
+            The BPF Compiler Collection (BCC), led by Brenden Blanco
+            at IO Visor with substantial contributions from Brendan
+            Gregg and many others, arrived in 2015. BCC let one write
+            tracing scripts in Python with embedded C, which the
+            kernel-side runtime would compile to eBPF bytecode and
+            load. The ergonomics were better than raw eBPF assembly;
+            they were still not DTrace.</p>
+
+        <p><a href="https://bpftrace.org/" target="_blank" rel="noopener">bpftrace</a>
+            was the closer match. Alastair Robertson (then a
+            researcher at the University of Manchester) wrote the
+            initial implementation; Brendan Gregg announced it in
+            October 2018 as "DTrace 2.0 for Linux". The bpftrace
+            script language deliberately echoes the D language: probe
+            specification, action block, aggregations, histograms,
+            stack traces. A bpftrace one-liner counting open syscalls
+            by process:</p>
+
+        <pre><code>bpftrace -e 'tracepoint:syscalls:sys_enter_open* { @[comm] = count(); }'</code></pre>
+
+        <p>The same answer as the DTrace example above. The five
+            letters at the front are different; the shape is
+            identical.</p>
+
+        <svg viewBox="0 0 600 280" aria-label="Two parallel timelines showing the fifteen-year gap. The top track is the DTrace lineage: 2001 design begins at Sun; November 2003 first working implementation; January 2005 Solaris 10 ships DTrace; 6 January 2009 FreeBSD 7.1-RELEASE ports DTrace via John Birrell. The bottom track is the Linux lineage: 1992 McCanne and Jacobson publish BPF at Berkeley for tcpdump; 2014 December Alexei Starovoitov and Daniel Borkmann ship eBPF in Linux 3.18; 2015 BCC arrives at IO Visor; October 2018 Brendan Gregg announces bpftrace as DTrace 2.0 for Linux. A bracket between the 2003 DTrace ship date and the 2018 bpftrace announcement is labelled 'fifteen years, same shape, different licence path'." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-cmp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-cmp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-cmp-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-cmp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-cmp-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .uw-cmp-tick { stroke: var(--muted); stroke-width: 1; }
+                .uw-cmp-dot { fill: var(--accent); }
+                .uw-cmp-bracket { stroke: var(--accent); stroke-width: 1.2; fill: none; stroke-dasharray: 4,3; }
+            </style>
+            <text x="300" y="22" class="uw-cmp-title" text-anchor="middle">Fifteen Years, Same Shape, Different Licence Path</text>
+
+            <text x="40" y="68" class="uw-cmp-head">DTrace lineage (CDDL, then BSD)</text>
+            <line x1="40" y1="92" x2="560" y2="92" class="uw-cmp-axis"/>
+
+            <circle cx="80" cy="92" r="4" class="uw-cmp-dot"/>
+            <line x1="80" y1="92" x2="80" y2="98" class="uw-cmp-tick"/>
+            <text x="80" y="116" class="uw-cmp-text" text-anchor="middle">2001</text>
+            <text x="80" y="130" class="uw-cmp-muted" text-anchor="middle">Sun design starts</text>
+
+            <circle cx="180" cy="92" r="4" class="uw-cmp-dot"/>
+            <line x1="180" y1="92" x2="180" y2="98" class="uw-cmp-tick"/>
+            <text x="180" y="116" class="uw-cmp-text" text-anchor="middle">Nov 2003</text>
+            <text x="180" y="130" class="uw-cmp-muted" text-anchor="middle">working impl.</text>
+
+            <circle cx="260" cy="92" r="4" class="uw-cmp-dot"/>
+            <line x1="260" y1="92" x2="260" y2="98" class="uw-cmp-tick"/>
+            <text x="260" y="116" class="uw-cmp-text" text-anchor="middle">Jan 2005</text>
+            <text x="260" y="130" class="uw-cmp-muted" text-anchor="middle">Solaris 10 GA</text>
+
+            <circle cx="370" cy="92" r="4" class="uw-cmp-dot"/>
+            <line x1="370" y1="92" x2="370" y2="98" class="uw-cmp-tick"/>
+            <text x="370" y="116" class="uw-cmp-text" text-anchor="middle">6 Jan 2009</text>
+            <text x="370" y="130" class="uw-cmp-muted" text-anchor="middle">FreeBSD 7.1 (Birrell)</text>
+
+            <text x="40" y="174" class="uw-cmp-head">Linux lineage (BPF substrate, then rebuild)</text>
+            <line x1="40" y1="198" x2="560" y2="198" class="uw-cmp-axis"/>
+
+            <circle cx="60" cy="198" r="4" class="uw-cmp-dot"/>
+            <line x1="60" y1="198" x2="60" y2="204" class="uw-cmp-tick"/>
+            <text x="60" y="222" class="uw-cmp-text" text-anchor="middle">1992</text>
+            <text x="60" y="236" class="uw-cmp-muted" text-anchor="middle">BPF at Berkeley</text>
+            <text x="60" y="248" class="uw-cmp-muted" text-anchor="middle">(McCanne, Jacobson)</text>
+
+            <circle cx="380" cy="198" r="4" class="uw-cmp-dot"/>
+            <line x1="380" y1="198" x2="380" y2="204" class="uw-cmp-tick"/>
+            <text x="380" y="222" class="uw-cmp-text" text-anchor="middle">7 Dec 2014</text>
+            <text x="380" y="236" class="uw-cmp-muted" text-anchor="middle">eBPF in Linux 3.18</text>
+            <text x="380" y="248" class="uw-cmp-muted" text-anchor="middle">(Starovoitov, Borkmann)</text>
+
+            <circle cx="450" cy="198" r="4" class="uw-cmp-dot"/>
+            <line x1="450" y1="198" x2="450" y2="204" class="uw-cmp-tick"/>
+            <text x="450" y="222" class="uw-cmp-text" text-anchor="middle">2015</text>
+            <text x="450" y="236" class="uw-cmp-muted" text-anchor="middle">BCC at IO Visor</text>
+
+            <circle cx="540" cy="198" r="4" class="uw-cmp-dot"/>
+            <line x1="540" y1="198" x2="540" y2="204" class="uw-cmp-tick"/>
+            <text x="540" y="222" class="uw-cmp-text" text-anchor="middle">Oct 2018</text>
+            <text x="540" y="236" class="uw-cmp-muted" text-anchor="middle">bpftrace</text>
+            <text x="540" y="248" class="uw-cmp-muted" text-anchor="middle">(Robertson, Gregg)</text>
+
+            <path d="M 180 50 Q 360 36, 540 152" class="uw-cmp-bracket"/>
+            <text x="360" y="42" class="uw-cmp-muted" text-anchor="middle" font-style="italic">fifteen years between the same shape arriving on two systems</text>
+        </svg>
+
+        <h2>The Bridge: Brendan Gregg</h2>
+
+        <p>The biographical detail is worth naming. Brendan Gregg had
+            been one of the most prolific DTrace authors at Sun and
+            later Joyent. He co-wrote
+            <em>DTrace: Dynamic Tracing in Oracle Solaris, Mac OS X,
+            and FreeBSD</em> with Jim Mauro in 2011. He moved to
+            Netflix in 2014, where the production fleet runs Linux.
+            He spent the following decade rebuilding, on Linux, the
+            observability he had taken for granted on Solaris. His
+            2019 book <em>BPF Performance Tools: Linux System and
+            Application Observability</em> is the spiritual sequel to
+            the DTrace book; the same author, the same shape of
+            question, two ecosystems, fifteen years apart.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A horizontal arrow showing Brendan Gregg's biographical arc across two ecosystems. On the left, Sun Microsystems and Joyent on Solaris, where he co-wrote the DTrace book with Jim Mauro in 2011. On the right, Netflix on Linux, where he co-wrote BPF Performance Tools in 2019. Between them, a bridge labelled 2014 marks his move from Joyent to Netflix. The arrow conveys that the same author wrote the canonical observability book for both ecosystems, with eight years between them." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-br-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-br-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-br-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-br-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-br-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .uw-br-arr { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#uw-br-arrow); }
+            </style>
+            <defs>
+                <marker id="uw-br-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="uw-br-title" text-anchor="middle">The Same Author on Both Sides</text>
+
+            <rect x="30" y="50" width="220" height="100" class="uw-br-accent-box"/>
+            <text x="140" y="72" class="uw-br-head" text-anchor="middle">Sun / Joyent / Solaris</text>
+            <text x="140" y="92" class="uw-br-muted" text-anchor="middle">DTrace, 2003 onward</text>
+            <text x="140" y="108" class="uw-br-muted" text-anchor="middle">DTrace book (2011)</text>
+            <text x="140" y="122" class="uw-br-muted" text-anchor="middle">with Jim Mauro</text>
+            <text x="140" y="142" class="uw-br-muted" text-anchor="middle" font-style="italic">canonical reference</text>
+
+            <line x1="250" y1="100" x2="350" y2="100" class="uw-br-arr"/>
+            <text x="300" y="86" class="uw-br-muted" text-anchor="middle">2014</text>
+            <text x="300" y="118" class="uw-br-muted" text-anchor="middle">moves to Netflix</text>
+
+            <rect x="350" y="50" width="220" height="100" class="uw-br-accent-box"/>
+            <text x="460" y="72" class="uw-br-head" text-anchor="middle">Netflix / Linux</text>
+            <text x="460" y="92" class="uw-br-muted" text-anchor="middle">eBPF, 2014 onward</text>
+            <text x="460" y="108" class="uw-br-muted" text-anchor="middle">BPF Performance Tools</text>
+            <text x="460" y="122" class="uw-br-muted" text-anchor="middle">(2019), bpftrace announce</text>
+            <text x="460" y="142" class="uw-br-muted" text-anchor="middle" font-style="italic">canonical reference</text>
+
+            <text x="300" y="182" class="uw-br-muted" text-anchor="middle">Same author. Same shape of question.</text>
+            <text x="300" y="196" class="uw-br-muted" text-anchor="middle">Two ecosystems. Two books. Fifteen years apart.</text>
+        </svg>
+
+        <p>His public reflection has been measured. In 2018, on
+            announcing bpftrace, he wrote that the goal was not to
+            compete with DTrace but to deliver, on Linux, the
+            production-tracing experience that DTrace had defined.
+            The Linux engineering community has not generally
+            disputed the framing.</p>
+
+        <h2>The Shape, Side by Side</h2>
+
+        <p>The two stacks have an almost mirror-image structure. A
+            short comparison clarifies why the bpftrace one-liner
+            felt familiar to a DTrace operator on day one.</p>
+
+        <svg viewBox="0 0 600 280" aria-label="A side-by-side comparison of the two tracing stacks. On the left, the DTrace stack on FreeBSD: D script language (deliberately Turing-incomplete, compiler proves safety), syscall and userland probes, kernel provider, base-system tool. On the right, the eBPF stack on Linux: bpftrace script language (Robertson, 2018), tracepoints and kprobes and uprobes, in-kernel verifier proves safety, eBPF virtual machine (Starovoitov and Borkmann, 2014). The two stacks are drawn with matching positions and the same number of layers; a small note at the bottom observes that the shape is identical and the journey was longer." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-st-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-st-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-st-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-st-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-st-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uw-st-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="uw-st-title" text-anchor="middle">Two Stacks, Same Shape</text>
+
+            <text x="155" y="48" class="uw-st-head" text-anchor="middle">FreeBSD &#x2014; DTrace</text>
+
+            <rect x="30" y="58" width="250" height="36" class="uw-st-accent-box"/>
+            <text x="155" y="76" class="uw-st-text" text-anchor="middle">D script language</text>
+            <text x="155" y="88" class="uw-st-muted" text-anchor="middle">Turing-incomplete; compiler proves safety</text>
+
+            <rect x="30" y="100" width="250" height="36" class="uw-st-box"/>
+            <text x="155" y="118" class="uw-st-text" text-anchor="middle">syscall, USDT, profile, fbt providers</text>
+            <text x="155" y="130" class="uw-st-muted" text-anchor="middle">tens of thousands of probes per host</text>
+
+            <rect x="30" y="142" width="250" height="36" class="uw-st-box"/>
+            <text x="155" y="160" class="uw-st-text" text-anchor="middle">kernel provider</text>
+            <text x="155" y="172" class="uw-st-muted" text-anchor="middle">arms only when requested, zero idle cost</text>
+
+            <rect x="30" y="184" width="250" height="36" class="uw-st-box"/>
+            <text x="155" y="202" class="uw-st-text" text-anchor="middle">dtrace(1) in base since FreeBSD 7.1</text>
+            <text x="155" y="214" class="uw-st-muted" text-anchor="middle">6 January 2009, John Birrell port</text>
+
+            <text x="445" y="48" class="uw-st-head" text-anchor="middle">Linux &#x2014; eBPF / bpftrace</text>
+
+            <rect x="320" y="58" width="250" height="36" class="uw-st-accent-box"/>
+            <text x="445" y="76" class="uw-st-text" text-anchor="middle">bpftrace script language</text>
+            <text x="445" y="88" class="uw-st-muted" text-anchor="middle">verifier proves termination &amp; bounds at load</text>
+
+            <rect x="320" y="100" width="250" height="36" class="uw-st-box"/>
+            <text x="445" y="118" class="uw-st-text" text-anchor="middle">tracepoints, kprobes, uprobes, USDT</text>
+            <text x="445" y="130" class="uw-st-muted" text-anchor="middle">comparable probe surface to DTrace</text>
+
+            <rect x="320" y="142" width="250" height="36" class="uw-st-box"/>
+            <text x="445" y="160" class="uw-st-text" text-anchor="middle">eBPF virtual machine</text>
+            <text x="445" y="172" class="uw-st-muted" text-anchor="middle">register-based; in-kernel JIT compiler</text>
+
+            <rect x="320" y="184" width="250" height="36" class="uw-st-box"/>
+            <text x="445" y="202" class="uw-st-text" text-anchor="middle">Linux 3.18, 7 December 2014</text>
+            <text x="445" y="214" class="uw-st-muted" text-anchor="middle">Starovoitov, Borkmann; bpftrace 2018</text>
+
+            <text x="300" y="252" class="uw-st-muted" text-anchor="middle" font-style="italic">Five different letters at the front of the command.</text>
+            <text x="300" y="266" class="uw-st-muted" text-anchor="middle" font-style="italic">The shape is identical. The journey was longer.</text>
+        </svg>
+
+        <h2>The Point</h2>
+
+        <p>The Unix way is to expose the system to the operator and
+            trust them to ask honest questions. DTrace was the
+            canonical answer in 2003. The shape was: instrument every
+            probe, run on demand, prove safety at load, return
+            aggregated results.</p>
+
+        <p>Linux shipped the equivalent shape in 2018, fifteen years
+            later. The engineering on Linux was not harder than the
+            engineering on Solaris in 2003; the verifier work was
+            more elaborate because eBPF chose a more powerful
+            instruction set, but the safety guarantee is comparable.
+            The journey was longer for a reason that had nothing to
+            do with engineering: the original work was released under
+            a licence the Linux kernel could not accept, the rebuild
+            had to start from a different substrate, and the
+            user-facing tools had to be written essentially from
+            scratch.</p>
+
+        <p>Two practical takeaways for a working engineer in 2026.</p>
+
+        <p>First, on FreeBSD the tracing answer has been settled for
+            the better part of two decades. <code>dtrace -l</code>
+            enumerates the probes; the D language is small enough to
+            learn in a weekend; the production safety is, on the
+            architectural record, the strongest of any tracing system
+            in active use.</p>
+
+        <p>Second, on Linux the answer has finally settled too.
+            bpftrace is the closest match to D in syntax and intent;
+            BCC remains useful for richer scripts; <code>perf</code>,
+            <code>ftrace</code> and the underlying tracepoints
+            continue to coexist for narrower use cases. The shape of
+            "ask the kernel anything in production" is now a settled
+            Linux capability, and Brendan Gregg has, between two
+            books, written most of the documentation one will need.</p>
+
+        <blockquote>
+            <p>The longer point is not which tracer is better. The
+                longer point is that an architectural idea, however
+                clearly demonstrated, can be delayed by fifteen years
+                on a neighbouring system if the receiving licence
+                refuses coexistence with the giving one. The shape
+                was always the same. The journey was a great deal
+                longer.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The tracing lineage, briefly:</strong></p>
+            <ul>
+                <li><strong>The original (Sun, 2003)</strong>: DTrace by Bryan Cantrill, Mike Shapiro, Adam Leventhal (USENIX 2004 paper); Solaris 10 GA January 2005; CDDL (coexistence model, refused by GPL absorption); FreeBSD 7.1-RELEASE on 6 January 2009 (Birrell port)</li>
+                <li><strong>The Linux reconstruction</strong>: BPF (McCanne, Jacobson, Berkeley, 1992); eBPF (Starovoitov, Borkmann, Linux 3.18 on 7 December 2014); BCC (Brenden Blanco at IO Visor, 2015); bpftrace (Alastair Robertson, announced by Brendan Gregg as "DTrace 2.0 for Linux" in October 2018)</li>
+                <li><strong>The bridge: Brendan Gregg</strong>. DTrace book (2011, with Jim Mauro at Sun/Joyent); BPF Performance Tools (2019, at Netflix). Same author, same idea, two ecosystems, fifteen years apart</li>
+                <li><strong>The shape, on both sides</strong>: probe everything in production; kernel verifier proves safety before loading; zero overhead on disabled probes; aggregations, histograms, stack traces, USDT</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

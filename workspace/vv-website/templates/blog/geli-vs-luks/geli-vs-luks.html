@@ -1,0 +1,393 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}GELI vs LUKS &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A laptop is left on a train. With full-disk encryption, the finder has an expensive paperweight and a drive full of noise. Without it, they have your keys, your mail and your customers. FreeBSD and Linux both solve this well; they solve it rather differently. GELI is a GEOM class: in FreeBSD the block layer is one framework, and encryption is just another composable transform alongside mirroring, striping and labelling, with per-sector HMAC integrity behind one flag. LUKS writes a LUKS2 header and opens the device through device-mapper as dm-crypt; its defaults are sensible and, in one respect, ahead, because LUKS2 derives the key with argon2id, a memory-hard function stronger than GELI's PBKDF2. For integrity on Linux you add a second layer, dm-integrity, beneath dm-crypt. Both default to AES-256-XTS and both turn a stolen drive into noise. One framework of uniform parts, or several specialised parts composed. The Unix way prefers the version you can hold in one hand.">
+{( endslot )}
+
+{( slot canonical )}/blog/geli-vs-luks{( endslot )}
+
+{( slot og-title )}GELI vs LUKS &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The Unix Way Episode 18. Full-disk encryption on FreeBSD and Linux, two shapes. GELI is a GEOM class: in FreeBSD the block layer is one framework and encryption is another composable transform alongside mirroring, striping and labelling. geli init -e AES-XTS -l 256 -a HMAC/SHA256 sets up confidentiality and per-sector authentication together; the attached provider appears as /dev/ada1.eli and can take UFS or be handed to ZFS as a vdev. LUKS writes a LUKS2 header and opens the device through device-mapper as dm-crypt; its argon2id key derivation is memory-hard and genuinely ahead of GELI's PBKDF2. For on-disk integrity you add dm-integrity beneath dm-crypt. Both default to AES-256-XTS; both turn a stolen drive into noise. GELI assembles encryption, integrity and one-time-keyed swap as one GEOM class with one vocabulary; LUKS assembles a LUKS header over dm-crypt over dm-integrity beside LVM, each its own device-mapper target. One framework of uniform parts, or several specialised parts composed. The Unix way prefers the version you can hold in one hand.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "GELI vs LUKS",
+    "datePublished": "2026-05-25",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/geli-vs-luks",
+    "description": "The Unix Way Episode 18. Full-disk encryption on FreeBSD and Linux. GELI is FreeBSD's disk-encryption framework and is not a standalone product but a GEOM class: GEOM is the modular block-storage framework in which every transformation of a disk (mirroring, striping, labelling, encryption) is a class that consumes providers and presents providers, so encryption is one more transform in the stack. geli init -e AES-XTS -l 256 -a HMAC/SHA256 writes metadata and a master key encrypted under the passphrase; the default AES-XTS key length is 128 so -l 256 selects AES-256-XTS; key strengthening uses PKCS#5v2 (PBKDF2) auto-tuned to the host; geli attach creates /dev/ada1.eli, which can take UFS via newfs or be handed to ZFS as a vdev; the -a HMAC/SHA256 flag adds per-sector authenticated encryption so a flipped bit is detected, not silently decrypted into rubbish; encrypted swap uses one-time keys via geom_eli in rc.conf. LUKS (Linux Unified Key Setup) is the standard, used through cryptsetup: luksFormat writes a LUKS2 header (default since cryptsetup 2.1, 2019) with up to thirty-two key slots; the default cipher is aes-xts-plain64 256-bit (AES-256-XTS) and the default KDF is argon2id, a memory-hard function (around one gibibyte and several hundred milliseconds per attempt) that is genuinely stronger than GELI's PBKDF2 because the attacker must provision memory per guess; cryptsetup open creates /dev/mapper/secret through device-mapper over the dm-crypt target; authenticated encryption is added with --integrity, a second device-mapper target dm-integrity beneath dm-crypt; persistence is via /etc/crypttab and LUKS composes with LVM in either order. The architectural difference: on FreeBSD encryption is a GEOM class that stacks uniformly with gmirror, gstripe and glabel under one vocabulary, with integrity a flag rather than a subsystem; on Linux the same power is assembled from separate subsystems (LUKS header, dm-crypt, dm-integrity, dm-verity, LVM, mdadm), each its own device-mapper target with its own tooling. The modularity is why LUKS2 could adopt argon2id ahead of GELI; the coherence is why the FreeBSD answer to encrypt, mirror and detect tampering is three flags and one mental model. Both default to AES-256-XTS and both turn a stolen drive into noise.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-25">25 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>GELI vs LUKS</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25C6; Episode 18</p>
+
+        <p>A laptop is left on a train. With full-disk encryption, the
+            person who finds it has an expensive paperweight and a
+            drive full of noise. Without it, they have your SSH keys,
+            your mail, your password store and your customers' data.
+            The stakes are not subtle. FreeBSD and Linux both solve
+            this problem properly, with mature, audited tooling and
+            the same underlying cipher. They arrive at the solution by
+            rather different routes, and the routes are the
+            interesting part.</p>
+
+        <h2>FreeBSD: GELI</h2>
+
+        <p>GELI is FreeBSD's disk-encryption framework, and the first
+            thing to understand is that it is not a standalone product
+            bolted onto the system. It is a GEOM class. GEOM is
+            FreeBSD's modular block-storage framework, in which every
+            transformation of a disk (mirroring, striping, labelling,
+            encryption) is a class that consumes one or more providers
+            and presents a new provider. Encryption, in this model, is
+            simply one more transform in the stack.</p>
+
+        <p>You initialise a provider, choosing the cipher, key length
+            and, optionally, a data-authentication algorithm:</p>
+
+        <pre><code>geli init -e AES-XTS -l 256 -a HMAC/SHA256 /dev/ada1
+geli attach /dev/ada1
+newfs /dev/ada1.eli</code></pre>
+
+        <p><code>geli init</code> writes a small metadata block to the
+            last sector of the provider and sets up the master key,
+            encrypted under your passphrase (and, optionally, one or
+            more key files). The default cipher is AES-XTS; the
+            default key length for AES-XTS is 128 bits, so
+            <code>-l 256</code> is worth specifying for AES-256-XTS.
+            Key strengthening uses PKCS#5v2 (PBKDF2), with the
+            iteration count auto-tuned to the host.</p>
+
+        <p><code>geli attach</code> prompts for the passphrase and
+            creates a new provider, <code>/dev/ada1.eli</code>.
+            Everything written to <code>.eli</code> is encrypted on
+            its way to <code>/dev/ada1</code>; everything read is
+            decrypted on the way back. You can put UFS on it with
+            <code>newfs</code>, or hand it to
+            <a href="/blog/technical-beauty-zfs">ZFS</a> as a vdev
+            (<code>zpool create tank /dev/ada1.eli</code>), at which
+            point you have an encrypted ZFS pool with all of ZFS's
+            checksumming and snapshots intact.</p>
+
+        <p>The <code>-a HMAC/SHA256</code> flag is the quietly elegant
+            part. Without it, GELI provides confidentiality only: an
+            attacker who flips bits on the raw disk cannot read your
+            data, but the corrupted ciphertext will decrypt into
+            corrupted plaintext, silently. With it, GELI stores a
+            keyed HMAC for each sector and verifies it on read. A
+            tampered or degraded sector is detected and reported, not
+            silently served as rubbish. This is authenticated
+            encryption, and it lives in the same tool, behind one
+            flag.</p>
+
+        <p>GELI also handles encrypted swap cleanly with one-time
+            keys: each boot, swap is encrypted under a fresh random
+            key that is discarded at shutdown, so swapped-out secrets
+            never persist. This is configured in <code>rc.conf</code>
+            via the <code>geom_eli</code> mechanism, with no separate
+            subsystem involved.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A diagram of GELI as one GEOM class composing uniformly with the rest of the FreeBSD block layer. At the bottom, a raw disk provider. Above it, a row of GEOM classes drawn identically: geli (encryption plus HMAC integrity), gmirror (mirroring), gstripe (striping), glabel (labelling). Each consumes a provider and presents a provider with the same interface, so they stack in any order. Above them, the attached provider /dev/ada1.eli, which takes UFS or becomes a ZFS vdev. A note observes that integrity is a flag on the encryption class, not a separate subsystem." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-geom-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-geom-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-geom-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-geom-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-geom-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uw-geom-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="uw-geom-title" text-anchor="middle">GELI Is Just Another GEOM Class</text>
+
+            <rect x="200" y="44" width="200" height="30" class="uw-geom-box"/>
+            <text x="300" y="63" class="uw-geom-text" text-anchor="middle">UFS, or ZFS vdev</text>
+
+            <rect x="200" y="86" width="200" height="34" class="uw-geom-accent-box"/>
+            <text x="300" y="104" class="uw-geom-text" text-anchor="middle">/dev/ada1.eli</text>
+            <text x="300" y="116" class="uw-geom-muted" text-anchor="middle">attached provider</text>
+
+            <text x="300" y="140" class="uw-geom-muted" text-anchor="middle">one uniform interface: consume a provider, present a provider</text>
+
+            <rect x="30" y="150" width="120" height="40" class="uw-geom-accent-box"/>
+            <text x="90" y="168" class="uw-geom-head" text-anchor="middle">geli</text>
+            <text x="90" y="182" class="uw-geom-muted" text-anchor="middle">encrypt + HMAC</text>
+
+            <rect x="160" y="150" width="120" height="40" class="uw-geom-box"/>
+            <text x="220" y="168" class="uw-geom-head" text-anchor="middle">gmirror</text>
+            <text x="220" y="182" class="uw-geom-muted" text-anchor="middle">mirroring</text>
+
+            <rect x="290" y="150" width="120" height="40" class="uw-geom-box"/>
+            <text x="350" y="168" class="uw-geom-head" text-anchor="middle">gstripe</text>
+            <text x="350" y="182" class="uw-geom-muted" text-anchor="middle">striping</text>
+
+            <rect x="420" y="150" width="120" height="40" class="uw-geom-box"/>
+            <text x="480" y="168" class="uw-geom-head" text-anchor="middle">glabel</text>
+            <text x="480" y="182" class="uw-geom-muted" text-anchor="middle">labelling</text>
+
+            <text x="300" y="208" class="uw-geom-muted" text-anchor="middle" font-style="italic">Integrity is a flag on the encryption class, not a separate subsystem.</text>
+        </svg>
+
+        <h2>Linux: LUKS</h2>
+
+        <p>LUKS (Linux Unified Key Setup) is the standard, and it is
+            genuinely excellent. The user-facing tool is
+            <code>cryptsetup</code>:</p>
+
+        <pre><code>cryptsetup luksFormat /dev/sdb
+cryptsetup open /dev/sdb secret
+mkfs.ext4 /dev/mapper/secret</code></pre>
+
+        <p><code>cryptsetup luksFormat</code> writes a LUKS2 header
+            (LUKS2 has been the default format since cryptsetup 2.1,
+            2019) to the start of the device. The header is the part
+            that distinguishes LUKS from raw dm-crypt: it is a
+            documented metadata format holding the cipher parameters
+            and up to thirty-two key slots, so multiple passphrases or
+            key files can unlock the same master key, and any one can
+            be revoked without re-encrypting.</p>
+
+        <p>The defaults are well chosen and, in one respect, ahead of
+            GELI. The default cipher is <code>aes-xts-plain64</code>
+            with a 256-bit key per XTS half, which is AES-256-XTS. The
+            default key-derivation function in LUKS2 is argon2id, a
+            memory-hard function (roughly one gibibyte of memory and
+            several hundred milliseconds per attempt by default).
+            Memory-hardness is the property that makes large-scale
+            brute-forcing expensive even on GPUs and custom hardware,
+            because the attacker must provision memory per guess, not
+            merely compute. GELI's PBKDF2 is sound but not
+            memory-hard. On the key-derivation question, LUKS2 is the
+            stronger default, and it is worth saying so plainly.</p>
+
+        <svg viewBox="0 0 600 210" aria-label="A comparison of two key-derivation functions defending the passphrase. PBKDF2, used by GELI, is compute-hard: the attacker needs many iterations of computation per guess, drawn as a tall stack of compute but almost no memory, which GPUs and custom hardware parallelise cheaply. argon2id, the LUKS2 default, is memory-hard: each guess requires roughly one gibibyte of memory as well as computation, drawn as a large memory block per guess, so an attacker must provision memory per parallel guess. A note observes that memory is what makes large-scale brute-forcing dear, and that this is LUKS2's genuine advantage over GELI." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-kdf-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-kdf-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-kdf-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-kdf-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-kdf-c { fill: var(--muted); opacity: 0.5; }
+                .uw-kdf-m { fill: var(--accent); opacity: 0.85; }
+                .uw-kdf-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="300" y="22" class="uw-kdf-title" text-anchor="middle">Compute-Hard vs Memory-Hard</text>
+
+            <text x="150" y="48" class="uw-kdf-head" text-anchor="middle">PBKDF2 (GELI)</text>
+            <text x="150" y="64" class="uw-kdf-muted" text-anchor="middle">compute-hard, cheap to parallelise</text>
+            <rect x="120" y="74" width="20" height="86" class="uw-kdf-c"/>
+            <rect x="150" y="150" width="60" height="10" class="uw-kdf-c"/>
+            <text x="130" y="174" class="uw-kdf-muted" text-anchor="middle">compute</text>
+            <text x="180" y="174" class="uw-kdf-muted" text-anchor="middle">~0 memory</text>
+
+            <text x="450" y="48" class="uw-kdf-head" text-anchor="middle">argon2id (LUKS2)</text>
+            <text x="450" y="64" class="uw-kdf-muted" text-anchor="middle">memory-hard, dear to parallelise</text>
+            <rect x="380" y="74" width="140" height="86" class="uw-kdf-m"/>
+            <text x="450" y="122" class="uw-kdf-text" text-anchor="middle">~1 GiB per guess</text>
+            <text x="450" y="174" class="uw-kdf-muted" text-anchor="middle">attacker must provision memory per guess</text>
+
+            <text x="300" y="200" class="uw-kdf-muted" text-anchor="middle" font-style="italic">Memory is what makes brute-forcing dear. This is LUKS2's genuine advantage.</text>
+        </svg>
+
+        <p><code>cryptsetup open</code> decrypts the master key with
+            your passphrase and creates <code>/dev/mapper/secret</code>
+            through device-mapper, the kernel's generic framework for
+            stacking virtual block devices. The underlying crypto
+            target is dm-crypt. If you want authenticated encryption,
+            the equivalent of GELI's HMAC flag, you enable it with
+            <code>cryptsetup</code>'s <code>--integrity</code> option,
+            which adds a second device-mapper target, dm-integrity,
+            beneath dm-crypt. It works well; it is a second layer
+            rather than a flag on the first.</p>
+
+        <p>Persistence is via <code>/etc/crypttab</code> and the
+            initramfs, and LUKS composes with
+            <a href="/blog/the-snapshot-that-travels">LVM</a> in
+            either order (LVM-on-LUKS or LUKS-on-LVM) depending on
+            whether you want one passphrase for several logical
+            volumes or separate encryption per volume.</p>
+
+        <h2>The Shape</h2>
+
+        <p>Here is the difference, and it is architectural rather than
+            a matter of which is better.</p>
+
+        <p>On FreeBSD, encryption is a GEOM class. So is mirroring
+            (<code>gmirror</code>), striping (<code>gstripe</code>),
+            labelling (<code>glabel</code>), and journalling
+            (<code>gjournal</code>). Each consumes providers and
+            presents providers, with a uniform interface, so they
+            stack in any sensible order: a mirror of two encrypted
+            disks, or an encrypted mirror, is the same two classes
+            composed two ways, with the same command vocabulary. The
+            block layer is a single framework of interchangeable
+            transforms, and <code>geli</code> is one of them.
+            Integrity is not a separate subsystem; it is a flag on the
+            encryption class.</p>
+
+        <p>On Linux, the same capabilities exist and are at least as
+            powerful, but they are assembled from separate subsystems
+            with separate tooling: the LUKS header format, dm-crypt
+            for encryption, dm-integrity for authentication, dm-verity
+            for read-only integrity, LVM for volume management, mdadm
+            for RAID. Each is a different device-mapper target or a
+            different tool, with its own configuration surface,
+            composed into a stack. The power is there; the uniformity
+            is not. You compose specialised parts rather than uniform
+            ones.</p>
+
+        <svg viewBox="0 0 600 250" aria-label="A side-by-side comparison of the two architectures. On the left, FreeBSD: a single framework, GEOM, with geli, gmirror, gstripe and glabel drawn as identical interchangeable blocks within it, one vocabulary, encryption and integrity together. On the right, Linux: a stack of separate specialised subsystems, each a different box with its own tooling, from top to bottom the filesystem, the LUKS2 header, dm-crypt, dm-integrity, LVM and mdadm, composed through device-mapper. A note observes that both reach the same secure drive: one framework of uniform parts, or several specialised parts composed." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-sh-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-sh-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-sh-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-sh-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-sh-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .uw-sh-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .uw-sh-frame { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 6; }
+            </style>
+            <text x="300" y="22" class="uw-sh-title" text-anchor="middle">One Framework, or Many Subsystems</text>
+
+            <text x="150" y="48" class="uw-sh-head" text-anchor="middle">FreeBSD: GEOM</text>
+            <rect x="30" y="58" width="240" height="120" class="uw-sh-frame"/>
+            <text x="150" y="76" class="uw-sh-muted" text-anchor="middle">one framework, one vocabulary</text>
+            <rect x="48" y="88" width="92" height="34" class="uw-sh-accent-box"/>
+            <text x="94" y="108" class="uw-sh-text" text-anchor="middle">geli</text>
+            <rect x="156" y="88" width="92" height="34" class="uw-sh-box"/>
+            <text x="202" y="108" class="uw-sh-text" text-anchor="middle">gmirror</text>
+            <rect x="48" y="130" width="92" height="34" class="uw-sh-box"/>
+            <text x="94" y="150" class="uw-sh-text" text-anchor="middle">gstripe</text>
+            <rect x="156" y="130" width="92" height="34" class="uw-sh-box"/>
+            <text x="202" y="150" class="uw-sh-text" text-anchor="middle">glabel</text>
+
+            <text x="450" y="48" class="uw-sh-head" text-anchor="middle">Linux: a stack</text>
+            <rect x="360" y="58" width="200" height="22" class="uw-sh-box"/>
+            <text x="460" y="73" class="uw-sh-muted" text-anchor="middle">filesystem (ext4)</text>
+            <rect x="360" y="82" width="200" height="22" class="uw-sh-box"/>
+            <text x="460" y="97" class="uw-sh-muted" text-anchor="middle">LUKS2 header</text>
+            <rect x="360" y="106" width="200" height="22" class="uw-sh-accent-box"/>
+            <text x="460" y="121" class="uw-sh-muted" text-anchor="middle">dm-crypt</text>
+            <rect x="360" y="130" width="200" height="22" class="uw-sh-box"/>
+            <text x="460" y="145" class="uw-sh-muted" text-anchor="middle">dm-integrity</text>
+            <rect x="360" y="154" width="200" height="22" class="uw-sh-box"/>
+            <text x="460" y="169" class="uw-sh-muted" text-anchor="middle">LVM / mdadm</text>
+            <text x="460" y="190" class="uw-sh-muted" text-anchor="middle">each a device-mapper target</text>
+
+            <text x="300" y="218" class="uw-sh-muted" text-anchor="middle">Both reach the same secure drive. The power is equal; the uniformity is not.</text>
+            <text x="300" y="234" class="uw-sh-muted" text-anchor="middle" font-style="italic">One framework of uniform parts, or several specialised parts composed.</text>
+        </svg>
+
+        <p>Neither approach is wrong, and the trade-off is real. The
+            Linux ecosystem's modularity is part of why LUKS2 could
+            adopt argon2id ahead of GELI: dm-crypt's key handling is
+            one focused subsystem with its own maintainers and its own
+            release cadence. FreeBSD's coherence is part of why the
+            answer to "encrypt this, mirror it, and detect tampering"
+            is three flags and one mental model rather than three
+            subsystems.</p>
+
+        <h2>The Point</h2>
+
+        <p>The honest summary for a working engineer in 2026 is this.
+            This series prizes composability, and on that measure GELI
+            is the more Unix-aligned answer: encryption, per-sector
+            authentication and one-time-keyed swap are one GEOM class
+            with one vocabulary, composing uniformly with the rest of
+            the FreeBSD block layer, so "encrypt it, mirror it, detect
+            tampering" is three flags and one mental model. LUKS
+            reaches the same secure drive that turns a stolen disk
+            into noise, and on key derivation it is genuinely ahead:
+            LUKS2's argon2id is memory-hard where GELI's PBKDF2 is
+            not, a real reason to prefer it where passphrase
+            brute-force resistance dominates the threat model. But
+            LUKS assembles its result from separate specialised
+            subsystems, a LUKS header over dm-crypt over dm-integrity
+            beside LVM, each a different device-mapper target with its
+            own tooling.</p>
+
+        <svg viewBox="0 0 600 200" aria-label="A summary comparison table of GELI and LUKS. Both default to AES-256-XTS. Both turn a stolen drive into noise. GELI uses PBKDF2 for key derivation; LUKS2 uses the memory-hard argon2id, which is ahead. GELI provides integrity as a flag (HMAC) on one class; LUKS adds dm-integrity as a second layer. GELI is one GEOM class composing with the block layer; LUKS is a stack of separate device-mapper subsystems. A note records that both arrive at the same place." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-cmp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-cmp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-cmp-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9.5px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-cmp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-cmp-rule { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="300" y="22" class="uw-cmp-title" text-anchor="middle">Same Cipher, Two Shapes</text>
+
+            <text x="220" y="48" class="uw-cmp-head" text-anchor="middle">GELI (FreeBSD)</text>
+            <text x="450" y="48" class="uw-cmp-head" text-anchor="middle">LUKS (Linux)</text>
+            <line x1="30" y1="56" x2="570" y2="56" class="uw-cmp-rule"/>
+
+            <text x="35" y="76" class="uw-cmp-muted">cipher</text>
+            <text x="220" y="76" class="uw-cmp-text" text-anchor="middle">AES-256-XTS</text>
+            <text x="450" y="76" class="uw-cmp-text" text-anchor="middle">AES-256-XTS</text>
+
+            <text x="35" y="98" class="uw-cmp-muted">key derivation</text>
+            <text x="220" y="98" class="uw-cmp-text" text-anchor="middle">PBKDF2</text>
+            <text x="450" y="98" class="uw-cmp-text" text-anchor="middle">argon2id (memory-hard, ahead)</text>
+
+            <text x="35" y="120" class="uw-cmp-muted">integrity</text>
+            <text x="220" y="120" class="uw-cmp-text" text-anchor="middle">HMAC flag, one class</text>
+            <text x="450" y="120" class="uw-cmp-text" text-anchor="middle">dm-integrity, second layer</text>
+
+            <text x="35" y="142" class="uw-cmp-muted">shape</text>
+            <text x="220" y="142" class="uw-cmp-text" text-anchor="middle">one GEOM class</text>
+            <text x="450" y="142" class="uw-cmp-text" text-anchor="middle">stack of dm subsystems</text>
+
+            <text x="35" y="164" class="uw-cmp-muted">stolen drive</text>
+            <text x="220" y="164" class="uw-cmp-text" text-anchor="middle">noise</text>
+            <text x="450" y="164" class="uw-cmp-text" text-anchor="middle">noise</text>
+
+            <text x="300" y="190" class="uw-cmp-muted" text-anchor="middle" font-style="italic">Both arrive at the same place. The Unix way prefers the version you can hold in one hand.</text>
+        </svg>
+
+        <p>One framework of uniform parts, or several specialised
+            parts composed. Both arrive at the same place: a drive
+            that is, to anyone without the key, honestly just noise.</p>
+
+        <blockquote>
+            <p>Both turn a stolen drive into noise. GELI's edge is
+                coherence: one GEOM class for encryption plus
+                integrity, composing uniformly with mirroring and
+                striping. LUKS2's edge is its argon2id key derivation,
+                memory-hard where GELI's PBKDF2 is not. The Unix way
+                prefers the version you can hold in one hand.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Disk encryption, the essentials:</strong></p>
+            <ul>
+                <li><strong>FreeBSD (GELI)</strong>: <code>geli init -e AES-XTS -l 256 -a HMAC/SHA256 /dev/ada1</code>; <code>geli attach</code>, then <code>newfs</code> or hand <code>/dev/ada1.eli</code> to ZFS; encrypted swap with one-time keys via <code>geom_eli</code> in <code>rc.conf</code>; GELI is a GEOM class, so it stacks with <code>gmirror</code>, <code>gstripe</code>, <code>glabel</code></li>
+                <li><strong>Linux (LUKS2)</strong>: <code>cryptsetup luksFormat /dev/sdb</code> (LUKS2 and argon2id by default); <code>cryptsetup open /dev/sdb secret</code>, then <code>mkfs</code> on <code>/dev/mapper/secret</code>; authenticated encryption via <code>cryptsetup --integrity</code> (adds dm-integrity); persist via <code>/etc/crypttab</code>; LVM-on-LUKS or LUKS-on-LVM as you prefer</li>
+                <li><strong>Fair notes</strong>: both default to AES-256-XTS. LUKS2's argon2id KDF is memory-hard, a real advantage over GELI's PBKDF2. GELI's edge is coherence: one GEOM class for encryption plus integrity</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

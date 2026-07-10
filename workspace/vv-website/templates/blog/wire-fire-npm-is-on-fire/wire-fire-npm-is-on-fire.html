@@ -1,0 +1,443 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}npm Is on Fire &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Six weeks, four waves, one open-source worm. 31 March 2026: state-sponsored operators push a remote-control trojan into axios for three hours, tagged latest. 29 April: Mini Shai-Hulud infects four SAP-related npm packages. 11 May, 19:20 to 19:26 UTC: 84 poisoned versions across 42 TanStack packages. 12 May: the fully weaponised Shai-Hulud worm source goes public. Cumulative compromise inside 48 hours: 172 packages, 403 versions across npm and PyPI, roughly 518 million downloads. The disease is not the worm; the disease is an ecosystem in which every install runs arbitrary code with user permissions. The architectural answer (FreeBSD VuXML, jails, Capsicum, and a package model with human review) has existed for decades.">
+{( endslot )}
+
+{( slot canonical )}/blog/wire-fire-npm-is-on-fire{( endslot )}
+
+{( slot og-title )}npm Is on Fire &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Wire Fire Episode 01. Six weeks of supply-chain compromise on the npm registry, ending on 12 May 2026 with the Shai-Hulud worm source going public. 31 March: state-sponsored operators (Microsoft Sapphire Sleet, Mandiant UNC1069) backdoor axios versions 1.14.1 and 0.30.4 for three hours, tagged latest; roughly 100 million weekly downloads. 29 April: Mini Shai-Hulud hits four SAP-related npm packages. 11 May 19:20 to 19:26 UTC: 84 versions across 42 TanStack packages, then @uipath, @mistralai/mistralai, OpenSearch, Guardrails AI; 172 packages and 403 versions inside 48 hours, ~518M cumulative downloads. 2025 alone: 454,648 malicious npm packages, more than 99 per cent of all open-source malware now targets npm. The architectural answer has been quietly available for decades.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "npm Is on Fire",
+    "datePublished": "2026-05-14",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/wire-fire-npm-is-on-fire",
+    "description": "Wire Fire Episode 01. A documented six-week chronicle of the 2026 npm supply-chain crisis, from the 31 March axios backdoor (Sapphire Sleet, UNC1069, ~100M weekly downloads, three hours tagged latest) through the 29 April Mini Shai-Hulud wave against four SAP-related packages and the 11 May TanStack wave (84 versions across 42 packages in six minutes, scaling to 172 packages and 403 versions across npm and PyPI in 48 hours, ~518M cumulative downloads), to the 12 May watershed when the fully weaponised Shai-Hulud worm source went public. 454,648 malicious npm packages observed in 2025 alone; more than 99 per cent of all open-source malware now targets npm. The architectural answer is older than the problem: FreeBSD VuXML for advisories, jails and Capsicum for blast-radius containment, the FreeBSD ports model with human review for the trust property npm chose to ship without.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-14">14 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>npm Is on Fire</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">node</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Wire Fire</em> &#x276F;&#x276F;&#x276F;&#x276F; Episode 01</p>
+
+        <p>npm, the open registry that sits behind nearly every
+            JavaScript project on the public internet, has been under
+            permanent attack for years. Every modern application pulls
+            in dozens of packages, each of which pulls in more,
+            silently and on every install. In 2025 alone, security
+            vendors logged
+            <a href="https://cybernews.com/security/npm-packages-with-millions-downloads-compromised/" target="_blank" rel="noopener">454,648 malicious npm packages</a>;
+            Unit 42's parallel telemetry puts more than 99 per cent of
+            all observed open-source malware on npm. This week's worm
+            waves are not the disease. They are the latest symptom.</p>
+
+        <p>Six weeks, four waves, one open-source worm. This is the
+            post about what happened, what it means for anyone whose
+            production runs JavaScript, and what an architecture that
+            did not have this problem in the first place looks like.</p>
+
+        <h2>The Breach, in Four Acts</h2>
+
+        <p><strong>31 March 2026.</strong> State-sponsored operators
+            <a href="https://www.cisa.gov/news-events/alerts/2026/04/20/supply-chain-compromise-impacts-axios-node-package-manager" target="_blank" rel="noopener">push a backdoored release of axios</a>,
+            versions 1.14.1 and 0.30.4, into the npm registry. The
+            payload is a remote-access trojan delivered via a
+            malicious dependency, <code>plain-crypto-js@4.2.1</code>,
+            executed at install time through the postinstall lifecycle
+            hook. The poisoned versions are live for roughly three
+            hours and, crucially, tagged <code>latest</code>; on a
+            package with roughly one hundred million weekly downloads,
+            three hours of <code>latest</code> is enough. Microsoft's
+            threat-intelligence team attributes the operation to
+            <a href="https://www.microsoft.com/en-us/security/blog/2026/04/01/mitigating-the-axios-npm-supply-chain-compromise/" target="_blank" rel="noopener">Sapphire Sleet</a>
+            (DPRK); Mandiant tracks the same cluster as
+            <a href="https://cloud.google.com/blog/topics/threat-intelligence/north-korea-threat-actor-targets-axios-npm-package" target="_blank" rel="noopener">UNC1069</a>.</p>
+
+        <p><strong>29 April 2026.</strong>
+            <a href="https://www.theregister.com/security/2026/05/01/ongoing-supply-chain-attacks-worm-into-sap-npm-packages/" target="_blank" rel="noopener">Mini Shai-Hulud</a>,
+            a stripped-down variant of the previous autumn's
+            Shai-Hulud worm, surfaces against four SAP-related npm
+            packages. The wave is small enough to read as a smoke
+            test. With hindsight, it was.</p>
+
+        <p><strong>11 May 2026, 19:20 to 19:26 UTC.</strong> A
+            six-minute window in which, per
+            <a href="https://www.wiz.io/blog/mini-shai-hulud-strikes-again-tanstack-more-npm-packages-compromised" target="_blank" rel="noopener">Wiz's incident telemetry</a>,
+            84 poisoned versions are published across 42 packages in
+            the TanStack JavaScript ecosystem. Within 48 hours, the
+            wave widens to roughly
+            <a href="https://thehackernews.com/2026/05/mini-shai-hulud-worm-compromises.html" target="_blank" rel="noopener">172 packages and 403 versions across npm and PyPI</a>,
+            with an estimated 518 million cumulative downloads; the
+            blast radius reaches <code>@uipath</code>,
+            <code>@mistralai/mistralai</code>, OpenSearch, Guardrails
+            AI, and a long tail of smaller projects. The flagship
+            casualty, <code>@tanstack/react-router</code>, ships
+            roughly twelve million weekly downloads of its own.</p>
+
+        <p><strong>12 May 2026.</strong> The malware-research
+            aggregator vx-underground reports that the fully
+            weaponised Shai-Hulud worm source code is now publicly
+            available. The attack kit is, as of that morning, off the
+            shelf. This is the watershed; everything before was a
+            campaign, everything after is the weather.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A horizontal timeline of the four npm supply-chain waves between 31 March and 12 May 2026. 31 March: axios versions 1.14.1 and 0.30.4 backdoored for three hours, tagged latest, attributed to Sapphire Sleet and UNC1069, ~100 million weekly downloads exposed. 29 April: Mini Shai-Hulud infects four SAP-related npm packages. 11 May from 19:20 to 19:26 UTC: 84 poisoned versions across 42 TanStack packages, scaling to 172 packages and 403 versions across npm and PyPI in 48 hours, ~518 million cumulative downloads. 12 May: Shai-Hulud worm source goes public. The interval from 11 May onward is shaded as the period in which the toolkit became off-the-shelf." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wf-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .wf-tl-tick { stroke: var(--muted); stroke-width: 1; }
+                .wf-tl-dot { fill: var(--accent); }
+                .wf-tl-band { fill: var(--accent); opacity: 0.12; }
+            </style>
+            <text x="300" y="22" class="wf-tl-title" text-anchor="middle">Six Weeks, Four Waves, One Open-Source Worm</text>
+
+            <rect x="420" y="135" width="140" height="14" class="wf-tl-band"/>
+            <text x="490" y="130" class="wf-tl-muted" text-anchor="middle" font-style="italic">toolkit off the shelf</text>
+
+            <line x1="40" y1="155" x2="560" y2="155" class="wf-tl-axis"/>
+
+            <circle cx="80" cy="155" r="4" class="wf-tl-dot"/>
+            <line x1="80" y1="155" x2="80" y2="161" class="wf-tl-tick"/>
+            <text x="80" y="178" class="wf-tl-text" text-anchor="middle">31 Mar</text>
+            <text x="80" y="194" class="wf-tl-muted" text-anchor="middle">axios 1.14.1</text>
+            <text x="80" y="206" class="wf-tl-muted" text-anchor="middle">+ 0.30.4 backdoored</text>
+            <text x="80" y="218" class="wf-tl-muted" text-anchor="middle">3 h, tagged latest</text>
+            <text x="80" y="230" class="wf-tl-muted" text-anchor="middle">~100M weekly</text>
+
+            <circle cx="240" cy="155" r="4" class="wf-tl-dot"/>
+            <line x1="240" y1="155" x2="240" y2="161" class="wf-tl-tick"/>
+            <text x="240" y="178" class="wf-tl-text" text-anchor="middle">29 Apr</text>
+            <text x="240" y="194" class="wf-tl-muted" text-anchor="middle">Mini Shai-Hulud</text>
+            <text x="240" y="206" class="wf-tl-muted" text-anchor="middle">hits 4 SAP-related</text>
+            <text x="240" y="218" class="wf-tl-muted" text-anchor="middle">npm packages</text>
+
+            <circle cx="420" cy="155" r="4" class="wf-tl-dot"/>
+            <line x1="420" y1="155" x2="420" y2="161" class="wf-tl-tick"/>
+            <text x="420" y="178" class="wf-tl-text" text-anchor="middle">11 May 19:20&#x2013;26</text>
+            <text x="420" y="194" class="wf-tl-muted" text-anchor="middle">84 versions / 42 pkgs</text>
+            <text x="420" y="206" class="wf-tl-muted" text-anchor="middle">TanStack &#x2192; 172/403</text>
+            <text x="420" y="218" class="wf-tl-muted" text-anchor="middle">in 48 h, ~518M dl</text>
+
+            <circle cx="540" cy="155" r="4" class="wf-tl-dot"/>
+            <line x1="540" y1="155" x2="540" y2="161" class="wf-tl-tick"/>
+            <text x="540" y="178" class="wf-tl-text" text-anchor="middle">12 May</text>
+            <text x="540" y="194" class="wf-tl-muted" text-anchor="middle">Shai-Hulud</text>
+            <text x="540" y="206" class="wf-tl-muted" text-anchor="middle">source code</text>
+            <text x="540" y="218" class="wf-tl-muted" text-anchor="middle">goes public</text>
+
+            <text x="300" y="68" class="wf-tl-muted" text-anchor="middle" font-style="italic">Wave 4 is the watershed. Until then the kit was custom;</text>
+            <text x="300" y="82" class="wf-tl-muted" text-anchor="middle" font-style="italic">from 12 May it is downloadable.</text>
+        </svg>
+
+        <h2>The Scope</h2>
+
+        <p>Some numbers, because the scale is the argument. axios
+            alone ships roughly one hundred million weekly downloads.
+            The flagship TanStack package,
+            <code>@tanstack/react-router</code>, ships roughly twelve
+            million on its own. Cumulative downloads of the
+            compromised cohort across the May wave: an estimated
+            <a href="https://thehackernews.com/2026/05/mini-shai-hulud-worm-compromises.html" target="_blank" rel="noopener">518 million</a>.
+            172 packages, 403 versions, two registries (npm and PyPI),
+            inside 48 hours.</p>
+
+        <p>Set against the steady-state numbers from 2025, the
+            campaign is not an aberration. 454,648 malicious npm
+            packages observed in 2025 alone, per
+            <a href="https://cybernews.com/security/npm-packages-with-millions-downloads-compromised/" target="_blank" rel="noopener">Cybernews and Unit 42's parallel telemetry</a>.
+            More than 99 per cent of all open-source malware now
+            targets npm. The reason is not that JavaScript developers
+            are more wicked than their colleagues in other ecosystems.
+            The reason is that npm is the easiest registry on the
+            public internet to attack and one of the largest by usage.
+            The two properties are not independent.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A bar comparison of the 2025 open-source malware distribution. A very large bar represents npm at more than 99 per cent of all observed open-source malware, with 454,648 malicious packages logged in 2025 alone. A small bar represents the combined total of PyPI, RubyGems, Crates.io, Maven Central and the other public package registries. The visual proportion shows that the npm bar dwarfs the combined remainder." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wf-sc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-sc-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-sc-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-sc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-sc-bar-bad { fill: var(--accent); opacity: 0.85; }
+                .wf-sc-bar-rest { fill: var(--muted); opacity: 0.55; }
+            </style>
+            <text x="300" y="22" class="wf-sc-title" text-anchor="middle">Where Open-Source Malware Lives in 2025</text>
+
+            <text x="40" y="60" class="wf-sc-head">npm</text>
+            <rect x="40" y="68" width="500" height="32" class="wf-sc-bar-bad"/>
+            <text x="550" y="89" class="wf-sc-text" text-anchor="end">&gt; 99% &#x2014; 454,648 malicious packages</text>
+
+            <text x="40" y="128" class="wf-sc-head">PyPI + RubyGems + Crates.io + Maven + others</text>
+            <rect x="40" y="136" width="6" height="32" class="wf-sc-bar-rest"/>
+            <text x="60" y="157" class="wf-sc-muted">&lt; 1% combined</text>
+
+            <text x="300" y="200" class="wf-sc-muted" text-anchor="middle" font-style="italic">The largest registry is not the only one. It is the easiest.</text>
+        </svg>
+
+        <h2>The Mechanism</h2>
+
+        <p>The dependency chain is the attack surface, and the worm
+            walks it. Compromise one maintainer account anywhere in
+            the chain (by phishing, by a leaked CI token, by an
+            over-permissioned bot pull request), and the worm does the
+            rest: it harvests the credentials of every package that
+            account can publish to, publishes poisoned versions under
+            those stolen identities, and uses each new compromise to
+            reach the next. The 11 May wave automated this across
+            hundreds of projects in seconds.</p>
+
+        <p>The 11 May automation, per
+            <a href="https://www.stepsecurity.io/blog/mini-shai-hulud-is-back-a-self-spreading-supply-chain-attack-hits-the-npm-ecosystem" target="_blank" rel="noopener">StepSecurity's reconstruction</a>,
+            chained three weaknesses in GitHub's build service. First,
+            a <code>pull_request_target</code> trigger configured
+            without input sanitisation, exploitable through a
+            so-called "Pwn Request": a malicious pull request runs
+            with the privileges of the target repository, not the
+            forking one. Second, GitHub Actions cache poisoning: a
+            malicious cache entry is keyed such that a later run on
+            the legitimate branch reads attacker-controlled code as if
+            it were trusted build artefact. Third, OIDC token
+            extraction: the workflow's short-lived OIDC token, meant
+            to authenticate to cloud providers, is used to publish to
+            npm before it expires. The payload then runs inside any
+            machine that does <code>npm install</code>, via the
+            standard lifecycle hooks. The destructive variants observed
+            on the day include
+            <a href="https://www.aikido.dev/blog/mini-shai-hulud-is-back-tanstack-compromised" target="_blank" rel="noopener"><code>rm -rf ~/</code></a>
+            on the install host once the harvested tokens have been
+            revoked by their owners.</p>
+
+        <svg viewBox="0 0 600 320" aria-label="A diagram of the Shai-Hulud worm propagation. A maintainer account at the top is compromised through one of three vectors: phishing, leaked CI token, or an over-permissioned bot pull request. The worm then harvests credentials, publishes poisoned versions under stolen identity, and the cycle repeats outward to further maintainers. To the right, a parallel diagram shows the three GitHub Actions weaknesses chained on 11 May: pull_request_target Pwn Request, Actions cache poisoning, and OIDC token extraction, which together publish to npm without further human action. The payload executes through the install-time postinstall lifecycle hook on every machine that installs an affected package." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wf-mc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-mc-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-mc-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-mc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-mc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .wf-mc-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .wf-mc-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#wf-mc-arrow); }
+            </style>
+            <defs>
+                <marker id="wf-mc-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="wf-mc-title" text-anchor="middle">How the Worm Walks the Chain</text>
+
+            <rect x="40" y="50" width="240" height="46" class="wf-mc-accent-box"/>
+            <text x="160" y="70" class="wf-mc-head" text-anchor="middle">1 &#x25A0; Compromise one maintainer</text>
+            <text x="160" y="86" class="wf-mc-muted" text-anchor="middle">phishing &#x2022; leaked CI token &#x2022; bot PR</text>
+
+            <line x1="160" y1="96" x2="160" y2="116" class="wf-mc-arr"/>
+
+            <rect x="40" y="116" width="240" height="46" class="wf-mc-box"/>
+            <text x="160" y="136" class="wf-mc-head" text-anchor="middle">2 &#x25A0; Harvest credentials</text>
+            <text x="160" y="152" class="wf-mc-muted" text-anchor="middle">npm tokens, GitHub PATs, OIDC artefacts</text>
+
+            <line x1="160" y1="162" x2="160" y2="182" class="wf-mc-arr"/>
+
+            <rect x="40" y="182" width="240" height="46" class="wf-mc-box"/>
+            <text x="160" y="202" class="wf-mc-head" text-anchor="middle">3 &#x25A0; Publish poisoned versions</text>
+            <text x="160" y="218" class="wf-mc-muted" text-anchor="middle">under the stolen identity, tagged latest</text>
+
+            <line x1="160" y1="228" x2="160" y2="248" class="wf-mc-arr"/>
+
+            <rect x="40" y="248" width="240" height="46" class="wf-mc-box"/>
+            <text x="160" y="268" class="wf-mc-head" text-anchor="middle">4 &#x25A0; Walk to the next maintainer</text>
+            <text x="160" y="284" class="wf-mc-muted" text-anchor="middle">and repeat &#x2014; the chain is the surface</text>
+
+            <rect x="320" y="50" width="240" height="244" class="wf-mc-accent-box"/>
+            <text x="440" y="72" class="wf-mc-head" text-anchor="middle">The 11 May automation</text>
+            <text x="440" y="90" class="wf-mc-muted" text-anchor="middle">three weaknesses chained</text>
+
+            <rect x="340" y="106" width="200" height="50" class="wf-mc-box"/>
+            <text x="440" y="124" class="wf-mc-text" text-anchor="middle">pull_request_target</text>
+            <text x="440" y="138" class="wf-mc-muted" text-anchor="middle">Pwn Request: runs with</text>
+            <text x="440" y="150" class="wf-mc-muted" text-anchor="middle">target repo privileges</text>
+
+            <rect x="340" y="166" width="200" height="50" class="wf-mc-box"/>
+            <text x="440" y="184" class="wf-mc-text" text-anchor="middle">Actions cache poisoning</text>
+            <text x="440" y="198" class="wf-mc-muted" text-anchor="middle">attacker-controlled artefact</text>
+            <text x="440" y="210" class="wf-mc-muted" text-anchor="middle">read as trusted on next run</text>
+
+            <rect x="340" y="226" width="200" height="50" class="wf-mc-box"/>
+            <text x="440" y="244" class="wf-mc-text" text-anchor="middle">OIDC token extraction</text>
+            <text x="440" y="258" class="wf-mc-muted" text-anchor="middle">short-lived token publishes</text>
+            <text x="440" y="270" class="wf-mc-muted" text-anchor="middle">to npm before it expires</text>
+        </svg>
+
+        <h2>The Exposure</h2>
+
+        <p>If you have installed <code>axios</code> versions 1.14.1 or
+            0.30.4 since 31 March, or any package matching
+            <code>@tanstack/*</code>, <code>@uipath/*</code>,
+            <code>@mistralai/mistralai</code> or any of the SAP-related
+            npm namespaces in the same window, the assumption is that
+            the host on which the install ran is compromised.</p>
+
+        <p>The minimum response, in order:</p>
+
+        <ol>
+            <li>Rotate every credential reachable from the affected host: npm tokens, GitHub Personal Access Tokens, SSH keys, cloud-provider credentials, anything stored in the local keychain</li>
+            <li>Downgrade or pin the affected packages to known-good versions; treat the lockfile as canonical evidence of what actually got installed</li>
+            <li>Audit transitive dependencies; the worm is interested in the chain, not the headline package</li>
+            <li>On FreeBSD, cross-check against the <a href="https://vuxml.freebsd.org/freebsd/index.xml" target="_blank" rel="noopener">VuXML advisory feed</a>, which the Ports security team maintains as a structured XML record of known vulnerabilities in the ports tree</li>
+        </ol>
+
+        <p>For everyone else, the structural hygiene that the year
+            after this article should be normal:</p>
+
+        <pre><code>npm config set ignore-scripts true</code></pre>
+
+        <p>The line above turns off lifecycle scripts for all
+            <code>npm install</code> operations. Many packages will
+            stop working; that is the point. A package whose install
+            requires running arbitrary code on the operator's machine
+            is, in the security model of any other domain, an
+            unsigned binary one is being asked to execute on trust. If
+            it breaks, you know which packages have been smuggling
+            install-time code under the dependency wrapper.</p>
+
+        <p>Then: pin transitive dependencies (every layer, not just
+            the top), isolate untrusted installs in FreeBSD jails or
+            equivalent containers, separate the operator's workstation
+            from the build host, and treat any new dependency the way
+            a sensible person treats a parcel that arrived without an
+            invoice.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>npm was designed for trust by default. Every install runs
+            arbitrary code with the permissions of the user invoking
+            it. The average modern project pulls in
+            <a href="/blog/dependency-avalanche">over a thousand contributors</a>
+            no one in the project has ever met, through a transitive
+            graph that npm itself does not surface honestly. The
+            ecosystem has had
+            <a href="/blog/the-npm-tax">left-pad in 2016</a>,
+            event-stream in 2018, ua-parser-js in 2021, the September
+            2025 wave of eighteen packages with 2.6 billion weekly
+            downloads, and now the fully open-sourced worm of May
+            2026. Five years of public incidents, one public worm, and
+            the architecture remains, rather notably, unchanged.</p>
+
+        <p>The architecture is the product. One phished maintainer,
+            one over-permissioned token, one approved bot pull
+            request: each is enough; the mistake travels at machine
+            speed; and there is no brake in the pipeline. There never
+            was one. The defenders' wrappers (Dependabot, Snyk,
+            Renovate, GitHub Advanced Security, the entire
+            supply-chain monitoring SaaS economy) sit downstream of
+            the registry and run on the engineer's pull-request
+            schedule, which is, on a busy week, slower than the worm.</p>
+
+        <p>The FreeBSD project's
+            <a href="https://www.freebsd.org/ports/" target="_blank" rel="noopener">Ports collection</a>
+            offers a quietly contrasting design. Each port is
+            maintained by a named human committer, reviewed before
+            commit, signed at distribution, and tracked in VuXML for
+            advisories. Updates land slowly, on purpose. Boring on
+            purpose. The cost of slowness is a freshness lag of days
+            or weeks; the cost of npm's speed is the last six weeks of
+            this article. Capsicum, jails and per-build
+            <a href="/blog/the-regex-that-ran-unbounded">rctl</a>
+            limits provide the runtime budget the registry chose not
+            to provide. None of this was invented in 2026. The Ports
+            tree has worked this way since the late 1990s.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A side-by-side comparison of the two registry architectures. On the left, the npm model: trust by default, arbitrary code at install time, automated publishing through OIDC tokens, no per-commit human review, advisories scattered across vendor blogs. On the right, the FreeBSD Ports model: named maintainer per port, human review before commit, signed distfiles, slow updates by design, VuXML as a single canonical advisory feed. The trade-off line at the bottom notes that one optimises for velocity, the other for the property that the operator can trust the installer." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wf-cmp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-cmp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-cmp-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-cmp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .wf-cmp-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="wf-cmp-title" text-anchor="middle">Two Registries, Two Trust Properties</text>
+
+            <rect x="20" y="46" width="270" height="160" class="wf-cmp-box"/>
+            <text x="155" y="68" class="wf-cmp-head" text-anchor="middle">npm (status quo)</text>
+            <text x="155" y="92" class="wf-cmp-muted" text-anchor="middle">trust by default, arbitrary install-time code</text>
+            <text x="155" y="108" class="wf-cmp-muted" text-anchor="middle">~1,000 transitive contributors per project</text>
+            <text x="155" y="124" class="wf-cmp-muted" text-anchor="middle">automated publish via OIDC tokens</text>
+            <text x="155" y="140" class="wf-cmp-muted" text-anchor="middle">no human review at commit</text>
+            <text x="155" y="156" class="wf-cmp-muted" text-anchor="middle">advisories scattered across vendor blogs</text>
+            <text x="155" y="180" class="wf-cmp-muted" text-anchor="middle" font-style="italic">optimised for velocity</text>
+
+            <rect x="310" y="46" width="270" height="160" class="wf-cmp-accent-box"/>
+            <text x="445" y="68" class="wf-cmp-head" text-anchor="middle">FreeBSD Ports (since ~1995)</text>
+            <text x="445" y="92" class="wf-cmp-muted" text-anchor="middle">named maintainer per port</text>
+            <text x="445" y="108" class="wf-cmp-muted" text-anchor="middle">human review before commit</text>
+            <text x="445" y="124" class="wf-cmp-muted" text-anchor="middle">signed distfiles, checksum-verified</text>
+            <text x="445" y="140" class="wf-cmp-muted" text-anchor="middle">slow updates, on purpose</text>
+            <text x="445" y="156" class="wf-cmp-muted" text-anchor="middle">VuXML: single canonical advisory feed</text>
+            <text x="445" y="180" class="wf-cmp-muted" text-anchor="middle" font-style="italic">optimised for trust</text>
+
+            <text x="300" y="226" class="wf-cmp-muted" text-anchor="middle" font-style="italic">A trade-off, not a hierarchy. Choose the one whose failure mode you can afford.</text>
+        </svg>
+
+        <p>For any environment that takes its own security seriously,
+            npm is simply not fit for purpose. That is not a moral
+            statement about JavaScript; it is an architectural
+            statement about a registry whose threat model was never
+            updated for the world in which the threat actors became
+            patient. The choice is between accepting the freshness
+            premium and the failure mode that goes with it, or moving
+            the production stack to a registry whose architecture
+            already disagrees with the worm.</p>
+
+        <blockquote>
+            <p>This week's wave was a campaign. The fire underneath
+                has been the weather for years, and the forecast does
+                not change. Forty-five poisoned versions in six
+                minutes; one published worm; an open registry that has
+                no brake. The architectural answer is older than the
+                problem. Today it is the weather.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Four waves, one page:</strong></p>
+            <ul>
+                <li><strong>31 Mar 2026</strong>: <code>axios</code> versions 1.14.1 and 0.30.4 backdoored via the <code>plain-crypto-js</code> postinstall payload; cross-platform RAT; Microsoft attribution Sapphire Sleet (DPRK), Mandiant UNC1069; ~100M weekly downloads exposed</li>
+                <li><strong>29 Apr 2026</strong>: Mini Shai-Hulud hits four SAP-related npm packages; a small but informative smoke test</li>
+                <li><strong>11 May 2026, 19:20 to 19:26 UTC</strong>: 84 versions across 42 <code>@tanstack/*</code> packages in six minutes; scales to 172 packages / 403 versions across npm and PyPI within 48 hours; ~518M cumulative downloads; <code>@uipath</code>, <code>@mistralai/mistralai</code>, OpenSearch, Guardrails AI also affected</li>
+                <li><strong>12 May 2026</strong>: vx-underground reports the fully weaponised Shai-Hulud source has been published openly; the toolkit is now off the shelf</li>
+            </ul>
+            <p><strong>Actions for today</strong>: <code>npm config set ignore-scripts true</code>; audit the lockfile for the affected packages; rotate every credential reachable from compromised hosts; pin transitive dependencies; run untrusted installs inside FreeBSD jails.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

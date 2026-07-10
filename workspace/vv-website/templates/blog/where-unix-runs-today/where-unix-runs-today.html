@@ -1,0 +1,521 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Where Unix Runs Today &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Unix is not in a museum. Unix is in the room. The Mac on the desk is certified UNIX 03. The phone in the pocket runs Darwin, the same family. The Netflix stream from Friday evening came off a FreeBSD-13 box pushing 375 gigabits per second. The PlayStation 5 boots a Sony-customised FreeBSD 11. The router that carried your call is Juniper Junos, FreeBSD-based since 1998. AIX 7 is the only UNIX V7 in production today. Linux is not on the list; it is Unix-like, not Unix. The first of three Mondays on what Unix is.">
+{( endslot )}
+
+{( slot canonical )}/blog/where-unix-runs-today{( endslot )}
+
+{( slot og-title )}Where Unix Runs Today &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Unix Universe, the first of three Mondays on what Unix is. Open the laptop in front of you. If it is a Mac, you are on certified Unix; every version of macOS from 10.5 Leopard (2007) through 15 Sequoia (2024) has been certified by The Open Group as conforming to UNIX 03. Apple is the single largest carrier of certified Unix today, hundreds of millions of machines on desks, in bags, in living rooms; iOS, iPadOS, tvOS and watchOS share the Darwin foundation though they are not separately certified. Only one product on the planet is certified at the next level, UNIX V7 (Single UNIX Specification version 4): IBM's AIX 7. When you stream Netflix in the evening, the bits almost certainly come off a server running FreeBSD; Netflix Open Connect appliances run a lightly customised build of FreeBSD's development branch, the TLS offloading that lets one box push around 375 gigabits per second on half its CPU is a FreeBSD-13 feature written by Drew Gallatin with Chelsio, and the Open Connect network pushes over 100 terabits per second at peak across thousands of appliances. A substantial share of evening internet, globally, is FreeBSD. PlayStation 4 boots Orbis OS derived from FreeBSD 9; PS5 boots Orbis 2.0 derived from FreeBSD 11.0; over 200 million units shipped. Juniper Junos, on a substantial part of the internet's backbone routing equipment, has been FreeBSD-based since July 1998; the classical line tracks FreeBSD versions (R15.1 on FreeBSD 10, R21.1 on FreeBSD 12, R24.2 on FreeBSD 14), while Junos OS Evolved (from R18.3, 2018) is a parallel line built on a Linux kernel. The world's commercial Unix systems are not all in retirement homes: IBM AIX is actively developed, Oracle Solaris is in sustaining support, HP-UX is genuinely fading, z/OS is certified Unix in a category most engineers never think about. Linux is not on this list, not because it does not matter but because Linux is not Unix; it is Unix-like, written from scratch by Linus Torvalds in 1991 with no inherited Unix or BSD code, GNU userland, never certified by The Open Group. The standards question is next Monday. You have been holding Unix all morning.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Where Unix Runs Today",
+    "datePublished": "2026-06-08",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/where-unix-runs-today",
+    "description": "Unix Universe, the first of three Mondays on what Unix is. Open the laptop in front of you: if it is a Mac you are on certified Unix; if you hand it to the child next to you watching cartoons on an iPad it is Darwin underneath, the same family; the phone in your pocket is the same; walk through any data centre serving European video and a sizeable share of those streams come off appliances running FreeBSD; pick up a games console at the till and odds are very good it boots a fork of FreeBSD before it ever shows you a menu. Unix is not in a museum, Unix is in the room. The single largest carrier of certified Unix today is Apple: every version of macOS from 10.5 Leopard (2007) through macOS 15 Sequoia (2024) has been certified by The Open Group as conforming to the Single UNIX Specification version 3 (UNIX 03); the certification is for the full macOS distribution, not for Darwin in isolation (Darwin, Apple's open-source layer consisting of the XNU kernel plus FreeBSD-derived userland, has never been certified on its own), but macOS as Apple ships it carries the trademark, which is hundreds of millions of certified-Unix machines on desks, in bags and in living rooms every day. iOS, iPadOS, tvOS and watchOS share the Darwin foundation but are not separately certified; the family resemblance is there, the same kernel inheritance, the same userland conventions, the same Unix-shaped system calls underneath the touch keyboards and the lock screens. Apple is certified on UNIX 03 dating from 2002. Only one product on the planet is certified at the next level, UNIX V7 (Single UNIX Specification version 4, POSIX.1-2008): IBM's AIX 7. When you stream an evening's viewing on Netflix, the bits you receive almost certainly come off a server running FreeBSD. Netflix Open Connect Appliances, the boxes ISPs host in their own racks to bring Netflix's catalogue close to the viewer, run a lightly customised build of FreeBSD's development branch; Netflix publishes its work back upstream. The TLS offloading that lets a single appliance push around 375 gigabits per second on roughly half its CPU is a FreeBSD-13 feature, written by Netflix engineer Drew Gallatin in collaboration with Chelsio. The Open Connect network pushes over 100 terabits per second at peak across thousands of these appliances; estimates of Netflix's share of total internet traffic in peak hours land in the region of one third, the figure is a plausibility estimate not an audited statistic and worth a hedge, but the order of magnitude is not in dispute. A substantial share of evening internet, globally, is FreeBSD; the largest single carrier of bits on the internet at peak runs on an operating system whose family tree goes back to 4.4BSD-Lite, which goes back to Berkeley, which goes back to Bell Labs. Both PlayStation 4 and PlayStation 5 boot a Sony-customised FreeBSD: the PS4's Orbis OS is derived from FreeBSD 9 (2013 vintage), the PS5's Orbis 2.0 is derived from FreeBSD 11.0; Sony publishes the modified FreeBSD kernel source on its open-source page as the BSD licence permits; over 200 million PlayStation units have shipped since the PS3 (which already carried BSD lineage in a different form), each one underneath the menus and the game launcher a Unix-family machine. Junos OS, which runs on a substantial part of the internet's backbone routing equipment, has been FreeBSD-based since its first release in July 1998; the classical Junos line tracks the FreeBSD versions (R15.1 on FreeBSD 10, R21.1 on FreeBSD 12, R24.2 on FreeBSD 14). Juniper has introduced Junos OS Evolved (from R18.3, 2018), a newer variant built on a Linux kernel rather than FreeBSD; both lines exist in parallel, classical Junos is still FreeBSD, Junos OS Evolved is not. When a packet crosses the internet between Frankfurt and Madrid there is a non-trivial chance it passes through a router whose control plane is a direct descendant of Berkeley's 4.4BSD-Lite. The world's commercial Unix systems are not all in retirement homes. IBM AIX is actively developed, new versions track new IBM POWER processors, the public roadmap is clear; AIX 7 is the only operating system in the world certified at UNIX V7 level. Oracle Solaris is in what Oracle calls sustaining support, security patches and critical bug fixes but no major new features; Solaris has not been the centre of Oracle's attention since the Sun acquisition in 2010, but it has not been killed and still runs in telecom carrier infrastructure, long-cycle replicated databases, places that would be expensive to migrate. HP-UX is the one that is genuinely fading; its fortunes were tied to Intel's Itanium processor, which Intel discontinued; HPE still offers extended support contracts but the platform has no forward path. z/OS on IBM mainframes is certified Unix in a category most engineers never think about; it powers a substantial part of the world's banking transaction processing, the kind of system whose downtime appears in newspaper headlines because so few people remember it is there. For a long stretch, through the years when WhatsApp scaled to a billion users with a famously small engineering team, the backend ran on FreeBSD with Erlang on top; after the Meta acquisition the stack changed; the point that survives is the one Rick Reed and Jan Koum made publicly at the time, that FreeBSD's coherence and its network stack let a small team carry a very large user base. Linux is not in this list, not because Linux is unimportant (it carries an enormous share of the world's cloud servers, embedded devices and Android phones) but because Linux is not Unix; it is Unix-like; Linus Torvalds wrote the Linux kernel from scratch in 1991 with no inherited Unix or BSD code; the standard userland comes from GNU not from AT&T or Berkeley; Linux has never been certified by The Open Group and is not on the UNIX trademark register. It is a separate family. It looks Unix-shaped because that was the design intent, but the genealogy is its own. Today's piece is about where the certified family and its direct BSD relatives are running right now. Unix is not a historical curiosity. It is the operating-system family under your phone, under your laptop, behind your Friday-evening stream, inside the router that carries your call, in the back office of the bank that holds your salary, and inside the console your nephew is shouting at in the next room. You have been holding Unix all morning. Next Monday: the standards question. What does it actually take to be allowed to say Unix, and who decides?",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-06-08">8 June 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Where Unix Runs Today</h1>
+        <p class="vv-article-meta"><em>Unix Universe &#x22A3; What
+            Unix Is, 1 of 3.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">linux</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Open the laptop in front of you. If it is a Mac, you are
+            on certified Unix. Hand it to the child next to you,
+            watching cartoons on an iPad &#x2014; also Darwin
+            underneath, the same family. The phone in your pocket:
+            same. Walk through any data centre serving European
+            video, and a sizeable share of those streams come off
+            appliances running FreeBSD. Pick up a games console at
+            the till in any electronics shop, and odds are very
+            good it boots a fork of FreeBSD before it ever shows
+            you a menu.</p>
+
+        <blockquote>
+            <p>Unix is not in a museum. Unix is in the room.</p>
+        </blockquote>
+
+        <p>Before this Bow gets into what Unix actually <em>is</em>
+            (next Monday) or where it <em>came from</em> (the Monday
+            after), we should look at where it <em>lives</em>.
+            Because the genealogy and the standards both make more
+            sense once you notice that you have been holding Unix
+            all morning.</p>
+
+        <svg viewBox="0 0 640 240" aria-label="A diagram of four everyday places Unix lives today. From left to right: Apple (macOS, iOS, iPadOS, tvOS, watchOS, hundreds of millions of devices, certified UNIX 03); Netflix (Open Connect Appliances, FreeBSD, 100+ terabits per second at peak); Sony PlayStation (PS4 Orbis OS on FreeBSD 9, PS5 Orbis 2.0 on FreeBSD 11, over 200 million units); Juniper (Junos OS, FreeBSD-based since July 1998, on backbone routing). The legend notes that you have been holding Unix all morning." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uu-pl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-pl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-pl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-pl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-pl-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uu-pl-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="uu-pl-title" text-anchor="middle">Four Places You Have Been Holding Unix</text>
+
+            <rect x="10" y="50" width="150" height="160" class="uu-pl-accent-box"/>
+            <text x="85" y="72" class="uu-pl-head" text-anchor="middle">Apple</text>
+            <text x="85" y="92" class="uu-pl-text" text-anchor="middle">desk + pocket</text>
+            <text x="85" y="120" class="uu-pl-muted" text-anchor="middle">macOS 10.5 &#x2192; 15</text>
+            <text x="85" y="134" class="uu-pl-muted" text-anchor="middle">iOS / iPadOS</text>
+            <text x="85" y="148" class="uu-pl-muted" text-anchor="middle">tvOS / watchOS</text>
+            <text x="85" y="178" class="uu-pl-head" text-anchor="middle">UNIX 03</text>
+            <text x="85" y="194" class="uu-pl-muted" text-anchor="middle">hundreds of millions</text>
+
+            <rect x="170" y="50" width="150" height="160" class="uu-pl-accent-box"/>
+            <text x="245" y="72" class="uu-pl-head" text-anchor="middle">Netflix</text>
+            <text x="245" y="92" class="uu-pl-text" text-anchor="middle">evening stream</text>
+            <text x="245" y="120" class="uu-pl-muted" text-anchor="middle">Open Connect</text>
+            <text x="245" y="134" class="uu-pl-muted" text-anchor="middle">FreeBSD</text>
+            <text x="245" y="148" class="uu-pl-muted" text-anchor="middle">375 Gbps / box</text>
+            <text x="245" y="178" class="uu-pl-head" text-anchor="middle">100+ Tbps</text>
+            <text x="245" y="194" class="uu-pl-muted" text-anchor="middle">at peak</text>
+
+            <rect x="330" y="50" width="150" height="160" class="uu-pl-accent-box"/>
+            <text x="405" y="72" class="uu-pl-head" text-anchor="middle">Sony</text>
+            <text x="405" y="92" class="uu-pl-text" text-anchor="middle">games console</text>
+            <text x="405" y="120" class="uu-pl-muted" text-anchor="middle">PS4: Orbis OS</text>
+            <text x="405" y="134" class="uu-pl-muted" text-anchor="middle">on FreeBSD 9</text>
+            <text x="405" y="148" class="uu-pl-muted" text-anchor="middle">PS5: Orbis 2.0</text>
+            <text x="405" y="178" class="uu-pl-head" text-anchor="middle">FreeBSD 11</text>
+            <text x="405" y="194" class="uu-pl-muted" text-anchor="middle">200M+ units</text>
+
+            <rect x="490" y="50" width="140" height="160" class="uu-pl-accent-box"/>
+            <text x="560" y="72" class="uu-pl-head" text-anchor="middle">Juniper</text>
+            <text x="560" y="92" class="uu-pl-text" text-anchor="middle">backbone router</text>
+            <text x="560" y="120" class="uu-pl-muted" text-anchor="middle">Junos OS</text>
+            <text x="560" y="134" class="uu-pl-muted" text-anchor="middle">FreeBSD-based</text>
+            <text x="560" y="148" class="uu-pl-muted" text-anchor="middle">since July 1998</text>
+            <text x="560" y="178" class="uu-pl-head" text-anchor="middle">R24.2 = FBSD 14</text>
+            <text x="560" y="194" class="uu-pl-muted" text-anchor="middle">classical line</text>
+        </svg>
+
+        <h2>The Everyday Unix: Apple</h2>
+
+        <p>The single largest carrier of certified Unix today is
+            Apple.</p>
+
+        <p>Every version of macOS from
+            <a href="https://www.opengroup.org/openbrand/register/" target="_blank" rel="noopener">10.5 Leopard (2007) through macOS 15 Sequoia (2024) has been certified by The Open Group</a>
+            as conforming to the Single UNIX Specification, version
+            3 &#x2014; branded <strong>UNIX 03</strong>. The
+            certification is for the full macOS distribution, not
+            for Darwin in isolation; Darwin (Apple's open-source
+            layer &#x2014; XNU kernel plus FreeBSD-derived userland)
+            has never been certified on its own. But macOS as Apple
+            ships it carries the trademark.</p>
+
+        <p>That is hundreds of millions of certified-Unix machines
+            on desks, in bags, in living rooms, every day.</p>
+
+        <p>iOS, iPadOS, tvOS and watchOS share the Darwin foundation
+            but are not separately certified. Still, the family
+            resemblance is there: the same kernel inheritance, the
+            same userland conventions, the same Unix-shaped system
+            calls underneath the touch keyboards and the lock
+            screens.</p>
+
+        <p>One footnote worth keeping. Apple is certified on UNIX
+            03, dating from 2002. Only one product on the planet is
+            certified at the next level &#x2014; <strong>UNIX V7</strong>
+            (Single UNIX Specification version 4, POSIX.1-2008):
+            IBM's AIX 7. Apple, for reasons of its own, has not
+            stepped up.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A diagram of the UNIX certification ladder. Three tiers are shown. The top tier, UNIX V7 (Single UNIX Specification 4, POSIX.1-2008): only IBM AIX 7. The middle tier, UNIX 03 (Single UNIX Specification 3, 2002): macOS 10.5 through macOS 15. Outside the ladder, Unix-like systems that are not on the trademark register: Linux, Android, FreeBSD itself (FreeBSD-derived projects are not certified), and any other system not registered with The Open Group. The legend notes that you can be Unix-shaped without being Unix, and you can be Unix-derived without being certified." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uu-cert-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-cert-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-cert-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-cert-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-cert-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uu-cert-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .uu-cert-dash { fill: none; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 3; rx: 4; }
+            </style>
+            <text x="320" y="22" class="uu-cert-title" text-anchor="middle">The UNIX Trademark Register</text>
+
+            <rect x="160" y="50" width="320" height="60" class="uu-cert-accent-box"/>
+            <text x="320" y="72" class="uu-cert-head" text-anchor="middle">UNIX V7 (SUSv4, POSIX.1-2008)</text>
+            <text x="320" y="92" class="uu-cert-text" text-anchor="middle">IBM AIX 7</text>
+            <text x="320" y="104" class="uu-cert-muted" text-anchor="middle">the only product on the planet</text>
+
+            <rect x="120" y="124" width="400" height="60" class="uu-cert-accent-box"/>
+            <text x="320" y="146" class="uu-cert-head" text-anchor="middle">UNIX 03 (SUSv3, 2002)</text>
+            <text x="320" y="166" class="uu-cert-text" text-anchor="middle">macOS 10.5 Leopard (2007) &#x2192; macOS 15 Sequoia (2024)</text>
+            <text x="320" y="178" class="uu-cert-muted" text-anchor="middle">hundreds of millions of devices &#x2022; certification on the full distribution</text>
+
+            <rect x="40" y="200" width="560" height="60" class="uu-cert-dash"/>
+            <text x="320" y="222" class="uu-cert-head" text-anchor="middle">Outside the register (Unix-like, or Unix-derived but uncertified)</text>
+            <text x="320" y="242" class="uu-cert-muted" text-anchor="middle">Linux &#x2022; Android &#x2022; FreeBSD &#x2022; OpenBSD &#x2022; NetBSD &#x2022; Darwin alone &#x2022; iOS / iPadOS / tvOS / watchOS</text>
+            <text x="320" y="254" class="uu-cert-muted" text-anchor="middle">Unix-shaped, not Unix-trademarked</text>
+        </svg>
+
+        <h2>The Infrastructure Unix: Netflix</h2>
+
+        <p>When you stream an evening's viewing on Netflix, the bits
+            you receive almost certainly come off a server running
+            FreeBSD.</p>
+
+        <p>Netflix's
+            <a href="https://openconnect.netflix.com/" target="_blank" rel="noopener">Open Connect Appliances</a>
+            &#x2014; the boxes ISPs host in their own racks to bring
+            Netflix's catalogue close to the viewer &#x2014; run a
+            lightly customised build of FreeBSD's development
+            branch. Netflix publishes its work back upstream. The
+            TLS offloading that lets a single appliance push around
+            <strong>375 gigabits per second</strong> on roughly half
+            its CPU is a FreeBSD-13 feature, written by Netflix
+            engineer Drew Gallatin in collaboration with Chelsio.</p>
+
+        <p>The Open Connect network pushes <strong>over 100
+            terabits per second</strong> at peak across thousands of
+            these appliances. Estimates of Netflix's share of total
+            internet traffic in peak hours land in the region of one
+            third; the figure is a plausibility estimate, not an
+            audited statistic, and worth a hedge. But the order of
+            magnitude is not in dispute. A substantial share of
+            evening internet, globally, is FreeBSD.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="A scale diagram of Netflix Open Connect. One Open Connect Appliance pushes around 375 gigabits per second, with TLS offloading on roughly half its CPU; this is a FreeBSD-13 feature written by Drew Gallatin and Chelsio. Thousands of appliances together push over 100 terabits per second at peak. Netflix's share of total internet traffic in peak hours is plausibly around one third, with a hedge that the figure is an estimate not an audited statistic. The legend traces the lineage: FreeBSD descends from 4.4BSD-Lite, which descends from Berkeley, which descends from Bell Labs." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uu-nf-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-nf-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-nf-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-nf-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-nf-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uu-nf-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .uu-nf-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#uu-nf-arrow); }
+            </style>
+            <defs>
+                <marker id="uu-nf-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="uu-nf-title" text-anchor="middle">Open Connect: From One Box to a Third of the Evening</text>
+
+            <rect x="10" y="60" width="170" height="80" class="uu-nf-accent-box"/>
+            <text x="95" y="82" class="uu-nf-head" text-anchor="middle">one appliance</text>
+            <text x="95" y="102" class="uu-nf-text" text-anchor="middle">~ 375 Gbps</text>
+            <text x="95" y="118" class="uu-nf-muted" text-anchor="middle">TLS offload, FreeBSD-13</text>
+            <text x="95" y="132" class="uu-nf-muted" text-anchor="middle">Drew Gallatin + Chelsio</text>
+
+            <line x1="180" y1="100" x2="220" y2="100" class="uu-nf-arr"/>
+
+            <rect x="220" y="60" width="170" height="80" class="uu-nf-accent-box"/>
+            <text x="305" y="82" class="uu-nf-head" text-anchor="middle">the fleet</text>
+            <text x="305" y="102" class="uu-nf-text" text-anchor="middle">100+ Tbps</text>
+            <text x="305" y="118" class="uu-nf-muted" text-anchor="middle">at peak</text>
+            <text x="305" y="132" class="uu-nf-muted" text-anchor="middle">thousands of boxes</text>
+
+            <line x1="390" y1="100" x2="430" y2="100" class="uu-nf-arr"/>
+
+            <rect x="430" y="60" width="200" height="80" class="uu-nf-accent-box"/>
+            <text x="530" y="82" class="uu-nf-head" text-anchor="middle">the evening internet</text>
+            <text x="530" y="102" class="uu-nf-text" text-anchor="middle">~ 1/3 at peak</text>
+            <text x="530" y="118" class="uu-nf-muted" text-anchor="middle">plausibility estimate</text>
+            <text x="530" y="132" class="uu-nf-muted" text-anchor="middle">not an audited statistic</text>
+
+            <rect x="20" y="170" width="600" height="60" class="uu-nf-box"/>
+            <text x="320" y="190" class="uu-nf-head" text-anchor="middle">Lineage</text>
+            <text x="320" y="208" class="uu-nf-text" text-anchor="middle">Bell Labs &#x2192; Berkeley &#x2192; 4.4BSD-Lite &#x2192; FreeBSD &#x2192; Open Connect</text>
+            <text x="320" y="222" class="uu-nf-muted" text-anchor="middle">a substantial share of evening internet, globally, is FreeBSD</text>
+        </svg>
+
+        <p>The point is not Netflix's brand. The point is that the
+            largest single carrier of bits on the internet, at
+            peak, runs on an operating system whose family tree
+            goes back to 4.4BSD-Lite, which goes back to Berkeley,
+            which goes back to Bell Labs.</p>
+
+        <h2>The Console Unix: Sony</h2>
+
+        <p>Both PlayStation 4 and PlayStation 5 boot a
+            Sony-customised FreeBSD.</p>
+
+        <p>The PS4's Orbis OS is derived from <strong>FreeBSD 9</strong>
+            (2013 vintage). The PS5's Orbis 2.0 is derived from
+            <strong>FreeBSD 11.0</strong>
+            (<code>__FreeBSD_version</code> 1100122, for the
+            curious). Sony publishes the modified FreeBSD kernel
+            source on its open-source page, as the BSD licence
+            permits and good citizenship encourages.</p>
+
+        <p>Over 200 million PlayStation units have shipped since the
+            PS3 (which already carried BSD lineage in a different
+            form). Each one is, underneath the menus and the game
+            launcher, a Unix-family machine.</p>
+
+        <h2>The Router Unix: Juniper</h2>
+
+        <p>Junos OS, which runs on a substantial part of the
+            internet's backbone routing equipment, has been
+            FreeBSD-based since its first release in July 1998. The
+            classical Junos line tracks the FreeBSD versions: Junos
+            R15.1 runs on FreeBSD 10, R21.1 on FreeBSD 12, R24.2 on
+            FreeBSD 14.</p>
+
+        <p>Worth being precise here, since precision is part of what
+            this Bow is about. Juniper has introduced
+            <strong>Junos OS Evolved</strong> (from R18.3, 2018), a
+            newer variant built on a Linux kernel rather than
+            FreeBSD. Both lines exist in parallel. Classical Junos
+            is still FreeBSD; Junos OS Evolved is not. When someone
+            says "Juniper runs BSD", they are talking about the
+            classical line.</p>
+
+        <p>Either way, when a packet crosses the internet between
+            Frankfurt and Madrid, there is a non-trivial chance it
+            passes through a router whose control plane is a direct
+            descendant of Berkeley's 4.4BSD-Lite.</p>
+
+        <svg viewBox="0 0 640 440" aria-label="A genealogy diagram of the BSD-derived systems currently in production. At the root, Bell Labs leads to Berkeley, then to 4.4BSD-Lite (1994). From 4.4BSD-Lite three branches emerge: FreeBSD (which leads to Netflix Open Connect, Sony Orbis OS on PS4 and PS5, and classical Juniper Junos OS), Darwin (which leads to macOS and to iOS, iPadOS, tvOS, watchOS), and NetBSD and OpenBSD as parallel forks. A separate row at the bottom shows that Linux is a separate family, written from scratch in 1991 by Linus Torvalds with no inherited Unix or BSD code; Junos OS Evolved (2018) is on Linux, not FreeBSD. The legend notes that Unix-shaped is not the same word as Unix." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uu-gen-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-gen-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-gen-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-gen-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-gen-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uu-gen-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .uu-gen-line { stroke: var(--border); stroke-width: 1; fill: none; }
+                .uu-gen-accent-line { stroke: var(--accent); stroke-width: 1.2; fill: none; }
+            </style>
+            <text x="320" y="22" class="uu-gen-title" text-anchor="middle">The BSD Family Tree, Living in 2026</text>
+
+            <rect x="240" y="44" width="160" height="42" class="uu-gen-accent-box"/>
+            <text x="320" y="62" class="uu-gen-head" text-anchor="middle">Bell Labs (1969)</text>
+            <text x="320" y="78" class="uu-gen-muted" text-anchor="middle">Berkeley &#x2192; 4.4BSD-Lite (1994)</text>
+
+            <line x1="320" y1="86" x2="120" y2="116" class="uu-gen-accent-line"/>
+            <line x1="320" y1="86" x2="320" y2="116" class="uu-gen-accent-line"/>
+            <line x1="320" y1="86" x2="530" y2="116" class="uu-gen-accent-line"/>
+
+            <rect x="40" y="116" width="160" height="38" class="uu-gen-accent-box"/>
+            <text x="120" y="140" class="uu-gen-head" text-anchor="middle">FreeBSD</text>
+
+            <rect x="240" y="116" width="160" height="38" class="uu-gen-accent-box"/>
+            <text x="320" y="140" class="uu-gen-head" text-anchor="middle">Darwin (Apple)</text>
+
+            <rect x="450" y="116" width="160" height="38" class="uu-gen-accent-box"/>
+            <text x="530" y="140" class="uu-gen-head" text-anchor="middle">NetBSD / OpenBSD</text>
+
+            <line x1="120" y1="154" x2="120" y2="180" class="uu-gen-line"/>
+            <line x1="320" y1="154" x2="320" y2="180" class="uu-gen-line"/>
+            <line x1="530" y1="154" x2="530" y2="180" class="uu-gen-line"/>
+
+            <rect x="40" y="180" width="160" height="32" class="uu-gen-box"/>
+            <text x="120" y="200" class="uu-gen-text" text-anchor="middle">Netflix Open Connect</text>
+
+            <rect x="40" y="222" width="160" height="32" class="uu-gen-box"/>
+            <text x="120" y="242" class="uu-gen-text" text-anchor="middle">Sony PS4 / PS5</text>
+
+            <rect x="40" y="264" width="160" height="32" class="uu-gen-box"/>
+            <text x="120" y="284" class="uu-gen-text" text-anchor="middle">Junos OS (classical)</text>
+
+            <rect x="240" y="180" width="160" height="32" class="uu-gen-box"/>
+            <text x="320" y="200" class="uu-gen-text" text-anchor="middle">macOS</text>
+
+            <rect x="240" y="222" width="160" height="32" class="uu-gen-box"/>
+            <text x="320" y="242" class="uu-gen-text" text-anchor="middle">iOS / iPadOS</text>
+
+            <rect x="240" y="264" width="160" height="32" class="uu-gen-box"/>
+            <text x="320" y="284" class="uu-gen-text" text-anchor="middle">tvOS / watchOS</text>
+
+            <rect x="450" y="180" width="160" height="32" class="uu-gen-box"/>
+            <text x="530" y="200" class="uu-gen-text" text-anchor="middle">research</text>
+
+            <rect x="450" y="222" width="160" height="32" class="uu-gen-box"/>
+            <text x="530" y="242" class="uu-gen-text" text-anchor="middle">server niches</text>
+
+            <line x1="40" y1="338" x2="600" y2="338" class="uu-gen-line"/>
+            <text x="320" y="332" class="uu-gen-muted" text-anchor="middle">&#x2014; a separate family &#x2014;</text>
+
+            <rect x="40" y="358" width="280" height="48" class="uu-gen-box"/>
+            <text x="180" y="380" class="uu-gen-head" text-anchor="middle">Linux (1991)</text>
+            <text x="180" y="396" class="uu-gen-muted" text-anchor="middle">written from scratch by Linus Torvalds</text>
+
+            <line x1="320" y1="382" x2="360" y2="382" class="uu-gen-line"/>
+
+            <rect x="360" y="358" width="240" height="48" class="uu-gen-box"/>
+            <text x="480" y="380" class="uu-gen-head" text-anchor="middle">Junos OS Evolved (2018)</text>
+            <text x="480" y="396" class="uu-gen-muted" text-anchor="middle">on Linux, not BSD</text>
+
+            <text x="320" y="428" class="uu-gen-muted" text-anchor="middle" font-style="italic">Unix-shaped is not the same word as Unix.</text>
+        </svg>
+
+        <h2>The Enterprise Unix: AIX, Solaris, HP-UX, z/OS</h2>
+
+        <p>The world's commercial Unix systems are not all in
+            retirement homes.</p>
+
+        <p><strong>IBM AIX</strong> is actively developed. New
+            versions track new IBM POWER processors; the public
+            roadmap is clear. AIX 7 is the only operating system in
+            the world certified at UNIX V7 (SUSv4) level. Banks,
+            insurance, large enterprise back-office: AIX still
+            carries this work, and IBM still treats it as core
+            strategy.</p>
+
+        <p><strong>Oracle Solaris</strong> is in what Oracle calls
+            <em>sustaining support</em>. Security patches, critical
+            bug fixes, no major new features. Solaris has not been
+            the centre of Oracle's attention since the Sun
+            acquisition in 2010, but it has not been killed. It
+            still runs in telecom carrier infrastructure, in
+            long-cycle replicated databases, in places that would be
+            expensive to migrate and have no business reason to
+            migrate.</p>
+
+        <p><strong>HP-UX</strong> is the one that is genuinely
+            fading. Its fortunes were tied to Intel's Itanium
+            processor, which Intel discontinued. Hewlett Packard
+            Enterprise still offers extended support contracts, but
+            the platform has no forward path. It runs where it
+            runs, and where it runs, it tends to stay until the
+            hardware fails.</p>
+
+        <p><strong>z/OS</strong> on IBM mainframes is certified
+            Unix in a category most engineers never think about. It
+            powers a substantial part of the world's banking
+            transaction processing &#x2014; the kind of system
+            whose downtime appears in newspaper headlines because
+            so few people remember it is there.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="A status grid of the world's commercial Unix systems. IBM AIX is actively developed, tracks new POWER processors, UNIX V7 certified, used by banks and insurance. Oracle Solaris is in sustaining support, security patches and critical bug fixes only, still in telecom carriers and long-cycle databases. HP-UX is genuinely fading, tied to discontinued Itanium hardware, runs where it runs until the hardware fails. z/OS on IBM mainframes is certified Unix and runs a substantial part of world banking transaction processing. The legend notes that the world's commercial Unix systems are not all in retirement homes." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uu-ent-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-ent-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-ent-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-ent-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uu-ent-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uu-ent-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .uu-ent-faint { fill: none; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 3; rx: 4; }
+            </style>
+            <text x="320" y="22" class="uu-ent-title" text-anchor="middle">Commercial Unix in 2026</text>
+
+            <rect x="20" y="50" width="290" height="90" class="uu-ent-accent-box"/>
+            <text x="165" y="72" class="uu-ent-head" text-anchor="middle">IBM AIX 7</text>
+            <text x="165" y="90" class="uu-ent-text" text-anchor="middle">actively developed</text>
+            <text x="165" y="108" class="uu-ent-muted" text-anchor="middle">tracks new IBM POWER processors</text>
+            <text x="165" y="122" class="uu-ent-muted" text-anchor="middle">UNIX V7 certified &#x2022; banks, insurance, back-office</text>
+
+            <rect x="330" y="50" width="290" height="90" class="uu-ent-accent-box"/>
+            <text x="475" y="72" class="uu-ent-head" text-anchor="middle">Oracle Solaris</text>
+            <text x="475" y="90" class="uu-ent-text" text-anchor="middle">sustaining support</text>
+            <text x="475" y="108" class="uu-ent-muted" text-anchor="middle">security patches, critical bug fixes only</text>
+            <text x="475" y="122" class="uu-ent-muted" text-anchor="middle">telecom carriers, long-cycle replicated databases</text>
+
+            <rect x="20" y="150" width="290" height="90" class="uu-ent-faint"/>
+            <text x="165" y="172" class="uu-ent-head" text-anchor="middle">HP-UX</text>
+            <text x="165" y="190" class="uu-ent-text" text-anchor="middle">genuinely fading</text>
+            <text x="165" y="208" class="uu-ent-muted" text-anchor="middle">tied to discontinued Itanium</text>
+            <text x="165" y="222" class="uu-ent-muted" text-anchor="middle">extended support &#x2022; runs where it runs</text>
+
+            <rect x="330" y="150" width="290" height="90" class="uu-ent-accent-box"/>
+            <text x="475" y="172" class="uu-ent-head" text-anchor="middle">z/OS</text>
+            <text x="475" y="190" class="uu-ent-text" text-anchor="middle">certified Unix on mainframes</text>
+            <text x="475" y="208" class="uu-ent-muted" text-anchor="middle">substantial part of world banking</text>
+            <text x="475" y="222" class="uu-ent-muted" text-anchor="middle">transaction processing</text>
+        </svg>
+
+        <h2>A Historical Footnote: WhatsApp on FreeBSD</h2>
+
+        <p>For a long stretch &#x2014; through the years when
+            WhatsApp scaled to a billion users with a famously small
+            engineering team &#x2014; the backend ran on FreeBSD,
+            with Erlang on top. After the Meta acquisition the stack
+            changed. The point that survives the change is the one
+            Rick Reed and Jan Koum made publicly at the time:
+            FreeBSD's coherence and its network stack let a small
+            team carry a very large user base. That, too, is part
+            of where Unix has lived.</p>
+
+        <h2>A Note on Linux</h2>
+
+        <p>Some readers will be tilting an eyebrow by now and
+            asking the reasonable question: what about Linux?</p>
+
+        <p>Linux is <strong>not</strong> in this list. Not because
+            Linux is unimportant &#x2014; it carries an enormous
+            share of the world's cloud servers, embedded devices
+            and Android phones &#x2014; but because Linux <strong>is
+            not Unix</strong>. It is <em>Unix-like</em>. Linus
+            Torvalds wrote the Linux kernel from scratch in 1991,
+            with no inherited Unix or BSD code. The standard
+            userland comes from GNU, not from AT&amp;T or Berkeley.
+            Linux has never been certified by The Open Group and is
+            not on the UNIX trademark register.</p>
+
+        <p>It is a separate family. It looks Unix-shaped because
+            that was the design intent, but the genealogy is its
+            own.</p>
+
+        <p>Next Monday's piece &#x2014; the standards question
+            &#x2014; will be the place to talk properly about that
+            line. Today's piece is about where the <em>certified</em>
+            family and its direct BSD relatives are running right
+            now. Linux's story is parallel, and we will give it its
+            own room.</p>
+
+        <h2>The Point</h2>
+
+        <p>Unix is not a historical curiosity. It is the
+            operating-system family under your phone, under your
+            laptop, behind your Friday-evening stream, inside the
+            router that carries your call, in the back office of
+            the bank that holds your salary, and inside the console
+            your nephew is shouting at in the next room.</p>
+
+        <blockquote>
+            <p>You have been holding Unix all morning. The question
+                for the rest of this Bow is what makes it Unix
+                &#x2014; and how this strange, fifty-seven-year-old
+                family came to be everywhere at once without ever
+                quite advertising itself.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Coming Mondays:</strong></p>
+            <ul>
+                <li><strong>What Unix Is (15 June).</strong> The
+                    standards question. POSIX, the Single UNIX
+                    Specification, certified versus Unix-like, and
+                    where Linux sits in that frame.</li>
+                <li><strong>Where Unix Came From (22 June).</strong>
+                    Bell Labs, the PDP-7 summer of 1969, the move
+                    to Berkeley, the AT&amp;T-vs-BSDi suit, and the
+                    family tree that holds together fifty-seven
+                    years later.</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

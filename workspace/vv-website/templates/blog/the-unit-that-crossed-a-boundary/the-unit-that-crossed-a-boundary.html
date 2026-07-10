@@ -1,0 +1,465 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Unit That Crossed a Boundary &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="23 September 1999. The Mars Climate Orbiter fires its main engine to enter orbit, passes behind Mars, and is never heard from again. The spacecraft cost 193 million dollars. It was lost to a number with no unit on it. Lockheed Martin's ground software computed thruster impulse in pound-force seconds (imperial); NASA JPL's trajectory software expected newton-seconds (metric/SI). One pound-force second is 4.45 newton-seconds. Every trajectory correction over nine months was off by that factor; the craft arrived at 57 km instead of 226 km, deep in the atmosphere. The number was correct; it simply had no unit attached as it crossed between systems. In science and engineering, measure in metric; where two systems must still meet, make the unit travel with the number (Rust newtypes, F# units of measure, named variables). The same trap hides in GB versus GiB.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-unit-that-crossed-a-boundary{( endslot )}
+
+{( slot og-title )}The Unit That Crossed a Boundary &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Tales from the Bare Metal Episode 04. Mars Climate Orbiter, 23 September 1999. After 670 million kilometres over nine months, the insertion burn was meant to leave it at 226 km altitude; it arrived at 57 km, deep in the atmosphere. Lockheed Martin's ground software output thruster impulse in pound-force seconds; NASA JPL's trajectory software expected newton-seconds. One pound-force second is 4.45 newton-seconds. The number was correct; it crossed the interface with no unit attached, and each side assumed its own. Three systemic conditions: the spec required metric but was a document not a runtime check; the discrepancy was visible in navigation data months early but raised informally and never escalated; no end-to-end test ran both systems against the same manoeuvre. In science and engineering, measure in metric; where systems must meet, make the unit travel with the number. The same trap hides in GB versus GiB.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Unit That Crossed a Boundary",
+    "datePublished": "2026-05-20",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-unit-that-crossed-a-boundary",
+    "description": "Tales from the Bare Metal Episode 04. The Mars Climate Orbiter, launched 11 December 1998 and lost on 23 September 1999 at Mars orbit insertion, cost 193 million dollars to build as part of a 327.6 million dollar mission. The insertion burn was designed to place it at 226 km above the surface; reconstruction showed it reached approximately 57 km, deep within the atmosphere, where a craft built for vacuum does not survive. The Mishap Investigation Board Phase I report of 10 November 1999 found the root cause to be a unit mismatch at a software interface: Lockheed Martin's ground software produced thruster impulse in pound-force seconds (imperial), while NASA JPL's navigation software expected newton-seconds (SI). One pound-force second equals 4.45 newton-seconds; every impulse was read as 4.45 times too small for nine months. The number was correct; it crossed the interface with no unit attached and each side assumed its own. Three systemic conditions allowed it: the interface spec required metric but was a document not a runtime check; the discrepancy was visible in cruise navigation data months early but raised informally and never escalated; no end-to-end test ran the two systems against the same manoeuvre. The principle: in science and engineering, measure in metric (SI); where two systems must still meet, make the unit travel with the number through types the compiler checks (Rust newtypes, F# units of measure), fields the parser demands, or names the variable carries. The same mismatch hides in the decimal-versus-binary gap between gigabyte and gibibyte, defined by the IEC in 1998; prefer KiB, MiB, GiB, TiB when you mean powers of two.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-20">20 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Unit That Crossed a Boundary</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">devops</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Tales from the Bare Metal</em> &#x261E; Episode 04</p>
+
+        <p><strong>&laquo; Thou shalt not measure science in imperial
+            units! &raquo;</strong></p>
+
+        <p>23 September 1999. The Mars Climate Orbiter fires its main
+            engine to enter orbit around Mars, passes behind the
+            planet as planned, and is never heard from again. The
+            spacecraft cost 193 million dollars to build, part of a
+            327.6 million dollar mission. It travelled 670 million
+            kilometres across nine months of deep space, and it was
+            lost to a number with no unit written on it.</p>
+
+        <p>This is the cleanest example in the engineering record of
+            why a quantity is not the same thing as a number.</p>
+
+        <h2>The Incident</h2>
+
+        <p>The Mars Climate Orbiter launched on 11 December 1998. Its
+            job was to enter a stable orbit around Mars and study the
+            planet's atmosphere, also serving as a communications
+            relay for the Mars Polar Lander that would follow.</p>
+
+        <p>The mission proceeded normally for nine months. On 23
+            September 1999, the orbiter executed its Mars Orbit
+            Insertion burn: a planned firing of the main engine to
+            slow the craft enough for Mars' gravity to capture it.
+            The burn was designed to place the orbiter at a closest
+            approach of 226 km above the Martian surface, comfortably
+            above the atmosphere.</p>
+
+        <p>The craft passed behind Mars, as expected, and signal was
+            lost, as expected. It was never reacquired. Post-failure
+            reconstruction showed that the trajectory had brought the
+            orbiter to approximately 57 km above the surface, deep
+            within the atmosphere. A spacecraft built for the vacuum
+            of orbit does not survive atmospheric entry at orbital
+            speed. It either burned up or was torn apart; either way,
+            it was gone.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A diagram of the planned and actual trajectories at Mars orbit insertion. The curved surface of Mars fills the lower portion. A thin shaded band above the surface marks the atmosphere. A green arc labelled 'planned 226 km' curves safely above the atmospheric band into a stable orbit. A red arc labelled 'actual 57 km' cuts down into the atmospheric band, where a small spacecraft silhouette is shown beginning to burn. A note records that the craft arrived 169 km too low." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-tr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-tr-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-tr-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-tr-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-tr-planned { stroke: var(--muted); stroke-width: 2; fill: none; stroke-dasharray: 5,3; }
+                .tb-tr-actual { stroke: var(--accent); stroke-width: 2; fill: none; }
+                .tb-tr-mars { fill: var(--muted); opacity: 0.18; }
+                .tb-tr-atmo { fill: var(--accent); opacity: 0.10; }
+            </style>
+            <text x="300" y="22" class="tb-tr-title" text-anchor="middle">Two Trajectories, 169 km Apart</text>
+
+            <path d="M 40 240 A 360 360 0 0 1 560 240 Z" class="tb-tr-mars"/>
+            <path d="M 40 215 A 360 340 0 0 1 560 215" class="tb-tr-atmo" stroke="none"/>
+            <path d="M 40 215 A 360 340 0 0 1 560 215" fill="none" stroke="var(--border)" stroke-width="0.75" stroke-dasharray="2,2"/>
+
+            <path d="M 70 60 Q 300 150, 540 70" class="tb-tr-planned"/>
+            <text x="300" y="120" class="tb-tr-head" text-anchor="middle">planned: 226 km</text>
+            <text x="300" y="134" class="tb-tr-muted" text-anchor="middle">safely above the atmosphere &#x2014; stable orbit</text>
+
+            <path d="M 70 95 Q 300 230, 540 95" class="tb-tr-actual"/>
+            <text x="300" y="206" class="tb-tr-head" text-anchor="middle">actual: 57 km</text>
+            <text x="300" y="220" class="tb-tr-muted" text-anchor="middle">deep in the atmosphere &#x2014; craft does not survive</text>
+
+            <circle cx="300" cy="218" r="3" fill="var(--accent)"/>
+        </svg>
+
+        <p>The Mars Climate Orbiter Mishap Investigation Board
+            released its Phase I report on 10 November 1999. The root
+            cause was stated plainly, and it was not a hardware fault,
+            not a navigation error in the usual sense, not a launch
+            problem. It was a unit mismatch at a software
+            interface.</p>
+
+        <h2>The Diagnosis</h2>
+
+        <p>The trajectory of a spacecraft is adjusted over its
+            journey by small thruster firings. Each firing produces an
+            impulse, and the magnitude of that impulse must be fed
+            into the navigation software so the predicted trajectory
+            stays accurate.</p>
+
+        <p>Two organisations wrote the two halves of this loop.
+            Lockheed Martin, in Colorado, built the spacecraft and the
+            ground software that calculated the impulse from each
+            thruster firing. NASA's Jet Propulsion Laboratory, in
+            California, ran the navigation software that consumed
+            those impulse figures and computed the resulting
+            trajectory.</p>
+
+        <p>Lockheed Martin's software produced the impulse in
+            pound-force seconds. This is an imperial unit: a
+            pound-force is the force exerted by gravity on a one-pound
+            mass, and a pound-force second is that force applied for
+            one second. JPL's navigation software expected the impulse
+            in newton-seconds. This is the metric (SI) unit: a newton
+            is the force that accelerates one kilogram at one metre
+            per second squared, and a newton-second is that force
+            applied for one second.</p>
+
+        <p>One pound-force second equals 4.45 newton-seconds. The two
+            numbers describe the same physical impulse, but the number
+            representing it differs by a factor of 4.45 depending on
+            which unit you mean. The interface specification required
+            metric. Lockheed Martin's software, for the specific file
+            in question, produced imperial. JPL's software read the
+            imperial numbers as though they were metric, and so every
+            impulse was interpreted as 4.45 times smaller than it
+            actually was. The corrections were systematically wrong,
+            in the same direction, for nine months, until the
+            predicted 226 km insertion altitude was, in reality,
+            57 km.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A diagram of the unit boundary. On the left, a box labelled Lockheed Martin ground software outputs impulse as 1.00 pound-force seconds. An arrow crosses a dashed boundary line carrying only the bare number 1.00 with no unit attached. On the right, a box labelled NASA JPL trajectory software reads the same 1.00 as newton-seconds. Below, a note records that one pound-force second equals 4.45 newton-seconds, so every value was read 4.45 times too small. The interface spec required metric; the bare number carried no label, and each side assumed its own." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-ub-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ub-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ub-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ub-big { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 16px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ub-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ub-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-ub-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tb-ub-arr { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#tb-ub-arrow); }
+                .tb-ub-bound { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4,3; fill: none; }
+            </style>
+            <defs>
+                <marker id="tb-ub-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="tb-ub-title" text-anchor="middle">The Number Crossed. The Unit Did Not.</text>
+
+            <rect x="30" y="56" width="190" height="70" class="tb-ub-box"/>
+            <text x="125" y="78" class="tb-ub-head" text-anchor="middle">Lockheed Martin</text>
+            <text x="125" y="94" class="tb-ub-muted" text-anchor="middle">ground software (Colorado)</text>
+            <text x="125" y="114" class="tb-ub-text" text-anchor="middle">output: 1.00 lbf&#x00B7;s</text>
+
+            <line x1="300" y1="50" x2="300" y2="150" class="tb-ub-bound"/>
+            <text x="300" y="44" class="tb-ub-muted" text-anchor="middle">interface (spec: metric)</text>
+            <line x1="220" y1="91" x2="380" y2="91" class="tb-ub-arr"/>
+            <text x="300" y="84" class="tb-ub-big" text-anchor="middle">1.00</text>
+            <text x="300" y="108" class="tb-ub-muted" text-anchor="middle">no unit attached</text>
+
+            <rect x="380" y="56" width="190" height="70" class="tb-ub-box"/>
+            <text x="475" y="78" class="tb-ub-head" text-anchor="middle">NASA JPL</text>
+            <text x="475" y="94" class="tb-ub-muted" text-anchor="middle">trajectory software (California)</text>
+            <text x="475" y="114" class="tb-ub-text" text-anchor="middle">read as: 1.00 N&#x00B7;s</text>
+
+            <rect x="120" y="156" width="360" height="44" class="tb-ub-accent-box"/>
+            <text x="300" y="178" class="tb-ub-text" text-anchor="middle">1 lbf&#x00B7;s = 4.45 N&#x00B7;s</text>
+            <text x="300" y="192" class="tb-ub-muted" text-anchor="middle">every impulse read 4.45&#x00D7; too small, in the same direction, for nine months</text>
+        </svg>
+
+        <p>The single most important sentence in the whole account is
+            this: the number was correct. The software did not
+            miscalculate. The bits that crossed the interface were the
+            right bits. What was missing was the label that said what
+            those bits meant, and each side filled in the missing
+            label with its own assumption.</p>
+
+        <h2>The Context</h2>
+
+        <p>A unit mismatch sounds like the kind of thing that should
+            be caught in an afternoon. The interesting question is not
+            how the mistake was made, but how it survived nine months
+            and 670 million kilometres without being caught. Three
+            conditions allowed it.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="Three systemic conditions that allowed the unit mismatch to survive. First: the interface specification required metric but was a document, not a runtime check; a document assigns blame after the fact, it does not stop a wrong number. Second: the discrepancy was visible in cruise navigation data months early, raised informally, but never escalated into a formal anomaly investigation because each individual correction was within tolerance. Third: there was no end-to-end test running both systems against the same manoeuvre; each system was tested in isolation and behaved correctly in isolation. A note observes that the fault lived only in the handoff, which isolated unit tests do not cover." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-cx-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-cx-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-cx-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-cx-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-cx-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="300" y="22" class="tb-cx-title" text-anchor="middle">Three Conditions, One Lost Mission</text>
+
+            <rect x="40" y="48" width="520" height="52" class="tb-cx-box"/>
+            <text x="60" y="70" class="tb-cx-head">1 &#x25A0; The spec was a document, not a check</text>
+            <text x="60" y="88" class="tb-cx-muted">the interface spec required metric; nothing enforced it at runtime. A document assigns blame after the fact</text>
+
+            <rect x="40" y="110" width="520" height="52" class="tb-cx-box"/>
+            <text x="60" y="132" class="tb-cx-head">2 &#x25A0; The warning was below the escalation threshold</text>
+            <text x="60" y="150" class="tb-cx-muted">cruise navigators saw the drift months early; raised informally, never escalated; each correction looked within tolerance</text>
+
+            <rect x="40" y="172" width="520" height="52" class="tb-cx-box"/>
+            <text x="60" y="194" class="tb-cx-head">3 &#x25A0; The test coverage stopped at the boundary</text>
+            <text x="60" y="212" class="tb-cx-muted">each system correct in isolation; no end-to-end test crossed the handoff, which is exactly where the fault lived</text>
+        </svg>
+
+        <p>First, the interface specification existed and was clear:
+            it required metric. The imperial output was a deviation
+            from spec. But nothing enforced the specification at
+            runtime. The specification was a document, not a check. A
+            document does not stop a wrong number; it only assigns
+            blame after the wrong number has done its work.</p>
+
+        <p>Second, the discrepancy was visible before the loss.
+            Navigators at JPL noticed during the cruise that the
+            trajectory was not behaving quite as the models predicted;
+            small corrections were needed more often than expected.
+            The signal was there in the data, months before arrival.
+            It was discussed informally but never escalated into a
+            formal anomaly investigation, partly because each
+            individual correction was within tolerance and the
+            cumulative drift looked like ordinary navigation noise
+            until it was too late.</p>
+
+        <p>Third, there was no end-to-end test. No test ran the
+            Lockheed Martin impulse calculation and the JPL trajectory
+            calculation against the same manoeuvre and compared the
+            result to an independent reference. Each system was tested
+            in isolation and behaved correctly in isolation. The fault
+            lived only in the handoff between them, which is precisely
+            the region that isolated unit tests do not cover.</p>
+
+        <p>These three conditions recur in almost every interface
+            failure. The spec is a document not a check; the warning
+            signal is visible but below the escalation threshold; the
+            test coverage stops at the boundary rather than crossing
+            it.</p>
+
+        <h2>The Principle</h2>
+
+        <p>Science settled the question of units a century ago. The
+            Syst&egrave;me International (SI) is the one coherent
+            measurement system the entire scientific and engineering
+            world shares, precisely so that a number computed by one
+            team means the same thing to another. The Mars Climate
+            Orbiter was lost because one half of the programme had not
+            honoured that settlement: it still computed in pound-force
+            seconds, an imperial unit with no place in serious
+            engineering work.</p>
+
+        <p>The lesson is direct. In scientific and engineering
+            contexts, measure in metric. There is no defence for
+            imperial units in work where a factor of 4.45 decides
+            whether a spacecraft enters orbit or enters the ground.
+            Every serious laboratory, the United States included,
+            standardised on SI for exactly this reason, and the
+            orbiter is the canonical demonstration of what the
+            alternative costs. Imperial units are a regional
+            convention for everyday life; they are not a tool for
+            computing trajectories, and the moment a programme treats
+            them as one, it has built a 4.45 into its maths and dared
+            the universe to find it.</p>
+
+        <p>There is a second guard worth stating, because metric
+            alone is not sufficient. Two systems both using metric can
+            still fail if one means seconds and the other
+            milliseconds, if one means metres and the other
+            kilometres, if one means bytes and the other kibibytes. So
+            the unit must also travel with the number, enforced where
+            the two systems meet.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="Three guards that make the unit travel with the number. First: types the compiler checks, such as Rust newtypes defining NewtonSeconds distinct from PoundForceSeconds, or F# units of measure where a float typed in newton-seconds cannot be assigned to pound-force seconds; the mistake becomes a compile error. Second: fields the parser demands, where a data-interchange format requires the unit as a mandatory field so the bare number is unrepresentable. Third: names the variable carries, the oldest discipline, writing timeout_ms rather than timeout, so the unit lives in the name. A note observes the orbiter needed all three and had none." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-gd-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-gd-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-gd-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-gd-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-gd-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="tb-gd-title" text-anchor="middle">Make the Unit Travel With the Number</text>
+
+            <rect x="40" y="48" width="520" height="52" class="tb-gd-accent-box"/>
+            <text x="60" y="70" class="tb-gd-head">1 &#x25A0; Types the compiler checks</text>
+            <text x="60" y="88" class="tb-gd-muted">Rust newtypes: NewtonSeconds(f64) &#x2260; PoundForceSeconds(f64) &#x2022; F# units of measure: float&lt;N*s&gt; &#x2260; float&lt;lbf*s&gt;</text>
+
+            <rect x="40" y="110" width="520" height="52" class="tb-gd-accent-box"/>
+            <text x="60" y="132" class="tb-gd-head">2 &#x25A0; Fields the parser demands</text>
+            <text x="60" y="150" class="tb-gd-muted">the unit is a mandatory field, not an optional comment; the bare number becomes unrepresentable</text>
+
+            <rect x="40" y="172" width="520" height="52" class="tb-gd-accent-box"/>
+            <text x="60" y="194" class="tb-gd-head">3 &#x25A0; Names the variable carries</text>
+            <text x="60" y="212" class="tb-gd-muted">never timeout = 30; write timeout_ms = 30 or Duration::from_secs(30). The unit lives where the reader cannot miss it</text>
+        </svg>
+
+        <p>The first rule needs no tooling: in science, measure in
+            metric. The second rule catches what the first cannot:
+            name the unit at every boundary regardless. The orbiter
+            needed both, and had neither.</p>
+
+        <p>On FreeBSD this discipline is visible in the small,
+            ordinary places. <code>dd bs=1M</code> states the block
+            size with its unit; the bare number would be ambiguous.
+            <code>sysctl</code> values are documented with their
+            units, and the tunables in <code>loader.conf</code> name
+            their dimensions. The convention across the base system is
+            that a number with a physical meaning is rarely written
+            naked. This is not glamorous and it has prevented an
+            enormous number of quiet disasters. The boundary is where
+            the unit must be loudest, because the boundary is exactly
+            where two assumptions meet and discover they disagree.</p>
+
+        <h2>Where It Travels</h2>
+
+        <p>The Mars Climate Orbiter is a spacecraft, which makes the
+            failure feel exotic. It is not exotic. The same failure
+            ships in ordinary software every day:</p>
+
+        <ul>
+            <li>Every API that passes a duration as a bare integer. Is <code>30</code> seconds or milliseconds? The function name <code>setTimeout(30)</code> does not say, and the two readings differ by a factor of a thousand</li>
+            <li>Every configuration value that takes a size without a suffix. Is <code>cache_size = 1000</code> bytes, kilobytes, or entries?</li>
+            <li>Every function signature with a parameter named <code>distance</code>, <code>interval</code>, <code>rate</code> or <code>size</code> and no unit anywhere in the type or the name</li>
+            <li>Every CSV handed from one team's export to another team's import, where column 7 is "amount" and nobody agreed whether it is gross or net, dollars or cents</li>
+            <li>Every number that means one thing on the left of an interface and another thing on the right, because the interface carried the number faithfully and the meaning not at all</li>
+        </ul>
+
+        <h2>The Same Mistake, Smaller: Gigabyte and Gibibyte</h2>
+
+        <p>The unit mismatch does not even need two systems as
+            different as imperial and metric. It hides inside a single
+            system, in the gap between decimal and binary.</p>
+
+        <p>A gigabyte, by the SI definition, is 1,000,000,000 bytes;
+            "giga" is the standard decimal prefix for a billion, the
+            same prefix as in gigahertz or gigawatt. A gibibyte,
+            defined by the IEC in 1998, is 1,073,741,824 bytes: two to
+            the power of thirty, the nearest binary round number. The
+            two differ by about 7.4%, and the gap widens with every
+            step up the ladder: terabyte versus tebibyte is about 10%,
+            petabyte versus pebibyte about 12.6%.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A bar comparison of decimal and binary units at each rung of the ladder. For each pair, a decimal bar and a binary bar are shown side by side, with the gap between them growing larger up the ladder. Kilobyte versus kibibyte differ by about 2.4 per cent; megabyte versus mebibyte by about 4.9 per cent; gigabyte versus gibibyte by about 7.4 per cent; terabyte versus tebibyte by about 10 per cent; petabyte versus pebibyte by about 12.6 per cent. A note records that a one-terabyte decimal drive displays as roughly 931 gibibytes, and recommends preferring KiB, MiB, GiB and TiB when powers of two are meant." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-gb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-gb-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-gb-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-gb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-gb-dec { fill: var(--muted); opacity: 0.5; }
+                .tb-gb-bin { fill: var(--accent); opacity: 0.85; }
+            </style>
+            <text x="300" y="22" class="tb-gb-title" text-anchor="middle">The Gap Widens Up the Ladder</text>
+
+            <text x="40" y="52" class="tb-gb-head">kB vs KiB</text>
+            <rect x="150" y="44" width="160" height="9" class="tb-gb-dec"/>
+            <rect x="150" y="44" width="164" height="9" class="tb-gb-bin" opacity="0"/>
+            <rect x="312" y="44" width="4" height="9" class="tb-gb-bin"/>
+            <text x="330" y="52" class="tb-gb-muted">+2.4%</text>
+
+            <text x="40" y="82" class="tb-gb-head">MB vs MiB</text>
+            <rect x="150" y="74" width="160" height="9" class="tb-gb-dec"/>
+            <rect x="312" y="74" width="8" height="9" class="tb-gb-bin"/>
+            <text x="334" y="82" class="tb-gb-muted">+4.9%</text>
+
+            <text x="40" y="112" class="tb-gb-head">GB vs GiB</text>
+            <rect x="150" y="104" width="160" height="9" class="tb-gb-dec"/>
+            <rect x="312" y="104" width="12" height="9" class="tb-gb-bin"/>
+            <text x="338" y="112" class="tb-gb-muted">+7.4%</text>
+
+            <text x="40" y="142" class="tb-gb-head">TB vs TiB</text>
+            <rect x="150" y="134" width="160" height="9" class="tb-gb-dec"/>
+            <rect x="312" y="134" width="16" height="9" class="tb-gb-bin"/>
+            <text x="342" y="142" class="tb-gb-muted">+10%</text>
+
+            <text x="40" y="172" class="tb-gb-head">PB vs PiB</text>
+            <rect x="150" y="164" width="160" height="9" class="tb-gb-dec"/>
+            <rect x="312" y="164" width="20" height="9" class="tb-gb-bin"/>
+            <text x="346" y="172" class="tb-gb-muted">+12.6%</text>
+
+            <text x="300" y="206" class="tb-gb-muted" text-anchor="middle">A "1 TB" decimal drive (1,000,000,000,000 bytes) displays as ~931 GiB.</text>
+            <text x="300" y="222" class="tb-gb-muted" text-anchor="middle" font-style="italic">Prefer KiB, MiB, GiB, TiB when you mean powers of two. The IEC defined them in 1998.</text>
+        </svg>
+
+        <p>The disk industry sells in decimal. A "1 TB" drive holds
+            1,000,000,000,000 bytes, exactly as labelled. Many
+            operating systems, Windows most stubbornly, then display
+            that capacity in binary while still calling the result
+            "GB". The drive shows up as roughly 931 "GB", the customer
+            concludes they have been short-changed by seven per cent,
+            and a support ticket is born. Nobody has lied; two
+            definitions of the same word have simply met at a boundary
+            without introducing themselves.</p>
+
+        <p>It is the Mars Climate Orbiter with the stakes turned down
+            from a spacecraft to a slightly disappointing disk. The
+            IEC defined a complete binary ladder in 1998, parallel to
+            the decimal one at every rung: kibibyte (KiB) beside
+            kilobyte (kB), mebibyte (MiB) beside megabyte (MB),
+            gibibyte (GiB) beside gigabyte (GB), and on through
+            tebibyte (TiB), pebibyte (PiB) and beyond. The
+            recommendation is the same discipline as everywhere else
+            in this story. If you mean the binary value, write GiB,
+            MiB, TiB. If you mean the decimal value, write GB, MB, TB.
+            Never write one while meaning the other. The standard has
+            been available for over a quarter of a century; the only
+            thing still keeping GB where GiB belongs is habit, and
+            habit is precisely what put pound-force seconds where
+            newton-seconds were expected.</p>
+
+        <blockquote>
+            <p>A 193-million-dollar spacecraft was lost because one
+                team did its sums in imperial units. The number was
+                right. The unit was from the wrong century. In science
+                and engineering, measure in metric; and where two
+                systems must still meet, name the unit of every number
+                that crosses between them, so that the compiler or the
+                variable name holds what no shared assumption ever
+                safely will.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The mismatch, in numbers:</strong></p>
+            <ul>
+                <li><strong>The failure</strong>: lost 23 September 1999 at orbital insertion; 193M USD spacecraft, 327.6M USD total mission; planned altitude 226 km, actual trajectory ~57 km, deep in the atmosphere</li>
+                <li><strong>The root cause</strong>: Lockheed Martin output pound-force seconds (imperial); NASA JPL expected newton-seconds (metric); 1 lbf&#x00B7;s = 4.45 N&#x00B7;s; the interface spec required metric and the deviation was never caught</li>
+                <li><strong>The systemic conditions</strong>: discrepancy visible months early, raised informally, never escalated; no end-to-end test across both systems</li>
+                <li><strong>The fix</strong>: in science and engineering, measure in metric (SI), full stop; where systems must still meet, the unit travels with the number (Rust newtypes, F# units of measure, typed quantities); prefer KiB, MiB, GiB, TiB when you mean powers of two</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

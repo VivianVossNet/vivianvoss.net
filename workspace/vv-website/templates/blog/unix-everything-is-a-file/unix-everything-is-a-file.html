@@ -1,0 +1,578 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Unix, Everything Is a File &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In the summer of 1969 Ken Thompson had three weeks of uninterrupted time at Bell Labs. He wrote the first version of Unix on a PDP-7 with four kilobytes of memory. With Dennis Ritchie and Rudd Canaday the team built a hierarchical filesystem, processes, pipes, and one architectural idea that has carried half a century without much fading: the file as the universal interface. A device, a pipe, a socket, a process listing, all opened, read, written and closed through the same system calls. ioctl is the honest escape hatch. Plan 9 followed the idea through. FreeBSD keeps the line: devfs, GELI as /dev/<name>.eli, ZFS zvol, bhyve under /dev/vmm/. Linux has, in some corners, drifted: D-Bus, systemd, Netlink, eBPF.">
+{( endslot )}
+
+{( slot canonical )}/blog/unix-everything-is-a-file{( endslot )}
+
+{( slot og-title )}Unix, Everything Is a File &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}By Design Episode 07. In the summer of 1969 Ken Thompson had three weeks of uninterrupted time at Bell Labs while his family was visiting California, an empty PDP-7 (an 18-bit minicomputer with four kilobytes of memory) and the lingering question of what a smaller, cleaner operating system might look like. By the end of those three weeks Thompson had written the first version of what became Unix; with Dennis Ritchie and Rudd Canaday over the following months the Bell Labs group built a hierarchical filesystem, processes, pipes for inter-process communication, a command interpreter, and one architectural idea that has carried half a century without much fading: the file as the universal interface. A device, a pipe, a socket, a process listing, all opened, read, written and closed through the same system calls. The idea did not arrive as a slogan; it arrived as the path of least resistance. The complaint, sockets are not files and GPUs are not files and hardware state does not fit a read(), is older than the design and not unfounded; ioctl exists precisely because some operations refuse to pretend they are bytes flowing in and out. The Unix answer is to extend the file when possible, accept the ioctl when not, and keep the path-and-handle vocabulary as the default. Devices live in /dev/, pipes are anonymous file descriptors, sockets are file descriptors after socket(), processes are inspectable through /proc; Ritchie and Thompson's 1974 ACM paper codified what had been on the PDP-7 since 1969; Plan 9 from Bell Labs (Pike, Thompson, Presotto, Winterbottom, 1992) pushed the idea to its logical end, with even the window system as a file system. Fifty-six years of Unix, and the file is still the unit: /dev/null, /dev/random, /dev/zero on every Unix-like ever shipped; pipes hold the shell together. On FreeBSD the discipline is intact: devfs (in base since FreeBSD 5.0, 2003) presents the kernel's device tree as a regular filesystem; GELI exposes encrypted volumes as /dev/<name>.eli; ZFS volumes appear under /dev/zvol/; bhyve presents virtual machine handles under /dev/vmm/. Linux started the same way and has, in some corners, drifted: D-Bus (2002) carries the message bus that earlier Unix work would have built as files and sockets; systemd (2010) builds its own interfaces around cgroups and the journal; Netlink is the alternative kernel channel for routing, audit and firewall; eBPF is a programmable layer that runs verified bytecode rather than a path that names a piece of state. Dennis Ritchie said of Plan 9 that Unix had the right idea but did not follow through; the same sentence, read against 2026 Linux, has rotated by 180 degrees. The principle is one interface, infinite implementations. A Unix one-liner reads almost like a sentence because every noun in it is a file.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Unix, Everything Is a File",
+    "datePublished": "2026-06-04",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/unix-everything-is-a-file",
+    "description": "By Design Episode 07. In the summer of 1969 Ken Thompson had three weeks of uninterrupted time; his wife and infant son were visiting relatives in California, AT&T research had recently withdrawn from the Multics project, and he had an empty PDP-7 (an 18-bit minicomputer with four kilobytes of memory) and the lingering question of what a smaller, cleaner operating system might look like. By the end of those three weeks Thompson had written the first version of what became Unix; with Dennis Ritchie and Rudd Canaday the Bell Labs group built a hierarchical filesystem, processes, pipes for inter-process communication, a command interpreter, and one architectural idea that has carried half a century without much fading: the file as the universal interface. A device, a pipe, a socket, a process listing, all opened, read, written and closed through the same system calls. The idea did not arrive as a slogan; it arrived as the path of least resistance: if you had a kernel that already knew how to give a userspace program a numbered handle to a piece of named state and a small set of operations on that handle, why invent another kind of handle for the next piece of state? Devices got file paths, pipes got file descriptors without paths, sockets, once they arrived in 4.2BSD in 1983, got the same file descriptors after a special creation call; the shape held, and the shape was the point. The complaint is older than the design and not unfounded. Sockets are not files: they carry connection state, message boundaries and asynchronous events that a stream of bytes throws away. GPUs are not files: they have command queues, memory layouts and a parallel execution model that no sequence of read() and write() naturally captures. A terminal has modes, signal characters and a baud rate that nobody types into the data stream. The escape hatch, ioctl, exists precisely because some operations refuse to pretend they are bytes; the Unix designers did not pretend otherwise. Alternative designs (microkernels, message-passing, capability-based systems, explicit object models) have produced more expressive surfaces in specific directions; none has displaced the file as the lingua franca of Unix-like systems, because the file is unreasonably composable. The decision is: when in doubt, give it a path. Devices live in /dev/ with names a shell script can open (/dev/null, /dev/random, /dev/zero); pipes are anonymous file descriptors created by pipe(2), bound between processes by the shell's |; sockets are created with socket() and used through the same read/write/close; processes are inspectable as /proc entries (Linux native, FreeBSD optional). Ritchie and Thompson's 1974 ACM paper, The UNIX Time-Sharing System (CACM volume 17 number 7), codified what had already been running on the PDP-7 since 1969 and was, by then, also on the PDP-11. Plan 9 from Bell Labs (Pike, Thompson, Presotto, Winterbottom, first edition 1992) pushed the idea to its logical end: in Plan 9 the window system is a file system, the keyboard is a file system, remote machines are mounted as file systems through the 9P protocol, even computation can be a file system. Dennis Ritchie said of Plan 9 that Unix had the right idea that just about everything in the system is accessible through a file but did not, in the end, follow through; Plan 9 followed through. The trade-off is honest: not every operation fits a sequence of bytes. A terminal driver has a stty configuration no read() will reveal; a network interface has an IP address you do not write into a file the way you write into one. ioctl is the call you make when the file model has carried you as far as it can. GPU drivers are the most striking modern case: a modern GPU exposes a command queue, a memory allocator, a synchronisation primitive set and a shader compiler interface, and the path-and-handle model can carry the open-the-device step but the rest is ioctl calls that look more like RPC than file IO. DRM (Direct Rendering Manager) on Linux and FreeBSD is the practical compromise: the GPU is a file in /dev/, opened like everything else, and then almost all the work happens through ioctl. Hardware that refuses the model outright lives behind its own ABI. The Unix answer is to extend the file when possible (memory mapping, asynchronous IO via fd, kqueue/epoll on file descriptors), accept the ioctl when the file abstraction cannot stretch further, and keep the path-and-handle vocabulary as the default. The trade is honest: the file model is not free, it is cheap because the alternatives are expensive. Fifty-six years of Unix, and the file is still the unit: /dev/null discards what is written to it, /dev/random and /dev/urandom give cryptographic randomness, /dev/zero gives an inexhaustible stream of zero bytes, pipes hold the shell together (ps ax piped to grep nginx piped to awk print one composes three programs into one query because every one reads from a file descriptor and writes to a file descriptor). On FreeBSD the discipline is intact: devfs (in base since FreeBSD 5.0, 2003) presents the kernel's device tree as a regular filesystem mounted on /dev/, GELI exposes encrypted volumes as /dev/<name>.eli, ZFS volumes (zvol) appear under /dev/zvol/<pool>/<name>, bhyve presents virtual machine handles under /dev/vmm/. Plan 9 is the pure version, still actively maintained at 9front.org. Linux started the same way and has, in some corners, drifted. /sys, the sysfs hierarchy added in 2.6, is in the spirit of the idea; the drift sits elsewhere. D-Bus (2002) carries the message bus that earlier Unix work would have built as files and sockets; systemd (2010) builds its own interfaces around cgroups, sockets, the journal and a large set of dbus services; Netlink sockets are the alternative kernel channel for routing, audit and firewall configuration that traditional Unix would have done through paths and ioctls; eBPF is a programmable layer that runs verified bytecode inside the kernel rather than a path that names a piece of state. None of these are wrong; they solve real problems the simple file model handles awkwardly. But the cumulative effect is that the Linux of 2026 has, in several important corners, become a system in which the file is one of several interfaces rather than the interface. Dennis Ritchie's verdict on Plan 9 was that Unix had the right idea but did not follow through; the same sentence, read against 2026 Linux, has rotated by 180 degrees; the FreeBSD line is closer to the original commitment, deliberately so. The principle: one interface, infinite implementations. The protocol the kernel offers (open, read, write, close, ioctl as the escape) and the abstraction the shell composes (the |, the <, the >, the 2>&1) are the same protocol viewed from different ends; there is no impedance to match because there is no impedance to bridge. A Unix one-liner reads almost like a sentence because every noun in it is a file.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-06-04">4 June 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Unix, Everything Is a File</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">linux</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>By Design</em> &#x22A3; Episode 07</p>
+
+        <p>In the summer of 1969,
+            <a href="https://computerhistory.org/blog/the-earliest-unix-code-an-anniversary-source-code-release/" target="_blank" rel="noopener">Ken Thompson had three weeks of uninterrupted time</a>.
+            His wife and infant son were visiting relatives in
+            California, and the AT&amp;T research division at Murray
+            Hill had recently withdrawn from the Multics project,
+            leaving Thompson with an empty PDP-7 (an 18-bit
+            minicomputer with four kilobytes of memory) and the
+            lingering question of what a smaller, cleaner operating
+            system might look like. By the end of those three weeks
+            Thompson had written the first version of what became
+            Unix. With Dennis Ritchie and Rudd Canaday over the
+            following months, the small Bell Labs group built a
+            hierarchical filesystem, the notion of computer
+            processes, pipes for inter-process communication, a
+            command interpreter, and one architectural idea that has
+            carried half a century without much fading: the file as
+            the universal interface. A device, a pipe, a socket, a
+            process listing, all opened, read, written and closed
+            through the same system calls.</p>
+
+        <p>The idea did not arrive as a slogan. It arrived as the
+            path of least resistance: if you had a kernel that
+            already knew how to give a userspace program a numbered
+            handle to a piece of named state, and a small set of
+            operations on that handle, why invent another kind of
+            handle for the next piece of state? Devices got file
+            paths. Pipes got file descriptors without paths.
+            Sockets, once they arrived in 4.2BSD in 1983, got the
+            same file descriptors after a special creation call.
+            The shape held, and the shape was the point.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="A diagram of the Unix universal-interface idea. Five different kinds of resource (a device under /dev/, an anonymous pipe, a socket, a process under /proc, and a regular file) each carry a file descriptor handle into the same small set of system calls: open, read, write, close, and ioctl as the escape hatch. The legend notes that the shape held and the shape was the point." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bd-cast-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-cast-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-cast-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-cast-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-cast-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .bd-cast-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .bd-cast-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#bd-cast-arrow); }
+            </style>
+            <defs>
+                <marker id="bd-cast-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="bd-cast-title" text-anchor="middle">One Handle for Every Kind of State</text>
+
+            <rect x="10" y="50" width="120" height="38" class="bd-cast-box"/>
+            <text x="70" y="68" class="bd-cast-text" text-anchor="middle">device</text>
+            <text x="70" y="82" class="bd-cast-muted" text-anchor="middle">/dev/null</text>
+
+            <rect x="10" y="92" width="120" height="38" class="bd-cast-box"/>
+            <text x="70" y="110" class="bd-cast-text" text-anchor="middle">pipe</text>
+            <text x="70" y="124" class="bd-cast-muted" text-anchor="middle">pipe(2)</text>
+
+            <rect x="10" y="134" width="120" height="38" class="bd-cast-box"/>
+            <text x="70" y="152" class="bd-cast-text" text-anchor="middle">socket</text>
+            <text x="70" y="166" class="bd-cast-muted" text-anchor="middle">socket(2)</text>
+
+            <rect x="10" y="176" width="120" height="38" class="bd-cast-box"/>
+            <text x="70" y="194" class="bd-cast-text" text-anchor="middle">process</text>
+            <text x="70" y="208" class="bd-cast-muted" text-anchor="middle">/proc/&lt;pid&gt;</text>
+
+            <rect x="10" y="218" width="120" height="38" class="bd-cast-box"/>
+            <text x="70" y="236" class="bd-cast-text" text-anchor="middle">regular file</text>
+            <text x="70" y="250" class="bd-cast-muted" text-anchor="middle">on disk</text>
+
+            <line x1="130" y1="69" x2="240" y2="120" class="bd-cast-arr"/>
+            <line x1="130" y1="111" x2="240" y2="124" class="bd-cast-arr"/>
+            <line x1="130" y1="153" x2="240" y2="130" class="bd-cast-arr"/>
+            <line x1="130" y1="195" x2="240" y2="134" class="bd-cast-arr"/>
+            <line x1="130" y1="237" x2="240" y2="140" class="bd-cast-arr"/>
+
+            <rect x="240" y="106" width="160" height="60" class="bd-cast-accent-box"/>
+            <text x="320" y="128" class="bd-cast-head" text-anchor="middle">file descriptor</text>
+            <text x="320" y="146" class="bd-cast-muted" text-anchor="middle">a small integer</text>
+            <text x="320" y="160" class="bd-cast-muted" text-anchor="middle">handle into the kernel</text>
+
+            <line x1="400" y1="135" x2="450" y2="135" class="bd-cast-arr"/>
+
+            <rect x="450" y="60" width="180" height="38" class="bd-cast-accent-box"/>
+            <text x="540" y="83" class="bd-cast-text" text-anchor="middle">open()</text>
+
+            <rect x="450" y="100" width="180" height="38" class="bd-cast-accent-box"/>
+            <text x="540" y="123" class="bd-cast-text" text-anchor="middle">read()</text>
+
+            <rect x="450" y="140" width="180" height="38" class="bd-cast-accent-box"/>
+            <text x="540" y="163" class="bd-cast-text" text-anchor="middle">write()</text>
+
+            <rect x="450" y="180" width="180" height="38" class="bd-cast-accent-box"/>
+            <text x="540" y="203" class="bd-cast-text" text-anchor="middle">close()</text>
+
+            <rect x="450" y="220" width="180" height="38" class="bd-cast-box"/>
+            <text x="540" y="240" class="bd-cast-text" text-anchor="middle">ioctl()</text>
+            <text x="540" y="252" class="bd-cast-muted" text-anchor="middle">the escape hatch</text>
+        </svg>
+
+        <h2>The Complaint</h2>
+
+        <p>"Sockets are not files. GPUs are not files. Hardware
+            state does not fit a <code>read()</code>."</p>
+
+        <p>The complaint is older than the design, and it is not
+            unfounded. Sockets carry connection state, message
+            boundaries, and asynchronous events; representing them
+            as a stream of bytes throws information away. GPUs have
+            command queues, memory layouts, and a parallel execution
+            model that no sequence of <code>read()</code> and
+            <code>write()</code> calls naturally captures. A
+            terminal has modes, signal characters and a baud rate
+            that nobody types into the data stream. The escape
+            hatch, <code>ioctl</code>, exists precisely because
+            some operations refuse to pretend they are bytes
+            flowing in and out, and the Unix designers did not
+            pretend otherwise.</p>
+
+        <p>The complaint, taken seriously, has produced several
+            alternative designs over the decades. Microkernels
+            handed each device its own service. Modern
+            operating-system research has proposed message-passing
+            kernels, capability-based systems, and explicit object
+            models in place of file descriptors. Each is more
+            expressive in some specific direction. None has
+            displaced the file as the lingua franca of Unix-like
+            systems, and the reason is not that the alternatives
+            are wrong; it is that the file is unreasonably
+            composable.</p>
+
+        <h2>The Decision</h2>
+
+        <p>The decision, plainly: when in doubt, give it a path.</p>
+
+        <p>Devices live in <code>/dev/</code>, with paths the user
+            can read aloud (<code>/dev/null</code>,
+            <code>/dev/random</code>, <code>/dev/zero</code>) and
+            that even a shell script can open. Pipes are anonymous
+            file descriptors created by <code>pipe(2)</code>; the
+            shell binds them between processes with the
+            <code>|</code> character that became the most-copied
+            piece of syntax in the history of computing. Sockets are
+            created with <code>socket()</code>, bound and connected
+            with their own calls, and then used through the same
+            read/write/close as everything else. Processes are
+            inspectable as <code>/proc</code> entries on Linux and
+            several other systems, optionally on FreeBSD; the
+            kernel exposes itself as a filesystem because once you
+            have decided that files are how state is named, you may
+            as well expose your own state that way.</p>
+
+        <p><a href="https://www.cs.princeton.edu/courses/archive/spring08/cos598B/papers/RitchieThompson74.pdf" target="_blank" rel="noopener">Ritchie and Thompson's 1974 ACM paper</a>,
+            "The UNIX Time-Sharing System", presented in CACM
+            volume 17 number 7, codified what had already been
+            running on the PDP-7 since 1969 and was, by then, also
+            running on the PDP-11.
+            <a href="https://doc.cat-v.org/plan_9/4th_edition/papers/9" target="_blank" rel="noopener">Plan 9 from Bell Labs</a>
+            (Pike, Thompson, Presotto, Winterbottom, first edition
+            1992) pushed the idea to its logical end. In Plan 9,
+            the window system is a file system; the keyboard is a
+            file system; remote machines are mounted as file systems
+            through the 9P protocol; even computation can be a file
+            system. Dennis Ritchie said of Plan 9 that "Unix had the
+            right idea that just about everything in the system is
+            accessible through a file" but did not, in the end,
+            follow through. Plan 9 followed through.</p>
+
+        <p>It is rather a sweeping promise, on the face of it. The
+            decision was to keep it.</p>
+
+        <svg viewBox="0 0 640 220" aria-label="A timeline of the file-as-interface lineage. Five milestones along an axis: 1969 Thompson writes Unix on the PDP-7 in three weeks; 1973 Unix rewritten in C; 1974 Ritchie and Thompson's CACM paper codifies the design; 1983 4.2BSD adds sockets as file descriptors; 1992 Plan 9 takes everything-is-a-file to its logical end. The legend notes that the idea has held for fifty-six years." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bd-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .bd-tl-tick { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+                .bd-tl-dot { fill: var(--accent); }
+            </style>
+            <text x="320" y="22" class="bd-tl-title" text-anchor="middle">The Lineage: Fifty-Six Years</text>
+
+            <line x1="40" y1="130" x2="600" y2="130" class="bd-tl-axis"/>
+
+            <circle cx="60" cy="130" r="5" class="bd-tl-dot"/>
+            <line x1="60" y1="130" x2="60" y2="80" class="bd-tl-tick"/>
+            <text x="60" y="74" class="bd-tl-head" text-anchor="middle">1969</text>
+            <text x="60" y="148" class="bd-tl-text" text-anchor="middle">Unix on PDP-7</text>
+            <text x="60" y="162" class="bd-tl-muted" text-anchor="middle">Thompson, 3 weeks</text>
+            <text x="60" y="174" class="bd-tl-muted" text-anchor="middle">Bell Labs</text>
+
+            <circle cx="190" cy="130" r="5" class="bd-tl-dot"/>
+            <line x1="190" y1="130" x2="190" y2="98" class="bd-tl-tick"/>
+            <text x="190" y="92" class="bd-tl-head" text-anchor="middle">1973</text>
+            <text x="190" y="148" class="bd-tl-text" text-anchor="middle">rewritten in C</text>
+            <text x="190" y="162" class="bd-tl-muted" text-anchor="middle">portability</text>
+
+            <circle cx="320" cy="130" r="5" class="bd-tl-dot"/>
+            <line x1="320" y1="130" x2="320" y2="80" class="bd-tl-tick"/>
+            <text x="320" y="74" class="bd-tl-head" text-anchor="middle">1974</text>
+            <text x="320" y="148" class="bd-tl-text" text-anchor="middle">CACM paper</text>
+            <text x="320" y="162" class="bd-tl-muted" text-anchor="middle">Ritchie &amp; Thompson</text>
+            <text x="320" y="174" class="bd-tl-muted" text-anchor="middle">codifies the design</text>
+
+            <circle cx="450" cy="130" r="5" class="bd-tl-dot"/>
+            <line x1="450" y1="130" x2="450" y2="98" class="bd-tl-tick"/>
+            <text x="450" y="92" class="bd-tl-head" text-anchor="middle">1983</text>
+            <text x="450" y="148" class="bd-tl-text" text-anchor="middle">4.2BSD sockets</text>
+            <text x="450" y="162" class="bd-tl-muted" text-anchor="middle">fds for the network</text>
+
+            <circle cx="580" cy="130" r="5" class="bd-tl-dot"/>
+            <line x1="580" y1="130" x2="580" y2="80" class="bd-tl-tick"/>
+            <text x="580" y="74" class="bd-tl-head" text-anchor="middle">1992</text>
+            <text x="580" y="148" class="bd-tl-text" text-anchor="middle">Plan 9</text>
+            <text x="580" y="162" class="bd-tl-muted" text-anchor="middle">Pike et al.</text>
+            <text x="580" y="174" class="bd-tl-muted" text-anchor="middle">follows through</text>
+
+            <text x="320" y="210" class="bd-tl-muted" text-anchor="middle">Plan 9 still maintained at 9front.org. The idea has not aged.</text>
+        </svg>
+
+        <h2>The Trade-Off</h2>
+
+        <p>Not every operation fits a sequence of bytes. The Unix
+            designers knew this from the start, and
+            <code>ioctl</code> is the honest answer. A terminal
+            driver has a stty configuration that no
+            <code>read()</code> will reveal; a network interface
+            has an IP address that you do not write into a file the
+            way you write into one. <code>ioctl</code> is the call
+            you make when the file model has carried you as far as
+            it can, and the rest needs structured arguments and
+            structured replies.</p>
+
+        <p>GPU drivers, in the modern era, are the most striking
+            case. A modern GPU exposes a command queue, a memory
+            allocator, a synchronisation primitive set and a shader
+            compiler interface. The path-and-handle model can carry
+            the open-the-device step, but the rest is
+            <code>ioctl</code> calls that look more like RPC than
+            like file IO. DRM (Direct Rendering Manager) on Linux
+            and FreeBSD is the practical compromise: the GPU is a
+            file in <code>/dev/</code>, opened like everything
+            else, and then almost all the work happens through
+            <code>ioctl</code>.</p>
+
+        <p>Hardware that refuses the model outright lives behind
+            its own ABI. Some embedded firmware, some legacy
+            industrial controllers, some accelerator cards reach
+            userspace through libraries that bypass the filesystem
+            entirely. The Unix answer is to extend the file when
+            possible (memory mapping, asynchronous IO via fd,
+            kqueue/epoll on file descriptors), accept the
+            <code>ioctl</code> when the file abstraction cannot
+            stretch further, and keep the path-and-handle
+            vocabulary as the default.</p>
+
+        <svg viewBox="0 0 640 240" aria-label="A diagram of where the file abstraction stretches and where it does not. On the left a wide accent box labelled fits the file model lists regular files, directories, pipes, devices, sockets and process listings, each addressable by path or fd with the four core calls. On the right a smaller box labelled needs ioctl lists terminal modes, network interface configuration, GPU command queues and certain firmware ABIs, each addressable by fd plus structured ioctl arguments. The legend notes that the trade is honest: the file model is cheap because the alternatives are expensive." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bd-to-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-to-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-to-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-to-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-to-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .bd-to-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="bd-to-title" text-anchor="middle">Where the File Model Stretches, Where ioctl Carries</text>
+
+            <text x="200" y="50" class="bd-to-head" text-anchor="middle">fits the file model</text>
+            <rect x="20" y="62" width="360" height="160" class="bd-to-accent-box"/>
+            <text x="200" y="84" class="bd-to-muted" text-anchor="middle">open / read / write / close</text>
+            <text x="40" y="108" class="bd-to-text">&#x2022; regular files, directories</text>
+            <text x="40" y="128" class="bd-to-text">&#x2022; pipes (pipe(2)), named pipes (FIFOs)</text>
+            <text x="40" y="148" class="bd-to-text">&#x2022; devices in /dev/ (block, character)</text>
+            <text x="40" y="168" class="bd-to-text">&#x2022; sockets after socket() / accept()</text>
+            <text x="40" y="188" class="bd-to-text">&#x2022; process listings via /proc</text>
+            <text x="40" y="212" class="bd-to-muted">composable, pipeable, scriptable</text>
+
+            <text x="510" y="50" class="bd-to-head" text-anchor="middle">needs ioctl</text>
+            <rect x="400" y="62" width="220" height="160" class="bd-to-box"/>
+            <text x="510" y="84" class="bd-to-muted" text-anchor="middle">fd + structured args</text>
+            <text x="416" y="108" class="bd-to-text">&#x2022; terminal stty modes</text>
+            <text x="416" y="128" class="bd-to-text">&#x2022; network interface config</text>
+            <text x="416" y="148" class="bd-to-text">&#x2022; GPU command queues</text>
+            <text x="416" y="168" class="bd-to-text">&#x2022; DRM / DRI surfaces</text>
+            <text x="416" y="188" class="bd-to-text">&#x2022; bespoke driver ABIs</text>
+            <text x="416" y="212" class="bd-to-muted">honest escape hatch</text>
+        </svg>
+
+        <p>The trade is honest. The file model is not free; it is
+            cheap because the alternatives are expensive.</p>
+
+        <h2>The Proof</h2>
+
+        <p>Fifty-six years of Unix, and the file is still the
+            unit.</p>
+
+        <p>On every Unix-like system shipped since the early
+            1970s, the same paths exist: <code>/dev/null</code>
+            discards what is written to it, <code>/dev/random</code>
+            and <code>/dev/urandom</code> give cryptographic
+            randomness, <code>/dev/zero</code> gives an
+            inexhaustible stream of zero bytes. Pipes hold the
+            shell together; a one-liner like
+            <code>ps ax | grep nginx | awk '{print $1}'</code>
+            composes three programs into one query because every
+            one of them reads from a file descriptor and writes to
+            a file descriptor without caring whether the other end
+            is a terminal, a file or another process.</p>
+
+        <p>On FreeBSD the discipline is intact.
+            <a href="https://man.freebsd.org/cgi/man.cgi?devfs(5)" target="_blank" rel="noopener">devfs</a>
+            (in-base since FreeBSD 5.0, 2003) presents the kernel's
+            device tree as a regular filesystem mounted on
+            <code>/dev/</code>; you can <code>stat</code> a device,
+            change its permissions with <code>chmod</code>, and
+            follow symbolic links to it like any other file. GELI,
+            the FreeBSD disk-encryption framework, exposes
+            encrypted volumes as <code>/dev/&lt;name&gt;.eli</code>,
+            a transparent overlay you can <code>newfs</code> or hand
+            to ZFS as a vdev. ZFS volumes (zvol) appear under
+            <code>/dev/zvol/&lt;pool&gt;/&lt;name&gt;</code>; you
+            can <code>dd</code> to one, partition it, export it via
+            iSCSI, all through the file interface. bhyve, FreeBSD's
+            hypervisor, presents virtual machine handles under
+            <code>/dev/vmm/</code>. Plan 9 is the pure version of
+            the idea and is still actively maintained at
+            <a href="https://9front.org" target="_blank" rel="noopener">9front.org</a>,
+            on the same architectural premise as in 1992.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A diagram of the FreeBSD /dev/ surface as a faithful expression of everything-is-a-file. A central /dev/ node fans out to six children: /dev/null, /dev/random, /dev/zero (classical Unix), then /dev/<name>.eli for GELI-encrypted volumes, /dev/zvol/<pool>/<name> for ZFS volumes, and /dev/vmm/ for bhyve virtual machines. A note records that all are stat-able, chmod-able and dd-able like any other file." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bd-fb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-fb-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-fb-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-fb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-fb-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .bd-fb-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .bd-fb-line { stroke: var(--accent); stroke-width: 1.2; fill: none; }
+            </style>
+            <text x="320" y="22" class="bd-fb-title" text-anchor="middle">FreeBSD: The Discipline Intact</text>
+
+            <rect x="240" y="46" width="160" height="46" class="bd-fb-accent-box"/>
+            <text x="320" y="68" class="bd-fb-head" text-anchor="middle">/dev/</text>
+            <text x="320" y="84" class="bd-fb-muted" text-anchor="middle">devfs since FreeBSD 5.0</text>
+
+            <line x1="320" y1="92" x2="90" y2="130" class="bd-fb-line"/>
+            <line x1="320" y1="92" x2="240" y2="130" class="bd-fb-line"/>
+            <line x1="320" y1="92" x2="400" y2="130" class="bd-fb-line"/>
+            <line x1="320" y1="92" x2="550" y2="130" class="bd-fb-line"/>
+            <line x1="320" y1="92" x2="160" y2="200" class="bd-fb-line"/>
+            <line x1="320" y1="92" x2="480" y2="200" class="bd-fb-line"/>
+
+            <rect x="30" y="130" width="120" height="48" class="bd-fb-box"/>
+            <text x="90" y="150" class="bd-fb-text" text-anchor="middle">/dev/null</text>
+            <text x="90" y="166" class="bd-fb-muted" text-anchor="middle">discard</text>
+
+            <rect x="180" y="130" width="120" height="48" class="bd-fb-box"/>
+            <text x="240" y="150" class="bd-fb-text" text-anchor="middle">/dev/random</text>
+            <text x="240" y="166" class="bd-fb-muted" text-anchor="middle">cryptographic</text>
+
+            <rect x="340" y="130" width="120" height="48" class="bd-fb-box"/>
+            <text x="400" y="150" class="bd-fb-text" text-anchor="middle">/dev/zero</text>
+            <text x="400" y="166" class="bd-fb-muted" text-anchor="middle">zero bytes</text>
+
+            <rect x="490" y="130" width="120" height="48" class="bd-fb-box"/>
+            <text x="550" y="150" class="bd-fb-text" text-anchor="middle">/dev/da0</text>
+            <text x="550" y="166" class="bd-fb-muted" text-anchor="middle">raw block</text>
+
+            <rect x="80" y="200" width="160" height="48" class="bd-fb-accent-box"/>
+            <text x="160" y="220" class="bd-fb-text" text-anchor="middle">/dev/&lt;name&gt;.eli</text>
+            <text x="160" y="236" class="bd-fb-muted" text-anchor="middle">GELI encrypted</text>
+
+            <rect x="260" y="200" width="160" height="48" class="bd-fb-accent-box"/>
+            <text x="340" y="220" class="bd-fb-text" text-anchor="middle">/dev/zvol/</text>
+            <text x="340" y="236" class="bd-fb-muted" text-anchor="middle">ZFS volumes</text>
+
+            <rect x="440" y="200" width="160" height="48" class="bd-fb-accent-box"/>
+            <text x="520" y="220" class="bd-fb-text" text-anchor="middle">/dev/vmm/</text>
+            <text x="520" y="236" class="bd-fb-muted" text-anchor="middle">bhyve VMs</text>
+
+            <text x="320" y="270" class="bd-fb-muted" text-anchor="middle">All stat-able, chmod-able, dd-able. The same file interface, all the way down.</text>
+        </svg>
+
+        <p>Linux started the same way and has, in some corners,
+            drifted. <code>/sys</code>, the sysfs hierarchy added in
+            2.6, is in the spirit of the idea, extending
+            <code>/proc</code> with kernel object trees. So far, so
+            good. The drift sits elsewhere. D-Bus, originating in
+            2002, carries the message bus that earlier Unix work
+            would have built as files and sockets; systemd, from
+            2010, builds its own interfaces around cgroups, sockets,
+            the journal, and a large set of dbus services.
+            <a href="https://man7.org/linux/man-pages/man7/netlink.7.html" target="_blank" rel="noopener">Netlink sockets</a>
+            are the alternative kernel channel for routing, audit
+            and firewall configuration that traditional Unix would
+            have done through paths and ioctls.
+            <a href="https://ebpf.io/what-is-ebpf/" target="_blank" rel="noopener">eBPF</a>
+            is a programmable layer that runs verified bytecode
+            inside the kernel rather than a path that names a piece
+            of state; it is, in many ways, a different
+            architectural idea.</p>
+
+        <p>None of these are wrong. They solve real problems that
+            the simple file model handles awkwardly. But the
+            cumulative effect is that the Linux of 2026 has, in
+            several important corners, become a system in which the
+            file is one of several interfaces rather than the
+            interface. Dennis Ritchie's verdict on Plan 9 was that
+            "Unix had the right idea but didn't follow through".
+            The same sentence, read against 2026 Linux, has rotated
+            by 180 degrees: the right idea has been followed through
+            in some corners and quietly diluted in others. The
+            FreeBSD line is closer to the original commitment,
+            deliberately so.</p>
+
+        <svg viewBox="0 0 640 240" aria-label="A diagram contrasting FreeBSD's commitment to the file interface with Linux's drift into parallel surfaces. On the left a single accent box labelled FreeBSD shows /dev/ as the dominant interface for devices, GELI, ZFS volumes and bhyve VMs. On the right four small boxes labelled D-Bus, systemd, Netlink and eBPF sit alongside a smaller box labelled /dev and /proc, illustrating that the file is now one of several interfaces. The legend notes that none of the Linux choices are wrong; the cumulative effect is the point." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bd-dr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-dr-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-dr-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-dr-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .bd-dr-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .bd-dr-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="bd-dr-title" text-anchor="middle">Where the Line Holds, Where It Drifts</text>
+
+            <text x="155" y="48" class="bd-dr-head" text-anchor="middle">FreeBSD: the file</text>
+            <rect x="20" y="60" width="270" height="160" class="bd-dr-box"/>
+
+            <rect x="40" y="80" width="230" height="120" class="bd-dr-accent-box"/>
+            <text x="155" y="106" class="bd-dr-head" text-anchor="middle">/dev/</text>
+            <text x="155" y="124" class="bd-dr-muted" text-anchor="middle">devices &#x2022; GELI &#x2022; ZFS zvol</text>
+            <text x="155" y="140" class="bd-dr-muted" text-anchor="middle">bhyve &#x2022; pipes &#x2022; sockets</text>
+            <text x="155" y="158" class="bd-dr-muted" text-anchor="middle">processes (procfs optional)</text>
+            <text x="155" y="184" class="bd-dr-text" text-anchor="middle">one interface, all the way down</text>
+
+            <text x="485" y="48" class="bd-dr-head" text-anchor="middle">Linux 2026: several</text>
+            <rect x="350" y="60" width="270" height="160" class="bd-dr-box"/>
+
+            <rect x="368" y="76" width="110" height="40" class="bd-dr-accent-box"/>
+            <text x="423" y="96" class="bd-dr-text" text-anchor="middle">/dev /proc /sys</text>
+            <text x="423" y="110" class="bd-dr-muted" text-anchor="middle">the original</text>
+
+            <rect x="494" y="76" width="110" height="40" class="bd-dr-box"/>
+            <text x="549" y="96" class="bd-dr-text" text-anchor="middle">D-Bus</text>
+            <text x="549" y="110" class="bd-dr-muted" text-anchor="middle">message bus (2002)</text>
+
+            <rect x="368" y="124" width="110" height="40" class="bd-dr-box"/>
+            <text x="423" y="144" class="bd-dr-text" text-anchor="middle">systemd</text>
+            <text x="423" y="158" class="bd-dr-muted" text-anchor="middle">cgroups, journal</text>
+
+            <rect x="494" y="124" width="110" height="40" class="bd-dr-box"/>
+            <text x="549" y="144" class="bd-dr-text" text-anchor="middle">Netlink</text>
+            <text x="549" y="158" class="bd-dr-muted" text-anchor="middle">routing, audit</text>
+
+            <rect x="368" y="172" width="236" height="40" class="bd-dr-box"/>
+            <text x="486" y="192" class="bd-dr-text" text-anchor="middle">eBPF</text>
+            <text x="486" y="206" class="bd-dr-muted" text-anchor="middle">programmable, not a path</text>
+        </svg>
+
+        <h2>The Principle</h2>
+
+        <p>One interface, infinite implementations.</p>
+
+        <p>The lesson, made portable: when a small set of operations
+            can address an arbitrarily large set of resources, the
+            operations compose without limit. Pipes, redirections,
+            file-descriptor passing, the entire shell tradition of
+            composing tools by gluing their inputs and outputs
+            together, rest on this property. The protocol the
+            kernel offers (<code>open</code>, <code>read</code>,
+            <code>write</code>, <code>close</code>,
+            <code>ioctl</code> as the escape) and the abstraction
+            the shell composes (the <code>|</code>, the
+            <code>&lt;</code>, the <code>&gt;</code>, the
+            <code>2&gt;&amp;1</code>) are the same protocol viewed
+            from different ends. There is no impedance to match
+            because there is no impedance to bridge.</p>
+
+        <p>A Unix one-liner reads almost like a sentence because
+            every noun in it is a file. The verbs are universal.
+            The grammar is small. The expressive range is, in
+            practice, vast. Half a century of operational evidence
+            sits behind the idea, and the corners of the modern
+            Unix world that have departed from it tend to discover,
+            after a while, that they have rebuilt parts of it with
+            worse vocabulary.</p>
+
+        <blockquote>
+            <p>That is what an architectural decision worth keeping
+                looks like. Not perfection, not freedom from
+                trade-offs, not absence of escape hatches. A small,
+                honest, composable shape that does not cease to pay
+                for fifty-six years.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Why a file is the most powerful abstraction
+                Unix ever shipped:</strong></p>
+            <ul>
+                <li>Devices appear in <code>/dev/</code>,
+                    addressable by path, openable with
+                    <code>open(2)</code></li>
+                <li>Pipes are anonymous file descriptors; the shell
+                    binds them with <code>|</code></li>
+                <li>Sockets are file descriptors after
+                    <code>socket()</code>; read/write apply</li>
+                <li>Processes are inspectable as
+                    <code>/proc</code> entries (Linux native,
+                    FreeBSD optional)</li>
+                <li>Encrypted volumes on FreeBSD:
+                    <code>/dev/&lt;name&gt;.eli</code> (GELI)</li>
+                <li>ZFS volumes on FreeBSD:
+                    <code>/dev/zvol/&lt;pool&gt;/&lt;name&gt;</code></li>
+                <li>Plan 9 took it furthest: even the window system
+                    was a file system</li>
+            </ul>
+            <p><strong>The escape hatch (honest):</strong></p>
+            <ul>
+                <li><code>ioctl(2)</code> carries the operations
+                    that refuse to be bytes</li>
+                <li>GPU drivers, NICs, TTY modes all reach for
+                    it</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

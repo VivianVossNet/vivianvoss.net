@@ -1,0 +1,579 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Terms You Did Not Sign &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="On 10 August 2023 HashiCorp moved Terraform, Vault, Consul, Nomad, Packer, Boundary, Waypoint and Vagrant from MPL 2.0 to the Business Source License 1.1. There was no consultation; the announcement was a press release. Forty-one days later, the Linux Foundation accepted OpenTofu (initial sponsors: Spacelift, Harness, Gruntwork, env0, Scalr); by January 2024 OpenTofu 1.6 shipped as a drop-in. On 24 April 2024 IBM announced a $6.4 billion acquisition; it closed on 27 February 2025. The .tf file you wrote in 2014 is on a different licence today than it was on the day you wrote it. Lock-in by Retroactive Adoption.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-terms-you-did-not-sign{( endslot )}
+
+{( slot og-title )}The Terms You Did Not Sign &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}In the Net Episode 06. On 10 August 2023 HashiCorp announced that all future releases of Terraform, Vault, Consul, Nomad, Packer, Boundary, Waypoint and Vagrant would move from the Mozilla Public License v2.0 to the Business Source License v1.1; there was no consultation, the announcement was a press release. Forty-one days later, on 20 September 2023, the Linux Foundation accepted OpenTofu, a community fork of Terraform held under MPL 2.0, with founding sponsorship from Spacelift, Harness, Gruntwork, env0 and Scalr. By January 2024 OpenTofu 1.6 had shipped as a drop-in replacement, fully compatible with Terraform 1.5.x. On 24 April 2024, IBM announced its intent to acquire HashiCorp for $6.4 billion; the acquisition closed on 27 February 2025, after the U.K. Competition and Markets Authority granted clearance. The .tf file you wrote in 2014 is on a different licence today than it was on the day you wrote it. The BSL 1.1 is not Open Source by the OSI definition; it is source-available. The Additional Use Grant forbids production use that competes with HashiCorp's commercial offering; what competes is ambiguous by design. Every binary built from official source after 10 August 2023 falls under BSL until exactly four years after its release, when that version (and only that version) converts to MPL 2.0; Terraform 1.5.7 was the last MPL release. Forking BSL code as Open Source is forbidden; OpenTofu was forked from 1.5.7 precisely because it was the last legal fork-target. HashiCorp's APIs, SDKs and provider plugins remain MPL 2.0; the core binary changed, the surrounding ecosystem mostly did not. This is the sixth distinct lock-in genus the series has named: Adobe took your file format, LinkedIn took your reach, AWS took your identity and your egress, VMware took your perpetual licence in an acquisition you were not party to, Oracle took your Java users and billed your entire workforce, HashiCorp took the licence on the source of the tool you had already adopted. Lock-in by Retroactive Adoption: the hooks were retrofitted onto the version-stream of the tool you had already adopted. The escape routes are concrete: OpenTofu (Linux Foundation, MPL 2.0) as a drop-in for the Terraform binary, with state files forward-compatible; OpenBao (Linux Foundation fork of Vault, MPL 2.0, GA December 2024) for Vault workloads; Pulumi (Apache 2.0, IaC in Python, Go, TypeScript or C-sharp) for a real port; Crossplane (Apache 2.0) for Kubernetes-native composition. You wrote infrastructure as code so the next engineer could read it. You did not promise the next licence-holder would let them.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Terms You Did Not Sign",
+    "datePublished": "2026-06-05",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-terms-you-did-not-sign",
+    "description": "In the Net Episode 06. On 10 August 2023 HashiCorp announced that all future releases of Terraform, Vault, Consul, Nomad, Packer, Boundary, Waypoint and Vagrant would move from the Mozilla Public License v2.0 to the Business Source License v1.1. There was no consultation with users, no extended discussion period; the announcement was a press release. Forty-one days later, on 20 September 2023, the Linux Foundation accepted OpenTofu, a community fork of Terraform held under MPL 2.0, with founding sponsorship from Spacelift, Harness, Gruntwork, env0 and Scalr. By January 2024 OpenTofu 1.6 had shipped as a drop-in replacement. On 24 April 2024, IBM announced its intent to acquire HashiCorp for $6.4 billion (approximately $35 per share in cash); the acquisition closed on 27 February 2025, after the U.K. Competition and Markets Authority granted clearance. The Terraform file in your repository, written before any of this, is on a different licence today than it was on the day you wrote it. HashiCorp made infrastructure boring, in the best sense. Before Terraform, the path from I want an EC2 instance to an EC2 instance exists went through AWS CloudFormation YAML (proprietary, AWS-only), Chef recipes (Ruby, mutable), Ansible playbooks (push-based imperative), or a shell script and a prayer; each had merits, none generalised. Terraform's hcl let you describe an EC2 instance, a Postgres database, an S3 bucket, an IAM policy, a Route 53 record and the dependencies that bound them, plan the difference between intent and reality, apply atomically, store the resulting state file for the next plan to read. For nine years (Terraform 0.1 shipped July 2014) the source was Mozilla Public License v2.0; a file-level copyleft permissive enough that a CI provider could host runs, a consultancy could automate it, a wrapper could extend it, all without a negotiation with HashiCorp. The ecosystem that grew (Spacelift, env0, Scalr, Terramate, Atlantis, Atmos, Terragrunt and a long tail of internal tooling) rested on the assumption that Terraform's binary, source and provider ecosystem were a stable commons. The Business Source License 1.1 is not Open Source by the Open Source Initiative's definition; it is source-available, in which you can read and use the source for purposes the licensor permits but cannot freely use for any purpose or redistribute modified versions. The BSL contains an Additional Use Grant in which the licensor names what you may not do; HashiCorp's grant forbids production use that competes with HashiCorp's commercial offering (Terraform Cloud, Terraform Enterprise, Vault Enterprise, Consul Enterprise and adjacent services). What constitutes competition with is ambiguous on the face of the licence text, and the ambiguity is the design point: a consultancy writing Terraform for a client on the client's CI runners is production use and arguably competing with Terraform Enterprise; a SaaS whose value proposition is managed Terraform runs with policy guards almost certainly is. HashiCorp's public guidance says end users running Terraform on their own infrastructure remain permitted, but end users have lawyers, and lawyers read the licence text, not the public guidance. Three further mechanics matter. Every binary built from official source after 10 August 2023 falls under BSL until exactly four years after that version's release, when the licence on that version (and only that version) converts to MPL 2.0; Terraform 1.5.7 remains MPL forever, Terraform 1.6.0 onwards is BSL for four years from each release date. Forking BSL code as Open Source is forbidden by BSL itself; forking as proprietary or source-available is permitted. OpenTofu was forked from Terraform 1.5.7 precisely because the last MPL version was the only legal fork-target. HashiCorp's APIs, SDKs, libraries and provider plugins remain MPL 2.0; the core binary changed, the surrounding ecosystem mostly did not. Your existing Terraform code is fine; your next upgrade is on different legal terms than your last. OpenTofu was forked very quickly: on 25 August 2023, fifteen days after the announcement, a manifesto signed by initial supporters proposed OpenTF as a Linux Foundation project; on 20 September 2023 the Linux Foundation formally accepted the project, renamed OpenTofu. Founding sponsors: Spacelift, Harness, Gruntwork, env0 and Scalr; subsequent endorsements from Digger, Terrateam, Massdriver, Terramate and others. By January 2024 OpenTofu 1.6 shipped, the first stable release, fully compatible with Terraform 1.5.x in module syntax, provider ecosystem and state file format. The state file written by either binary remains compatible with the other; a terraform apply followed by a tofu apply on the same state file is, today, a working migration path. OpenTofu crossed 20,000 GitHub stars within months of its 1.6 release. The community voted with its mirror. The Business Source License is reversible at the licensor's discretion only. HashiCorp could in principle restore MPL 2.0 tomorrow; IBM, the licensor now, could do the same, or extend the four-year period, modify the Additional Use Grant, or replace BSL with a more restrictive licence altogether at future releases. The Terraform file you wrote in 2014 was on a contract you understood; the Terraform file you write today is on a contract that IBM holds and may, with notice, change. This is Lock-in by Retroactive Adoption: the hooks were not laid when you adopted the tool; they were retrofitted onto the version-stream of the tool you had already adopted, and the retrofit happened because a press release said so, not because you renegotiated. The price: Terraform Cloud SaaS prices per applied resource, per concurrent run and per workspace; Terraform Enterprise (self-hosted) starts at five-figure annual commitments; Vault Enterprise prices per client per month; large estates reach six and seven figures yearly. The pricing was the same pricing before the BSL change as after; the licence change was not a pricing increase, it was a redefinition of the legal terms on which the free version was available, with the effect of pushing organisations who built on the free version toward either the commercial version or a migration. The licence is the leverage; the pricing is the price of staying. The escape routes are concrete. For Terraform, OpenTofu (Linux Foundation, MPL 2.0): replaces the terraform binary with tofu, state files forward and backward compatible with Terraform 1.5.x, hcl syntax identical, provider plugins reusable; a tooling swap rather than a rewrite. For Vault, OpenBao (Linux Foundation, MPL 2.0), forked at Vault 1.14.x in late 2023, GA December 2024, drop-in for most Vault workloads. For Consul, pinned-version OSS or migration to alternatives; service mesh capability has largely shifted to Istio and Linkerd, KV-store needs map onto etcd or Consul OSS pinned to a pre-BSL version. Beyond the BSL stack: Pulumi (Apache 2.0): IaC in Python, Go, TypeScript or C-sharp, a real port rather than a swap, appropriate when the team prefers a real programming language over hcl; Crossplane (Apache 2.0): Kubernetes-native composition, cloud resources as Kubernetes Custom Resources reconciled by controllers, appropriate when the team already runs Kubernetes and wants infrastructure-as-controller rather than infrastructure-as-code. Practical hygiene for new code: avoid Terraform Cloud private registries and sensitive-variable storage (extraction points), pin provider versions explicitly, keep CI runners self-hosted, maintain state file backups that any compatible binary can read. The pattern of this episode is the sixth distinct shape of Lock-in this series has named. Adobe took your file format. LinkedIn took your reach. AWS took your identity and your egress. VMware took your perpetual licence in an acquisition you were not party to. Oracle took your Java users and billed your entire workforce. HashiCorp, now IBM, took the licence on the source of the tool you had already adopted, four years deep into your platform, and changed it under your feet. There is no shock; there is no audit; there is no per-employee invoice. There is a press release, a four-year BSL clock, and a Terraform file in your repository whose terms today are not its terms when you wrote it. You wrote infrastructure as code so the next engineer could read it. You did not promise the next licence-holder would let them.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-06-05">5 June 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Terms You Did Not Sign</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">licensing</span>
+            <span class="vv-pill">law</span>
+            <span class="vv-pill">devops</span>
+            <span class="vv-pill">architecture</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>In the Net</em> &#x22A3; Episode 06</p>
+
+        <p>On 10 August 2023,
+            <a href="https://www.globenewswire.com/news-release/2023/08/10/2723189/0/en/HashiCorp-adopts-the-Business-Source-License-for-future-releases-of-its-products.html" target="_blank" rel="noopener">HashiCorp announced that all future releases of Terraform, Vault, Consul, Nomad, Packer, Boundary, Waypoint and Vagrant would move from the Mozilla Public License v2.0 to the Business Source License v1.1</a>.
+            There was no consultation with users; there was no
+            extended discussion period; the announcement was a press
+            release. Forty-one days later, on 20 September 2023,
+            <a href="https://www.linuxfoundation.org/press/announcing-opentofu" target="_blank" rel="noopener">the Linux Foundation accepted OpenTofu</a>,
+            a community fork of Terraform held under MPL 2.0, with
+            founding sponsorship from Spacelift, Harness, Gruntwork,
+            env0 and Scalr. By January 2024, OpenTofu 1.6 had
+            shipped as a drop-in replacement. On 24 April 2024, IBM
+            announced its intent to acquire HashiCorp for $6.4
+            billion.
+            <a href="https://techcrunch.com/2025/02/27/ibm-closes-6-4b-hashicorp-acquisition" target="_blank" rel="noopener">The acquisition closed on 27 February 2025</a>,
+            after the U.K. Competition and Markets Authority granted
+            clearance.</p>
+
+        <p>The Terraform file in your repository, written before any
+            of this, is on a different licence today than it was on
+            the day you wrote it. That sentence, plainly read, is
+            what this episode is about.</p>
+
+        <svg viewBox="0 0 640 240" aria-label="A timeline of the HashiCorp licence event. Six milestones along an axis: July 2014 Terraform 0.1 ships under MPL 2.0; 10 August 2023 HashiCorp announces BSL; 25 August 2023 OpenTF manifesto; 20 September 2023 Linux Foundation accepts OpenTofu; January 2024 OpenTofu 1.6 ships as a drop-in; 24 April 2024 IBM announces $6.4 billion acquisition; 27 February 2025 the acquisition closes. The legend notes nine years on the original licence and forty-one days from announcement to fork." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .itn-tl-tick { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+                .itn-tl-dot { fill: var(--accent); }
+            </style>
+            <text x="320" y="22" class="itn-tl-title" text-anchor="middle">From MPL to BSL to IBM</text>
+
+            <line x1="40" y1="130" x2="600" y2="130" class="itn-tl-axis"/>
+
+            <circle cx="60" cy="130" r="5" class="itn-tl-dot"/>
+            <line x1="60" y1="130" x2="60" y2="80" class="itn-tl-tick"/>
+            <text x="60" y="74" class="itn-tl-head" text-anchor="middle">Jul 2014</text>
+            <text x="60" y="148" class="itn-tl-text" text-anchor="middle">Terraform 0.1</text>
+            <text x="60" y="162" class="itn-tl-muted" text-anchor="middle">MPL 2.0</text>
+
+            <circle cx="180" cy="130" r="5" class="itn-tl-dot"/>
+            <line x1="180" y1="130" x2="180" y2="98" class="itn-tl-tick"/>
+            <text x="180" y="92" class="itn-tl-head" text-anchor="middle">10 Aug 2023</text>
+            <text x="180" y="148" class="itn-tl-text" text-anchor="middle">BSL 1.1</text>
+            <text x="180" y="162" class="itn-tl-muted" text-anchor="middle">press release</text>
+
+            <circle cx="290" cy="130" r="5" class="itn-tl-dot"/>
+            <line x1="290" y1="130" x2="290" y2="80" class="itn-tl-tick"/>
+            <text x="290" y="74" class="itn-tl-head" text-anchor="middle">25 Aug 2023</text>
+            <text x="290" y="148" class="itn-tl-text" text-anchor="middle">OpenTF manifesto</text>
+            <text x="290" y="162" class="itn-tl-muted" text-anchor="middle">15 days later</text>
+
+            <circle cx="400" cy="130" r="5" class="itn-tl-dot"/>
+            <line x1="400" y1="130" x2="400" y2="98" class="itn-tl-tick"/>
+            <text x="400" y="92" class="itn-tl-head" text-anchor="middle">20 Sep 2023</text>
+            <text x="400" y="148" class="itn-tl-text" text-anchor="middle">LF accepts OpenTofu</text>
+
+            <circle cx="490" cy="130" r="5" class="itn-tl-dot"/>
+            <line x1="490" y1="130" x2="490" y2="80" class="itn-tl-tick"/>
+            <text x="490" y="74" class="itn-tl-head" text-anchor="middle">Apr 2024</text>
+            <text x="490" y="148" class="itn-tl-text" text-anchor="middle">IBM announces</text>
+            <text x="490" y="162" class="itn-tl-muted" text-anchor="middle">$6.4 billion</text>
+
+            <circle cx="580" cy="130" r="5" class="itn-tl-dot"/>
+            <line x1="580" y1="130" x2="580" y2="98" class="itn-tl-tick"/>
+            <text x="580" y="92" class="itn-tl-head" text-anchor="middle">Feb 2025</text>
+            <text x="580" y="148" class="itn-tl-text" text-anchor="middle">IBM closes</text>
+            <text x="580" y="162" class="itn-tl-muted" text-anchor="middle">licensor: IBM</text>
+
+            <text x="320" y="218" class="itn-tl-muted" text-anchor="middle">Nine years on the original licence. The change came in three taps of a keyboard.</text>
+        </svg>
+
+        <h2>The Promise</h2>
+
+        <p>HashiCorp made infrastructure boring, in the best sense.
+            Before Terraform, the path from "I want an EC2 instance"
+            to "an EC2 instance exists" went through AWS
+            CloudFormation YAML (proprietary, AWS-only), Chef
+            recipes (Ruby, mutable), Ansible playbooks (push-based
+            imperative), or a shell script and a prayer. Each had
+            merits; none generalised. Terraform's hcl let you
+            describe an EC2 instance, a Postgres database, an S3
+            bucket, an IAM policy, a Route 53 record and the
+            dependencies that bound them, then plan the difference
+            between your intent and the cloud's reality, then apply
+            that difference atomically, then store the resulting
+            state file for the next plan to read.</p>
+
+        <p>For nine years (Terraform 0.1 shipped in July 2014), the
+            source code was Mozilla Public License v2.0. MPL 2.0 is
+            a copyleft licence in the file-level sense:
+            modifications to MPL-licensed files must be released
+            under MPL, but those files may be combined with code
+            under other licences (including proprietary code) at the
+            file boundary. For the practical purpose of building a
+            business around Terraform, it was permissive enough that
+            a CI provider could host runs, a consultancy could
+            automate it, a wrapper could extend it, all without a
+            negotiation with HashiCorp.</p>
+
+        <p>That permissiveness produced the ecosystem. Spacelift,
+            env0, Scalr, Terramate, Atlantis, Atmos, Terragrunt and
+            a long tail of internal tooling at every serious
+            cloud-using organisation grew up around the assumption
+            that Terraform's binary, source, and provider ecosystem
+            were a stable commons. The de facto IaC standard had
+            Open Source mechanics behind it.</p>
+
+        <h2>The Hooks</h2>
+
+        <p><a href="https://www.hashicorp.com/en/bsl" target="_blank" rel="noopener">The Business Source License 1.1</a>
+            is not Open Source by
+            <a href="https://opensource.org/osd" target="_blank" rel="noopener">the Open Source Initiative's definition</a>.
+            It is "source available", which is to say that you can
+            read the source and use the code for purposes the
+            licensor permits, but you cannot meet the OSI's
+            freedoms-2 and -6: freedom to use for any purpose,
+            freedom to redistribute modified versions for any
+            purpose. The BSL contains what its drafters call an
+            "Additional Use Grant", a paragraph in which the
+            licensor names the things you may not do; the canonical
+            example, used by MariaDB and Sentry before HashiCorp,
+            is "you may not offer a commercial product that competes
+            with us".</p>
+
+        <p>HashiCorp's Additional Use Grant forbids "production use
+            that competes with HashiCorp's commercial offering".
+            What constitutes "competition with" is, on the face of
+            the licence text, ambiguous, and that ambiguity is the
+            design point.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="A diagram of the Additional Use Grant ambiguity. Three columns: clearly permitted (end-user running Terraform on their own infrastructure), the grey zone (a consultancy automating Terraform for clients, a CI provider hosting runs, a wrapper that adds policy guards), and clearly forbidden (a SaaS whose value proposition is managed Terraform runs that competes with Terraform Cloud). The legend notes that the grey zone is wide and the ambiguity is the design point." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-aug-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-aug-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-aug-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-aug-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-aug-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .itn-aug-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="itn-aug-title" text-anchor="middle">"Production Use That Competes With Us"</text>
+
+            <rect x="20" y="60" width="190" height="170" class="itn-aug-box"/>
+            <text x="115" y="82" class="itn-aug-head" text-anchor="middle">permitted</text>
+            <text x="115" y="98" class="itn-aug-muted" text-anchor="middle">end-user on own infra</text>
+            <text x="32" y="120" class="itn-aug-text">&#x2022; tofu apply your stack</text>
+            <text x="32" y="138" class="itn-aug-text">&#x2022; CI runner on your VMs</text>
+            <text x="32" y="156" class="itn-aug-text">&#x2022; internal platform</text>
+            <text x="32" y="174" class="itn-aug-text">&#x2022; in-house wrapper</text>
+            <text x="115" y="206" class="itn-aug-muted" text-anchor="middle">the licence text</text>
+            <text x="115" y="218" class="itn-aug-muted" text-anchor="middle">agrees here</text>
+
+            <rect x="225" y="60" width="190" height="170" class="itn-aug-accent-box"/>
+            <text x="320" y="82" class="itn-aug-head" text-anchor="middle">the grey zone</text>
+            <text x="320" y="98" class="itn-aug-muted" text-anchor="middle">ambiguous by design</text>
+            <text x="237" y="120" class="itn-aug-text">&#x2022; consultancy billing</text>
+            <text x="237" y="138" class="itn-aug-text">&#x2022; CI provider hosting</text>
+            <text x="237" y="156" class="itn-aug-text">&#x2022; wrapper as a service</text>
+            <text x="237" y="174" class="itn-aug-text">&#x2022; managed module registry</text>
+            <text x="320" y="206" class="itn-aug-muted" text-anchor="middle">your lawyer's call,</text>
+            <text x="320" y="218" class="itn-aug-muted" text-anchor="middle">not the docs'</text>
+
+            <rect x="430" y="60" width="190" height="170" class="itn-aug-box"/>
+            <text x="525" y="82" class="itn-aug-head" text-anchor="middle">forbidden</text>
+            <text x="525" y="98" class="itn-aug-muted" text-anchor="middle">competes with HashiCorp</text>
+            <text x="442" y="120" class="itn-aug-text">&#x2022; managed Terraform SaaS</text>
+            <text x="442" y="138" class="itn-aug-text">&#x2022; commercial Terraform fork</text>
+            <text x="442" y="156" class="itn-aug-text">&#x2022; Vault-clone product</text>
+            <text x="442" y="174" class="itn-aug-text">&#x2022; Consul-clone product</text>
+            <text x="525" y="206" class="itn-aug-muted" text-anchor="middle">the design target</text>
+            <text x="525" y="218" class="itn-aug-muted" text-anchor="middle">of the change</text>
+        </svg>
+
+        <p>HashiCorp has, in its public guidance, said that "end
+            users running Terraform on their own infrastructure"
+            remain permitted. But end users have lawyers, and lawyers
+            read the licence text, and the licence text is not what
+            the public guidance says it is.</p>
+
+        <p>Three further mechanics of the BSL change matter to the
+            user. Every binary built from official HashiCorp source
+            after 10 August 2023 falls under BSL until exactly four
+            years after that version's release, when the licence on
+            that version (and only that version) converts to MPL
+            2.0. Terraform 1.5.7, the last MPL release, will remain
+            MPL 2.0 forever; Terraform 1.6.0 and onwards is BSL for
+            four years from each individual release date. Forking
+            BSL code as Open Source is forbidden by the BSL itself;
+            forking it as proprietary, source-available or BSL code
+            is permitted. The OpenTofu fork was made from Terraform
+            1.5.7 (the last MPL version) precisely because the
+            MPL-licensed code was the only fork-target the team
+            could legally relicense. HashiCorp's APIs, SDKs,
+            libraries and provider plugins (the things that talk to
+            AWS, Azure, GCP, on your behalf) remain MPL 2.0.</p>
+
+        <svg viewBox="0 0 640 240" aria-label="A timeline of BSL releases and their four-year reversion dates. Three Terraform releases shown: 1.5.7 (MPL 2.0 forever) in August 2023, 1.6.0 (BSL until October 2027) in October 2023, 1.9.0 (BSL until July 2028) in July 2024. Each BSL release has its own four-year clock that runs independently to a per-release reversion to MPL 2.0. The legend notes that the licence is per release, not per project." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-cl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-cl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-cl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-cl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-cl-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .itn-cl-mpl { fill: var(--accent); opacity: 0.18; }
+                .itn-cl-bsl { fill: var(--muted); opacity: 0.22; }
+                .itn-cl-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#itn-cl-arrow); }
+            </style>
+            <defs>
+                <marker id="itn-cl-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="itn-cl-title" text-anchor="middle">The Four-Year Clock, Per Release</text>
+
+            <text x="40" y="56" class="itn-cl-muted">Terraform 1.5.7 (Aug 2023)</text>
+            <rect x="40" y="62" width="560" height="26" class="itn-cl-box"/>
+            <rect x="40" y="62" width="560" height="26" class="itn-cl-mpl"/>
+            <text x="320" y="80" class="itn-cl-text" text-anchor="middle">MPL 2.0 &#x2014; forever</text>
+
+            <text x="40" y="112" class="itn-cl-muted">Terraform 1.6.0 (Oct 2023)</text>
+            <rect x="40" y="118" width="560" height="26" class="itn-cl-box"/>
+            <rect x="40" y="118" width="430" height="26" class="itn-cl-bsl"/>
+            <rect x="470" y="118" width="130" height="26" class="itn-cl-mpl"/>
+            <text x="255" y="136" class="itn-cl-text" text-anchor="middle">BSL 1.1</text>
+            <text x="535" y="136" class="itn-cl-text" text-anchor="middle">&#x2192; MPL 2.0</text>
+            <text x="40" y="160" class="itn-cl-muted">reverts October 2027</text>
+
+            <text x="40" y="180" class="itn-cl-muted">Terraform 1.9.0 (Jul 2024)</text>
+            <rect x="40" y="186" width="560" height="26" class="itn-cl-box"/>
+            <rect x="40" y="186" width="520" height="26" class="itn-cl-bsl"/>
+            <rect x="560" y="186" width="40" height="26" class="itn-cl-mpl"/>
+            <text x="300" y="204" class="itn-cl-text" text-anchor="middle">BSL 1.1</text>
+            <text x="580" y="204" class="itn-cl-text" text-anchor="middle">2028</text>
+            <text x="40" y="228" class="itn-cl-muted">reverts July 2028</text>
+        </svg>
+
+        <p>The Hook, summarised: your existing Terraform code is
+            fine. Your next upgrade is on different legal terms than
+            your last upgrade.</p>
+
+        <h2>The Standing</h2>
+
+        <p>OpenTofu was forked very quickly. On 25 August 2023,
+            fifteen days after the BSL announcement, a manifesto
+            signed by initial supporters proposed OpenTF as a Linux
+            Foundation project. On 20 September 2023, the Linux
+            Foundation formally accepted the project, which had by
+            then been renamed OpenTofu. The founding sponsors were
+            Spacelift, Harness, Gruntwork, env0 and Scalr, with
+            subsequent endorsements from Digger, Terrateam,
+            Massdriver, Terramate and others. All of these are
+            vendors whose business model HashiCorp's BSL Additional
+            Use Grant ambiguously threatens.</p>
+
+        <p>By January 2024 OpenTofu shipped 1.6, the first stable
+            release, fully compatible with Terraform 1.5.x including
+            module syntax, provider ecosystem and state file format.
+            The tool's vocabulary changed (<code>terraform</code>
+            becomes <code>tofu</code> at the command line), the
+            lockfile differs slightly, and OpenTofu added features
+            Terraform did not have, including OCI registry support
+            for modules and providers. The state file written by
+            either binary remains compatible with the other; a
+            <code>terraform apply</code> followed by a
+            <code>tofu apply</code> on the same state file is,
+            today, a working migration path.</p>
+
+        <p>GitHub stars are an imperfect measure of community
+            adoption, but they are visible:
+            <a href="https://opentofu.org/" target="_blank" rel="noopener">OpenTofu crossed 20,000 stars</a>
+            within months of its 1.6 release and continued to climb.
+            Major cloud providers, vendors and large internal
+            platforms migrated. The community voted with its
+            mirror.</p>
+
+        <p>Six months later,
+            <a href="https://techcrunch.com/2024/04/24/ibm-acquires-hashicorp-for-6-4-billion" target="_blank" rel="noopener">on 24 April 2024, IBM announced its intent to acquire HashiCorp for $6.4 billion</a>
+            (approximately $35 per share in cash). The acquisition
+            was delayed by regulatory review at the U.S. Federal
+            Trade Commission and the U.K. Competition and Markets
+            Authority, longer than IBM's original "by the end of
+            2024" guidance suggested. The CMA cleared the deal in
+            late February 2025; the acquisition closed on 27
+            February 2025. As of that date, the licence on every
+            Terraform release after 10 August 2023 belongs,
+            contractually, to IBM.</p>
+
+        <h2>The Exit That Isn't</h2>
+
+        <p>The Business Source License is reversible at the
+            licensor's discretion only. HashiCorp could, in
+            principle, restore MPL 2.0 to its products tomorrow.
+            IBM, the licensor now, could do the same. Either could
+            also extend the four-year BSL period, modify the
+            Additional Use Grant, or replace BSL with a more
+            restrictive licence altogether at future releases. The
+            Terraform file you wrote in 2014 was on a contract you
+            understood; the Terraform file you write today is on a
+            contract that IBM holds and may, with notice, change.</p>
+
+        <p>This is Lock-in by Retroactive Adoption. The hooks were
+            not laid when you adopted the tool. The hooks were
+            retrofitted onto the version-stream of the tool you had
+            already adopted, and the retrofit happened because a
+            press release said so, not because you renegotiated. The
+            only practical defences are forks (OpenTofu, OpenBao)
+            and migrations away (Pulumi, Crossplane), and both of
+            those are work you did not budget for when you adopted
+            the original tool.</p>
+
+        <h2>The Six Genera</h2>
+
+        <p>The pattern of this episode is the sixth distinct shape
+            of Lock-in this series has named.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A diagram of the six lock-in genera the series has documented. Six rows: Adobe (file format), LinkedIn (reach), AWS (identity and egress), VMware (perpetual licence absorbed in an acquisition), Oracle (per-employee Java audit), HashiCorp now IBM (retroactive licence change). The sixth row, the HashiCorp/IBM episode, is highlighted as the genus this episode names. The legend notes that none of these are pricing rises; each is a different shape of the same problem." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-gen-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-gen-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-gen-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-gen-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-gen-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .itn-gen-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="itn-gen-title" text-anchor="middle">Six Distinct Lock-In Genera</text>
+
+            <rect x="20" y="46" width="600" height="32" class="itn-gen-box"/>
+            <text x="50" y="66" class="itn-gen-head">Ep 01</text>
+            <text x="130" y="66" class="itn-gen-text">Adobe</text>
+            <text x="320" y="66" class="itn-gen-muted">your file format becomes the subscription</text>
+
+            <rect x="20" y="82" width="600" height="32" class="itn-gen-box"/>
+            <text x="50" y="102" class="itn-gen-head">Ep 02</text>
+            <text x="130" y="102" class="itn-gen-text">LinkedIn</text>
+            <text x="320" y="102" class="itn-gen-muted">your reach belongs to the platform</text>
+
+            <rect x="20" y="118" width="600" height="32" class="itn-gen-box"/>
+            <text x="50" y="138" class="itn-gen-head">Ep 03</text>
+            <text x="130" y="138" class="itn-gen-text">AWS</text>
+            <text x="320" y="138" class="itn-gen-muted">identity, egress and architecture by gravity</text>
+
+            <rect x="20" y="154" width="600" height="32" class="itn-gen-box"/>
+            <text x="50" y="174" class="itn-gen-head">Ep 04</text>
+            <text x="130" y="174" class="itn-gen-text">VMware</text>
+            <text x="320" y="174" class="itn-gen-muted">perpetual licence absorbed in an acquisition</text>
+
+            <rect x="20" y="190" width="600" height="32" class="itn-gen-box"/>
+            <text x="50" y="210" class="itn-gen-head">Ep 05</text>
+            <text x="130" y="210" class="itn-gen-text">Oracle</text>
+            <text x="320" y="210" class="itn-gen-muted">per-employee Java audit, regardless of use</text>
+
+            <rect x="20" y="226" width="600" height="32" class="itn-gen-accent-box"/>
+            <text x="50" y="246" class="itn-gen-head">Ep 06</text>
+            <text x="130" y="246" class="itn-gen-text">HashiCorp / IBM</text>
+            <text x="320" y="246" class="itn-gen-muted">retroactive licence change on the source you adopted</text>
+
+            <text x="320" y="276" class="itn-gen-muted" text-anchor="middle">None of these are pricing rises. Each is a different shape of the same problem.</text>
+        </svg>
+
+        <h2>The Price</h2>
+
+        <p>HashiCorp's commercial pricing is not the headline cost.
+            Terraform Cloud SaaS prices per applied resource, per
+            concurrent run and per workspace; the Free tier covers
+            small teams; the Standard, Plus and Enterprise tiers
+            add Sentinel policy enforcement, SSO, audit logging and
+            run pipelines. For a hundred-engineer organisation
+            managing a few thousand resources, the annual bill
+            comfortably reaches six figures. Terraform Enterprise
+            (the self-hosted variant) starts at five-figure annual
+            commitments. Vault Enterprise prices per client (per
+            authenticated identity per month). At the upper end of
+            large estates, the HashiCorp annual spend can reach
+            seven figures.</p>
+
+        <p>The pricing was the same pricing before the BSL change as
+            after. The BSL change was not a pricing increase; it was
+            a redefinition of the legal terms on which the free
+            version was available, which has the effect of pushing
+            organisations who built on the free version, at scale,
+            toward either the commercial version or toward a
+            migration. The licence is the leverage; the pricing is
+            the price of staying.</p>
+
+        <h2>The Escape Route</h2>
+
+        <p>The migration off HashiCorp's licensed stack is, today,
+            a more concrete proposition than the migration off
+            VMware (Episode 04) or Oracle Java SE (Episode 05),
+            because the community produced a complete replacement.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A diagram of four escape routes. For Terraform: OpenTofu (Linux Foundation, MPL 2.0), drop-in for the terraform binary, state files forward-compatible, hcl identical. For Vault: OpenBao (Linux Foundation, MPL 2.0), forked at Vault 1.14.x, GA December 2024. Beyond the BSL stack: Pulumi (Apache 2.0), IaC in Python/Go/TypeScript/C-sharp, a real port. Crossplane (Apache 2.0), Kubernetes-native composition. The legend notes that each route is a different cost and a different fit." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-esc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-esc-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-esc-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-esc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-esc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .itn-esc-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="itn-esc-title" text-anchor="middle">Four Concrete Escape Routes</text>
+
+            <rect x="20" y="46" width="290" height="100" class="itn-esc-accent-box"/>
+            <text x="40" y="68" class="itn-esc-head">OpenTofu</text>
+            <text x="40" y="84" class="itn-esc-muted">Linux Foundation &#x2022; MPL 2.0</text>
+            <text x="40" y="104" class="itn-esc-text">drop-in for terraform</text>
+            <text x="40" y="120" class="itn-esc-muted">state files forward-compatible</text>
+            <text x="40" y="136" class="itn-esc-muted">hcl identical, providers reusable</text>
+
+            <rect x="330" y="46" width="290" height="100" class="itn-esc-accent-box"/>
+            <text x="350" y="68" class="itn-esc-head">OpenBao</text>
+            <text x="350" y="84" class="itn-esc-muted">Linux Foundation &#x2022; MPL 2.0</text>
+            <text x="350" y="104" class="itn-esc-text">forked at Vault 1.14.x</text>
+            <text x="350" y="120" class="itn-esc-muted">GA December 2024</text>
+            <text x="350" y="136" class="itn-esc-muted">drop-in for most Vault workloads</text>
+
+            <rect x="20" y="156" width="290" height="100" class="itn-esc-box"/>
+            <text x="40" y="178" class="itn-esc-head">Pulumi</text>
+            <text x="40" y="194" class="itn-esc-muted">Apache 2.0</text>
+            <text x="40" y="214" class="itn-esc-text">IaC in Python / Go / TS / C#</text>
+            <text x="40" y="230" class="itn-esc-muted">a real port, not a swap</text>
+            <text x="40" y="246" class="itn-esc-muted">real programming language</text>
+
+            <rect x="330" y="156" width="290" height="100" class="itn-esc-box"/>
+            <text x="350" y="178" class="itn-esc-head">Crossplane</text>
+            <text x="350" y="194" class="itn-esc-muted">Apache 2.0</text>
+            <text x="350" y="214" class="itn-esc-text">Kubernetes-native composition</text>
+            <text x="350" y="230" class="itn-esc-muted">cloud resources as CRDs</text>
+            <text x="350" y="246" class="itn-esc-muted">infrastructure-as-controller</text>
+        </svg>
+
+        <p><strong>For Terraform: OpenTofu</strong> (Linux Foundation,
+            MPL 2.0). Replaces the <code>terraform</code> binary
+            with <code>tofu</code>. State files are forward and
+            backward compatible with Terraform 1.5.x. The hcl syntax
+            is identical. Provider plugins are reusable. The
+            migration, for the existing .tf code in your
+            repository, is a tooling swap rather than a rewrite. For
+            a sufficiently complex enterprise estate, the migration
+            is a several-week project to audit the differences and
+            exercise the new binary in CI; for a small estate, it
+            is an afternoon.</p>
+
+        <p><strong>For Vault: OpenBao</strong> (Linux Foundation,
+            MPL 2.0). Forked at Vault 1.14.x in late 2023; GA
+            release December 2024. Drop-in for most Vault workloads;
+            some enterprise features (HSM integration, MFA,
+            namespaces in the OSS sense) require additional
+            development or paid alternatives.</p>
+
+        <p><strong>For Consul:</strong> pinned-version OSS or
+            migration to alternatives. Service mesh capability has
+            largely shifted to Istio and Linkerd; KV-store needs
+            map onto etcd or Consul OSS pinned to a pre-BSL
+            version.</p>
+
+        <p><strong>Beyond the BSL stack: Pulumi</strong> (Apache
+            2.0): IaC in Python, Go, TypeScript, C#. Different
+            programming model; a real port rather than a swap.
+            Mature; appropriate when the team prefers a real
+            programming language over hcl.
+            <strong>Crossplane</strong> (Apache 2.0): Kubernetes-
+            native composition. Defines cloud resources as
+            Kubernetes Custom Resources, reconciled by controllers.
+            Appropriate when the team already runs Kubernetes and
+            wants infrastructure-as-controller rather than
+            infrastructure-as-code.</p>
+
+        <p><strong>Practical hygiene for new code from today
+            onwards:</strong> avoid Terraform Cloud private
+            registries and sensitive-variable storage; those are
+            extraction points. Pin provider versions explicitly; do
+            not float. Keep CI runners self-hosted where possible.
+            Maintain state file backups that any compatible binary
+            can read.</p>
+
+        <h2>Coda</h2>
+
+        <p>The pattern of this episode is the sixth distinct shape
+            of Lock-in this series has named. Adobe took your file
+            format. LinkedIn took your reach. AWS took your identity
+            and your egress. VMware took your perpetual licence in
+            an acquisition you were not party to. Oracle took your
+            Java users and billed your entire workforce. HashiCorp,
+            now IBM, took the licence on the source of the tool you
+            had already adopted, four years deep into your platform,
+            and changed it under your feet. There is no shock; there
+            is no audit; there is no per-employee invoice. There is
+            a press release, a four-year BSL clock, and a Terraform
+            file in your repository whose terms today are not its
+            terms when you wrote it.</p>
+
+        <blockquote>
+            <p>You wrote infrastructure as code so the next engineer
+                could read it. You did not promise the next
+                licence-holder would let them.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Escape routes that work today:</strong></p>
+            <ul>
+                <li><strong>OpenTofu</strong> (Linux Foundation, MPL
+                    2.0): drop-in for Terraform;
+                    <code>tofu init/plan/apply</code> on existing
+                    .tf; state files forward-compatible</li>
+                <li><strong>OpenBao</strong> (Linux Foundation fork
+                    of Vault, MPL 2.0): GA December 2024</li>
+                <li><strong>Pulumi</strong> (Apache 2.0): IaC in
+                    Python/Go/TypeScript/C#, mature</li>
+                <li><strong>Crossplane</strong> (Apache 2.0):
+                    Kubernetes-native composition</li>
+                <li>For new code: avoid Terraform Cloud private
+                    modules until contract clarity returns</li>
+            </ul>
+            <p><strong>Quick licence facts:</strong></p>
+            <ul>
+                <li>BSL 1.1 is NOT OSI Open Source. Each version
+                    converts to MPL 2.0 after four years.</li>
+                <li>HashiCorp APIs and SDKs remain MPL 2.0; only the
+                    core products moved.</li>
+                <li>OpenTofu was forked from Terraform 1.5.7, the
+                    last MPL version.</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,371 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}find &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A disk is filling up. Somewhere under /var are thousands of stale log files, scattered across directories nobody remembers creating. One line finds them all and clears them: find /var/log -name '*.log' -mtime +30 -delete. No loop, no script, no manual descent. The tool that reads that line like a sentence has been doing so since 1979. Most Unix tools take flags; find takes an expression. You compose primaries (tests) and operators into a small query language, and the tool walks the tree satisfying it. Dick Haight wrote find for Version 7 Unix in 1979 in the Unix Support Group; the researchers were faintly put off by the syntax and kept it because it was useful. Forty-seven years on, the grammar is unchanged, and the modern descendant fd (David Peter, Rust, 2017) reproduces the very same idea. find is the rare Unix tool that is a little language pretending to be a command.">
+{( endslot )}
+
+{( slot canonical )}/blog/find{( endslot )}
+
+{( slot og-title )}find &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Technical Beauty Episode 37. Most Unix tools take flags; find takes an expression. You compose primaries (tests like -name, -type, -mtime, -size, -newer) and operators (implicit AND, -o for OR, ! for NOT, parentheses for grouping) into a small query language, and the tool walks the directory tree evaluating it per file, firing actions where it is true. That is the reduction: not a flag for every case, but a grammar that builds every case from a few parts, small vocabulary to large expressivity. -exec cmd {} + batches matches; -print0 piped to xargs -0 moves arbitrary filenames safely, where the naive for f in $(ls) breaks on the first odd name. FreeBSD ships BSD find in base, BSD-licensed, lean and POSIX-clean; GNU findutils (GPL) accreted more primaries and is a pkg install away as gfind. Dick Haight wrote find for Version 7 Unix in 1979 in the Unix Support Group; the researchers were put off by the syntax and kept it because it was useful. Forty-seven years on the grammar is unchanged, and fd (David Peter, Rust, 2017) reproduces the same idea. find is the rare Unix tool that is a little language pretending to be a command.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "find",
+    "datePublished": "2026-05-26",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/find",
+    "description": "Technical Beauty Episode 37. The reduction is conceptual: most Unix tools take flags, a verb and switches, but find takes an expression, a small query language. The arguments after the starting path are terms: primaries that test or act (-name matches a glob, -type f selects regular files, -mtime +30 means modified more than thirty days ago, -size +100M means larger than a hundred megabytes, -newer ref means changed more recently than a reference), and operators that combine them (terms next to each other are joined by an implicit logical AND, -o is OR, ! is NOT, escaped parentheses group). find walks the directory tree and evaluates the expression for each file, firing the actions where it is true. The surface is small (find . -type f -name '*.conf'; find /var/log -mtime +30 -delete; find . -size +100M -exec ls -lh {} +) and the -exec action has two forms: {} + batches matches into as few invocations as possible, {} ; runs once per file. For safe composition, find . -type f -print0 | xargs -0 cmd terminates each filename with a null byte so spaces and newlines do not corrupt the pipeline, where the naive for f in $(ls) breaks. FreeBSD ships BSD find in base, BSD-licensed and POSIX-clean; GNU findutils (GPL) grew more primaries (-printf, regex variants) and is a pkg install away as gfind. Dick Haight wrote find, along with cpio and expr, for Version 7 Unix (1979), in the Unix Support Group rather than the research room; the researchers were faintly put off by the prefix-expression syntax and kept it because it was useful. Forty-seven years on the grammar is unchanged, and the modern descendant fd (David Peter, sharkdp, Rust, 2017, MIT and Apache licensed) reproduces the same idea: a small set of predicates over a tree walk. find is the rare Unix tool that is a little language pretending to be a command.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-26">26 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>find</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">linux</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x2726; Episode 37</p>
+
+        <p>A disk is filling up. Somewhere under /var are thousands of
+            stale log files, scattered across directories nobody
+            remembers creating. The task is dreary and familiar:
+            locate the old ones and clear them. One line does it, and
+            reads almost like an instruction to a colleague:</p>
+
+        <pre><code>find /var/log -name '*.log' -mtime +30 -delete</code></pre>
+
+        <p>No loop, no temporary file, no manual descent into each
+            directory. The tool that reads that line as a single
+            coherent thought has been doing so since 1979, and the way
+            it reads is the whole point of this episode.</p>
+
+        <h2>The Grammar</h2>
+
+        <p>Most Unix tools take flags: a verb and a handful of
+            switches that modify it. find is different. find takes an
+            expression.</p>
+
+        <p>The arguments after the starting path are not flags in the
+            usual sense; they are terms in a small query language.
+            There are primaries, which are tests or actions:
+            <code>-name</code> matches a glob, <code>-type f</code>
+            selects regular files, <code>-mtime +30</code> means
+            "modified more than thirty days ago", <code>-size
+            +100M</code> means larger than a hundred megabytes,
+            <code>-newer ref</code> means changed more recently than a
+            reference file. There are operators that combine them:
+            terms written next to each other are joined by an implicit
+            logical AND, <code>-o</code> is OR, <code>!</code> is NOT,
+            and parentheses group sub-expressions (escaped from the
+            shell as <code>\( ... \)</code>).</p>
+
+        <svg viewBox="0 0 600 250" aria-label="A diagram of find's expression grammar. At the top, three building blocks: primaries (tests such as -name, -type, -mtime, -size, -newer), operators (implicit AND, -o for OR, exclamation mark for NOT, parentheses for grouping), and actions (-print, -print0, -delete, -exec). Below, these compose into one expression. Below that, find walks the directory tree and evaluates the expression once per file, firing the actions where it is true. A note observes that the small vocabulary builds an enormous space of queries." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-g-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-g-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-g-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-g-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-g-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-g-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tb-g-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#tb-g-arrow); }
+            </style>
+            <defs>
+                <marker id="tb-g-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="tb-g-title" text-anchor="middle">An Expression, Not a Pile of Flags</text>
+
+            <rect x="20" y="44" width="175" height="52" class="tb-g-box"/>
+            <text x="107" y="62" class="tb-g-head" text-anchor="middle">primaries (tests)</text>
+            <text x="107" y="78" class="tb-g-muted" text-anchor="middle">-name -type -mtime</text>
+            <text x="107" y="90" class="tb-g-muted" text-anchor="middle">-size -newer</text>
+
+            <rect x="212" y="44" width="175" height="52" class="tb-g-box"/>
+            <text x="300" y="62" class="tb-g-head" text-anchor="middle">operators</text>
+            <text x="300" y="78" class="tb-g-muted" text-anchor="middle">AND (implicit), -o, !</text>
+            <text x="300" y="90" class="tb-g-muted" text-anchor="middle">( ) grouping</text>
+
+            <rect x="404" y="44" width="175" height="52" class="tb-g-box"/>
+            <text x="491" y="62" class="tb-g-head" text-anchor="middle">actions</text>
+            <text x="491" y="78" class="tb-g-muted" text-anchor="middle">-print -print0</text>
+            <text x="491" y="90" class="tb-g-muted" text-anchor="middle">-delete -exec</text>
+
+            <line x1="107" y1="96" x2="280" y2="120" class="tb-g-arr"/>
+            <line x1="300" y1="96" x2="300" y2="120" class="tb-g-arr"/>
+            <line x1="491" y1="96" x2="320" y2="120" class="tb-g-arr"/>
+
+            <rect x="170" y="120" width="260" height="40" class="tb-g-accent-box"/>
+            <text x="300" y="140" class="tb-g-text" text-anchor="middle">one expression</text>
+            <text x="300" y="153" class="tb-g-muted" text-anchor="middle">composed from a small vocabulary</text>
+
+            <line x1="300" y1="160" x2="300" y2="184" class="tb-g-arr"/>
+
+            <rect x="120" y="184" width="360" height="40" class="tb-g-accent-box"/>
+            <text x="300" y="204" class="tb-g-text" text-anchor="middle">walk the tree, evaluate per file, fire actions where true</text>
+            <text x="300" y="217" class="tb-g-muted" text-anchor="middle">traversal, test and action in one sentence</text>
+
+            <text x="300" y="242" class="tb-g-muted" text-anchor="middle" font-style="italic">Small vocabulary to large expressivity: elegance on a command line.</text>
+        </svg>
+
+        <p>find walks the directory tree, and for each file it
+            evaluates the expression. If the expression is true, the
+            actions in it fire. That is the entire model. "Find every
+            regular file under here, larger than a hundred megabytes,
+            not owned by root, and print it" is one expression,
+            evaluated once per file, composed from parts you already
+            know.</p>
+
+        <p>This is the reduction the series exists to celebrate. find
+            does not ship a flag for every conceivable query. It ships
+            a grammar, and the grammar composes every query from a
+            small vocabulary of primaries and three operators. The
+            surface you must learn is tiny; the space of things you
+            can express is enormous. That ratio, small vocabulary to
+            large expressivity, is what elegance looks like on a
+            command line.</p>
+
+        <h2>The Surface</h2>
+
+        <p>In practice, most of what anyone types is a handful of
+            shapes:</p>
+
+        <pre><code>find . -type f -name '*.conf'
+find /var/log -mtime +30 -delete
+find . -size +100M -exec ls -lh {} +
+find . -type d -empty -delete</code></pre>
+
+        <p>The <code>-exec</code> action deserves a note, because it
+            has two forms and the difference matters. <code>-exec cmd
+            {} \;</code> runs the command once per matched file,
+            substituting the filename for <code>{}</code>.
+            <code>-exec cmd {} +</code> gathers as many matches as the
+            command line allows and runs the command as few times as
+            possible, which is dramatically faster for large match
+            sets. The plus form is the one to reach for by default;
+            the semicolon form is for when the command genuinely takes
+            one argument at a time.</p>
+
+        <svg viewBox="0 0 600 200" aria-label="A comparison of the two forms of the -exec action over a set of, say, a thousand matched files. The semicolon form, -exec cmd {} backslash-semicolon, runs the command once per file, drawn as a thousand separate invocations. The plus form, -exec cmd {} plus, gathers matches and runs the command as few times as possible, drawn as one or two invocations. A note observes that the plus form is dramatically faster for large match sets and is the one to reach for by default." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-ex-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ex-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ex-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ex-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ex-slow { fill: var(--muted); opacity: 0.5; }
+                .tb-ex-fast { fill: var(--accent); opacity: 0.85; }
+            </style>
+            <text x="300" y="22" class="tb-ex-title" text-anchor="middle">Two Forms of -exec, a Thousand Files</text>
+
+            <text x="40" y="60" class="tb-ex-head">-exec cmd {} \;</text>
+            <rect x="40" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="53" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="66" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="79" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="92" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="105" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="118" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="131" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="144" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="157" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="170" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="183" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="196" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <rect x="209" y="68" width="9" height="16" class="tb-ex-slow"/>
+            <text x="232" y="81" class="tb-ex-muted">... 1,000 invocations, one per file</text>
+
+            <text x="40" y="128" class="tb-ex-head">-exec cmd {} +</text>
+            <rect x="40" y="136" width="22" height="16" class="tb-ex-fast"/>
+            <text x="72" y="149" class="tb-ex-muted">1 or 2 invocations, matches batched onto the command line</text>
+
+            <text x="300" y="184" class="tb-ex-muted" text-anchor="middle" font-style="italic">The plus form is dramatically faster on large match sets, and the one to reach for by default.</text>
+        </svg>
+
+        <p>For everything else, find composes with the rest of the
+            toolbox through the pipe, and it does so safely:</p>
+
+        <pre><code>find . -type f -print0 | xargs -0 sha256</code></pre>
+
+        <p><code>-print0</code> terminates each filename with a null
+            byte instead of a newline, and <code>xargs -0</code> reads
+            them the same way. This is not a nicety. Filenames on Unix
+            may contain spaces, newlines, and almost any other byte,
+            and the naive idioms (<code>for f in $(ls)</code>, or
+            piping plain find output into a tool that splits on
+            whitespace) corrupt or skip such names, occasionally with
+            destructive results. The null-separated pipeline is the
+            correct way to move a list of arbitrary filenames between
+            tools, and find has supported it for decades. Beauty,
+            here, includes correctness: the elegant idiom is also the
+            safe one.</p>
+
+        <svg viewBox="0 0 600 210" aria-label="A comparison of two ways to pass filenames between tools, given an awkward filename containing a space and a newline. The naive way, for f in $(ls), splits on whitespace and so breaks the awkward name into pieces, corrupting or skipping it. The safe way, find -print0 piped to xargs -0, separates names with a null byte, which cannot occur inside a filename, so the awkward name passes through intact. A note observes that the elegant idiom is also the safe one." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-p0-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-p0-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-p0-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-p0-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-p0-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-p0-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="tb-p0-title" text-anchor="middle">A Filename With a Space and a Newline</text>
+
+            <rect x="30" y="44" width="250" height="120" class="tb-p0-box"/>
+            <text x="155" y="64" class="tb-p0-head" text-anchor="middle">Naive: for f in $(ls)</text>
+            <text x="155" y="86" class="tb-p0-muted" text-anchor="middle">splits on spaces and newlines</text>
+            <text x="155" y="106" class="tb-p0-text" text-anchor="middle">"my report.log"</text>
+            <text x="155" y="122" class="tb-p0-muted" text-anchor="middle">becomes "my" and "report.log"</text>
+            <text x="155" y="146" class="tb-p0-muted" text-anchor="middle" font-style="italic">corrupted or skipped, sometimes</text>
+            <text x="155" y="158" class="tb-p0-muted" text-anchor="middle" font-style="italic">destructively</text>
+
+            <rect x="320" y="44" width="250" height="120" class="tb-p0-accent-box"/>
+            <text x="445" y="64" class="tb-p0-head" text-anchor="middle">Safe: -print0 | xargs -0</text>
+            <text x="445" y="86" class="tb-p0-muted" text-anchor="middle">separates names with a null byte</text>
+            <text x="445" y="106" class="tb-p0-text" text-anchor="middle">"my report.log"</text>
+            <text x="445" y="122" class="tb-p0-muted" text-anchor="middle">passes through intact</text>
+            <text x="445" y="146" class="tb-p0-muted" text-anchor="middle" font-style="italic">a null byte cannot occur</text>
+            <text x="445" y="158" class="tb-p0-muted" text-anchor="middle" font-style="italic">inside a filename</text>
+
+            <text x="300" y="194" class="tb-p0-muted" text-anchor="middle">Beauty includes correctness: the elegant idiom is also the safe one.</text>
+        </svg>
+
+        <h2>On FreeBSD</h2>
+
+        <p>FreeBSD ships BSD find in the base system, BSD-licensed, at
+            <code>/usr/bin/find</code>. It is the lean, POSIX-clean
+            implementation, and on a freshly installed FreeBSD it is
+            simply present, no package required. The same is true on
+            OpenBSD, NetBSD and macOS, all of which carry a
+            BSD-derived find.</p>
+
+        <p>GNU find, part of the GNU findutils package and licensed
+            under the GPL, grew a larger set of primaries over the
+            years (<code>-printf</code> with its own format language,
+            several regex variants, and more) and accreted complexity
+            accordingly. None of that is wrong, and some of the
+            extensions are genuinely handy; it is simply a different
+            point on the curve between "small and POSIX-clean" and
+            "feature-rich". On FreeBSD it is a <code>pkg install
+            findutils</code> away, installed as <code>gfind</code>,
+            for the occasions when a script needs a specific GNU
+            primary. For the daily load, the in-base BSD tool is the
+            whole tool, and that is the version this episode is about:
+            the one that fits in your head.</p>
+
+        <h2>The Lineage</h2>
+
+        <p>Dick Haight wrote find for Version 7 Unix, released in
+            1979, along with <a href="/blog/the-pipe">cpio and
+            expr</a>. He worked in what was then the Unix Support
+            Group, the part of Bell Labs charged with turning the
+            research system into something AT&amp;T could support and
+            ship, rather than in the research group where Unix itself
+            was born.</p>
+
+        <p>There is a well-aired anecdote, preserved in the Unix
+            history archives, that the researchers were faintly put
+            off by the syntax of the USG tools: find did not read like
+            the other commands, with its prefix-expression notation
+            and its little grammar. It was, by the aesthetic of the
+            research room, slightly foreign. They kept it anyway,
+            because it was useful, and because once you stop expecting
+            it to look like <a href="/blog/grep">grep</a> and start
+            reading it as a query language, it is not foreign at all;
+            it is consistent with itself.</p>
+
+        <svg viewBox="0 0 600 200" aria-label="A timeline of find from 1979 to 2017. 1979: Dick Haight writes find, along with cpio and expr, for Version 7 Unix, in the Unix Support Group; the researchers are put off by the syntax but keep it because it is useful. The expression grammar then stays unchanged across the decades, carried by BSD find (BSD-licensed, in the FreeBSD base) and GNU findutils (GPL). 2017: fd, by David Peter in Rust, is faster and friendlier yet reproduces the same idea, a small set of predicates over a tree walk. A note observes that the shape was right the first time." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .tb-tl-tick { stroke: var(--muted); stroke-width: 1; }
+                .tb-tl-dot { fill: var(--accent); }
+                .tb-tl-bracket { stroke: var(--accent); stroke-width: 1.2; fill: none; stroke-dasharray: 4,3; }
+            </style>
+            <text x="300" y="22" class="tb-tl-title" text-anchor="middle">Forty-Seven Years, One Grammar</text>
+
+            <line x1="50" y1="120" x2="560" y2="120" class="tb-tl-axis"/>
+
+            <circle cx="90" cy="120" r="4" class="tb-tl-dot"/>
+            <line x1="90" y1="120" x2="90" y2="126" class="tb-tl-tick"/>
+            <text x="90" y="142" class="tb-tl-text" text-anchor="middle">1979</text>
+            <text x="90" y="158" class="tb-tl-muted" text-anchor="middle">Dick Haight, V7 Unix</text>
+            <text x="90" y="170" class="tb-tl-muted" text-anchor="middle">Unix Support Group</text>
+            <text x="90" y="182" class="tb-tl-muted" text-anchor="middle">(with cpio, expr)</text>
+
+            <circle cx="320" cy="120" r="4" class="tb-tl-dot"/>
+            <line x1="320" y1="120" x2="320" y2="126" class="tb-tl-tick"/>
+            <text x="320" y="142" class="tb-tl-text" text-anchor="middle">1980s&#x2013;2010s</text>
+            <text x="320" y="158" class="tb-tl-muted" text-anchor="middle">BSD find (in base)</text>
+            <text x="320" y="170" class="tb-tl-muted" text-anchor="middle">GNU findutils (GPL)</text>
+            <text x="320" y="182" class="tb-tl-muted" text-anchor="middle">grammar unchanged</text>
+
+            <circle cx="530" cy="120" r="4" class="tb-tl-dot"/>
+            <line x1="530" y1="120" x2="530" y2="126" class="tb-tl-tick"/>
+            <text x="530" y="142" class="tb-tl-text" text-anchor="middle">2017</text>
+            <text x="530" y="158" class="tb-tl-muted" text-anchor="middle">fd, David Peter</text>
+            <text x="530" y="170" class="tb-tl-muted" text-anchor="middle">Rust, faster,</text>
+            <text x="530" y="182" class="tb-tl-muted" text-anchor="middle">same idea</text>
+
+            <path d="M 90 100 L 90 88 L 530 88 L 530 100" class="tb-tl-bracket"/>
+            <text x="310" y="80" class="tb-tl-muted" text-anchor="middle" font-style="italic">a one-liner from a 1980s manual runs today: the shape was right the first time</text>
+        </svg>
+
+        <p>Forty-seven years later, the expression grammar is
+            essentially unchanged. A find one-liner from a 1980s
+            manual runs today. The modern descendant fd (David Peter,
+            written in Rust, 2017, MIT and Apache licensed) is faster,
+            prettier in its output, and friendlier in its defaults (it
+            ignores <code>.git</code> and respects
+            <code>.gitignore</code>), and it reproduces the very same
+            idea: a small set of predicates over a tree walk. The
+            shape was right the first time.</p>
+
+        <blockquote>
+            <p>find is the rare Unix tool that is a little language
+                pretending to be a command. The researchers were
+                right that it reads oddly. They were also right to
+                keep it, because a small grammar that composes every
+                case from a few parts is worth a little oddness at
+                first sight. Learn the vocabulary once, and you can
+                ask the filesystem almost anything, in a sentence.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The find cheatsheet and lineage:</strong></p>
+            <ul>
+                <li><strong>Daily primaries</strong>: <code>-name</code> / <code>-iname</code> (glob), <code>-type f|d</code>, <code>-mtime</code> / <code>-mmin</code> (age), <code>-size</code>, <code>-newer</code></li>
+                <li><strong>Operators</strong>: implicit AND, <code>-o</code> (OR), <code>!</code> (NOT), <code>( )</code> grouping. Numeric tests carry a sign: <code>-mtime +30</code> is more than thirty days, <code>-30</code> fewer</li>
+                <li><strong>Actions</strong>: <code>-print</code>, <code>-print0</code>, <code>-delete</code>, <code>-exec cmd {} +</code> (batched) versus <code>-exec cmd {} \;</code> (once per file)</li>
+                <li><strong>Safe composition</strong>: <code>find . -type f -print0 | xargs -0 cmd</code> survives spaces and newlines, where <code>for f in $(ls)</code> breaks on the first odd name</li>
+                <li><strong>History</strong>: Dick Haight, Unix Support Group, Version 7 Unix, 1979 (with cpio and expr); BSD find is BSD-licensed and in the FreeBSD base, GNU find is findutils and GPL; the modern descendant is fd (David Peter, Rust, 2017)</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

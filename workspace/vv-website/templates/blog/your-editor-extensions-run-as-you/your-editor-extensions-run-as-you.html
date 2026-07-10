@@ -1,0 +1,389 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Your Editor Extensions Run as You &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="On 18 May 2026 an attacker published a poisoned version of a popular Visual Studio Code extension. It was live for eleven minutes. That was long enough to reach a GitHub employee's laptop and exfiltrate around 3,800 of GitHub's own internal source-code repositories, confirmed 20 May. The extension was a trojanised build of Nx Console (nrwl.angular-console) version 18.95.0. The attacker, TeamPCP, tracked by Google Threat Intelligence as UNC6780, is asking over 50,000 dollars for the stolen repositories. A VS Code extension runs with the full privileges of the developer who installed it, with no sandbox; the moment a workspace opens, its activation code runs and can read any file, run any command and reach any credential on the machine. The editor is now part of the supply chain. The marketplace is a registry now, and it is not being watched like one. On FreeBSD the structural fix has a name: Capsicum.">
+{( endslot )}
+
+{( slot canonical )}/blog/your-editor-extensions-run-as-you{( endslot )}
+
+{( slot og-title )}Your Editor Extensions Run as You &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Wire Fire Episode 02. On 18 May 2026 a trojanised build of Nx Console (nrwl.angular-console v18.95.0) was published to the VS Code Marketplace, live roughly eleven minutes. Long enough to reach a GitHub employee's laptop and exfiltrate around 3,800 internal repositories; GitHub detected the intrusion on 19 May and confirmed it on 20 May. The attacker, TeamPCP (Google Threat Intelligence: UNC6780), is asking over 50,000 dollars for the stolen material; GitHub reports no evidence so far that customer data, enterprise accounts or user repositories were touched. A VS Code extension runs with the full privileges of the developer who installed it, with no sandbox; on workspace open the activation code runs and can read any file, run any command, reach any credential. The editor is now part of the supply chain. The marketplace is a registry now, and it is not being watched like one. On FreeBSD the structural fix has a name: Capsicum, capability-mode sandboxing. Editors are not built that way yet.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Your Editor Extensions Run as You",
+    "datePublished": "2026-05-21",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/your-editor-extensions-run-as-you",
+    "description": "Wire Fire Episode 02. On 18 May 2026 a trojanised build of Nx Console (the VS Code extension for the Nx build system, published as nrwl.angular-console) appeared on the Visual Studio Code Marketplace as version 18.95.0, live for approximately eleven minutes before removal. That was long enough to reach a GitHub employee's laptop and exfiltrate around 3,800 of GitHub's own internal source-code repositories. GitHub detected the intrusion on 19 May and confirmed the breach publicly on 20 May, attributing it to an employee device compromised through the extension. The attacker, TeamPCP, tracked by Google Threat Intelligence as UNC6780, has claimed responsibility and is reportedly asking more than 50,000 US dollars for the stolen material; GitHub reports no evidence as of the confirmation that customer data, enterprise accounts or user repositories were affected. The mechanism: a VS Code extension runs with the full privileges of the developer who installed it, with no sandbox; the moment a workspace opens the activation code runs automatically and can read any file the user can read, run any command the user can run, and reach any credential on the machine. The poisoned build fetched an obfuscated payload on activation and harvested credentials. The pattern: the editor is now part of the supply chain. An extension marketplace is a package registry by another name, with the same arbitrary-code risk as npm and far less scrutiny. Editor extensions are production dependencies and belong in software-supply-chain policy. On FreeBSD the structural fix is Capsicum, capability-mode sandboxing, so a process holds only the authority it was handed; editors are not built that way yet on any platform.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-21">21 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Your Editor Extensions Run as You</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">devops</span>
+            <span class="vv-pill">freebsd</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Wire Fire</em> &#x276F;&#x276F;&#x276F;&#x276F; Episode 02</p>
+
+        <p>On 18 May 2026 an attacker published a poisoned version of
+            a popular Visual Studio Code extension. It was live for
+            roughly eleven minutes. That was long enough to reach a
+            GitHub employee's laptop, and from there to exfiltrate
+            around 3,800 of GitHub's own internal source-code
+            repositories. GitHub confirmed the breach on 20 May. This
+            is the situation, what it means, and what to do about
+            it.</p>
+
+        <h2>The Breach</h2>
+
+        <p>The timeline is short and worth stating precisely.</p>
+
+        <p>On 18 May, a trojanised build of Nx Console (the VS Code
+            extension for the Nx build system, published under the
+            identifier <code>nrwl.angular-console</code>) appeared on
+            the Visual Studio Code Marketplace as version 18.95.0. It
+            was live for approximately eleven minutes before being
+            pulled. Eleven minutes is the number to sit with: it is
+            the same lesson as the axios incident in
+            <a href="/blog/wire-fire-npm-is-on-fire">Wire Fire Episode 01</a>,
+            where three hours of a poisoned package tagged "latest"
+            was more than enough. A short window is not a small window
+            when the install is automatic and the reach is global.</p>
+
+        <p>On 19 May, GitHub detected the intrusion. On 20 May,
+            <a href="https://www.bleepingcomputer.com/news/security/github-confirms-breach-of-3-800-repos-via-malicious-vscode-extension/" target="_blank" rel="noopener">GitHub confirmed publicly</a>
+            that an employee's device had been compromised through
+            the extension, and that the attacker had used that access
+            to clone internal repositories. GitHub stated it had
+            isolated the device, removed the extension, and rotated
+            credentials within hours of detection.</p>
+
+        <p>The attacker is TeamPCP, tracked by Google Threat
+            Intelligence as
+            <a href="https://therecord.media/github-confirms-teampcp-hack-customers-unaffected" target="_blank" rel="noopener">UNC6780</a>,
+            a group that specialises in supply-chain attacks against
+            open-source security utilities and developer tooling, and
+            that has been active across npm, PyPI and PHP package
+            ecosystems earlier in 2026. They have claimed
+            responsibility on underground forums and are reportedly
+            asking more than 50,000 US dollars for the stolen
+            material.</p>
+
+        <svg viewBox="0 0 600 200" aria-label="A horizontal timeline of the GitHub breach. 18 May: a trojanised build of Nx Console version 18.95.0 is published to the VS Code Marketplace and is live for approximately eleven minutes before removal. 19 May: GitHub detects the intrusion. 20 May: GitHub confirms the breach publicly, attributing it to a compromised employee device, with around 3,800 internal repositories exfiltrated. The interval from 18 May onward is shaded as the window in which eleven minutes on a marketplace reached the home of the world's source code." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wf-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .wf-tl-tick { stroke: var(--muted); stroke-width: 1; }
+                .wf-tl-dot { fill: var(--accent); }
+                .wf-tl-band { fill: var(--accent); opacity: 0.10; }
+            </style>
+            <text x="300" y="22" class="wf-tl-title" text-anchor="middle">Eleven Minutes to 3,800 Repositories</text>
+
+            <rect x="90" y="120" width="120" height="14" class="wf-tl-band"/>
+            <text x="150" y="116" class="wf-tl-muted" text-anchor="middle" font-style="italic">~11 minutes live</text>
+
+            <line x1="40" y1="140" x2="560" y2="140" class="wf-tl-axis"/>
+
+            <circle cx="100" cy="140" r="4" class="wf-tl-dot"/>
+            <line x1="100" y1="140" x2="100" y2="146" class="wf-tl-tick"/>
+            <text x="100" y="160" class="wf-tl-text" text-anchor="middle">18 May</text>
+            <text x="100" y="176" class="wf-tl-muted" text-anchor="middle">poisoned Nx Console</text>
+            <text x="100" y="188" class="wf-tl-muted" text-anchor="middle">v18.95.0 on Marketplace</text>
+
+            <circle cx="320" cy="140" r="4" class="wf-tl-dot"/>
+            <line x1="320" y1="140" x2="320" y2="146" class="wf-tl-tick"/>
+            <text x="320" y="160" class="wf-tl-text" text-anchor="middle">19 May</text>
+            <text x="320" y="176" class="wf-tl-muted" text-anchor="middle">GitHub detects</text>
+            <text x="320" y="188" class="wf-tl-muted" text-anchor="middle">the intrusion</text>
+
+            <circle cx="540" cy="140" r="4" class="wf-tl-dot"/>
+            <line x1="540" y1="140" x2="540" y2="146" class="wf-tl-tick"/>
+            <text x="540" y="160" class="wf-tl-text" text-anchor="middle">20 May</text>
+            <text x="540" y="176" class="wf-tl-muted" text-anchor="middle">confirms publicly,</text>
+            <text x="540" y="188" class="wf-tl-muted" text-anchor="middle">~3,800 repos gone</text>
+
+            <text x="300" y="62" class="wf-tl-muted" text-anchor="middle" font-style="italic">A short window is not a small window when the install is automatic</text>
+            <text x="300" y="76" class="wf-tl-muted" text-anchor="middle" font-style="italic">and the reach is global.</text>
+        </svg>
+
+        <h2>The Scope</h2>
+
+        <p>Around 3,800 internal repositories were exfiltrated. GitHub
+            reports, as of the confirmation, no evidence that customer
+            data, enterprise accounts or user repositories were
+            affected. That assessment may change as the investigation
+            continues; treat it as the current state, not the final
+            word.</p>
+
+        <p>The exposure surface is wider than GitHub, and that is the
+            part worth attention. The Visual Studio Code Marketplace
+            serves the most widely used code editor in the world.
+            Installation is one click. There is no enforced
+            provenance: the Marketplace does not require that the
+            publisher prove control of the upstream project, and a
+            name collision or a compromised publisher account can
+            place a poisoned build in front of millions of developers
+            in the time it takes to click "Install".</p>
+
+        <h2>The Mechanism</h2>
+
+        <p>Here is the part that should change behaviour, stated in
+            plain terms.</p>
+
+        <p>A VS Code extension runs with the full privileges of the
+            developer who installed it. There is no sandbox between
+            the extension and the rest of your machine. When you open
+            a workspace (a folder, a project) the extension's
+            activation code runs immediately and automatically. From
+            that moment the extension can read any file your user
+            account can read, run any command your user account can
+            run, and reach any credential, token or SSH key sitting
+            on your machine.</p>
+
+        <svg viewBox="0 0 600 250" aria-label="A flow diagram of the poisoned extension's activation. Step one: the developer opens a workspace in VS Code. Step two: the extension's activation code runs immediately and automatically, with the full privileges of the developer and no sandbox. Step three: the activation code fetches an obfuscated payload from an external server. Step four: the payload reads files, runs commands and harvests credentials, tokens and SSH keys. Step five: the harvested access is used to clone around 3,800 internal repositories. A note observes that no firewall was breached and no server exploited; the attacker was invited in by an automatic activation of trusted code." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wf-mc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-mc-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-mc-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-mc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-mc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .wf-mc-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .wf-mc-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#wf-mc-arrow); }
+            </style>
+            <defs>
+                <marker id="wf-mc-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="wf-mc-title" text-anchor="middle">Activation: No Door Was Forced</text>
+
+            <rect x="40" y="48" width="240" height="40" class="wf-mc-box"/>
+            <text x="160" y="66" class="wf-mc-head" text-anchor="middle">1 &#x25A0; developer opens a workspace</text>
+            <text x="160" y="80" class="wf-mc-muted" text-anchor="middle">a folder, a project, one click earlier</text>
+
+            <line x1="160" y1="88" x2="160" y2="106" class="wf-mc-arr"/>
+
+            <rect x="40" y="106" width="240" height="40" class="wf-mc-accent-box"/>
+            <text x="160" y="124" class="wf-mc-head" text-anchor="middle">2 &#x25A0; activation code runs</text>
+            <text x="160" y="138" class="wf-mc-muted" text-anchor="middle">full user privileges, no sandbox</text>
+
+            <line x1="160" y1="146" x2="160" y2="164" class="wf-mc-arr"/>
+
+            <rect x="40" y="164" width="240" height="40" class="wf-mc-box"/>
+            <text x="160" y="182" class="wf-mc-head" text-anchor="middle">3 &#x25A0; fetch obfuscated payload</text>
+            <text x="160" y="196" class="wf-mc-muted" text-anchor="middle">from an external server, on activation</text>
+
+            <line x1="280" y1="184" x2="320" y2="184" class="wf-mc-arr"/>
+
+            <rect x="320" y="106" width="240" height="40" class="wf-mc-box"/>
+            <text x="440" y="124" class="wf-mc-head" text-anchor="middle">4 &#x25A0; harvest credentials</text>
+            <text x="440" y="138" class="wf-mc-muted" text-anchor="middle">tokens, SSH keys, env secrets</text>
+
+            <line x1="440" y1="164" x2="440" y2="146" class="wf-mc-arr"/>
+
+            <rect x="320" y="164" width="240" height="40" class="wf-mc-accent-box"/>
+            <text x="440" y="182" class="wf-mc-head" text-anchor="middle">5 &#x25A0; clone ~3,800 repositories</text>
+            <text x="440" y="196" class="wf-mc-muted" text-anchor="middle">everything the employee could reach</text>
+
+            <text x="300" y="232" class="wf-mc-muted" text-anchor="middle" font-style="italic">No firewall breached, no server exploited, no password brute-forced.</text>
+            <text x="300" y="246" class="wf-mc-muted" text-anchor="middle" font-style="italic">The attacker was invited in, with a single click of trust. The front door was never touched.</text>
+        </svg>
+
+        <p>The poisoned Nx Console build did precisely this. On
+            activation it fetched an obfuscated payload from an
+            external server and executed it. The payload harvested
+            credentials and environment secrets. On an ordinary
+            developer's machine that is bad. On a GitHub employee's
+            machine, the harvested access was enough to clone internal
+            repositories that the employee could legitimately
+            reach.</p>
+
+        <p>Note what did not happen. No firewall was breached from
+            outside. No server was exploited. No password was
+            brute-forced. The attacker did not break in; the attacker
+            was invited in, by an automatic activation of code the
+            developer chose to trust with a single click. The front
+            door was never touched.</p>
+
+        <h2>The Exposure</h2>
+
+        <p>If you installed Nx Console
+            (<code>nrwl.angular-console</code>) around 18 May 2026,
+            and specifically version 18.95.0, you should assume the
+            machine is compromised. Rotate every credential reachable
+            from that machine: cloud tokens, registry tokens, SSH
+            keys, API keys, anything in your environment or your
+            credential store. Revoke and reissue, do not merely
+            change. Check for unexpected outbound network connections
+            and review recent repository access.</p>
+
+        <p>For everyone, whether or not you touched this specific
+            extension, the operative steps are the same and they
+            generalise:</p>
+
+        <ul>
+            <li>Pin extension versions where your editor allows it, and disable automatic updates for extensions. Auto-update is the mechanism that turns one poisoned build into thousands of compromised machines before anyone notices</li>
+            <li>Audit your installed extensions and their publishers. Remove the ones you do not use. Every extension is attack surface that runs as you</li>
+            <li>Treat a new editor extension with the same suspicion you would give a new dependency in your code. You would, one hopes, read about a new npm package before adding it to production. The extension has more privilege and runs sooner</li>
+        </ul>
+
+        <p>On FreeBSD, the structural fix has a name.
+            <a href="/blog/capsicum-vs-seccomp">Capsicum</a> is a
+            capability-mode sandboxing framework: a process can drop
+            into capability mode and then operate only on the file
+            descriptors and resources it was explicitly handed, with
+            no ambient authority to open new files, make new
+            connections, or reach the wider system. An editor built
+            on that model could run an extension in a box that holds
+            only what the extension actually needs. Editors are not
+            built that way yet, on any platform. The capability is in
+            the kernel; the application has not asked for it.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="Two privilege models compared. On the left, the model today: the extension runs with ambient authority, holding the developer's full set of permissions, able to reach files, the network, credentials and the whole system whether or not it needs them. On the right, the Capsicum capability model: the extension is handed only the specific file descriptors and resources it needs, with no ambient authority to reach anything else. A note observes that the capability is in the FreeBSD kernel; editors have not asked for it on any platform." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wf-cap-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-cap-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-cap-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-cap-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-cap-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .wf-cap-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="wf-cap-title" text-anchor="middle">Ambient Authority vs Capability Mode</text>
+
+            <rect x="20" y="48" width="270" height="156" class="wf-cap-box"/>
+            <text x="155" y="70" class="wf-cap-head" text-anchor="middle">Today: ambient authority</text>
+            <text x="155" y="90" class="wf-cap-muted" text-anchor="middle">extension holds the user's whole set</text>
+            <rect x="50" y="104" width="100" height="26" class="wf-cap-box"/>
+            <text x="100" y="121" class="wf-cap-muted" text-anchor="middle">all files</text>
+            <rect x="160" y="104" width="100" height="26" class="wf-cap-box"/>
+            <text x="210" y="121" class="wf-cap-muted" text-anchor="middle">network</text>
+            <rect x="50" y="136" width="100" height="26" class="wf-cap-box"/>
+            <text x="100" y="153" class="wf-cap-muted" text-anchor="middle">credentials</text>
+            <rect x="160" y="136" width="100" height="26" class="wf-cap-box"/>
+            <text x="210" y="153" class="wf-cap-muted" text-anchor="middle">whole system</text>
+            <text x="155" y="184" class="wf-cap-muted" text-anchor="middle" font-style="italic">reaches everything, needs or not</text>
+
+            <rect x="310" y="48" width="270" height="156" class="wf-cap-accent-box"/>
+            <text x="445" y="70" class="wf-cap-head" text-anchor="middle">Capsicum: capability mode</text>
+            <text x="445" y="90" class="wf-cap-muted" text-anchor="middle">extension holds only what it was handed</text>
+            <rect x="370" y="104" width="150" height="26" class="wf-cap-accent-box"/>
+            <text x="445" y="121" class="wf-cap-muted" text-anchor="middle">the one project folder</text>
+            <rect x="370" y="136" width="150" height="26" class="wf-cap-box"/>
+            <text x="445" y="153" class="wf-cap-muted" text-anchor="middle">nothing else: no ambient authority</text>
+            <text x="445" y="184" class="wf-cap-muted" text-anchor="middle" font-style="italic">cannot open new files or connections</text>
+
+            <text x="300" y="226" class="wf-cap-muted" text-anchor="middle">The capability is in the FreeBSD kernel. The editor has not asked for it, on any platform.</text>
+        </svg>
+
+        <h2>The Pattern</h2>
+
+        <p>The editor is now part of the supply chain, and that is the
+            structural news under the GitHub headline.</p>
+
+        <p>For two years the industry has been learning, expensively,
+            that <code>npm install</code> runs arbitrary code with
+            your privileges, that the registry is an attack surface,
+            that a dependency you did not write and cannot read is
+            running on your machine.
+            <a href="/blog/wire-fire-npm-is-on-fire">Wire Fire Episode 01</a>
+            covered the npm side of this in detail. The lesson is now
+            well established for package registries.</p>
+
+        <p>It is exactly as true for editor extensions, and almost
+            nobody treats it that way. The extension marketplace is a
+            package registry by another name: arbitrary code,
+            published by parties you have not vetted, installed with
+            one click, activated automatically, running with your
+            full privileges. It has all the supply-chain risk of npm
+            and less of the scrutiny, because the install does not
+            feel like adding a dependency. It feels like configuring
+            your editor.</p>
+
+        <svg viewBox="0 0 600 230" aria-label="A side-by-side comparison of the npm package registry and the VS Code extension marketplace. Both deliver arbitrary code from unvetted parties, install with one action, activate automatically and run with the user's full privileges. The npm registry has, after two years of incidents, acquired scrutiny: lockfiles, audit tools, supply-chain monitoring, review policies. The VS Code Marketplace has the same risk profile but far less scrutiny, because installing an extension feels like configuring the editor rather than adding a dependency. A note concludes that the marketplace is a registry now and is not being watched like one." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wf-cmp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-cmp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-cmp-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-cmp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .wf-cmp-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .wf-cmp-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="wf-cmp-title" text-anchor="middle">Two Registries, One Risk Profile</text>
+
+            <rect x="20" y="46" width="270" height="150" class="wf-cmp-box"/>
+            <text x="155" y="68" class="wf-cmp-head" text-anchor="middle">npm registry</text>
+            <text x="155" y="90" class="wf-cmp-muted" text-anchor="middle">arbitrary code, unvetted parties</text>
+            <text x="155" y="106" class="wf-cmp-muted" text-anchor="middle">one command, runs with your privileges</text>
+            <text x="155" y="128" class="wf-cmp-muted" text-anchor="middle">after two years of incidents:</text>
+            <text x="155" y="144" class="wf-cmp-muted" text-anchor="middle">lockfiles, audit tools, monitoring,</text>
+            <text x="155" y="158" class="wf-cmp-muted" text-anchor="middle">review policies</text>
+            <text x="155" y="182" class="wf-cmp-muted" text-anchor="middle" font-style="italic">treated as a dependency</text>
+
+            <rect x="310" y="46" width="270" height="150" class="wf-cmp-accent-box"/>
+            <text x="445" y="68" class="wf-cmp-head" text-anchor="middle">VS Code Marketplace</text>
+            <text x="445" y="90" class="wf-cmp-muted" text-anchor="middle">arbitrary code, unvetted parties</text>
+            <text x="445" y="106" class="wf-cmp-muted" text-anchor="middle">one click, runs with your privileges</text>
+            <text x="445" y="128" class="wf-cmp-muted" text-anchor="middle">activates automatically on workspace open</text>
+            <text x="445" y="144" class="wf-cmp-muted" text-anchor="middle">no enforced provenance,</text>
+            <text x="445" y="158" class="wf-cmp-muted" text-anchor="middle">far less scrutiny</text>
+            <text x="445" y="182" class="wf-cmp-muted" text-anchor="middle" font-style="italic">treated as editor config</text>
+
+            <text x="300" y="218" class="wf-cmp-muted" text-anchor="middle">The marketplace is a registry now. It is not being watched like one.</text>
+        </svg>
+
+        <p>For a decision-maker, the translation is direct: editor
+            extensions are production dependencies and belong in your
+            software-supply-chain policy. If your organisation reviews
+            and pins npm packages but lets developers install any VS
+            Code extension with one click, you have secured the front
+            door and left every window open. GitHub, of all
+            organisations, demonstrated the cost this week. The
+            marketplace is a registry now. It is not being watched
+            like one.</p>
+
+        <blockquote>
+            <p>The home of the world's source code was read through a
+                plugin to the world's most popular editor. Both, as it
+                happens, belong to the same company. The call came
+                from inside the toolchain.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The breach, the actor, the check:</strong></p>
+            <ul>
+                <li><strong>Timeline</strong>: 18 May, trojanised Nx Console v18.95.0 on the VS Code Marketplace, ~11 minutes live; 19 May GitHub detects; 20 May confirms, employee device, credentials rotated</li>
+                <li><strong>Actor</strong>: TeamPCP (Google Threat Intelligence: UNC6780); 50,000+ USD for ~3,800 stolen repos; GitHub reports no customer or user-repo impact (ongoing)</li>
+                <li><strong>Exposure check</strong>: ran <code>nrwl.angular-console</code> 18.95.0 around 18 May? Assume compromise, rotate every reachable credential; pin extension versions, disable auto-update, audit installed extensions; treat editor extensions as production dependencies</li>
+                <li><strong>The structural fix</strong>: an extension marketplace is a package registry with far less scrutiny. Capsicum-style capability sandboxing would contain it; editors are not built that way yet, on any platform</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

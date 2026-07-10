@@ -1,0 +1,575 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Renewal You Did Not Survive &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="You bought VMware once, outright, the way you buy a tool. In November 2023 a 69 billion dollar acquisition closed, and over eighteen months the thing you owned was quietly converted into a thing you rent. Broadcom ended perpetual licences (subscription only, or support and security updates stop), withdrew the free ESXi hypervisor then quietly reinstated it as a non-production build that cannot reach vCenter, and moved licensing from per-CPU to per-core sold in bundles (VVF, VCF) that bill for NSX and vSAN whether or not you run them. VMware held roughly 70 per cent of the virtualisation market in 2024; Gartner expects 40 per cent by 2029. Ingram Micro stopped carrying VMware in early 2025; AT&T had to sue to keep support without buying subscriptions. The escape route is a stack, not a product: bhyve, jails and ZFS in the FreeBSD base, Proxmox VE for the mainstream path, migration over OVF and qcow2.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-renewal-you-did-not-survive{( endslot )}
+
+{( slot og-title )}The Renewal You Did Not Survive &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}In the Net Episode 04. Adobe, LinkedIn and AWS built their lock-in into the product; VMware's was built into a transaction. Broadcom completed its 69 billion dollar acquisition of VMware on 22 November 2023, and the floor moved: perpetual licences ended (subscription only now), the free ESXi hypervisor was withdrawn then quietly reinstated in April 2025 as a non-production build that cannot connect to vCenter, and per-CPU licensing became per-core sold in VVF and VCF bundles that bill for NSX and vSAN whether or not you run them. VMware held roughly 70 per cent of the virtualisation market in 2024; Gartner expects 40 per cent by 2029. Ingram Micro stopped carrying VMware in early 2025; a March 2025 72-core minimum appeared, then vanished with Broadcom stating it had never announced a price change; AT&T sued in 2024 to keep support it believed it had already contracted. The escape route is a stack, not a product: bhyve, jails and ZFS in the FreeBSD base, Sylve as the optional Proxmox-style UI, Proxmox VE as the mature mainstream target, migration over the open OVF and qcow2 path.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Renewal You Did Not Survive",
+    "datePublished": "2026-05-22",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-renewal-you-did-not-survive",
+    "description": "In the Net Episode 04. VMware sold the hypervisor as a perpetual licence for two decades: you paid once and owned the right to run it indefinitely, with support an optional separate subscription. Broadcom announced its intent to acquire VMware in May 2022 and completed the 69 billion dollar acquisition on 22 November 2023, after regulatory review by the US FTC, the UK CMA and the European Commission. Three hooks followed: perpetual licences ended (subscription only, or support and security updates stop); the free ESXi edition was withdrawn in early 2024 and quietly reinstated in April 2025 as ESXi 8.0 Update 3e, a non-production build with no support that cannot connect to vCenter, announced in release notes rather than a press release; and per-CPU licensing became per-core, repackaged into VMware vSphere Foundation (VVF) and VMware Cloud Foundation (VCF) bundles that include NSX networking and vSAN storage whether or not the customer runs them. VMware held roughly 70 per cent of the server-virtualisation market on Gartner's 2024 figures; Gartner projects that share falling to around 40 per cent by 2029. Ingram Micro, one of the largest distributors in the world, ended its VMware distribution in select regions from early January 2025. A March 2025 72-core minimum per order would have forced a 32-core cluster to buy 72 cores, a 125 per cent increase for no additional capability; after backlash it was withdrawn, with Broadcom stating it had never announced a price change. AT&T sued Broadcom in the New York State Supreme Court in August 2024 to keep support under a pre-acquisition agreement without buying subscription bundles. Reported renewal increases range from 150 per cent into four figures. The escape route is a stack, not a product: bhyve for VMs, jails for containers, ZFS for storage, all in the FreeBSD base and none of it for acquisition; Sylve as the optional Proxmox-style web UI (v0.2.x, 2026, young but productive for FreeBSD-first shops); Proxmox VE on KVM as the mature mass-migration target, with XCP-ng and Nutanix AHV as alternatives; migration over the open OVF and qcow2 path rather than a vendor one-way tool.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-22">22 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Renewal You Did Not Survive</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">licensing</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">saas</span>
+            <span class="vv-pill">freebsd</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>In the Net</em> &#x26D3; Episode 04</p>
+
+        <p>You bought VMware once, outright, the way you buy a tool.
+            You paid for a perpetual licence, you owned it, and it
+            kept running whether or not you ever spoke to the vendor
+            again. In November 2023 a 69 billion US dollar (around 64
+            billion euro) acquisition closed, and over the following
+            eighteen months the thing you owned was quietly,
+            methodically converted into a thing you rent. This is the
+            fourth episode of <em>In the Net</em>, a series on the
+            documented mechanics of vendor lock-in. The premise has
+            not changed. Every platform tells you how to come in. The
+            architecture, and increasingly the contract, tells you
+            whether you can leave, and on whose terms.</p>
+
+        <p>This episode is slightly different from the first three.
+            <a href="/blog/the-subscription-you-did-not-ask-for">Adobe</a>,
+            <a href="/blog/linkedin-reach-you-did-not-earn">LinkedIn</a>
+            and <a href="/blog/the-architecture-you-did-not-design">AWS</a>
+            each built their lock-in into the product. VMware's
+            lock-in was built into a transaction. The product barely
+            changed; the ownership of it did, and the terms
+            followed.</p>
+
+        <h2>The Promise</h2>
+
+        <p>VMware made the hypervisor boring, and that was the whole
+            point. A hypervisor is the layer that lets one physical
+            server pretend to be many; VMware's ESXi and vSphere did
+            this so reliably that an entire generation of data centres
+            was built on the assumption that it simply worked.
+            vMotion moved a running virtual machine from one host to
+            another without dropping a packet. Distributed Resource
+            Scheduler balanced load without anyone watching. For
+            roughly two decades, vSphere was the quiet floor the
+            enterprise data centre stood on.</p>
+
+        <p>Crucially, it was sold as a perpetual licence. You paid
+            once for a version, and you owned the right to run it
+            indefinitely. Support and upgrades were a separate,
+            optional subscription. The distinction mattered: the
+            software you ran was yours, and the relationship with the
+            vendor was something you chose to maintain, not something
+            you were compelled to renew. That distinction is the thing
+            this episode is about, because it is the thing that was
+            removed.</p>
+
+        <h2>The Hooks</h2>
+
+        <p>Broadcom announced its intent to acquire VMware in May
+            2022 and completed the acquisition on 22 November 2023,
+            after some eighteen months of regulatory review by the US
+            FTC, the UK Competition and Markets Authority and the
+            European Commission. The deal was valued at around 69
+            billion US dollars, including roughly 8 billion in assumed
+            debt. VMware was delisted from the New York Stock
+            Exchange. None of the customers running vSphere were
+            consulted, which is unremarkable: that is how acquisitions
+            work. What followed is the part worth documenting.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A horizontal timeline of the VMware conversion. May 2022: Broadcom announces intent to acquire VMware. 22 November 2023: the acquisition closes at around 69 billion dollars and VMware is delisted. Early 2024: perpetual licences end and the free ESXi edition is withdrawn. March 2025: a 72-core minimum per order appears, then is withdrawn after backlash. April 2025: the free ESXi hypervisor quietly returns as a non-production build that cannot connect to vCenter. A note marks the span from the close onward as the period in which ownership became tenancy." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .itn-tl-tick { stroke: var(--muted); stroke-width: 1; }
+                .itn-tl-dot { fill: var(--accent); }
+                .itn-tl-band { fill: var(--accent); opacity: 0.10; }
+            </style>
+            <text x="300" y="22" class="itn-tl-title" text-anchor="middle">Ownership Became Tenancy, in Eighteen Months</text>
+
+            <rect x="180" y="120" width="380" height="14" class="itn-tl-band"/>
+            <text x="370" y="116" class="itn-tl-muted" text-anchor="middle" font-style="italic">the floor moved</text>
+
+            <line x1="40" y1="140" x2="560" y2="140" class="itn-tl-axis"/>
+
+            <circle cx="70" cy="140" r="4" class="itn-tl-dot"/>
+            <line x1="70" y1="140" x2="70" y2="146" class="itn-tl-tick"/>
+            <text x="70" y="160" class="itn-tl-text" text-anchor="middle">May 2022</text>
+            <text x="70" y="176" class="itn-tl-muted" text-anchor="middle">acquisition</text>
+            <text x="70" y="188" class="itn-tl-muted" text-anchor="middle">announced</text>
+
+            <circle cx="180" cy="140" r="4" class="itn-tl-dot"/>
+            <line x1="180" y1="140" x2="180" y2="146" class="itn-tl-tick"/>
+            <text x="180" y="160" class="itn-tl-text" text-anchor="middle">22 Nov 2023</text>
+            <text x="180" y="176" class="itn-tl-muted" text-anchor="middle">$69B close,</text>
+            <text x="180" y="188" class="itn-tl-muted" text-anchor="middle">NYSE delist</text>
+
+            <circle cx="300" cy="140" r="4" class="itn-tl-dot"/>
+            <line x1="300" y1="140" x2="300" y2="146" class="itn-tl-tick"/>
+            <text x="300" y="160" class="itn-tl-text" text-anchor="middle">early 2024</text>
+            <text x="300" y="176" class="itn-tl-muted" text-anchor="middle">perpetual ends,</text>
+            <text x="300" y="188" class="itn-tl-muted" text-anchor="middle">free ESXi pulled</text>
+
+            <circle cx="420" cy="140" r="4" class="itn-tl-dot"/>
+            <line x1="420" y1="140" x2="420" y2="146" class="itn-tl-tick"/>
+            <text x="420" y="160" class="itn-tl-text" text-anchor="middle">Mar 2025</text>
+            <text x="420" y="176" class="itn-tl-muted" text-anchor="middle">72-core minimum</text>
+            <text x="420" y="188" class="itn-tl-muted" text-anchor="middle">appears, vanishes</text>
+
+            <circle cx="540" cy="140" r="4" class="itn-tl-dot"/>
+            <line x1="540" y1="140" x2="540" y2="146" class="itn-tl-tick"/>
+            <text x="540" y="160" class="itn-tl-text" text-anchor="middle">Apr 2025</text>
+            <text x="540" y="176" class="itn-tl-muted" text-anchor="middle">free ESXi back,</text>
+            <text x="540" y="188" class="itn-tl-muted" text-anchor="middle">no vCenter</text>
+
+            <text x="300" y="64" class="itn-tl-muted" text-anchor="middle" font-style="italic">The product barely changed. The ownership of it did,</text>
+            <text x="300" y="78" class="itn-tl-muted" text-anchor="middle" font-style="italic">and the terms followed.</text>
+        </svg>
+
+        <p><strong>Perpetual licences ended.</strong> Broadcom moved
+            VMware to a subscription-only model. Existing perpetual
+            licences do not technically expire, but they no longer
+            receive support or security updates, and at renewal the
+            customer is moved onto an annual subscription. In
+            practical terms, for any estate that needs patched,
+            supported software, ownership became tenancy.</p>
+
+        <p><strong>The free tier was removed, then quietly
+            returned.</strong> The free edition of ESXi, long the
+            entry point for labs, edge nodes and small deployments,
+            was withdrawn in early 2024. In April 2025 it returned, as
+            ESXi 8.0 Update 3e, without a press release: the news
+            appeared in the product release notes, which described it
+            as an entry-level hypervisor for non-production use, with
+            no Broadcom support, and unable to connect to vCenter. A
+            capability removed with a transition plan and reinstated
+            in a footnote tells you something about who the
+            communication is for.</p>
+
+        <p><strong>Per-CPU pricing became per-core, sold in
+            bundles.</strong> Licensing shifted from a per-socket
+            model to a per-core model, and the products were
+            repackaged into a small number of bundles: VMware vSphere
+            Foundation (VVF) and the larger VMware Cloud Foundation
+            (VCF). These bundles include components such as NSX
+            (networking) and vSAN (storage) whether or not the
+            customer runs them. A customer who wanted vSphere and
+            nothing else now buys a suite, and the suite is priced per
+            core.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="The three post-acquisition hooks. First: perpetual licences ended; subscription only, renewed yearly, or support and security updates stop. Second: the free ESXi edition was withdrawn in early 2024 and quietly reinstated in April 2025 as a non-production build with no support that cannot connect to vCenter. Third: per-CPU licensing became per-core, sold in VVF and VCF bundles that include NSX networking and vSAN storage whether or not the customer runs them. A note observes that each is defensible alone; together they convert a one-time purchase into a recurring obligation whose size the vendor sets." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-h-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-h-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-h-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-h-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-h-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="300" y="22" class="itn-h-title" text-anchor="middle">Three Hooks, One Conversion</text>
+
+            <rect x="40" y="48" width="520" height="50" class="itn-h-box"/>
+            <text x="60" y="70" class="itn-h-head">1 &#x25A0; Perpetual licences ended</text>
+            <text x="60" y="88" class="itn-h-muted">subscription only now, renewed yearly, or support and security updates stop. What you bought, you rent</text>
+
+            <rect x="40" y="108" width="520" height="50" class="itn-h-box"/>
+            <text x="60" y="130" class="itn-h-head">2 &#x25A0; Free ESXi withdrawn, then quietly returned</text>
+            <text x="60" y="148" class="itn-h-muted">Apr 2025 as 8.0 U3e: non-production, no support, cannot connect to vCenter, announced in a release note</text>
+
+            <rect x="40" y="168" width="520" height="50" class="itn-h-box"/>
+            <text x="60" y="190" class="itn-h-head">3 &#x25A0; Per-CPU became per-core, sold in bundles</text>
+            <text x="60" y="208" class="itn-h-muted">VVF and VCF bill for NSX networking and vSAN storage whether or not you run them</text>
+        </svg>
+
+        <p>Each of these, on its own, is a defensible commercial
+            decision. Taken together, over eighteen months, they
+            convert a one-time purchase into a recurring obligation
+            whose size the vendor sets.</p>
+
+        <h2>The Standing</h2>
+
+        <p>VMware entered this period holding roughly 70 per cent of
+            the server-virtualisation market on Gartner's figures for
+            2024. Gartner has since projected that share falling to
+            around 40 per cent by 2029, a consequence the firm
+            attributes directly to the post-acquisition strategy. A
+            vendor does not shed thirty points of a market it
+            dominates because the technology got worse; it sheds them
+            because the terms changed faster than the customers could
+            be locked down.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A bar comparison of VMware's server-virtualisation market share. In 2024, roughly 70 per cent, drawn as a long bar. Gartner's projection for 2029, roughly 40 per cent, drawn as a bar a little over half as long. A note observes that a vendor does not shed thirty points of a dominated market because the technology got worse, and that Ingram Micro, one of the largest distributors in the world, ended its VMware distribution in early 2025." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-ms-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-ms-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-ms-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-ms-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-ms-now { fill: var(--accent); opacity: 0.85; }
+                .itn-ms-proj { fill: var(--muted); opacity: 0.5; }
+            </style>
+            <text x="300" y="22" class="itn-ms-title" text-anchor="middle">A Dominated Market, Shedding</text>
+
+            <text x="40" y="64" class="itn-ms-head">2024 (Gartner)</text>
+            <rect x="160" y="54" width="364" height="26" class="itn-ms-now"/>
+            <text x="534" y="73" class="itn-ms-text" text-anchor="end">~70%</text>
+
+            <text x="40" y="114" class="itn-ms-head">2029 (Gartner projection)</text>
+            <rect x="160" y="104" width="208" height="26" class="itn-ms-proj"/>
+            <text x="378" y="123" class="itn-ms-text">~40%</text>
+
+            <text x="300" y="168" class="itn-ms-muted" text-anchor="middle">Thirty points shed not because the technology got worse, but because the terms changed.</text>
+            <text x="300" y="188" class="itn-ms-muted" text-anchor="middle" font-style="italic">Ingram Micro, one of the largest distributors on earth, stopped carrying VMware in early 2025.</text>
+            <text x="300" y="206" class="itn-ms-muted" text-anchor="middle" font-style="italic">When the distributor walks, the terms were not friendly.</text>
+        </svg>
+
+        <p>The clearest signal came from the distribution channel
+            rather than the customers. In December 2024, Ingram Micro,
+            one of the largest technology distributors in the world,
+            announced it would end its Broadcom and VMware
+            distribution relationship in select regions from early
+            January 2025. Distributors do not walk away from a
+            70-per-cent-market-share product over a disagreement about
+            colour schemes. When the people whose business is selling
+            the product decide it is not worth selling, the contract
+            on offer was not a friendly one.</p>
+
+        <h2>How the User Is Treated</h2>
+
+        <p>The dignity dimension this series tracks has, in VMware's
+            case, an unusually clean piece of evidence: a court
+            filing.</p>
+
+        <p>In August 2024, AT&amp;T filed suit against Broadcom in the
+            New York State Supreme Court. AT&amp;T held perpetual
+            VMware licences and, critically, had signed an amended
+            support agreement with pre-acquisition VMware in 2022,
+            running through 8 September 2024, with an option to renew
+            for two further years. After the acquisition, AT&amp;T
+            alleged, Broadcom declined to honour that renewal option
+            unless AT&amp;T purchased VMware's new subscription
+            bundles under a three-year commitment. AT&amp;T sought
+            injunctive relief; by October 2024 the parties were
+            reported to be moving towards a settlement.</p>
+
+        <p>Set aside the legal merits, which the settlement leaves
+            unresolved in public. The structural fact is the one that
+            matters for this series. AT&amp;T is one of the largest
+            telecommunications companies on earth, with a procurement
+            department the size of a mid-tier vendor, and it concluded
+            that the only way to obtain support it believed it had
+            already contracted for was to sue. Between AT&amp;T's
+            courtroom and the small cluster paying for cores it cannot
+            use sits every customer too large to ignore the bill and
+            too small to file in the New York State Supreme Court.</p>
+
+        <h2>The Exit That Isn't</h2>
+
+        <p>The exit problem here is not technical in the way AWS' was;
+            a virtual machine is far more portable than an IAM policy.
+            The exit problem is contractual and informational, and the
+            clearest illustration is the 72-core episode.</p>
+
+        <p>In March 2025, reports emerged that Broadcom would raise
+            the minimum core count per VMware order from 16 to 72,
+            effective 10 April 2025. For a customer with a 32-core
+            cluster, this meant buying 72 cores and paying for 40 they
+            could not use: a 125 per cent increase for no additional
+            capability. After a sharp industry backlash, the
+            requirement was withdrawn, with distributors confirming
+            the minimum stayed at 16. When asked, a Broadcom
+            spokesperson stated that the company had "never announced
+            a price change".</p>
+
+        <svg viewBox="0 0 600 200" aria-label="A bar comparison of the 72-core minimum episode. A 32-core cluster is shown as the capacity actually needed. The proposed 72-core minimum is shown as a longer bar, with the 40-core gap between them shaded as cores paid for but unusable, a 125 per cent increase for no additional capability. A note records that the requirement appeared in March 2025, was withdrawn after backlash, and that Broadcom stated it had never announced a price change; pricing you cannot point to is the hardest to argue against." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-ex-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-ex-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-ex-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-ex-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-ex-need { fill: var(--accent); opacity: 0.85; }
+                .itn-ex-waste { fill: var(--muted); opacity: 0.4; }
+            </style>
+            <text x="300" y="22" class="itn-ex-title" text-anchor="middle">The 72-Core Minimum That Was Never Announced</text>
+
+            <text x="40" y="62" class="itn-ex-head">Cores you need</text>
+            <rect x="180" y="52" width="160" height="24" class="itn-ex-need"/>
+            <text x="350" y="70" class="itn-ex-text">32 cores</text>
+
+            <text x="40" y="106" class="itn-ex-head">Cores you must buy</text>
+            <rect x="180" y="96" width="160" height="24" class="itn-ex-need"/>
+            <rect x="340" y="96" width="200" height="24" class="itn-ex-waste"/>
+            <text x="440" y="112" class="itn-ex-muted" text-anchor="middle">+40 unusable</text>
+            <text x="548" y="112" class="itn-ex-text" text-anchor="end">72</text>
+
+            <text x="300" y="156" class="itn-ex-muted" text-anchor="middle">A 125% increase for no additional capability. Appeared March 2025, withdrawn after backlash.</text>
+            <text x="300" y="178" class="itn-ex-muted" text-anchor="middle" font-style="italic">"Never announced a price change." Pricing you cannot point to is the hardest to argue against.</text>
+        </svg>
+
+        <p>This is worth sitting with, because it is the exit problem
+            in miniature. A pricing rule that can appear, reshape a
+            customer's renewal maths for several weeks, and then be
+            denied as never having existed is a pricing rule the
+            customer cannot plan against, cannot cite in a
+            negotiation, and cannot appeal. The lock-in is not only
+            that migration takes time; it is that the terms you are
+            migrating away from will not hold still long enough to be
+            measured.</p>
+
+        <p>This is lock-in by design, in the precise sense this series
+            uses the phrase. Not a boardroom conspiracy to trap users,
+            but an arrangement in which the architecture and the
+            contract together produce the outcome that customers stay
+            and pay even when, on their own honest accounting, they
+            would rather not. Ownership was converted to tenancy by a
+            transaction the customer was never party to, and the terms
+            of the tenancy are set, revised and occasionally un-set by
+            the landlord.</p>
+
+        <h2>The Price</h2>
+
+        <p>The price of staying is the renewal, and the renewals have
+            been steep. Reported increases vary enormously by
+            customer, tier and how much grandfathering survived the
+            transition: figures from 150 per cent to several hundred
+            per cent are common in trade reporting, with some large or
+            specialised estates citing four-figure percentage
+            increases. These are reported numbers from customer
+            accounts and analyst write-ups rather than published list
+            prices, and should be read as a range, not a constant; the
+            precise figure depends on the bundle, the core count and
+            the negotiation.</p>
+
+        <p>The price of leaving is a hypervisor migration, which is
+            real work but bounded work. A virtual machine has a
+            portable representation: the Open Virtualization Format
+            (OVF) for the metadata, and disk images that convert
+            cleanly to qcow2 for KVM-based platforms. The migration
+            cost is in testing, in re-tooling the operational layer
+            (backup, monitoring, automation that assumed vCenter), and
+            in retraining. It is measured in months for a large
+            estate, not years, and it is a one-time cost against a
+            recurring one. That asymmetry, a bounded one-time exit
+            cost against an unbounded recurring stay cost set by the
+            vendor, is exactly the calculation that shifts when the
+            renewal letter arrives.</p>
+
+        <svg viewBox="0 0 600 210" aria-label="A comparison of two cost shapes. On the left, the perpetual licence: a single one-time payment, after which the cost is flat at zero for the years that follow. On the right, the subscription: a recurring yearly payment that repeats and escalates each year, with the height set by the vendor. A note observes that the bounded one-time cost of migrating away sits against the unbounded recurring cost of staying, and that this asymmetry is the calculation that shifts when the renewal letter arrives." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-pr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-pr-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-pr-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-pr-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .itn-pr-owned { fill: var(--muted); opacity: 0.55; }
+                .itn-pr-rented { fill: var(--accent); opacity: 0.85; }
+            </style>
+            <text x="300" y="22" class="itn-pr-title" text-anchor="middle">Owned Once vs Rented Yearly</text>
+
+            <text x="150" y="48" class="itn-pr-head" text-anchor="middle">Perpetual (owned)</text>
+            <line x1="40" y1="150" x2="270" y2="150" class="itn-pr-axis"/>
+            <rect x="55" y="80" width="26" height="70" class="itn-pr-owned"/>
+            <text x="68" y="166" class="itn-pr-muted" text-anchor="middle">buy</text>
+            <text x="110" y="166" class="itn-pr-muted">then nothing</text>
+            <text x="150" y="186" class="itn-pr-muted" text-anchor="middle">one payment, runs indefinitely</text>
+
+            <text x="450" y="48" class="itn-pr-head" text-anchor="middle">Subscription (rented)</text>
+            <line x1="330" y1="150" x2="560" y2="150" class="itn-pr-axis"/>
+            <rect x="345" y="120" width="22" height="30" class="itn-pr-rented"/>
+            <rect x="385" y="108" width="22" height="42" class="itn-pr-rented"/>
+            <rect x="425" y="92" width="22" height="58" class="itn-pr-rented"/>
+            <rect x="465" y="74" width="22" height="76" class="itn-pr-rented"/>
+            <rect x="505" y="58" width="22" height="92" class="itn-pr-rented"/>
+            <text x="450" y="166" class="itn-pr-muted" text-anchor="middle">yr 1   2   3   4   5</text>
+            <text x="450" y="186" class="itn-pr-muted" text-anchor="middle">recurring, escalating, vendor-set</text>
+
+            <text x="300" y="204" class="itn-pr-muted" text-anchor="middle" font-style="italic">A bounded one-time exit cost against an unbounded recurring stay cost.</text>
+        </svg>
+
+        <h2>The Escape Route</h2>
+
+        <p>The escape route from VMware is unusually mature, for a
+            reason worth naming: the alternatives reached production
+            quality at almost exactly the moment the pricing crisis
+            hit. The timing was not planned by anyone, but it changed
+            the negotiation.</p>
+
+        <p><strong>Proxmox VE</strong> is the headline alternative. It
+            is an open-source virtualisation platform built on KVM and
+            QEMU for full virtual machines and LXC for containers,
+            with clustering, live migration, software-defined storage
+            (including Ceph) and a web interface. It is free to use
+            with no feature gates; a support subscription is optional
+            and starts at around 115 euro per CPU socket per year. For
+            the small and mid-sized estates that felt the 72-core
+            maths most acutely, the cost delta against a VVF or VCF
+            renewal is not subtle.</p>
+
+        <p><strong>XCP-ng with Xen Orchestra</strong> is the Xen-based
+            alternative, with a strong following in environments that
+            prefer the Xen hypervisor and want a polished management
+            layer. <strong>Nutanix AHV</strong> is the hyperconverged
+            option for customers who want an integrated appliance-style
+            platform. <strong>Microsoft Hyper-V</strong> and Azure
+            Stack HCI exist for Windows-centric shops, with their own
+            lock-in characteristics to weigh. <strong>OpenStack</strong>
+            remains the option at genuine cloud scale, with genuine
+            operational weight to match.</p>
+
+        <p>And the <strong>FreeBSD stack</strong> is the quietly
+            elegant choice for those who want their virtualisation
+            layer to be a small, auditable part of a coherent
+            operating system rather than a product in its own right:
+            <a href="/blog/technical-beauty-jails">bhyve for virtual machines, jails for containers</a>,
+            <a href="/blog/technical-beauty-zfs">ZFS for storage</a>,
+            all in the base system and none of it for sale to an
+            acquirer. This is the point worth holding onto, because it
+            is the structural answer to the whole episode: a perpetual
+            licence can be revoked at the next renewal, but a
+            base-system component is not a product anyone can buy out
+            from under you.</p>
+
+        <svg viewBox="0 0 600 250" aria-label="The escape-route landscape. At the centre, the migration path: export from VMware to OVF, convert disks to qcow2, import to the target, using open formats rather than a vendor one-way tool. Around it, four destinations. The FreeBSD stack: bhyve for VMs, jails for containers, ZFS for storage, all in the base system, with Sylve as an optional Proxmox-style web UI. Proxmox VE on KVM and QEMU as the mature mainstream target. XCP-ng with Xen Orchestra on Xen. Nutanix AHV as the hyperconverged appliance option. A note observes that the replacement is a stack, not a product, and none of the FreeBSD base is up for acquisition." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-er-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-er-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-er-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-er-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-er-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .itn-er-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .itn-er-arr { stroke: var(--accent); stroke-width: 1; fill: none; marker-end: url(#itn-er-arrow); }
+            </style>
+            <defs>
+                <marker id="itn-er-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="itn-er-title" text-anchor="middle">The Replacement Is a Stack, Not a Product</text>
+
+            <rect x="210" y="46" width="180" height="44" class="itn-er-box"/>
+            <text x="300" y="66" class="itn-er-head" text-anchor="middle">Migration path</text>
+            <text x="300" y="82" class="itn-er-muted" text-anchor="middle">VMware &#x2192; OVF &#x2192; qcow2 &#x2192; target</text>
+
+            <line x1="240" y1="90" x2="150" y2="120" class="itn-er-arr"/>
+            <line x1="280" y1="90" x2="250" y2="120" class="itn-er-arr"/>
+            <line x1="320" y1="90" x2="350" y2="120" class="itn-er-arr"/>
+            <line x1="360" y1="90" x2="450" y2="120" class="itn-er-arr"/>
+
+            <rect x="20" y="120" width="170" height="100" class="itn-er-accent-box"/>
+            <text x="105" y="140" class="itn-er-head" text-anchor="middle">FreeBSD stack</text>
+            <text x="105" y="158" class="itn-er-muted" text-anchor="middle">bhyve (VMs)</text>
+            <text x="105" y="172" class="itn-er-muted" text-anchor="middle">jails (containers)</text>
+            <text x="105" y="186" class="itn-er-muted" text-anchor="middle">ZFS (storage)</text>
+            <text x="105" y="204" class="itn-er-muted" text-anchor="middle">+ Sylve web UI (v0.2)</text>
+            <text x="105" y="216" class="itn-er-muted" text-anchor="middle" font-style="italic">in base, not for sale</text>
+
+            <rect x="200" y="120" width="125" height="100" class="itn-er-box"/>
+            <text x="262" y="140" class="itn-er-head" text-anchor="middle">Proxmox VE</text>
+            <text x="262" y="158" class="itn-er-muted" text-anchor="middle">KVM + QEMU</text>
+            <text x="262" y="172" class="itn-er-muted" text-anchor="middle">LXC, Ceph</text>
+            <text x="262" y="190" class="itn-er-muted" text-anchor="middle">mature mass-</text>
+            <text x="262" y="202" class="itn-er-muted" text-anchor="middle">migration target</text>
+
+            <rect x="335" y="120" width="110" height="100" class="itn-er-box"/>
+            <text x="390" y="140" class="itn-er-head" text-anchor="middle">XCP-ng</text>
+            <text x="390" y="158" class="itn-er-muted" text-anchor="middle">Xen +</text>
+            <text x="390" y="172" class="itn-er-muted" text-anchor="middle">Xen Orchestra</text>
+
+            <rect x="455" y="120" width="125" height="100" class="itn-er-box"/>
+            <text x="517" y="140" class="itn-er-head" text-anchor="middle">Nutanix AHV</text>
+            <text x="517" y="158" class="itn-er-muted" text-anchor="middle">hyperconverged</text>
+            <text x="517" y="172" class="itn-er-muted" text-anchor="middle">appliance</text>
+            <text x="517" y="190" class="itn-er-muted" text-anchor="middle">OpenStack at</text>
+            <text x="517" y="202" class="itn-er-muted" text-anchor="middle">cloud scale</text>
+
+            <text x="300" y="240" class="itn-er-muted" text-anchor="middle" font-style="italic">A base-system component is not a product anyone can buy out from under you.</text>
+        </svg>
+
+        <p>For those who miss the point-and-click of a Proxmox
+            dashboard, Sylve puts bhyve and jails under one
+            Proxmox-style web interface, written in Go and SvelteKit,
+            with clustering and scheduled backups via zelta. Sylve
+            made its first release in early 2026 and sits at v0.2.x at
+            the time of writing; it requires FreeBSD 15.0 or later, and
+            it is honestly young: not yet a drop-in for an enterprise
+            estate that needs support contracts and proven HA at
+            scale, but already productive for homelabs and
+            FreeBSD-first shops whose operators are comfortable on the
+            v0.x curve. The substance is the stack, which is mature;
+            Sylve is the convenience layer, which is new.</p>
+
+        <p>The migration path itself is the open one: export from
+            VMware to OVF, convert disks to qcow2, import to the
+            target. The Proxmox project ships a VMware importer that
+            automates the bulk of this for the common case. The work
+            is in the operational tail, not the disk images.</p>
+
+        <h2>Coda</h2>
+
+        <p>VMware did not get worse. vSphere still moves a live
+            machine without dropping a packet, and vMotion is still a
+            small marvel of engineering. The product is not the issue.
+            The issue is that the product was sold as something you
+            own, and an acquisition you had no part in converted it
+            into something you rent, with the rent set by a landlord
+            who reserves the right to revise the terms and then deny
+            having done so.</p>
+
+        <p>The lesson generalises well past virtualisation. A
+            perpetual licence is a promise about the future, and a
+            promise about the future is only as durable as the entity
+            that made it. The moment a layer of your architecture
+            stops being replaceable, its price stops being negotiable.
+            The defence is not loyalty to a vendor or hostility to
+            one; it is keeping the replaceable layers replaceable, so
+            that the renewal letter is an invitation rather than a
+            summons.</p>
+
+        <blockquote>
+            <p>You owned a hypervisor. You were handed a subscription.
+                The hypervisor, it turns out, was never the expensive
+                part.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Escape routes that exist today:</strong></p>
+            <ul>
+                <li><strong>FreeBSD-native</strong>: bhyve (VMs) + jails (containers) + ZFS, all in base, nothing to acquire. Sylve adds a Proxmox-style web UI for the click-inclined (young, v0.2 2026, but already productive for FreeBSD-first shops)</li>
+                <li><strong>Mainstream</strong>: Proxmox VE (KVM), the mature mass-migration target; also XCP-ng with Xen Orchestra, Nutanix AHV, and OpenStack at scale</li>
+                <li><strong>Migration</strong>: export to OVF and qcow2, the open path; the Proxmox VMware importer automates the bulk. Migrate over open formats, not the vendor's one-way tool</li>
+                <li><strong>Keep the hypervisor a commodity</strong>: no vSAN or NSX bundle dependency, no bundle lock at the next renewal</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

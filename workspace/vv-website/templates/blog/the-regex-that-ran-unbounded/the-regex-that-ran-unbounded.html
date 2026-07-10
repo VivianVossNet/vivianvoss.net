@@ -1,0 +1,414 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Regex That Ran Unbounded &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="13:42 UTC on Tuesday 2 July 2019, a Cloudflare engineer deploys one new managed WAF rule. Within seconds every Cloudflare server in the world is at 100% CPU and HTTP traffic stops moving. Twenty-seven minutes later the engineers will find that the rule was a regex of forty-five characters. The catastrophic sub-expression: (?:.*=.*). Two greedy quantifiers in sequence, classic catastrophic backtracking on PCRE; one pathological body times every concurrent request times every CPU core on every edge server is the global saturation. Three systemic conditions: an author optimising for coverage, an engine with no runtime budget, a deployment path with no staged rollout. The unixoid answer: re2 or Rust regex, FreeBSD rctl, treat global propagation as the kill switch, not the default.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-regex-that-ran-unbounded{( endslot )}
+
+{( slot og-title )}The Regex That Ran Unbounded &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Tales from the Bare Metal Episode 03. Cloudflare WAF outage, 2 July 2019. 13:42 UTC: rule pushed via Quicksilver, global in seconds. 13:45 UTC: synthetic-test alerts. 14:00 UTC: WAF identified. 14:07 UTC: global termination. 14:09 UTC: traffic and CPU normal. 14:52 UTC: WAF re-enabled. The forty-five-character pattern hid (?:.*=.*); two greedy quantifiers in sequence, classic catastrophic backtracking on PCRE; one pathological body multiplied by every concurrent request and every CPU core on every edge server is global saturation. Three systemic conditions: author optimised for detection coverage, engine had no runtime budget, deployment path had no staged rollout. Linear-time alternatives (RE2, Rust regex) refuse exponential patterns at compile time. FreeBSD rctl(8) gives the budget the engine cannot. Quicksilver is a kill switch, not a default.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Regex That Ran Unbounded",
+    "datePublished": "2026-05-13",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-regex-that-ran-unbounded",
+    "description": "Tales from the Bare Metal Episode 03. The Cloudflare WAF outage of 2 July 2019, 13:42 to 14:09 UTC, 27 minutes of traffic stopped on a service that fronts a sizeable share of the public internet. A managed cross-site-scripting detection rule deployed via Quicksilver. The catastrophic sub-expression (?:.*=.*) reduces to .*.*=.* and, on PCRE, triggers exponential backtracking on inputs that do not contain an equals sign. Three systemic conditions made the outage global: an author optimising for detection coverage and no CPU-time check in the harness; a PCRE engine with no runtime budget after an earlier guard had been removed and not reinstated; and a deployment path with no staged rollout for managed rules, with a dashboard that ran on the same edge network it was meant to control. Cloudflare's announced preventive measures include moving to re2 or Rust regex (linear time, refuse exponential patterns at compile time), reinstating CPU-usage protection, profiling in CI and a staged rollout SOP for managed rules. The FreeBSD lesson: rctl gives the budget the engine cannot.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-13">13 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Regex That Ran Unbounded</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">freebsd</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Tales from the Bare Metal</em> &#x261E; Episode 03</p>
+
+        <p><strong>&laquo; Thou shalt not let a regex run unbounded
+            anywhere! &raquo;</strong></p>
+
+        <p>13:42 UTC on Tuesday, 2 July 2019. A Cloudflare engineer
+            deploys a single new managed WAF rule. Within seconds,
+            every Cloudflare server in the world is at 100% CPU and
+            incoming HTTP traffic stops moving. Twenty-seven minutes
+            later, with traffic restored, the engineers will find that
+            the rule was a regex of forty-five characters.</p>
+
+        <p>This is the story of how a regular expression that compiles
+            cleanly, passes its tests, deploys via a globally
+            distributed key-value store in seconds, and is enabled in
+            simulation mode rather than blocking mode, takes down a
+            sizeable fraction of the public internet for the duration
+            of a coffee break. The interesting part is not the regex.
+            The interesting part is the architecture that gave the
+            regex unrestricted access to every CPU core on the
+            network.</p>
+
+        <h2>The Incident, in UTC</h2>
+
+        <ul>
+            <li><strong>13:42</strong> Engineer deploys the new managed WAF rule. Automatic deployment via Quicksilver, Cloudflare's distributed key-value store, propagates the change worldwide in seconds</li>
+            <li><strong>13:45</strong> First PagerDuty alert: synthetic WAF test fails</li>
+            <li><strong>14:00</strong> WAF identified as the root cause of the global CPU saturation</li>
+            <li><strong>14:02</strong> A "global terminate" of the WAF Managed Rulesets is proposed</li>
+            <li><strong>14:07</strong> Global terminate executed</li>
+            <li><strong>14:09</strong> Traffic and CPU return to normal worldwide</li>
+            <li><strong>14:52</strong> WAF re-enabled globally after the offending rule is rolled back and the change is tested</li>
+        </ul>
+
+        <p>Twenty-seven minutes from rule push to traffic restoration.
+            Two further hours before the WAF Managed Rulesets are
+            fully re-enabled.</p>
+
+        <svg viewBox="0 0 600 200" aria-label="A horizontal timeline of the Cloudflare WAF outage on 2 July 2019. 13:42 UTC: rule pushed via Quicksilver, propagating worldwide in seconds. 13:45 UTC: first PagerDuty alert from a synthetic WAF test. 14:00 UTC: WAF identified as the root cause. 14:07 UTC: global terminate executed. 14:09 UTC: traffic and CPU return to normal. 14:52 UTC: WAF re-enabled after the rule has been rolled back. The interval between 13:42 and 14:09 is shaded as the 27-minute window during which a sizeable share of the public internet was unreachable through Cloudflare." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tb-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .tb-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .tb-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tb-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .tb-tl-tick { stroke: var(--muted); stroke-width: 1; }
+                .tb-tl-dot { fill: var(--accent); }
+                .tb-tl-band { fill: var(--accent); opacity: 0.12; }
+            </style>
+            <text x="300" y="22" class="tb-tl-title" text-anchor="middle">2 July 2019, the 27-Minute Shape</text>
+
+            <rect x="60" y="120" width="320" height="14" class="tb-tl-band"/>
+            <text x="220" y="116" class="tb-tl-muted" text-anchor="middle" font-style="italic">27 minutes, traffic stopped</text>
+
+            <line x1="40" y1="140" x2="560" y2="140" class="tb-tl-axis"/>
+
+            <circle cx="60" cy="140" r="4" class="tb-tl-dot"/>
+            <line x1="60" y1="140" x2="60" y2="146" class="tb-tl-tick"/>
+            <text x="60" y="160" class="tb-tl-text" text-anchor="middle">13:42</text>
+            <text x="60" y="174" class="tb-tl-muted" text-anchor="middle">rule pushed</text>
+            <text x="60" y="186" class="tb-tl-muted" text-anchor="middle">via Quicksilver</text>
+
+            <circle cx="125" cy="140" r="4" class="tb-tl-dot"/>
+            <line x1="125" y1="140" x2="125" y2="146" class="tb-tl-tick"/>
+            <text x="125" y="160" class="tb-tl-text" text-anchor="middle">13:45</text>
+            <text x="125" y="174" class="tb-tl-muted" text-anchor="middle">synthetic</text>
+            <text x="125" y="186" class="tb-tl-muted" text-anchor="middle">test alerts</text>
+
+            <circle cx="240" cy="140" r="4" class="tb-tl-dot"/>
+            <line x1="240" y1="140" x2="240" y2="146" class="tb-tl-tick"/>
+            <text x="240" y="160" class="tb-tl-text" text-anchor="middle">14:00</text>
+            <text x="240" y="174" class="tb-tl-muted" text-anchor="middle">WAF</text>
+            <text x="240" y="186" class="tb-tl-muted" text-anchor="middle">identified</text>
+
+            <circle cx="340" cy="140" r="4" class="tb-tl-dot"/>
+            <line x1="340" y1="140" x2="340" y2="146" class="tb-tl-tick"/>
+            <text x="340" y="160" class="tb-tl-text" text-anchor="middle">14:07</text>
+            <text x="340" y="174" class="tb-tl-muted" text-anchor="middle">global</text>
+            <text x="340" y="186" class="tb-tl-muted" text-anchor="middle">terminate</text>
+
+            <circle cx="380" cy="140" r="4" class="tb-tl-dot"/>
+            <line x1="380" y1="140" x2="380" y2="146" class="tb-tl-tick"/>
+            <text x="380" y="160" class="tb-tl-text" text-anchor="middle">14:09</text>
+            <text x="380" y="174" class="tb-tl-muted" text-anchor="middle">traffic</text>
+            <text x="380" y="186" class="tb-tl-muted" text-anchor="middle">restored</text>
+
+            <circle cx="540" cy="140" r="4" class="tb-tl-dot"/>
+            <line x1="540" y1="140" x2="540" y2="146" class="tb-tl-tick"/>
+            <text x="540" y="160" class="tb-tl-text" text-anchor="middle">14:52</text>
+            <text x="540" y="174" class="tb-tl-muted" text-anchor="middle">WAF</text>
+            <text x="540" y="186" class="tb-tl-muted" text-anchor="middle">re-enabled</text>
+        </svg>
+
+        <h2>The Diagnosis</h2>
+
+        <p>The offending rule was a managed XSS-detection regular
+            expression in Cloudflare's WAF. Its full form is a
+            forty-five-character pattern; the catastrophic part is one
+            sub-expression:</p>
+
+        <pre><code>(?:.*=.*)</code></pre>
+
+        <p>Reduced to its essence:</p>
+
+        <pre><code>.*.*=.*</code></pre>
+
+        <p>Two greedy quantifiers (<code>.*</code>) followed by a
+            literal (<code>=</code>) followed by another greedy
+            quantifier. When the engine matches this against a long
+            input that does not contain <code>=</code>, it has to try
+            every possible way of splitting the input between the two
+            <code>.*</code> quantifiers before concluding failure. For
+            an input of length <em>n</em>, there are O(<em>n</em><sup>2</sup>)
+            possible splits to try. For longer inputs against more
+            complex variants of this pattern, the worst case escalates
+            rapidly. This is the classic shape of
+            <strong>catastrophic backtracking</strong>, a failure mode
+            known under the acronym <strong>ReDoS</strong> (regular
+            expression denial of service).</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A graph comparing match time against input length for two regex engine classes. The first curve, labelled PCRE backtracking, rises gently at first and then steeply, reaching the top of the chart at modest input lengths. The second curve, labelled RE2 or Rust regex, is a straight line rising linearly with input length, staying near the floor of the chart even at the right edge. A small annotation reads 'compile-time refusal' next to the linear curve, indicating that the linear-time engines reject patterns whose worst case is exponential before they ever run." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-cb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-cb-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-cb-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-cb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-cb-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .tb-cb-curve-bad { stroke: var(--accent); stroke-width: 2; fill: none; }
+                .tb-cb-curve-good { stroke: var(--muted); stroke-width: 2; fill: none; }
+            </style>
+            <text x="300" y="22" class="tb-cb-title" text-anchor="middle">Two Engine Classes on the Same Bad Input</text>
+
+            <line x1="60" y1="210" x2="560" y2="210" class="tb-cb-axis"/>
+            <line x1="60" y1="50" x2="60" y2="210" class="tb-cb-axis"/>
+            <text x="310" y="228" class="tb-cb-muted" text-anchor="middle">input length</text>
+            <text x="48" y="130" class="tb-cb-muted" text-anchor="middle" transform="rotate(-90 48 130)">CPU time</text>
+
+            <path d="M 60 208 L 540 188" class="tb-cb-curve-good"/>
+            <path d="M 60 208 Q 240 206, 360 188 T 470 80 L 480 55" class="tb-cb-curve-bad"/>
+
+            <text x="478" y="60" class="tb-cb-head" text-anchor="end">PCRE</text>
+            <text x="478" y="74" class="tb-cb-muted" text-anchor="end">backtracking, exponential worst case</text>
+
+            <text x="220" y="172" class="tb-cb-head">RE2 / Rust regex</text>
+            <text x="220" y="186" class="tb-cb-muted">linear time,</text>
+            <text x="220" y="198" class="tb-cb-muted">refuses exponential patterns at compile time</text>
+        </svg>
+
+        <p>Cloudflare's WAF was implemented in Lua, running inside
+            nginx (the OpenResty stack), with PCRE (Perl Compatible
+            Regular Expressions) doing the actual regex matching. PCRE
+            evaluates patterns by backtracking and has no built-in
+            runtime budget; once a match attempt begins, it runs until
+            it succeeds or exhausts the search space.</p>
+
+        <p>On a single host, a single pathological input produces a
+            single CPU-bound match attempt. Multiplied by every HTTP
+            request that hits the WAF, multiplied by every CPU core on
+            every Cloudflare edge server worldwide, this is exactly
+            the global saturation that took the network down.</p>
+
+        <h2>The Context</h2>
+
+        <p>Three systemic conditions shaped the afternoon.</p>
+
+        <p><strong>The author was solving for coverage, not
+            performance.</strong> The rule was new; the goal was to
+            catch a wider class of XSS payloads. The test harness
+            verified that the rule matched the patterns it was
+            supposed to match and did not match the patterns it was
+            supposed to ignore. CPU-time profiling on pathological
+            inputs was not part of the harness, and Cloudflare's
+            postmortem notes explicitly that previous WAF builds had
+            not logged any CPU regression of the kind that would have
+            flagged the new rule. The rule looked fine to every
+            gatekeeper between author and edge.</p>
+
+        <p><strong>The engine had no runaway protection.</strong> PCRE
+            has no built-in CPU budget; this is a property of the
+            algorithm class (backtracking matchers cannot bound their
+            own runtime in general). Cloudflare had previously had a
+            CPU-usage protection mechanism in the WAF, but it had been
+            removed for unrelated reasons and was never reinstated.
+            The combination of an unbounded engine and a removed
+            wrapper-level guard meant the runtime budget was, in
+            practice, infinite.</p>
+
+        <p><strong>The deployment path had no staged rollout for
+            managed rules.</strong> Quicksilver pushes changes
+            globally in seconds. This is a feature for emergency kill
+            switches: when something has to be turned off everywhere
+            at once, seconds matter. For ordinary rule changes, it is
+            a feature that converts a local bug into a global outage.
+            There was no canary stage, no per-data-centre soak time,
+            no automated rollback on CPU regression. And the dashboard
+            and API that customers and operators would have used to
+            disable the rule manually ran on the same Cloudflare edge
+            network; once the edge was saturated, the control plane
+            was unreachable too.</p>
+
+        <svg viewBox="0 0 600 340" aria-label="A vertical stack. Top, the regex sub-expression that triggered the outage: .*.*=.* on PCRE, two greedy quantifiers in sequence. Below it, three systemic conditions stacked as full-width rows. First: the author was solving for coverage, with no CPU-time profiling in the harness and no prior CPU regression logged. Second: the engine had no runtime budget, since PCRE backtracks until done and the earlier CPU-usage guard had been removed and not reinstated. Third: the deployment path had no staged rollout, since Quicksilver propagates globally in seconds and the dashboard ran on the saturated edge. Below the three rows, a small italic note observes that no single component owned the question of the worst case, and that the failure lived in the spaces between them." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-sys-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tb-sys-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .tb-sys-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .tb-sys-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tb-sys-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-sys-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tb-sys-line { stroke: var(--accent); stroke-width: 1; fill: none; stroke-dasharray: 3,3; }
+            </style>
+            <text x="300" y="22" class="tb-sys-title" text-anchor="middle">Three Conditions, One Outage</text>
+
+            <rect x="180" y="44" width="240" height="44" class="tb-sys-accent-box"/>
+            <text x="300" y="64" class="tb-sys-head" text-anchor="middle">.*.*=.*</text>
+            <text x="300" y="80" class="tb-sys-muted" text-anchor="middle">PCRE, two greedy quantifiers</text>
+
+            <line x1="300" y1="88" x2="300" y2="110" class="tb-sys-line"/>
+
+            <rect x="40" y="110" width="520" height="50" class="tb-sys-box"/>
+            <text x="60" y="132" class="tb-sys-head">1 &#x25A0; Author solving for coverage</text>
+            <text x="60" y="150" class="tb-sys-muted">CPU-time profiling not in the harness; no prior CPU regression logged</text>
+
+            <rect x="40" y="170" width="520" height="50" class="tb-sys-box"/>
+            <text x="60" y="192" class="tb-sys-head">2 &#x25A0; Engine without budget</text>
+            <text x="60" y="210" class="tb-sys-muted">PCRE backtracks until done; the earlier CPU-usage guard had been removed and not reinstated</text>
+
+            <rect x="40" y="230" width="520" height="50" class="tb-sys-box"/>
+            <text x="60" y="252" class="tb-sys-head">3 &#x25A0; Deployment without canary</text>
+            <text x="60" y="270" class="tb-sys-muted">Quicksilver global in seconds; the dashboard ran on the same saturated edge it would have switched off</text>
+
+            <text x="300" y="306" class="tb-sys-muted" text-anchor="middle" font-style="italic">No single component owned the question "what is the worst case here?"</text>
+            <text x="300" y="322" class="tb-sys-muted" text-anchor="middle" font-style="italic">The failure lived in the spaces between them.</text>
+        </svg>
+
+        <p>The pattern across the three is familiar: each system was
+            reasonable on its own. Quicksilver was excellent for what
+            it was designed for. PCRE was an industry-standard regex
+            engine. The XSS rule was a reasonable response to a known
+            attack class. The failure mode lived in the spaces between
+            them, where no single component owned the question "what
+            is the worst case here?"</p>
+
+        <h2>The Principle</h2>
+
+        <p>The unixoid response to "this code path could run forever"
+            is to give it a budget that the kernel enforces. The
+            detailed answer has three parts.</p>
+
+        <p><strong>Use an engine with runtime guarantees.</strong> The
+            linear-time regex engines, of which
+            <a href="https://github.com/google/re2" target="_blank" rel="noopener">Google's RE2</a>
+            and the Rust <code>regex</code> crate are the two
+            production-grade examples, both refuse at compile time to
+            accept patterns whose worst case is exponential, and both
+            run any pattern they do accept in time proportional to the
+            input. Cloudflare's preventive measures, announced in the
+            <a href="https://blog.cloudflare.com/details-of-the-cloudflare-outage-on-july-2-2019/" target="_blank" rel="noopener">postmortem</a>,
+            include switching the WAF from PCRE to either RE2 or Rust
+            regex. The linear-time class was first published as a
+            theoretical result by
+            <a href="https://swtch.com/~rsc/regexp/regexp1.html" target="_blank" rel="noopener">Ken Thompson in 1968</a>
+            and has been available in production form since RE2 was
+            open-sourced in 2010. It is not new technology; it is
+            technology that has not yet displaced its older sibling
+            everywhere it should.</p>
+
+        <p><strong>Where the engine cannot be changed, cap it from
+            outside.</strong> On FreeBSD,
+            <a href="https://man.freebsd.org/cgi/man.cgi?query=rctl" target="_blank" rel="noopener"><code>rctl(8)</code></a>
+            enforces resource limits on processes, jails and users:
+            CPU time, memory, file descriptors, and several others. A
+            regex worker run inside a jail with
+            <code>rctl -a jail:waf:cputime:deny=200ms</code> cannot
+            eat more than 200 milliseconds of CPU per process before
+            the kernel terminates it. On any Unix,
+            <code>ulimit -t</code> in the parent shell or a separate
+            worker process per request with a kill-after timeout
+            provides a coarser version of the same guarantee. The
+            principle is older than software: the operator pays for an
+            unbounded computation; the kernel is the only place that
+            can refuse on the operator's behalf.</p>
+
+        <p><strong>Treat global propagation as the kill switch, not
+            the default.</strong> Quicksilver propagating worldwide in
+            seconds is the right tool for "turn this off everywhere"
+            or "patch the active CVE". It is the wrong default for
+            "deploy a new rule": the cost of a slow rollout (minutes
+            per region) is the upper bound on the blast radius of a
+            bug. Cloudflare's SOP changes announced after the outage
+            include a staged rollout path for managed rules while
+            retaining the emergency global lane. Two paths, two
+            purposes, two SLAs.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="Three layers of defence against an unbounded regex. Top layer: choose an engine with runtime guarantees (RE2 or Rust regex), which refuses exponential patterns at compile time. Middle layer: where the engine cannot be changed, cap it from outside with rctl on FreeBSD, ulimit -t on any Unix, or a worker process per request with a hard timeout. Bottom layer: treat global propagation as the kill switch, not the default, and run the dashboard somewhere other than the network it controls." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-pr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tb-pr-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .tb-pr-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .tb-pr-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tb-pr-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="tb-pr-title" text-anchor="middle">Three Layers, One Budget</text>
+
+            <rect x="40" y="50" width="520" height="50" class="tb-pr-accent-box"/>
+            <text x="60" y="72" class="tb-pr-head">1 &#x25A0; Engine with runtime guarantees</text>
+            <text x="60" y="90" class="tb-pr-muted">RE2 (Google, 2010) and Rust regex crate &#x2014; refuse exponential patterns at compile time, linear in input</text>
+
+            <rect x="40" y="110" width="520" height="50" class="tb-pr-accent-box"/>
+            <text x="60" y="132" class="tb-pr-head">2 &#x25A0; Cap from outside the engine</text>
+            <text x="60" y="150" class="tb-pr-muted">FreeBSD rctl(8) for CPU and memory; ulimit -t; one worker per request with a hard kill-after timeout</text>
+
+            <rect x="40" y="170" width="520" height="50" class="tb-pr-accent-box"/>
+            <text x="60" y="192" class="tb-pr-head">3 &#x25A0; Global propagation as kill switch, not default</text>
+            <text x="60" y="210" class="tb-pr-muted">Two paths, two SLAs; control plane on a separate failure domain from the network it controls</text>
+        </svg>
+
+        <p>The FreeBSD context is worth pausing on. The BSD camp has
+            been arguing for runtime-bounded execution at the kernel
+            boundary for decades: <code>rctl</code> for CPU and memory
+            caps, <a href="/blog/the-jails-replacement">jails</a> for
+            blast-radius containment,
+            <a href="/blog/capsicum-vs-seccomp">Capsicum</a> for
+            capability-level sandboxing, the Unix-traditional
+            discipline of one job per process with a clean exit path.
+            None of this needed to be invented in 2019. It needed to
+            be applied at the point where the WAF was making decisions
+            in the request hot path. The Cloudflare team has applied
+            the equivalent answers since; the lesson, for the rest of
+            the industry, is that the equivalent answers exist and
+            have been quietly proven for a long time.</p>
+
+        <h2>Where It Travels</h2>
+
+        <p>Cloudflare runs the WAF, but the pattern is everywhere a
+            regex meets user input:</p>
+
+        <ul>
+            <li><strong>Every Web Application Firewall</strong>. Cloudflare, AWS WAF, F5, ModSecurity, custom-built rules</li>
+            <li><strong>Every intrusion detection or prevention system</strong>. Suricata, Zeek and snort all run rule sets containing regex against packet payloads or extracted strings</li>
+            <li><strong>Every centralised logging stack</strong>. Splunk, Elastic and Datadog and similar systems regex inbound log lines for parsing and routing. A pathological message can melt the parsing tier</li>
+            <li><strong>Every JSON or GraphQL schema validator</strong> that supports <code>pattern</code> keywords. A schema author can write a ReDoS into an API definition without realising it</li>
+            <li><strong>Every text-classification or content-moderation pipeline</strong> that runs regex on user-submitted content as a first-pass filter</li>
+            <li><strong>Every Python <code>re</code> application on a streaming source</strong>, where one bad input can stall the whole stream</li>
+            <li><strong>Every dashboard that runs on the platform it monitors</strong>. This is not the regex lesson; it is its travelling companion. A status page, a kill-switch console or a deployment dashboard that depends on the same infrastructure it controls will be unreachable exactly when it is needed</li>
+        </ul>
+
+        <blockquote>
+            <p>Forty-five characters of expression, twenty-seven
+                minutes of internet. The engine did exactly what the
+                regex asked for. The architecture decided what
+                <em>exactly</em> meant.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The 27-minute shape, the preventive answer:</strong></p>
+            <ul>
+                <li><strong>The clock</strong> (UTC, 2 July 2019): 13:42 rule pushed via Quicksilver; 13:45 synthetic-test alerts; 14:00 WAF identified; 14:07 global terminate; 14:09 traffic and CPU normal; 14:52 WAF re-enabled after rollback</li>
+                <li><strong>The offending sub-expression</strong>: <code>(?:.*=.*)</code>, simplified <code>.*.*=.*</code>. Two greedy quantifiers in sequence; classic catastrophic backtracking on PCRE</li>
+                <li><strong>Cloudflare's preventive measures</strong> (per the John Graham-Cumming postmortem): switch to RE2 or Rust regex (both linear-time); reintroduce CPU-usage protection; performance profiling in CI on pathological inputs; staged rollout SOP for managed rules with the global-deploy lane retained for kill switches; separate the control-plane dashboard from the edge network it controls</li>
+                <li><strong>No data loss, no breach</strong>. CPU saturation on every edge core; control plane sharing fate with the network. The wrong engine in the wrong code path with the wrong rollout</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

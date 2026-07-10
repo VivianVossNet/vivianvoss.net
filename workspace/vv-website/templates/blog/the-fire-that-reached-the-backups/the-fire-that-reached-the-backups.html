@@ -1,0 +1,474 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Fire That Reached the Backups &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In the early hours of 10 March 2021, a fire began in a power room in Strasbourg. By morning an entire OVHcloud data centre was gone. The data loss was not the surprise; the surprise, for thousands of customers, was that they had backups, and the backups had burned with the building. SBG2 was destroyed entirely, SBG1 badly damaged; around 3.6 million websites went dark. SBG2 used a free-cooling tower design that, once alight, behaved like a chimney; the floors were wooden, rated for about an hour; none of the five buildings had an automatic extinguishing system. The lesson is not about cooling towers but about failure domains: a backup can be complete, valid and restorable and still worthless if it shares a failure domain with the thing it backs up. The rule is older than the cloud: 3-2-1. Three copies, two kinds of media, one off-site, meaning a different failure domain. Redundancy that shares a postcode is decoration.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-fire-that-reached-the-backups{( endslot )}
+
+{( slot og-title )}The Fire That Reached the Backups &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Tales from the Bare Metal Episode 05. The OVHcloud Strasbourg data-centre fire of 10 March 2021. A fire that began in a power room destroyed SBG2 entirely and badly damaged SBG1; around 3.6 million websites went dark, and for customers whose only copy lived on-site the data was gone for good. The BEA-RI report records high moisture near a power inverter in the hour before ignition and stops short of a definitive cause; the spread is well understood: a free-cooling tower design that behaved like a chimney, wooden floors rated for about an hour, and no automatic extinguishing system in any of the five buildings. The lesson is not the cooling but the failure domain: a backup that shares a building with the original burns in the same fire. The rule is older than the cloud: 3-2-1, three copies, two media, one off-site (a different failure domain, not a different rack). On FreeBSD, zfs send a snapshot to a pool in another region; with restic or borg, replicate somewhere the same fire cannot reach. Multi-AZ is not multi-region; Azure LRS is not GRS; the NAS in the same room is a second copy awaiting the same flood. Redundancy that shares a postcode is decoration.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Fire That Reached the Backups",
+    "datePublished": "2026-05-27",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-fire-that-reached-the-backups",
+    "description": "Tales from the Bare Metal Episode 05. The OVHcloud Strasbourg (SBG) data-centre fire of 10 March 2021. Shortly before 01:00 a fire broke out in a power room; SBG2 was destroyed entirely, SBG1 badly damaged, SBG3 and SBG4 powered down. Roughly 3.6 million websites and around 464,000 domains were unavailable at the peak, close to 18 per cent of OVH's active IP addresses; for customers whose only copy lived on-site, the data was permanently lost. The French BEA-RI investigation report (June 2022) records high humidity readings near a power inverter in the hour before ignition and deliberately stops short of a single definitive cause. The spread compounded from three design facts: SBG2's free-cooling tower design (built 2011), which let waste heat rise and drew outside air in, behaving like a chimney once a fire took hold; wooden floors rated to resist fire for about an hour; and the absence of any automatic fire-extinguishing system in all five buildings. The systemic context: a mental model in which 'in the data centre' means 'safe' and nobody pictures the building; hosting panels that present 'backup' as a feature to switch on rather than a question of geography, so primary and backup ended up in one failure domain by default; and the location of a backup being a checkbox nobody owned. The principle is older than the cloud: 3-2-1, three copies, on at least two media types, with at least one off-site, meaning a different failure domain that the primary's fire, flood or power event cannot reach. Episode 01 (GitLab) asked you to restore your backups; this episode asks where they physically live, an independent axis. On FreeBSD, zfs send a snapshot to a pool in another region; with restic or borg, replicate to object storage in a different region. Where it travels: AWS multi-AZ is not multi-region (an Availability Zone is a cluster of buildings, a region is geography); Azure locally-redundant storage is not geo-redundant storage; Kubernetes Velero and etcd snapshots should ship off-cluster and off-region; the on-prem NAS in the same room is a second copy awaiting the same flood. Redundancy that shares a postcode is decoration.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-27">27 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Fire That Reached the Backups</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">cloud</span>
+            <span class="vv-pill">devops</span>
+            <span class="vv-pill">freebsd</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Tales from the Bare Metal</em> &#x261E; Episode 05</p>
+
+        <p><strong>&laquo; Thou shalt not keep thy backup in the
+            building thou art backing up! &raquo;</strong></p>
+
+        <p>In the early hours of 10 March 2021, a fire began in a
+            power room in Strasbourg. By morning an entire data centre
+            had been destroyed and a second badly damaged. Around 3.6
+            million websites went offline. For a great many of those
+            customers the sites came back within days. For some, they
+            never came back at all, because the only copy of their
+            data had been in the building that burned. The data loss
+            is not the lesson of this episode. The lesson is that a
+            backup can be complete, valid, restorable, and still
+            worthless, if it shares a failure domain with the thing it
+            is backing up.</p>
+
+        <h2>The Incident</h2>
+
+        <p>Shortly before 01:00 on 10 March 2021, fire broke out in a
+            power room at OVHcloud's Strasbourg site, known as SBG.
+            The site comprised several buildings. SBG2 was destroyed
+            entirely. SBG1 was badly damaged, several of its rooms
+            lost. SBG3 and SBG4 were not burned but were powered down
+            as the site was made safe and the power infrastructure was
+            gone.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A site plan of the OVHcloud Strasbourg campus showing four buildings and the outcome of the fire. SBG2 is marked destroyed entirely. SBG1, adjacent, is marked badly damaged. SBG3 and SBG4 are marked powered down but not burned. An arrow from SBG2 indicates the chimney-like updraught of its free-cooling tower design. A note records that one fire in one power room reached an entire building." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-site-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-site-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-site-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-site-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-site-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-site-gone { fill: var(--accent); opacity: 0.16; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tb-site-arr { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#tb-site-arrow); }
+            </style>
+            <defs>
+                <marker id="tb-site-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="tb-site-title" text-anchor="middle">One Power Room, One Building Gone</text>
+
+            <rect x="60" y="80" width="110" height="80" class="tb-site-gone"/>
+            <text x="115" y="116" class="tb-site-head" text-anchor="middle">SBG2</text>
+            <text x="115" y="132" class="tb-site-muted" text-anchor="middle">destroyed</text>
+            <text x="115" y="144" class="tb-site-muted" text-anchor="middle">entirely</text>
+
+            <rect x="185" y="80" width="110" height="80" class="tb-site-box"/>
+            <text x="240" y="116" class="tb-site-head" text-anchor="middle">SBG1</text>
+            <text x="240" y="132" class="tb-site-muted" text-anchor="middle">badly</text>
+            <text x="240" y="144" class="tb-site-muted" text-anchor="middle">damaged</text>
+
+            <rect x="310" y="80" width="110" height="80" class="tb-site-box"/>
+            <text x="365" y="116" class="tb-site-head" text-anchor="middle">SBG3</text>
+            <text x="365" y="132" class="tb-site-muted" text-anchor="middle">powered</text>
+            <text x="365" y="144" class="tb-site-muted" text-anchor="middle">down</text>
+
+            <rect x="435" y="80" width="110" height="80" class="tb-site-box"/>
+            <text x="490" y="116" class="tb-site-head" text-anchor="middle">SBG4</text>
+            <text x="490" y="132" class="tb-site-muted" text-anchor="middle">powered</text>
+            <text x="490" y="144" class="tb-site-muted" text-anchor="middle">down</text>
+
+            <line x1="115" y1="80" x2="115" y2="54" class="tb-site-arr"/>
+            <text x="115" y="48" class="tb-site-muted" text-anchor="middle">chimney updraught</text>
+
+            <text x="300" y="184" class="tb-site-muted" text-anchor="middle">~3.6M websites, ~464,000 domains down at the peak (~18% of OVH's active IPs).</text>
+            <text x="300" y="200" class="tb-site-muted" text-anchor="middle" font-style="italic">For customers whose only copy lived on-site, the data was gone for good.</text>
+        </svg>
+
+        <p>The scale of the dependent estate became clear within
+            hours. According to figures cited in the official
+            investigation, roughly 3.6 million websites, corresponding
+            to around 464,000 domain names, were unavailable at the
+            height of the crisis, close to 18 per cent of the active
+            IP addresses OVH had assigned over the preceding
+            fortnight. Game servers, government sites, e-commerce shops
+            and countless small businesses went dark together.
+            OVHcloud's founder communicated openly and frequently
+            through the days that followed, and the company moved
+            quickly to rebuild and to ship replacement capacity. But
+            for customers whose only copy of their data lived on the
+            SBG site, no amount of openness brought the data back. It
+            was gone.</p>
+
+        <h2>The Diagnosis</h2>
+
+        <p>The fire started in the power room. The French Bureau of
+            Investigation and Analysis on Industrial Risks (BEA-RI)
+            published its report in June 2022. The report records high
+            humidity readings near one of the power inverters in the
+            hour before the fire began, and discusses the inverters as
+            a likely origin, but it deliberately stops short of
+            asserting a single definitive cause. That hedge is worth
+            respecting: the precise ignition is not known with
+            certainty, and inventing one would be dishonest.</p>
+
+        <p>What is understood, and what matters more for the lesson,
+            is why a fire in one power room became the loss of a
+            building. Three design facts compounded.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="The three design facts that turned a power-room fire into the loss of a building. First, cooling: SBG2's free-cooling tower design let waste heat rise and drew outside air in, energy-efficient but, once alight, behaving like a chimney that fed and lifted the fire. Second, construction: the floors were wooden, rated to resist fire for about an hour. Third, suppression: none of the five buildings on the site had an automatic fire-extinguishing system. A note observes that none of these alone is the villain; together they left little standing between one power room and the whole structure." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-d-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-d-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-d-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-d-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-d-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="300" y="22" class="tb-d-title" text-anchor="middle">Why One Power Room Became a Building</text>
+
+            <rect x="40" y="46" width="520" height="48" class="tb-d-box"/>
+            <text x="60" y="66" class="tb-d-head">1 &#x25A0; Cooling: a free-cooling tower (built 2011)</text>
+            <text x="60" y="84" class="tb-d-muted">waste heat rises, outside air drawn in: efficient for a decade, a chimney once a fire took hold</text>
+
+            <rect x="40" y="102" width="520" height="48" class="tb-d-box"/>
+            <text x="60" y="122" class="tb-d-head">2 &#x25A0; Construction: wooden floors</text>
+            <text x="60" y="140" class="tb-d-muted">rated to resist fire for about an hour; a long time at a desk, a short time against a fed fire</text>
+
+            <rect x="40" y="158" width="520" height="48" class="tb-d-box"/>
+            <text x="60" y="178" class="tb-d-head">3 &#x25A0; Suppression: none automatic</text>
+            <text x="60" y="196" class="tb-d-muted">no automatic extinguishing system in any of the five buildings; only detection and human response</text>
+        </svg>
+
+        <p>First, the cooling. SBG2 was built in 2011 using a tower
+            design with free cooling, sometimes called
+            auto-ventilation: rather than mechanical chillers, the
+            building let the waste heat of the servers rise and vent
+            at the top, drawing cooler outside air in at the bottom.
+            As an energy strategy this is genuinely elegant and
+            genuinely efficient. As a fire behaviour, a tall shaft
+            with a strong natural updraught is, in the words that have
+            followed the incident, rather like a chimney. The same
+            airflow that cooled the servers fed and lifted the
+            fire.</p>
+
+        <p>Second, the construction. The floors were wooden, rated to
+            resist fire for about an hour. An hour is a long time at a
+            desk and a short time against a fed fire in a ventilated
+            tower.</p>
+
+        <p>Third, suppression. OVH had chosen not to fit any of the
+            five buildings on the Strasbourg site with an automatic
+            fire-extinguishing system. There were detection and human
+            response and the fire brigade, but no gas or water system
+            that triggers on its own in the room of origin in the
+            first minutes, which are the minutes that decide whether a
+            fire stays in one rack or takes a building.</p>
+
+        <p>None of these, on its own, is the villain. Together they
+            meant that an event in one power room had very little
+            standing between it and the whole structure.</p>
+
+        <h2>The Context</h2>
+
+        <p>The hard part of this story is not OVH's building. It is
+            the customers' assumption, because that assumption is
+            nearly universal and it is the part that travels.</p>
+
+        <p>The first condition is a mental model. We say "it is in the
+            data centre" or "it is in the cloud" and we hear "it is
+            safe". The phrase abstracts away the physical fact: a
+            specific building, in a specific town, with specific walls
+            and a specific power room. Almost nobody, choosing where
+            their backup lives, pictures the building. The abstraction
+            that makes cloud convenient is the same abstraction that
+            hides the failure domain.</p>
+
+        <p>The second condition is the shape of the tools. A hosting
+            panel offers a backup option, often a cheap one, and the
+            nearest and cheapest option is frequently storage in the
+            same data centre, sometimes the same building. The
+            interface presents "backup" as a feature you switch on,
+            not as a question about geography. So customers switched
+            it on, in good faith, and their primary and their backup
+            came to sit inside one failure domain, chosen by default
+            rather than by decision. The word "backup" did all the
+            reassuring; the location did all the risk.</p>
+
+        <p>The third condition is ownership. The location of a backup
+            is rarely anyone's explicit, written requirement. It is a
+            setting, a default, a checkbox during provisioning, and
+            checkboxes have no owner. Restore-testing, the subject of
+            this series' first episode, at least tends to land on
+            someone's plate eventually. "Is our backup in a different
+            failure domain from our primary?" is a question that, in a
+            great many organisations, no one has ever been assigned to
+            answer.</p>
+
+        <p>And all of it was reasonable at the time it was decided.
+            The free-cooling tower was a real efficiency innovation
+            that saved real energy for a decade. The single-site
+            backup was a real saving that worked perfectly every day
+            the building did not burn. These were not careless
+            choices. They were ordinary trade-offs whose hidden
+            assumption, that the failure domains do not overlap, was
+            simply never tested until a fire tested it for everyone at
+            once.</p>
+
+        <h2>The Principle</h2>
+
+        <p>The rule that answers this is older than the cloud, and it
+            is three numbers: 3-2-1. Keep three copies of your data,
+            on at least two different kinds of media, with at least
+            one of them off-site. The number that does the work here
+            is the one: off-site, which does not mean a different rack
+            or a different room, it means a different failure domain,
+            far enough that a fire, a flood, a power surge or a flooded
+            basement at the primary cannot reach it.</p>
+
+        <svg viewBox="0 0 600 230" aria-label="The 3-2-1 backup rule. Three copies of the data are shown: the production primary and a second copy both inside one site labelled as one failure domain, and a third copy at a separate off-site location in a different failure domain. A flame icon over the first site shows that a single fire reaches both the primary and the same-site copy, but cannot reach the off-site copy. The rule is summarised: three copies, on two kinds of media, with one off-site, where off-site means a different failure domain rather than a different rack." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-321-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-321-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-321-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-321-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-321-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-321-good { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tb-321-domain { fill: var(--accent); opacity: 0.08; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4,3; rx: 6; }
+            </style>
+            <text x="300" y="22" class="tb-321-title" text-anchor="middle">3-2-1: the One Is the One That Matters</text>
+
+            <rect x="30" y="60" width="270" height="120" class="tb-321-domain"/>
+            <text x="165" y="80" class="tb-321-muted" text-anchor="middle">one failure domain (one site)</text>
+            <rect x="55" y="92" width="100" height="56" class="tb-321-box"/>
+            <text x="105" y="116" class="tb-321-text" text-anchor="middle">primary</text>
+            <text x="105" y="132" class="tb-321-muted" text-anchor="middle">copy 1</text>
+            <rect x="175" y="92" width="100" height="56" class="tb-321-box"/>
+            <text x="225" y="116" class="tb-321-text" text-anchor="middle">same-site</text>
+            <text x="225" y="132" class="tb-321-muted" text-anchor="middle">copy 2</text>
+            <text x="165" y="170" class="tb-321-muted" text-anchor="middle">one fire reaches both</text>
+
+            <text x="330" y="58" class="tb-321-head" text-anchor="middle">&#x1F525;</text>
+
+            <rect x="330" y="60" width="240" height="120" class="tb-321-domain"/>
+            <text x="450" y="80" class="tb-321-muted" text-anchor="middle">a different failure domain (off-site)</text>
+            <rect x="380" y="92" width="140" height="56" class="tb-321-good"/>
+            <text x="450" y="116" class="tb-321-text" text-anchor="middle">off-site copy 3</text>
+            <text x="450" y="132" class="tb-321-muted" text-anchor="middle">the fire cannot reach it</text>
+            <text x="450" y="170" class="tb-321-muted" text-anchor="middle">this is the copy that survives</text>
+
+            <text x="300" y="206" class="tb-321-muted" text-anchor="middle">3 copies &#x2022; 2 kinds of media &#x2022; 1 off-site</text>
+            <text x="300" y="222" class="tb-321-muted" text-anchor="middle" font-style="italic">Off-site means a different failure domain, not a different rack.</text>
+        </svg>
+
+        <p>The previous episode of this series gave you the first
+            commandment of backups: thou shalt not trust a backup thou
+            hast not restored. This episode gives you the second, and
+            they are not the same: thou shalt not keep that backup in
+            the building thou art backing up. A backup you have
+            diligently restore-tested every week is still not a backup
+            if it burns in the same fire as the original.
+            Restorability and separation are two independent axes, and
+            you need both.
+            <a href="/blog/the-backup-that-wasnt">GitLab</a>, in
+            episode one, had the separation and lacked the
+            restorability. OVH's unluckier customers had neither
+            guaranteed.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A two-by-two diagram of the two independent backup axes: restorability on one axis and separation (a different failure domain) on the other. The top-right quadrant, restorable and separated, is the only safe one. GitLab is placed in the restorable-but-not-yet-known quadrant, having had separation but lacking verified restorability. The OVH on-site-only customers are placed in the bottom-left quadrant, lacking both. A note observes that a backup needs both restorability and separation, and that they are independent." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-ax-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ax-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ax-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ax-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-ax-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .tb-ax-safe { fill: var(--accent); opacity: 0.12; }
+                .tb-ax-cell { fill: none; stroke: var(--border); stroke-width: 0.75; }
+            </style>
+            <text x="300" y="22" class="tb-ax-title" text-anchor="middle">Two Independent Axes, You Need Both</text>
+
+            <rect x="300" y="50" width="220" height="70" class="tb-ax-safe"/>
+            <rect x="80" y="50" width="220" height="70" class="tb-ax-cell"/>
+            <rect x="300" y="120" width="220" height="70" class="tb-ax-cell"/>
+            <rect x="80" y="120" width="220" height="70" class="tb-ax-cell"/>
+
+            <line x1="80" y1="50" x2="80" y2="190" class="tb-ax-axis"/>
+            <line x1="80" y1="190" x2="520" y2="190" class="tb-ax-axis"/>
+
+            <text x="190" y="84" class="tb-ax-muted" text-anchor="middle">separated, not</text>
+            <text x="190" y="96" class="tb-ax-muted" text-anchor="middle">yet restore-verified</text>
+            <text x="190" y="112" class="tb-ax-head" text-anchor="middle">GitLab (Ep 01)</text>
+
+            <text x="410" y="80" class="tb-ax-text" text-anchor="middle">restorable + separated</text>
+            <text x="410" y="96" class="tb-ax-head" text-anchor="middle">the only safe quadrant</text>
+            <text x="410" y="112" class="tb-ax-muted" text-anchor="middle">restore-test AND 3-2-1</text>
+
+            <text x="190" y="150" class="tb-ax-muted" text-anchor="middle">neither guaranteed</text>
+            <text x="190" y="166" class="tb-ax-head" text-anchor="middle">OVH on-site-only</text>
+
+            <text x="410" y="158" class="tb-ax-muted" text-anchor="middle">restorable but</text>
+            <text x="410" y="170" class="tb-ax-muted" text-anchor="middle">same failure domain</text>
+
+            <text x="300" y="210" class="tb-ax-muted" text-anchor="middle">&#x2192; separation (different failure domain)</text>
+            <text x="64" y="120" class="tb-ax-muted" text-anchor="middle" transform="rotate(-90 64 120)">&#x2191; restorability</text>
+        </svg>
+
+        <p>In the unixoid tradition the mechanics are unglamorous and
+            well-proven. On FreeBSD, take a ZFS snapshot and
+            <a href="/blog/the-snapshot-that-travels"><code>zfs send</code></a>
+            it over SSH to a pool in another building, another region,
+            or another provider entirely; a cron job and a receiving
+            pool are the whole apparatus, and the stream is incremental
+            after the first run. With restic or borg, back up to object
+            storage in a different region, encrypted, deduplicated,
+            with the repository somewhere the primary's misfortune
+            cannot follow. The tooling is not the hard part and never
+            was. The hard part is the decision to put the second copy
+            somewhere the first copy's bad day cannot reach, and then
+            to verify, with a restore, that it is really there.</p>
+
+        <h2>Where It Travels</h2>
+
+        <p>The OVH customers were not unusually careless. The same
+            failure domain hides in nearly every modern stack, wearing
+            the local vocabulary.</p>
+
+        <svg viewBox="0 0 600 250" aria-label="The same failure-domain trap across four modern stacks. On AWS, multi-AZ survives a host or rack fault but an Availability Zone is a cluster of buildings in one metro area; the off-site copy is cross-region replication. On Azure, locally-redundant storage keeps copies in one data centre while geo-redundant storage places a copy in a paired region. In Kubernetes, Velero backups and etcd snapshots on the same cluster or same-region storage are a second copy in one place; ship them off-cluster and off-region. On-premises, the backup NAS in the same server room is a second copy awaiting the same flood; the tape carried across town survives. A note: a copy that shares a failure domain with the original is redundancy in name only." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-w-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-w-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-w-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9.5px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-w-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-w-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-w-shares { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-style: italic; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-w-off { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+            </style>
+            <text x="300" y="22" class="tb-w-title" text-anchor="middle">The Same Trap, Four Vocabularies</text>
+
+            <rect x="30" y="44" width="265" height="44" class="tb-w-box"/>
+            <text x="44" y="62" class="tb-w-head">AWS</text>
+            <text x="44" y="78" class="tb-w-shares">shares: multi-AZ (one metro)</text>
+            <text x="285" y="70" class="tb-w-off" text-anchor="end">off-site: cross-region</text>
+
+            <rect x="305" y="44" width="265" height="44" class="tb-w-box"/>
+            <text x="319" y="62" class="tb-w-head">Azure</text>
+            <text x="319" y="78" class="tb-w-shares">shares: LRS (one DC)</text>
+            <text x="560" y="70" class="tb-w-off" text-anchor="end">off-site: GRS (paired region)</text>
+
+            <rect x="30" y="96" width="265" height="44" class="tb-w-box"/>
+            <text x="44" y="114" class="tb-w-head">Kubernetes</text>
+            <text x="44" y="130" class="tb-w-shares">shares: Velero/etcd on cluster</text>
+            <text x="285" y="122" class="tb-w-off" text-anchor="end">off-site: off-cluster + region</text>
+
+            <rect x="305" y="96" width="265" height="44" class="tb-w-box"/>
+            <text x="319" y="114" class="tb-w-head">On-prem</text>
+            <text x="319" y="130" class="tb-w-shares">shares: NAS in same room</text>
+            <text x="560" y="122" class="tb-w-off" text-anchor="end">off-site: tape across town</text>
+
+            <text x="300" y="174" class="tb-w-muted" text-anchor="middle">A copy that shares a failure domain with the original is redundancy in name only.</text>
+            <text x="300" y="190" class="tb-w-muted" text-anchor="middle">It survives the failures that do not matter much and dies in the one that does.</text>
+
+            <text x="300" y="222" class="tb-w-title" text-anchor="middle">The fire does not read your architecture diagram.</text>
+            <text x="300" y="240" class="tb-w-head" text-anchor="middle">It reads the floor plan.</text>
+        </svg>
+
+        <p>On AWS, the trap is the word "zone". Multi-AZ feels like
+            redundancy, and against a single server or rack failure it
+            is. But an Availability Zone is a cluster of buildings in
+            one metropolitan area, and a region is the unit of
+            geographic separation. A database replicated across AZs
+            survives a host fault and may not survive a regional
+            event; the off-site copy is cross-region replication (S3
+            Cross-Region Replication, cross-region snapshots), and it
+            is a separate, deliberate setting.</p>
+
+        <p>On Azure, the distinction is the storage redundancy tier:
+            locally-redundant storage (LRS) keeps the copies in one
+            data centre, while geo-redundant storage (GRS) places a
+            copy in a paired region hundreds of kilometres away. The
+            cheaper default is the one that shares the postcode. On
+            Google Cloud, multi-region buckets and cross-region
+            backups serve the same role, and the same
+            default-versus-decision applies.</p>
+
+        <p>In Kubernetes, the cluster is the failure domain people
+            forget. Velero backups and etcd snapshots that live on the
+            same cluster, or in object storage in the same region, are
+            a second copy in one place. Ship them off-cluster and
+            off-region. On-premises, the rule is at its most physical
+            and most ignored. The backup NAS in the same server room
+            as the production servers is not a backup; it is a second
+            copy awaiting the same flood, the same power surge, the
+            same fire. The unfashionable tape, written weekly and
+            carried to a drawer across town or a safe-deposit box, has
+            quietly saved more organisations than any cloud panel's
+            backup toggle.</p>
+
+        <h2>Coda</h2>
+
+        <p>OVHcloud rebuilt, changed its designs, and the industry
+            spent a fortnight reading think-pieces about fire
+            suppression and free cooling. Both are worth reading. But
+            the durable lesson of 10 March 2021 is not about cooling
+            towers or wooden floors, which are OVH's to fix. It is
+            about a sentence every team can check this afternoon
+            without a single phone call to a vendor: where, physically,
+            is our backup, and could the thing that kills our primary
+            kill it too?</p>
+
+        <blockquote>
+            <p>Redundancy that shares a postcode is decoration. The
+                fire does not read your architecture diagram. It reads
+                the floor plan.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Why a backup can be intact and still useless:</strong></p>
+            <ul>
+                <li>Fire started in a power room; the BEA-RI report notes high moisture near an inverter, no definitive cause</li>
+                <li>SBG2 used free cooling: efficient airflow that, once alight, behaved like a chimney</li>
+                <li>Wooden floors rated for about an hour; no automatic extinguishing system in any of the five buildings</li>
+                <li>~3.6M sites / 464,000 domains down; data permanently lost for those whose only copy was on-site</li>
+            </ul>
+            <p><strong>The 3-2-1 rule, plainly:</strong></p>
+            <ul>
+                <li>3 copies, 2 media types, 1 off-site (a different failure domain, not just a different rack)</li>
+                <li>"Off-site" means the primary's fire, flood or power event cannot reach it</li>
+                <li>Multi-AZ is not multi-region; a same-region "backup" shares the postcode</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,432 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}grep &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A development server holds a mystery. Someone deployed something, the logs hold the truth. One types grep -i timeout /var/log/messages and three lines admit what happened. The command was unremarkable. The thing that made it possible has been answering that question since November 1973. Doug McIlroy asked Ken Thompson for a tool: Lee McMahon wanted to analyse the Federalist Papers by pattern. Thompson disappeared into his office for about an hour and emerged with grep, named after the ed editor command g/re/p (global, regular-expression, print). The interior of GNU grep, carried for years by Mike Haertel, uses Boyer-Moore for fixed strings, two-way string matching for harder patterns, Thompson's 1968 NFA construction for full regex, and mmap on the input. The shape, pattern plus files plus matching lines on stdout, has stayed identical for fifty-three years. ack, ag, ripgrep each rewrote the implementation; none changed the interface.">
+{( endslot )}
+
+{( slot canonical )}/blog/grep{( endslot )}
+
+{( slot og-title )}grep &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Technical Beauty Episode 36. grep, written by Ken Thompson at Bell Labs in November 1973 after Doug McIlroy commissioned a tool that would let Lee McMahon analyse the Federalist Papers by pattern. Named after ed's g/re/p command. The implementation is famously fast: Mike Haertel's GNU grep uses Boyer-Moore (1977) for fixed strings, Crochemore-Perrin two-way string matching (1991) for harder patterns, Thompson's 1968 NFA construction for full regex, and mmap on the input. The principle, in Haertel's words: the key to making programmes fast is to make them do practically nothing. FreeBSD ships bsdgrep in base since around 2010. The shape (pattern plus files plus matching lines on stdout) has stayed identical for fifty-three years; ack (Andy Lester, 2005, Perl), ag (Geoff Greer, 2011, C) and ripgrep (Andrew Gallant, 2016, Rust) each rewrote the implementation but none changed the interface.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "grep",
+    "datePublished": "2026-05-19",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/grep",
+    "description": "Technical Beauty Episode 36. The origin: Ken Thompson wrote grep at Bell Labs in November 1973 after Doug McIlroy asked for a tool that would let Lee McMahon analyse the Federalist Papers by pattern; the story, told later by Brian Kernighan in 'The Unix Programming Environment', has Thompson disappearing into his office for about an hour and returning with grep. The name was a wink at ed's g/re/p command (global, regular-expression, print). The surface is famously austere: pattern, n files, matching lines on stdout, composable through pipes. Variants merged over the years: egrep became grep -E (extended regex), fgrep became grep -F (fixed strings), pcregrep became grep -P where included (Perl-compatible regex). The interior is fast: Mike Haertel's GNU grep (late 1980s onward) uses Boyer-Moore (1977) for fixed-string searches, Crochemore-Perrin two-way matching (1991) for harder cases with fixed prefix or suffix, Thompson's 1968 NFA construction for full regex, and mmap rather than stdio on the input; the principle in Haertel's August 2010 freebsd-current note was that the key to making programmes fast is to make them do practically nothing. FreeBSD ships bsdgrep in base since approximately 2010, a BSD-licensed lean implementation; GNU grep is one pkg install gnugrep away. The interface, fifty-three years on, has stayed identical: ack (Andy Lester, 2005, Perl), ag (Geoff Greer, 2011, C) and ripgrep (Andrew Gallant, 2016, Rust) each push performance and ergonomics, none changes the calling convention.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-19">19 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>grep</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">tooling</span>
+            <span class="vv-pill">linux</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty</em> &#x2726; Episode 36</p>
+
+        <p>A development server holds a mystery. Someone deployed
+            something, the logs hold the truth. One types
+            <code>grep -i timeout /var/log/messages</code> and three
+            lines admit what happened. The command was unremarkable.
+            The thing that made it possible has been answering that
+            question since November 1973, and the architecture inside
+            has held that whole time.</p>
+
+        <h2>The Hour</h2>
+
+        <p>The story is well-known in Unix circles but bears
+            retelling because it remains the cleanest example of what
+            a productive afternoon at
+            <a href="/blog/the-unix-origins">Bell Labs</a> in 1973
+            looked like.</p>
+
+        <p>Doug McIlroy, who ran the research department at Bell Labs
+            and is the man behind the
+            <a href="/blog/the-pipe">Unix pipeline</a> as a concept,
+            came to Ken Thompson with a request. Lee E. McMahon, also
+            at Bell Labs, wanted to analyse the text of the Federalist
+            Papers by pattern. The need was specific and mundane:
+            search a body of text for occurrences of certain words
+            and word-classes. The tools available were ed's
+            <code>g/re/p</code> command (global, regular-expression,
+            print) which printed every line of a file matching a
+            regex. It worked, but only inside ed.</p>
+
+        <p>McIlroy asked Thompson to extract the command into a
+            standalone tool. Thompson, by Brian Kernighan's later
+            telling (in <em>The Unix Programming Environment</em> and
+            elsewhere), disappeared into his office for about an hour
+            and came back with grep. The name was the ed command
+            turned into a single word. The interface was the same
+            regex language that ed users already typed daily.</p>
+
+        <p>That hour produced a tool that, fifty-three years later,
+            ships in the base system of every Unix-derived operating
+            system in production. It is also, on any reasonable
+            telling, the tool that taught a generation of working
+            programmers what regular expressions were for.</p>
+
+        <h2>The Surface</h2>
+
+        <p>The surface of grep is famously austere.</p>
+
+        <pre><code>grep pattern files</code></pre>
+
+        <p>One pattern, n files, print the matching lines. The
+            pattern is a regular expression in the grep dialect
+            (POSIX BRE by default, POSIX ERE with <code>-E</code>,
+            fixed strings with <code>-F</code>, Perl-compatible with
+            <code>-P</code> where the implementation includes it).
+            Three flags carry the bulk of daily use:</p>
+
+        <pre><code>grep ERROR /var/log/messages              # case-sensitive, basic regex
+grep -i timeout /var/log/messages         # case-insensitive
+grep -v INFO /var/log/messages            # invert: print non-matching
+grep -r "TODO" src/                       # recurse into directories
+ps aux | grep -v grep | grep nginx        # composed through a pipe</code></pre>
+
+        <p>The output is text on stdout: matching lines, one per
+            line, optionally preceded by filename and line number
+            with <code>-n -H</code>. The compositional fit with pipes
+            is what made grep central to Unix from its first day.
+            <code>grep | awk | sort | uniq</code> is not a script
+            someone wrote; it is a sentence in the language Unix
+            happens to be.</p>
+
+        <p>Over the years the variant tools merged. egrep (extended
+            regex with <code>+</code>, <code>?</code>, alternation)
+            became <code>grep -E</code>. fgrep (fixed strings, no
+            regex parsing) became <code>grep -F</code>. pcregrep
+            (Perl-compatible regex with lookahead and named groups)
+            became <code>grep -P</code> on implementations that
+            include it. One tool, four dialects, single calling
+            convention.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="Four historical variants of grep merging into one tool with three flags. The first row shows the original grep (basic regex, POSIX BRE), with no flag. The second row shows egrep (extended regex with plus, question and alternation) merging into grep -E. The third row shows fgrep (fixed strings, no regex parsing) merging into grep -F. The fourth row shows pcregrep (Perl-compatible regex) merging into grep -P where implementations include it. A small annotation observes that the calling convention is unchanged across all four dialects." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-vr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-vr-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-vr-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-vr-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-vr-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-vr-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tb-vr-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#tb-vr-arrow); }
+            </style>
+            <defs>
+                <marker id="tb-vr-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="tb-vr-title" text-anchor="middle">Four Dialects, One Calling Convention</text>
+
+            <rect x="30" y="50" width="180" height="28" class="tb-vr-box"/>
+            <text x="120" y="68" class="tb-vr-text" text-anchor="middle">grep (POSIX BRE)</text>
+            <line x1="210" y1="64" x2="380" y2="64" class="tb-vr-arr"/>
+            <rect x="380" y="50" width="190" height="28" class="tb-vr-accent-box"/>
+            <text x="475" y="68" class="tb-vr-text" text-anchor="middle">grep (default)</text>
+
+            <rect x="30" y="86" width="180" height="28" class="tb-vr-box"/>
+            <text x="120" y="104" class="tb-vr-text" text-anchor="middle">egrep (extended regex)</text>
+            <line x1="210" y1="100" x2="380" y2="100" class="tb-vr-arr"/>
+            <rect x="380" y="86" width="190" height="28" class="tb-vr-accent-box"/>
+            <text x="475" y="104" class="tb-vr-text" text-anchor="middle">grep -E</text>
+
+            <rect x="30" y="122" width="180" height="28" class="tb-vr-box"/>
+            <text x="120" y="140" class="tb-vr-text" text-anchor="middle">fgrep (fixed strings)</text>
+            <line x1="210" y1="136" x2="380" y2="136" class="tb-vr-arr"/>
+            <rect x="380" y="122" width="190" height="28" class="tb-vr-accent-box"/>
+            <text x="475" y="140" class="tb-vr-text" text-anchor="middle">grep -F</text>
+
+            <rect x="30" y="158" width="180" height="28" class="tb-vr-box"/>
+            <text x="120" y="176" class="tb-vr-text" text-anchor="middle">pcregrep (Perl-compatible)</text>
+            <line x1="210" y1="172" x2="380" y2="172" class="tb-vr-arr"/>
+            <rect x="380" y="158" width="190" height="28" class="tb-vr-accent-box"/>
+            <text x="475" y="176" class="tb-vr-text" text-anchor="middle">grep -P (where built)</text>
+
+            <text x="300" y="208" class="tb-vr-muted" text-anchor="middle" font-style="italic">One tool, four dialects, single interface. The flags expanded; the shape did not.</text>
+        </svg>
+
+        <h2>The Layers Underneath</h2>
+
+        <p>The implementation is the part that does not look modest
+            once you look at it.</p>
+
+        <p>Na&iuml;ve regex matching is slow. The straightforward
+            approach (backtracking through the pattern tree at every
+            position in the input) has worst-case runtime
+            <a href="/blog/the-regex-that-ran-unbounded">exponential in the pattern length</a>
+            for certain patterns. Production grep cannot afford
+            that.</p>
+
+        <p>The interior of GNU grep, the most widely deployed
+            implementation, was carried for many years by Mike
+            Haertel (afaik the main author from the late 1980s
+            through the 1990s and into the 2000s). His
+            <a href="https://lists.freebsd.org/pipermail/freebsd-current/2010-August/019310.html" target="_blank" rel="noopener">"why GNU grep is fast" note</a>,
+            posted to the FreeBSD mailing list in August 2010, is one
+            of the cleanest pieces of performance-engineering writing
+            one will encounter. He states the principle: "The key to
+            making programs fast is to make them do practically
+            nothing."</p>
+
+        <p>The mechanics he applied:</p>
+
+        <ul>
+            <li><strong>Boyer-Moore for fixed strings.</strong> When the pattern contains no regex metacharacters, GNU grep uses the Boyer-Moore algorithm (Robert Boyer and J Strother Moore, 1977). Boyer-Moore is sub-linear on average: it skips characters in the input it has already determined cannot start a match</li>
+            <li><strong>Two-way string matching for harder cases.</strong> When fixed-string matching does not apply but the pattern has a fixed prefix or suffix, a two-way string matcher (Crochemore and Perrin, 1991) handles the harder cases without falling back to general regex</li>
+            <li><strong>Thompson's NFA construction.</strong> For full regex, GNU grep falls back to the NFA-construction algorithm Thompson himself published in 1968 (CACM, "Regular Expression Search Algorithm"). The NFA is built once and run as a deterministic state machine over the input, avoiding the exponential blow-up that na&iuml;ve backtracking allows</li>
+            <li><strong>mmap on the input.</strong> GNU grep mmaps the input file into memory rather than reading it through stdio. The match runs directly on the mapped pages; the kernel pages in on demand. No userland copy, no stdio buffering</li>
+            <li><strong>Avoid the input where possible.</strong> GNU grep does not look at every byte. The Boyer-Moore skip table lets it advance by the pattern length on a mismatch; on a typical English-text input with a four- or five-character pattern, the inner loop touches a small fraction of the file</li>
+        </ul>
+
+        <svg viewBox="0 0 600 280" aria-label="The decision tree inside GNU grep when a pattern is supplied. A central node labelled 'pattern arrives' branches into three paths. The first path is for a fixed-string pattern with no regex metacharacters, which routes to the Boyer-Moore algorithm (1977) for sub-linear average-case matching. The second path is for a pattern with a fixed prefix or suffix, which routes to Crochemore-Perrin two-way string matching (1991). The third path is for a general regex pattern, which routes to Thompson's 1968 NFA construction. All three paths then converge on a final node labelled mmap and skip table for the input handling. A note at the bottom quotes Haertel: the key to making programmes fast is to make them do practically nothing." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-al-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-al-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-al-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-al-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-al-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tb-al-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .tb-al-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#tb-al-arrow); }
+            </style>
+            <defs>
+                <marker id="tb-al-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="tb-al-title" text-anchor="middle">Inside grep: Which Algorithm for Which Pattern</text>
+
+            <rect x="240" y="48" width="120" height="36" class="tb-al-accent-box"/>
+            <text x="300" y="68" class="tb-al-text" text-anchor="middle">pattern arrives</text>
+            <text x="300" y="80" class="tb-al-muted" text-anchor="middle">parse, classify</text>
+
+            <line x1="270" y1="84" x2="105" y2="120" class="tb-al-arr"/>
+            <line x1="300" y1="84" x2="300" y2="120" class="tb-al-arr"/>
+            <line x1="330" y1="84" x2="495" y2="120" class="tb-al-arr"/>
+
+            <rect x="20" y="120" width="170" height="64" class="tb-al-box"/>
+            <text x="105" y="140" class="tb-al-head" text-anchor="middle">fixed string</text>
+            <text x="105" y="156" class="tb-al-muted" text-anchor="middle">no metacharacters</text>
+            <text x="105" y="170" class="tb-al-text" text-anchor="middle">Boyer-Moore (1977)</text>
+
+            <rect x="215" y="120" width="170" height="64" class="tb-al-box"/>
+            <text x="300" y="140" class="tb-al-head" text-anchor="middle">fixed pre/suffix</text>
+            <text x="300" y="156" class="tb-al-muted" text-anchor="middle">harder pattern</text>
+            <text x="300" y="170" class="tb-al-text" text-anchor="middle">two-way (Crochemore 1991)</text>
+
+            <rect x="410" y="120" width="170" height="64" class="tb-al-box"/>
+            <text x="495" y="140" class="tb-al-head" text-anchor="middle">general regex</text>
+            <text x="495" y="156" class="tb-al-muted" text-anchor="middle">full pattern</text>
+            <text x="495" y="170" class="tb-al-text" text-anchor="middle">Thompson NFA (1968)</text>
+
+            <line x1="105" y1="184" x2="200" y2="220" class="tb-al-arr"/>
+            <line x1="300" y1="184" x2="300" y2="220" class="tb-al-arr"/>
+            <line x1="495" y1="184" x2="400" y2="220" class="tb-al-arr"/>
+
+            <rect x="180" y="220" width="240" height="36" class="tb-al-accent-box"/>
+            <text x="300" y="240" class="tb-al-text" text-anchor="middle">mmap input + Boyer-Moore skip table</text>
+            <text x="300" y="252" class="tb-al-muted" text-anchor="middle">touch a small fraction of the file</text>
+
+            <text x="300" y="274" class="tb-al-muted" text-anchor="middle" font-style="italic">"The key to making programs fast is to make them do practically nothing." &#x2014; Haertel, 2010</text>
+        </svg>
+
+        <p>The result is a tool that, on modern commodity hardware,
+            scans several gigabytes of plain text per second. The
+            1973 surface and the late-1980s interior happen to fit
+            together such that the workflow Thompson designed in an
+            hour is still the workflow one wants in 2026.</p>
+
+        <h2>On FreeBSD</h2>
+
+        <p>FreeBSD has shipped bsdgrep in the base system since
+            around 2010 (afaik), a BSD-licensed reimplementation that
+            replaced the GNU-licensed version in the base tree. The
+            reason was licence: the FreeBSD project preferred to keep
+            its base userland under BSD licences for the same reasons
+            of coexistence that have applied to FreeBSD's
+            <a href="/blog/dtrace-vs-ebpf">licence philosophy</a>
+            since the project's earliest days.</p>
+
+        <p>bsdgrep is a leaner implementation than GNU grep. It does
+            not aim to match GNU grep's last-mile performance
+            optimisations on every input class; it aims for
+            correctness, POSIX compliance, and small footprint. For
+            the typical workloads on a FreeBSD system (log scanning,
+            build-system uses, ports infrastructure), the difference
+            is invisible. For the workload of scanning a multi-gigabyte
+            corpus repeatedly, GNU grep is one
+            <code>pkg install gnugrep</code> away.</p>
+
+        <p>The FreeBSD path to grep is therefore:
+            <code>/usr/bin/grep</code> is bsdgrep, available without
+            installing anything, on every FreeBSD system from a
+            minimal install upward. OpenBSD and NetBSD follow the
+            same pattern. On Linux, GNU grep is the default;
+            <code>/bin/grep</code> and <code>/usr/bin/grep</code>
+            point to it on the major distributions.</p>
+
+        <h2>The Lineage</h2>
+
+        <p>The shape (pattern, file, matching lines on stdout) has
+            stayed identical for fifty-three years. The modern
+            descendants reproduce it exactly.</p>
+
+        <p>ack arrived in 2005, written by Andy Lester (afaik) in
+            Perl. Its primary differences from grep were ergonomic:
+            by default it skipped version-control directories, build
+            artefacts and binary files, and it recurse-searched by
+            default. The interface was grep's.</p>
+
+        <p>ag, the silver searcher, arrived in 2011 from Geoff Greer
+            (afaik), written in C. ag's primary differences from ack
+            were performance: ack was Perl and slow; ag was C and
+            fast. The interface was still grep's.</p>
+
+        <p><a href="https://github.com/BurntSushi/ripgrep" target="_blank" rel="noopener">ripgrep</a>
+            arrived in 2016 from Andrew Gallant (BurntSushi on
+            GitHub), written in Rust. ripgrep honours
+            <code>.gitignore</code> by default, uses SIMD instructions
+            for fast searching, and is competitive with or faster
+            than GNU grep on most workloads. The interface was, once
+            again, still grep's.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A horizontal timeline of grep and its descendants from 1973 to 2016. 1973: grep, Ken Thompson, Bell Labs. 2005: ack, Andy Lester, Perl, .gitignore-aware. 2011: ag (silver searcher), Geoff Greer, C, fast. 2016: ripgrep, Andrew Gallant, Rust, SIMD. A bracket runs across the entire range labelled fifty-three years, same interface. Each entry is annotated with author, language and the one ergonomic or performance change that motivated it; none change the calling convention of pattern, files, matching lines." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tb-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tb-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .tb-tl-tick { stroke: var(--muted); stroke-width: 1; }
+                .tb-tl-dot { fill: var(--accent); }
+                .tb-tl-bracket { stroke: var(--accent); stroke-width: 1.2; fill: none; stroke-dasharray: 4,3; }
+            </style>
+            <text x="300" y="22" class="tb-tl-title" text-anchor="middle">Fifty-Three Years, Same Interface</text>
+
+            <line x1="40" y1="140" x2="560" y2="140" class="tb-tl-axis"/>
+
+            <circle cx="60" cy="140" r="4" class="tb-tl-dot"/>
+            <line x1="60" y1="140" x2="60" y2="146" class="tb-tl-tick"/>
+            <text x="60" y="160" class="tb-tl-text" text-anchor="middle">Nov 1973</text>
+            <text x="60" y="176" class="tb-tl-muted" text-anchor="middle">grep</text>
+            <text x="60" y="188" class="tb-tl-muted" text-anchor="middle">Thompson</text>
+            <text x="60" y="200" class="tb-tl-muted" text-anchor="middle">Bell Labs</text>
+
+            <circle cx="280" cy="140" r="4" class="tb-tl-dot"/>
+            <line x1="280" y1="140" x2="280" y2="146" class="tb-tl-tick"/>
+            <text x="280" y="160" class="tb-tl-text" text-anchor="middle">2005</text>
+            <text x="280" y="176" class="tb-tl-muted" text-anchor="middle">ack</text>
+            <text x="280" y="188" class="tb-tl-muted" text-anchor="middle">Lester, Perl</text>
+            <text x="280" y="200" class="tb-tl-muted" text-anchor="middle">vcs-aware</text>
+
+            <circle cx="400" cy="140" r="4" class="tb-tl-dot"/>
+            <line x1="400" y1="140" x2="400" y2="146" class="tb-tl-tick"/>
+            <text x="400" y="160" class="tb-tl-text" text-anchor="middle">2011</text>
+            <text x="400" y="176" class="tb-tl-muted" text-anchor="middle">ag</text>
+            <text x="400" y="188" class="tb-tl-muted" text-anchor="middle">Greer, C</text>
+            <text x="400" y="200" class="tb-tl-muted" text-anchor="middle">faster</text>
+
+            <circle cx="520" cy="140" r="4" class="tb-tl-dot"/>
+            <line x1="520" y1="140" x2="520" y2="146" class="tb-tl-tick"/>
+            <text x="520" y="160" class="tb-tl-text" text-anchor="middle">2016</text>
+            <text x="520" y="176" class="tb-tl-muted" text-anchor="middle">ripgrep</text>
+            <text x="520" y="188" class="tb-tl-muted" text-anchor="middle">Gallant, Rust</text>
+            <text x="520" y="200" class="tb-tl-muted" text-anchor="middle">SIMD, .gitignore</text>
+
+            <path d="M 60 90 L 60 80 L 520 80 L 520 90" class="tb-tl-bracket"/>
+            <text x="290" y="72" class="tb-tl-muted" text-anchor="middle" font-style="italic">interface unchanged across three reimplementations</text>
+        </svg>
+
+        <p>The pattern across these descendants is worth naming. Each
+            was written by a developer who looked at grep and
+            concluded that it was the right shape, that the only
+            thing worth changing was the implementation. Thompson's
+            original choice (the regex grammar from ed, the
+            line-oriented output, the pipe-as-default-output)
+            survived three implementation rewrites across nearly two
+            decades without anyone proposing a different interface.
+            That is what an interface looks like when its designer
+            was paying attention.</p>
+
+        <h2>A Note on Regular Expressions</h2>
+
+        <p>Stephen Cole Kleene formalised regular sets in 1956 as a
+            mathematical object: a finite-state recogniser for
+            regular languages. The construction was not intended for
+            programmers; it was a piece of theoretical computer
+            science.</p>
+
+        <p>Thompson, in 1968, wrote the first practical
+            implementation in his CACM paper. He showed that an NFA
+            could be built directly from a regex syntax, that the NFA
+            could be simulated efficiently, and that this gave a fast
+            pattern-matching procedure suitable for an editor. The
+            QED editor he was working on at the time was the first
+            user of this construction; ed inherited it; grep
+            extracted it.</p>
+
+        <p>The pedagogical consequence has been quietly enormous. A
+            working programmer in 2026 who knows regex learnt it
+            because grep was the first place they typed one. The
+            pattern language travelled from ed to grep to
+            <a href="/blog/technical-beauty-sed">sed</a> to
+            <a href="/blog/technical-beauty-awk">awk</a> to Perl to
+            JavaScript to every modern programming environment.
+            Kleene's mathematical object became a working tool
+            because Thompson saw, in 1968, what one could do with it,
+            and because grep, in 1973, made it the default search
+            interface for the working programmer.</p>
+
+        <h2>The Aphorism</h2>
+
+        <p>A man wrote, in about an hour, a tool that taught a
+            generation of programmers what regular expressions were
+            for. Then he wrote Unix, B, C, and UTF-8 in the years on
+            either side. One rather suspects he was paying attention
+            to which tools the world would still need fifty years
+            later.</p>
+
+        <blockquote>
+            <p>The Federalist Papers got their pattern analysis. The
+                world got grep. Lee McMahon, on the available record,
+                has been somewhat under-credited; one rather hopes he
+                was pleased.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The hour, the layers, the descendants:</strong></p>
+            <ul>
+                <li><strong>The origin</strong>: Ken Thompson, Bell Labs, November 1973 (Unix v4); commissioned by Doug McIlroy; built so Lee McMahon could analyse the Federalist Papers; name from ed's <code>g/re/p</code> (global, regex, print)</li>
+                <li><strong>The architecture</strong>: Thompson's 1968 NFA construction for regex; Boyer-Moore (1977) for fixed-string searches; Crochemore-Perrin two-way string matching (1991) for harder patterns; <code>mmap</code> on the input file</li>
+                <li><strong>The variants merged</strong>: egrep became <code>grep -E</code> (extended regex); fgrep became <code>grep -F</code> (fixed strings); pcregrep became <code>grep -P</code> where built (Perl-compatible regex)</li>
+                <li><strong>The descendants</strong>: ack (Andy Lester, 2005, Perl, afaik); ag, the silver searcher (Geoff Greer, 2011, C, afaik); ripgrep (Andrew Gallant a.k.a. BurntSushi, 2016, Rust, .gitignore-aware)</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

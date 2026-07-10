@@ -1,0 +1,558 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}netstat vs ss &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="On a busy Linux load balancer netstat -anp keeps one waiting; on FreeBSD the same workload returns at once. Both speak Unix text and pipe into grep. Only one was built the way Unix tools are built: ask the kernel, format the answer, get out of the way. FreeBSD's netstat asks the kernel through sysctl pcblist. Linux net-tools netstat reads /proc/net/tcp, a kernel-rendered ASCII file that is readable but not askable. Alexey Kuznetsov restored the Unix pattern by adding netlink NETLINK_INET_DIAG in Linux 2.6.14 (October 2005), generalised to NETLINK_SOCK_DIAG in 3.3 (March 2012). The shape ss restored is the shape sysctl has been running on FreeBSD since 1983.">
+{( endslot )}
+
+{( slot canonical )}/blog/netstat-vs-ss{( endslot )}
+
+{( slot og-title )}netstat vs ss &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The Unix Way Episode 16. The Unix text interface lives in the tool, not in a file. FreeBSD netstat (1983, 4.2BSD) asks the kernel through sysctl net.inet.tcp.pcblist and pipes the answer; sub-second on sixty thousand sockets. Linux net-tools netstat reads /proc/net/tcp, a kernel-rendered ASCII file that is readable but not askable, so the tool re-parses every line and filters in userspace; no new release since 2011, deprecation attempted 2009. Linux ss by Alexey Kuznetsov asks netlink: NETLINK_INET_DIAG (Linux 2.6.14, October 2005), generalised to NETLINK_SOCK_DIAG (Linux 3.3, March 2012). Kernel-side filtering, structured queries, fast on the workloads that made the old netstat sit and think. The shape ss restored is the shape sysctl has been running on FreeBSD since 1983.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "netstat vs ss",
+    "datePublished": "2026-05-11",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/netstat-vs-ss",
+    "description": "The Unix Way Episode 16. The Unix text interface lives in the tool, not in a file. FreeBSD netstat has been in base since 4.2BSD shipped TCP/IP in August 1983; it asks the kernel through sysctl pcblist and formats the answer. Linux net-tools netstat reads /proc/net/tcp, a kernel-rendered ASCII dump that is readable but not askable; on sixty thousand sockets the pretence becomes expensive. Alexey Kuznetsov restored the Unix pattern with ss by adding NETLINK_INET_DIAG in Linux 2.6.14 (October 2005), generalised to NETLINK_SOCK_DIAG in 3.3 (March 2012). McIlroy's text-streams principle puts the interface in the tool's mouth: one asks netstat, netstat speaks. A file shaped like text is not the same thing.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-11">11 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>netstat vs ss</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x25C6; Episode 16</p>
+
+        <p>On a busy Linux load balancer one types <code>netstat
+            -anp</code>. The prompt is in no particular hurry to come
+            back. Time enough, on a generous estimate, to make a cup of
+            tea and consider one's life choices. On a FreeBSD host
+            doing roughly the same work, the same command returns
+            before the kettle has finished. Both tools speak Unix text.
+            Both pipe into <code>grep</code>, <code>awk</code> and
+            <code>sort</code> without fuss. Only one of them was built
+            the way Unix tools are built: ask the kernel, format the
+            answer, get out of the way.</p>
+
+        <p>This is not a story about Linux being slow. It is a story
+            about where the Unix text interface lives, and what that
+            choice costs a decade later.</p>
+
+        <h2>The Principle</h2>
+
+        <p><a href="/blog/the-unix-philosophy">Doug McIlroy</a>'s
+            principle, the one that gets quoted at every Unix lecture,
+            says: text streams are the universal interface. The Unix
+            Way is to build tools that answer questions in text and
+            let pipelines compose them on the fly. The interface lives
+            in the tool's mouth. One asks <code>netstat</code>; it
+            speaks. One pipes its output into <code>grep</code>; that
+            speaks. The text exists where one program hands its work
+            to another or to the human at the keyboard, and not
+            before.</p>
+
+        <p>FreeBSD took the principle and built <code>netstat</code>
+            accordingly. The tool asks the kernel through
+            <code>sysctl</code>, formats one answer at its output,
+            pipes onward. <em>Keep It Simple, Stupid</em> in the
+            classical sense. Linux took the same principle and added
+            something McIlroy never asked for: a <em>file</em> shaped
+            like a text interface that isn't quite one.
+            <code>/proc/net/tcp</code> is a kernel-rendered ASCII
+            dump. It is readable, in the sense that one can
+            <code>cat</code> it. It is not askable: there is no way to
+            query it for "sockets on port 443" or "all UDP listeners".
+            One can only read it whole. So the tool behind it still
+            does all the work, plus the parsing of someone else's text
+            on the way in.</p>
+
+        <svg viewBox="0 0 600 300" aria-label="Two architectures compared side by side. On the left, the FreeBSD path: the user asks netstat; netstat asks the kernel through sysctl pcblist; the kernel returns a structured binary array; netstat formats the answer as text and pipes it onward. On the right, the Linux net-tools path: the user asks netstat; the kernel has pre-rendered /proc/net/tcp as an ASCII file; netstat reads the whole file, parses every line back to records, filters in userspace, and only then formats the answer as text. The FreeBSD path has fewer arrows and no intermediate text layer." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-arch-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .uw-arch-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .uw-arch-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .uw-arch-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .uw-arch-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .uw-arch-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 3; }
+                .uw-arch-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#uw-arrow); }
+                .uw-arch-arr-muted { stroke: var(--muted); stroke-width: 1.2; fill: none; marker-end: url(#uw-arrow-muted); }
+            </style>
+            <defs>
+                <marker id="uw-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+                <marker id="uw-arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--muted)"/>
+                </marker>
+            </defs>
+            <text x="300" y="22" class="uw-arch-title" text-anchor="middle">Two Architectures, One Pretend Interface</text>
+
+            <text x="140" y="48" class="uw-arch-head" text-anchor="middle">FreeBSD</text>
+            <rect x="60" y="58" width="160" height="30" class="uw-arch-accent-box"/>
+            <text x="140" y="78" class="uw-arch-text" text-anchor="middle">netstat -an</text>
+            <line x1="140" y1="88" x2="140" y2="108" class="uw-arch-arr"/>
+            <text x="225" y="103" class="uw-arch-muted">asks</text>
+            <rect x="60" y="108" width="160" height="30" class="uw-arch-box"/>
+            <text x="140" y="128" class="uw-arch-text" text-anchor="middle">sysctl pcblist</text>
+            <line x1="140" y1="138" x2="140" y2="158" class="uw-arch-arr"/>
+            <text x="225" y="153" class="uw-arch-muted">struct[]</text>
+            <rect x="60" y="158" width="160" height="30" class="uw-arch-box"/>
+            <text x="140" y="178" class="uw-arch-text" text-anchor="middle">kernel</text>
+            <line x1="140" y1="188" x2="140" y2="208" class="uw-arch-arr"/>
+            <rect x="60" y="208" width="160" height="30" class="uw-arch-accent-box"/>
+            <text x="140" y="228" class="uw-arch-text" text-anchor="middle">format &amp; pipe</text>
+            <text x="140" y="270" class="uw-arch-muted" text-anchor="middle">one ask, one answer</text>
+            <text x="140" y="284" class="uw-arch-muted" text-anchor="middle">sub-second on 60k sockets</text>
+
+            <text x="460" y="48" class="uw-arch-head" text-anchor="middle">Linux (net-tools)</text>
+            <rect x="380" y="58" width="160" height="30" class="uw-arch-accent-box"/>
+            <text x="460" y="78" class="uw-arch-text" text-anchor="middle">netstat -anp</text>
+            <line x1="460" y1="88" x2="460" y2="108" class="uw-arch-arr-muted"/>
+            <text x="545" y="103" class="uw-arch-muted">reads</text>
+            <rect x="380" y="108" width="160" height="30" class="uw-arch-box"/>
+            <text x="460" y="124" class="uw-arch-text" text-anchor="middle">/proc/net/tcp</text>
+            <text x="460" y="136" class="uw-arch-muted" text-anchor="middle">(ASCII, pre-rendered)</text>
+            <line x1="460" y1="138" x2="460" y2="158" class="uw-arch-arr-muted"/>
+            <text x="545" y="153" class="uw-arch-muted">re-parse</text>
+            <rect x="380" y="158" width="160" height="30" class="uw-arch-box"/>
+            <text x="460" y="178" class="uw-arch-text" text-anchor="middle">walk /proc/&lt;pid&gt;/fd</text>
+            <line x1="460" y1="188" x2="460" y2="208" class="uw-arch-arr-muted"/>
+            <text x="545" y="203" class="uw-arch-muted">filter</text>
+            <rect x="380" y="208" width="160" height="30" class="uw-arch-accent-box"/>
+            <text x="460" y="228" class="uw-arch-text" text-anchor="middle">format &amp; pipe</text>
+            <text x="460" y="270" class="uw-arch-muted" text-anchor="middle">readable, not askable</text>
+            <text x="460" y="284" class="uw-arch-muted" text-anchor="middle">ten to fifteen seconds on 60k</text>
+        </svg>
+
+        <h2>A Short History of netstat</h2>
+
+        <p><code>netstat</code> was part of the
+            <a href="https://en.wikipedia.org/wiki/Berkeley_Software_Distribution" target="_blank" rel="noopener">4.2BSD networking release of August 1983</a>.
+            The CSRG team at Berkeley, working with the new TCP/IP
+            stack that <a href="https://en.wikipedia.org/wiki/Bill_Joy" target="_blank" rel="noopener">Bill Joy</a>
+            and Sam Leffler had brought together, needed a tool that
+            could ask the kernel about its sockets, its routing table,
+            its interfaces and its protocol statistics. The result was
+            <code>netstat(1)</code>. The vocabulary it established
+            (<code>-a</code> for all sockets, <code>-n</code> for
+            numeric output, <code>-r</code> for the routing table,
+            <code>-i</code> for interfaces, <code>-s</code> for
+            protocol statistics) became part of the shared idiom of
+            every Unix administrator for the next several decades.</p>
+
+        <p>For most of its history, <code>netstat</code> was a thin
+            Unix tool: ask the kernel, format the answer, send it to
+            standard output. On BSD it asked through
+            <code>sysctl(3)</code> and <code>kvm(3)</code>: interfaces
+            designed to be queried by a tool. On early Linux it asked
+            through <code>/proc/net</code>: files designed to be read
+            whole, in ASCII, by humans and tools alike. The format on
+            the screen looked the same. The shape of the interface
+            underneath did not. The first is a tool asking another
+            tool a question. The second is a tool reading a file that
+            someone else has already laid out, and which one cannot,
+            in any meaningful sense, ask.</p>
+
+        <h2>FreeBSD: One Tool, Still in Base</h2>
+
+        <p>On FreeBSD in 2026, the answer to "how do I list all the
+            established TCP connections on this host" is the same as
+            the answer in 1996, in 2006, and in 2016:</p>
+
+        <pre><code>netstat -an</code></pre>
+
+        <p>To get a specific protocol family:</p>
+
+        <pre><code>netstat -anp tcp
+netstat -anp udp
+netstat -an -f unix</code></pre>
+
+        <p>For the routing table, the same convention:</p>
+
+        <pre><code>netstat -rn</code></pre>
+
+        <p>For protocol statistics, the same again:</p>
+
+        <pre><code>netstat -s
+netstat -s -p tcp</code></pre>
+
+        <p>The tool is part of the base system. The man page lives at
+            <code>/usr/share/man/man1/netstat.1.gz</code>. The source
+            lives under <code>/usr/src/usr.bin/netstat/</code>. It is
+            updated as part of the FreeBSD release cycle, by the
+            people who also maintain the kernel that produces the
+            data.</p>
+
+        <p>The reason it is still fast on a busy server is the
+            interface underneath. The FreeBSD kernel exposes its
+            in-kernel
+            <a href="https://en.wikipedia.org/wiki/Protocol_data_unit" target="_blank" rel="noopener">protocol control blocks</a>
+            through the <code>sysctl</code> tree:</p>
+
+        <ul>
+            <li><code>net.inet.tcp.pcblist</code> (TCP PCBs)</li>
+            <li><code>net.inet.udp.pcblist</code> (UDP PCBs)</li>
+            <li><code>net.inet.raw.pcblist</code> (raw sockets)</li>
+            <li><code>net.local.stream.pcblist</code> (Unix-domain stream)</li>
+            <li><code>net.local.dgram.pcblist</code> (Unix-domain datagram)</li>
+            <li><code>net.local.seqpacket.pcblist</code> (Unix-domain seqpacket)</li>
+        </ul>
+
+        <p>A single <code>sysctl</code> call returns a structured
+            array of records. The userland <code>netstat</code>
+            formats them into columns, applies the requested filters,
+            and exits. The interface here is <code>netstat</code>
+            itself: one asks <code>netstat</code>, <code>netstat</code>
+            speaks Unix text back, and that text pipes into
+            <code>grep</code>, <code>awk</code>, <code>sort</code> or
+            any other tool one cares to compose it with. There is no
+            intermediate file pretending to be a tool. The cost is
+            linear in the number of sockets, with a small constant; on
+            a server with sixty thousand connections the command still
+            returns in well under a second.</p>
+
+        <p>For users who prefer a more focused view of sockets without
+            the routing-and-statistics surface area of
+            <code>netstat</code>, FreeBSD also ships
+            <code>sockstat(1)</code> in base:</p>
+
+        <pre><code>sockstat -4l       # IPv4 listeners
+sockstat -p 443    # everything on port 443</code></pre>
+
+        <p><code>sockstat</code> reads the same <code>sysctl</code>
+            tree. It is a complementary tool, not a replacement, and
+            it has been in the base system since FreeBSD 3.0 in 1998.</p>
+
+        <h2>Linux: netstat, Still There, No Longer Maintained</h2>
+
+        <p>On a Linux system, <code>netstat</code> is also still
+            there, in most cases. It lives in the
+            <code>net-tools</code> package, alongside
+            <code>ifconfig</code>, <code>arp</code>, <code>route</code>
+            and a handful of other tools that the BSD-trained
+            administrator has known since the late 1980s. The Linux
+            versions were written in the early 1990s by Fred N. van
+            Kempen and others, modelled on the BSD originals but
+            implemented from scratch against the Linux
+            <code>/proc</code> filesystem rather than against
+            <code>sysctl</code> and <code>kvm</code>.</p>
+
+        <p>For most of Linux's history, this worked.
+            <code>/proc/net/tcp</code> contains one line per active
+            TCP socket, in a well-defined ASCII format. The Linux
+            <code>netstat</code> opens that file, reads the lines,
+            parses each one, looks up process information through
+            <code>/proc/&lt;pid&gt;/fd/</code>, and prints the result.
+            On a small or medium server with a few hundred sockets,
+            the cost was invisible.</p>
+
+        <p>The deeper issue is the shape of the interaction, not the
+            byte count. <code>/proc/net/tcp</code> is a file. One can
+            read it. One cannot ask it anything. If one wants only
+            sockets on port 443, one has to read the whole file and
+            filter in userspace. If one wants only established
+            sockets, same thing. If one wants only sockets owned by a
+            particular process, one has to read
+            <code>/proc/net/tcp</code> whole <em>and</em> walk
+            <code>/proc/&lt;pid&gt;/fd/</code> whole, matching inodes
+            by hand. The Unix Way says "compose tools by piping text";
+            <code>/proc/net/tcp</code> is not a tool, it is the text
+            pretending to be one, and the actual work still happens in
+            the tool behind it.</p>
+
+        <p>On a busy server the pretence becomes expensive. A reverse
+            proxy or a load balancer in 2010 might have sixty thousand
+            simultaneous connections, perhaps far more. Listing them
+            with <code>netstat -anp</code> meant reading sixty
+            thousand lines from <code>/proc/net/tcp</code>, parsing
+            them all, walking the <code>/proc/&lt;pid&gt;/fd/</code>
+            tree, and filtering in userspace. On the same server,
+            <code>netstat</code> could take ten or fifteen seconds and
+            burn rather a lot of CPU during that time. None of that
+            cost was paid by the kernel; all of it was paid by the
+            tool, because the file in front of the tool was not
+            askable.</p>
+
+        <p>The <code>net-tools</code> package itself has not had a new
+            release since 2011. The maintainer publicly attempted to
+            deprecate it in 2009; the LWN article
+            <a href="https://lwn.net/Articles/710533/" target="_blank" rel="noopener">"Moving on from net-tools"</a>
+            documents the conversation. Most major distributions now
+            recommend <code>iproute2</code> as the replacement, and
+            several no longer install <code>net-tools</code> by
+            default. The Linux <code>netstat</code> is still there, it
+            still works for small workloads, and it still does the
+            wrong thing on busy ones. The wrong thing is not the
+            tool's parsing; it is being asked to do that parsing
+            because the thing in front of it was a file rather than a
+            queryable interface.</p>
+
+        <h2>Linux: ss, the Unix Pattern Restored</h2>
+
+        <p>The replacement is <code>ss(8)</code>, short for
+            <em>socket statistics</em>. It was written by Alexey
+            Kuznetsov, the same author who wrote much of the Linux QoS
+            code and started the <code>iproute2</code> package.
+            <code>ss</code> does not read <code>/proc/net/tcp</code>.
+            It asks <code>netlink</code> instead, and
+            <code>netlink</code>, crucially, is askable.</p>
+
+        <p><a href="https://man7.org/linux/man-pages/man7/netlink.7.html" target="_blank" rel="noopener">netlink</a>
+            is a Linux kernel-to-userspace IPC mechanism, also
+            Kuznetsov's work, designed for structured queries against
+            kernel subsystems. In October 2005, Linux 2.6.14 added a
+            netlink family called <code>NETLINK_INET_DIAG</code>,
+            exposing IPv4 and IPv6 socket information as a queryable
+            interface. In March 2012, Linux 3.3 generalised it to
+            <a href="https://man7.org/linux/man-pages/man7/sock_diag.7.html" target="_blank" rel="noopener">NETLINK_SOCK_DIAG</a>,
+            adding Unix-domain socket support. The userland tool opens
+            one netlink socket, sends one request specifying exactly
+            what it wants, and receives back only the matching sockets
+            as a stream of <code>inet_diag_msg</code> or
+            <code>unix_diag_msg</code> records. <code>ss</code>
+            formats those records into Unix text, prints them, and
+            exits. The interface here is <code>ss</code> itself: one
+            asks <code>ss</code>, <code>ss</code> speaks, and the
+            answer pipes onward like any other Unix tool's output.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A timeline showing the architectural history. 1983: 4.2BSD ships netstat with sysctl pcblist. 1996 onward: Linux net-tools netstat reads /proc/net/tcp. 2005 October: Linux 2.6.14 adds NETLINK_INET_DIAG, ss begins. 2009: net-tools deprecation attempted. 2011: net-tools last release. 2012 March: Linux 3.3 generalises NETLINK_SOCK_DIAG with AF_UNIX support. 2026: FreeBSD netstat still answers in well under a second on sixty thousand sockets. The line connecting 1983 sysctl to 2005 netlink shows the shape ss restored is the shape sysctl had since 1983." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .uw-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .uw-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .uw-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .uw-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .uw-tl-tick { stroke: var(--muted); stroke-width: 1; }
+                .uw-tl-dot { fill: var(--accent); }
+                .uw-tl-arc { stroke: var(--accent); stroke-width: 1.2; fill: none; stroke-dasharray: 4,3; }
+            </style>
+            <text x="300" y="22" class="uw-tl-title" text-anchor="middle">The Shape, Forty-Three Years Apart</text>
+
+            <line x1="40" y1="170" x2="560" y2="170" class="uw-tl-axis"/>
+
+            <circle cx="60" cy="170" r="4" class="uw-tl-dot"/>
+            <line x1="60" y1="170" x2="60" y2="176" class="uw-tl-tick"/>
+            <text x="60" y="190" class="uw-tl-text" text-anchor="middle">1983</text>
+            <text x="60" y="204" class="uw-tl-muted" text-anchor="middle">4.2BSD ships</text>
+            <text x="60" y="216" class="uw-tl-muted" text-anchor="middle">netstat + sysctl</text>
+            <text x="60" y="228" class="uw-tl-muted" text-anchor="middle">pcblist</text>
+
+            <circle cx="200" cy="170" r="4" class="uw-tl-dot"/>
+            <line x1="200" y1="170" x2="200" y2="176" class="uw-tl-tick"/>
+            <text x="200" y="190" class="uw-tl-text" text-anchor="middle">1993&#x2013;1996</text>
+            <text x="200" y="204" class="uw-tl-muted" text-anchor="middle">Linux net-tools</text>
+            <text x="200" y="216" class="uw-tl-muted" text-anchor="middle">reads /proc/net/tcp</text>
+            <text x="200" y="228" class="uw-tl-muted" text-anchor="middle">van Kempen et al.</text>
+
+            <circle cx="340" cy="170" r="4" class="uw-tl-dot"/>
+            <line x1="340" y1="170" x2="340" y2="176" class="uw-tl-tick"/>
+            <text x="340" y="190" class="uw-tl-text" text-anchor="middle">Oct 2005</text>
+            <text x="340" y="204" class="uw-tl-muted" text-anchor="middle">Linux 2.6.14</text>
+            <text x="340" y="216" class="uw-tl-muted" text-anchor="middle">NETLINK_INET_DIAG</text>
+            <text x="340" y="228" class="uw-tl-muted" text-anchor="middle">ss begins</text>
+
+            <circle cx="430" cy="170" r="4" class="uw-tl-dot"/>
+            <line x1="430" y1="170" x2="430" y2="176" class="uw-tl-tick"/>
+            <text x="430" y="190" class="uw-tl-text" text-anchor="middle">2009&#x2013;2011</text>
+            <text x="430" y="204" class="uw-tl-muted" text-anchor="middle">net-tools</text>
+            <text x="430" y="216" class="uw-tl-muted" text-anchor="middle">deprecation,</text>
+            <text x="430" y="228" class="uw-tl-muted" text-anchor="middle">last release</text>
+
+            <circle cx="510" cy="170" r="4" class="uw-tl-dot"/>
+            <line x1="510" y1="170" x2="510" y2="176" class="uw-tl-tick"/>
+            <text x="510" y="190" class="uw-tl-text" text-anchor="middle">Mar 2012</text>
+            <text x="510" y="204" class="uw-tl-muted" text-anchor="middle">Linux 3.3</text>
+            <text x="510" y="216" class="uw-tl-muted" text-anchor="middle">NETLINK_SOCK_DIAG</text>
+            <text x="510" y="228" class="uw-tl-muted" text-anchor="middle">(adds AF_UNIX)</text>
+
+            <path d="M 60 165 Q 200 80, 340 165" class="uw-tl-arc"/>
+            <text x="200" y="100" class="uw-tl-muted" text-anchor="middle" font-style="italic">the shape ss restored,</text>
+            <text x="200" y="112" class="uw-tl-muted" text-anchor="middle" font-style="italic">sysctl had been running for 22 years</text>
+        </svg>
+
+        <p>The performance difference is not a constant factor. On a
+            server with a few hundred sockets it is barely measurable;
+            on a server with sixty thousand it is the difference
+            between a snappy tool and a slow one. The structured query
+            also allows filtering in the kernel rather than in
+            userspace:</p>
+
+        <pre><code>ss -tan state established '( dport = :443 )'</code></pre>
+
+        <p>The bracketed expression is translated into a kernel-side
+            filter, and only the matching records come back. Both
+            gains follow from the same source: the kernel offers a
+            queryable interface, and <code>ss</code> is free to be the
+            Unix text tool one talks to. The middleman that pretended
+            to be one is gone.</p>
+
+        <p>In day-to-day use:</p>
+
+        <pre><code>ss -tan                     # all TCP, numeric
+ss -tanp                    # add process info (needs root)
+ss -s                       # summary by protocol
+ss -tan state established   # only established TCP
+ss -lntp                    # listening TCP with processes</code></pre>
+
+        <p>The vocabulary is similar enough to <code>netstat</code>
+            that a long-time BSD administrator can guess most of it on
+            first encounter. The behaviour is fast enough that it
+            survives in production.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A horizontal bar comparison of three tools running the same query on a server with roughly sixty thousand sockets. FreeBSD netstat asks sysctl pcblist and finishes in well under a second. Linux net-tools netstat reads /proc/net/tcp and walks /proc/<pid>/fd in userspace, taking ten to fifteen seconds. Linux ss asks netlink with kernel-side filtering and finishes in well under a second. The proportions show the architectural difference rather than any virtue of the language or the tool." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-cmp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .uw-cmp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .uw-cmp-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .uw-cmp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .uw-cmp-fast { fill: var(--accent); opacity: 0.85; }
+                .uw-cmp-slow { fill: var(--muted); opacity: 0.55; }
+            </style>
+            <text x="300" y="22" class="uw-cmp-title" text-anchor="middle">Same Query, Sixty Thousand Sockets</text>
+
+            <text x="40" y="64" class="uw-cmp-head">FreeBSD netstat</text>
+            <rect x="40" y="72" width="22" height="22" class="uw-cmp-fast"/>
+            <text x="72" y="89" class="uw-cmp-text">&lt; 1 s</text>
+            <text x="72" y="102" class="uw-cmp-muted">asks sysctl pcblist, one structured array, formats</text>
+
+            <text x="40" y="128" class="uw-cmp-head">Linux net-tools netstat</text>
+            <rect x="40" y="136" width="350" height="22" class="uw-cmp-slow"/>
+            <text x="400" y="153" class="uw-cmp-text">~10&#x2013;15 s</text>
+            <text x="40" y="172" class="uw-cmp-muted">reads /proc/net/tcp whole, walks /proc/&lt;pid&gt;/fd, filters in userspace</text>
+
+            <text x="40" y="194" class="uw-cmp-head">Linux ss</text>
+            <rect x="40" y="202" width="22" height="14" class="uw-cmp-fast"/>
+            <text x="72" y="214" class="uw-cmp-text">&lt; 1 s &#x2014; asks netlink, kernel-side filter</text>
+        </svg>
+
+        <h2>The Architectural Point</h2>
+
+        <p>The Unix Way puts the text interface in the tool's mouth.
+            <code>netstat</code> IS the interface: one asks it, it
+            speaks, the answer pipes into <code>grep</code>,
+            <code>awk</code>, <code>sort</code>, <code>less</code> and
+            whatever else one cares to compose. That is McIlroy's
+            text-streams principle in its proper place. KISS in the
+            classical sense: one tool, one question, one answer.</p>
+
+        <p><code>/proc/net/tcp</code> is a different idea altogether.
+            It is a file shaped like text. One can <code>cat</code>
+            it, one can squint at it, one can <code>grep</code> it in
+            a pinch. It is not a tool one can ask: there is no syntax
+            for "established sockets on port 443 owned by nginx". So
+            the tool behind it has to do that work: reading the whole
+            file, parsing every line, filtering in userspace, walking
+            another <code>/proc</code> tree, and only then formatting
+            the result for the human. The Unix-ness has been pushed
+            one layer out, and the work in front of it has not gone
+            anywhere.</p>
+
+        <svg viewBox="0 0 600 220" aria-label="A diagram of where the text interface lives. On the left, the FreeBSD shape: the tool itself is the interface; the user speaks to the tool, the tool speaks back, and the pipeline composes the conversation. On the right, the /proc shape: the kernel pre-renders text into a file, and the tool then reads that file as if it were a tool, parsing the same text it will eventually print. A label notes that one of these is McIlroy's text-streams principle and one is a file that looks like it." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-mc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .uw-mc-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .uw-mc-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .uw-mc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .uw-mc-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uw-mc-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="uw-mc-title" text-anchor="middle">Where the Text Interface Lives</text>
+
+            <rect x="20" y="46" width="270" height="140" class="uw-mc-accent-box"/>
+            <text x="155" y="68" class="uw-mc-head" text-anchor="middle">In the tool's mouth</text>
+            <text x="155" y="88" class="uw-mc-text" text-anchor="middle">FreeBSD netstat &#x2014; Linux ss</text>
+            <text x="155" y="110" class="uw-mc-muted" text-anchor="middle">tool asks the kernel (sysctl / netlink)</text>
+            <text x="155" y="124" class="uw-mc-muted" text-anchor="middle">kernel returns structured records</text>
+            <text x="155" y="138" class="uw-mc-muted" text-anchor="middle">tool formats text at the output</text>
+            <text x="155" y="152" class="uw-mc-muted" text-anchor="middle">text exists where pipes need it</text>
+            <text x="155" y="174" class="uw-mc-muted" text-anchor="middle" font-style="italic">McIlroy text-streams, in their place</text>
+
+            <rect x="310" y="46" width="270" height="140" class="uw-mc-box"/>
+            <text x="445" y="68" class="uw-mc-head" text-anchor="middle">In a file that looks like one</text>
+            <text x="445" y="88" class="uw-mc-text" text-anchor="middle">Linux net-tools netstat</text>
+            <text x="445" y="110" class="uw-mc-muted" text-anchor="middle">kernel pre-renders ASCII to /proc/net/tcp</text>
+            <text x="445" y="124" class="uw-mc-muted" text-anchor="middle">tool reads the whole file</text>
+            <text x="445" y="138" class="uw-mc-muted" text-anchor="middle">parses every line back to records</text>
+            <text x="445" y="152" class="uw-mc-muted" text-anchor="middle">filters and formats once more</text>
+            <text x="445" y="174" class="uw-mc-muted" text-anchor="middle" font-style="italic">readable, not askable</text>
+
+            <text x="300" y="208" class="uw-mc-muted" text-anchor="middle">Two shapes that look alike on the terminal and behave differently at scale.</text>
+        </svg>
+
+        <p>This is not a criticism of <code>/proc</code> as a debugging
+            surface. Being able to <code>grep /proc/net/tcp</code> for
+            one weird socket without writing a tool is a real benefit,
+            and it is the reason <code>/proc</code> is still there in
+            2026. The trouble is that the same surface was also asked
+            to serve as the production data feed, and a fixed text
+            dump is the wrong material for that role. It can do both
+            jobs, but only badly. It cannot do both well at scale.</p>
+
+        <p><code>ss</code> and the netlink <code>sock_diag</code>
+            family fixed the production case by adding a second
+            interface that one can actually ask. The old surface stays
+            for <code>cat</code> and <code>grep</code>. The new one
+            took over the actual workload. The cost of the transition
+            was a decade of slow <code>netstat</code> on production
+            servers, a long mailing-list conversation, and a
+            generation of administrators learning a new tool name. The
+            shape of the fix, twenty-two years on, looked exactly like
+            <code>sysctl</code>.</p>
+
+        <p>FreeBSD never had to choose, because FreeBSD never put a
+            non-askable file between its tools and the kernel in the
+            first place. The tool from 1983 still answers the question
+            on the workloads of 2026. The Linux ecosystem did the
+            right thing by adding <code>ss</code>. The fact that it
+            had to is the architectural lesson.</p>
+
+        <p>The Unix text interface is a tool one can question, not a
+            file one can read. <code>netstat</code> and
+            <code>sockstat</code> are the interface;
+            <code>/proc/net/tcp</code> only ever looked like one.
+            KISS, properly applied, knows the difference.</p>
+
+        <blockquote>
+            <p>One tool from 1983 that still answers at scale. One
+                tool that had to be written because the first one was
+                too slow. Same question. Two architectures.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The shape, in one paragraph each:</strong></p>
+            <ul>
+                <li><strong>FreeBSD (tool asks, tool speaks)</strong>: <code>net.inet.tcp.pcblist</code>, <code>net.inet.udp.pcblist</code>, <code>net.local.stream.pcblist</code>. Commands: <code>netstat -an</code>, <code>netstat -rn</code>, <code>sockstat -4l</code>. Pipe-able, grep-able, unchanged in shape since 4.2BSD (August 1983)</li>
+                <li><strong>Linux net-tools netstat (tool reads a pre-rendered file)</strong>: <code>/proc/net/tcp</code>, <code>/proc/net/udp</code> are readable, not askable. Tool does all the filtering in userspace; no new release since 2011, deprecation attempted on the mailing list in 2009 (Fred N. van Kempen and contributors)</li>
+                <li><strong>Linux ss (tool asks netlink)</strong>: <code>NETLINK_INET_DIAG</code>, Linux 2.6.14, October 2005; <code>NETLINK_SOCK_DIAG</code>, Linux 3.3, March 2012, adding AF_UNIX. Author Alexey Kuznetsov, also the author of much of the Linux QoS code and of the <code>iproute2</code> package. Commands: <code>ss -tan | grep ESTAB</code>, <code>ss -tanp '( dport = :443 )'</code></li>
+                <li><strong>The architectural lesson</strong>: the shape <code>ss</code> restored is the shape <code>sysctl</code> has been running on FreeBSD since 1983. McIlroy text-streams live in the tool's mouth. A file that looks like text is not the same thing</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

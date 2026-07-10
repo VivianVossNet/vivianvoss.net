@@ -1,0 +1,645 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Architecture You Did Not Design &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In March 2024 AWS waived data-egress fees for customers wishing to leave. Two years on, leaving is harder than ever, and egress is no longer the reason. The lock-in lives in three layers, only one of which gets discussed: the egress layer (Free Data Transfer Out For Leaving, gated and discretionary, in the window before EU Data Act Article 25 prohibits switching charges from 12 January 2027); the runtime layer (Aurora's six-way replicated storage, Babelfish, Limitless Database, DynamoDB, Lambda wired to EventBridge/SQS/SNS/CloudWatch); and the identity layer (IAM policies, ARNs, KMS keys that never leave AWS in plaintext, Identity Center permission sets). 37signals dropped from ~$3.2M/y on AWS to under $1M on-prem; hardware recouped in year one. Twenty-one per cent of workloads have already been repatriated. You can take your data with you. The architecture stays behind.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-architecture-you-did-not-design{( endslot )}
+
+{( slot og-title )}The Architecture You Did Not Design &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}In the Net Episode 03. AWS opened in 2006 with a real promise that was kept. The architecture that produced the value, taken whole, also keeps the customer in a way that is increasingly difficult to characterise as a free choice. The lock-in lives in three layers: egress (Free Data Transfer Out For Leaving, 5 March 2024, gated on good standing, more than 100 GB, all data, 90 days, account-level review), runtime (Aurora's six-way replicated storage fabric, Babelfish T-SQL, Aurora Machine Learning, Limitless Database, DynamoDB without an on-prem equivalent, Lambda wired to EventBridge/SQS/SNS/CloudWatch), and identity (IAM policies, ARNs, KMS keys that never leave AWS in plaintext, Identity Center permission sets). AWS holds about 30% of the global cloud infrastructure market; the Big Three about 65%. EU Data Act Article 25 prohibits switching charges from 12 January 2027. 37signals saved roughly $2M per year leaving AWS, hardware recouped in year one. The architecture is the more expensive part.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Architecture You Did Not Design",
+    "datePublished": "2026-05-15",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-architecture-you-did-not-design",
+    "description": "In the Net Episode 03. The lock-in lives in three layers. The egress layer (AWS Free Data Transfer Out For Leaving, 5 March 2024) is gated on good standing, more than 100 GB, intention to move all data, 90 days, account-level review and additional scrutiny on repeated applications; the EU Data Act Article 25 prohibits all switching charges from 12 January 2027. The runtime layer (Aurora's six-way replicated storage fabric, Babelfish T-SQL, Aurora Machine Learning, Limitless Database, DynamoDB without an on-prem equivalent, Lambda wired to EventBridge, SQS, SNS, CloudWatch) makes the workload an AWS workload rather than a PostgreSQL workload. The identity layer (IAM policy language, ARNs, KMS keys that never leave AWS in plaintext, Identity Center permission sets) is the largest and most expensive part to migrate. AWS holds about 30 per cent of the global cloud infrastructure market in Q1 2026 per Synergy Research; the Big Three together hold about 65 per cent. 37signals dropped from ~$3.2M/y to under $1M on-prem; hardware recouped in year one; ~$2M annual savings ongoing. Twenty-one per cent of cloud workloads have been repatriated per Flexera 2025. The escape route is portable identity (Keycloak, Authentik, Zitadel), policy as code (Open Policy Agent plus Crossplane), EU IaaS (Hetzner, Scaleway, OVHcloud, IONOS), and open-source data services (PostgreSQL, Cassandra, ScyllaDB, MongoDB, MinIO, Garage).",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-05-15">15 May 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Architecture You Did Not Design</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">cloud</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">law</span>
+            <span class="vv-pill">saas</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>In the Net</em> &#x26D3; Episode 03</p>
+
+        <p>In March 2024
+            <a href="https://aws.amazon.com/blogs/aws/free-data-transfer-out-to-internet-when-moving-out-of-aws/" target="_blank" rel="noopener">AWS announced that it would waive data-egress fees</a>
+            for customers wishing to leave. The press release was
+            elegant, the wording generous, the timing precise: less
+            than two months after the
+            <a href="https://digital-strategy.ec.europa.eu/en/policies/data-act" target="_blank" rel="noopener">EU Data Act</a>
+            came into force, with its Article 25 obligations on cloud
+            switching, and rather earlier than the moment in January
+            2027 when the same regulation will prohibit switching
+            charges altogether. Two years on, the egress bill is no
+            longer the largest cost of leaving AWS. The egress bill,
+            in fact, is not even the main reason customers do not
+            leave. The architecture is.</p>
+
+        <p>This is the third episode of <em>In the Net</em>: a series
+            on the documented mechanics of vendor lock-in. The premise
+            has not changed. Every platform tells you how to come in.
+            The architecture tells you whether you can leave, what it
+            does with what you build inside it, and how much of what
+            you built belongs to you when you wish to walk out.</p>
+
+        <h2>The Promise</h2>
+
+        <p>AWS opened to the public in 2006 with what was, at the
+            time, an unusual proposition. Stop owning racks. Stop
+            running data centres. Rent capacity, and pay for what you
+            use. Two decades later that promise has been kept on its
+            own terms. Startups have shipped products without ever
+            owning a server. Established firms have moved workloads
+            off depreciating hardware on predictable cycles. The
+            cloud has been, by any honest reading, the most productive
+            infrastructure shift of a generation, and AWS has led
+            most of it.</p>
+
+        <p>This matters. Lock-in stories are most useful when they
+            begin with the promise that was real, because the
+            architecture which produces the lock-in is not the
+            architecture which produces the value. The value is real.
+            The architecture, taken as a whole, also keeps the
+            customer in a way that is increasingly difficult to
+            characterise as a free choice.</p>
+
+        <h2>The Hooks</h2>
+
+        <p>The lock-in lives in three layers. The first is widely
+            discussed. The second is rarely discussed. The third is
+            almost never discussed in the right terms.</p>
+
+        <svg viewBox="0 0 600 280" aria-label="A diagram of the three layers of AWS lock-in. The top layer is the egress layer: Free Data Transfer Out For Leaving, gated on good standing, more than 100 GB, intention to move all data, 90 days, account-level review. The middle layer is the runtime layer: Aurora's six-way replicated storage fabric, Babelfish, Limitless Database, DynamoDB without an on-prem equivalent, Lambda wired to EventBridge, SQS, SNS, CloudWatch. The bottom layer is the identity layer: IAM policy language, ARNs, KMS keys that never leave AWS in plaintext, Identity Center permission sets. The visual note observes that the depth of the lock-in increases from top to bottom, and that the layer most engineering leads underestimate is the deepest." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-h-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-h-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-h-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-h-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-h-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .itn-h-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="itn-h-title" text-anchor="middle">Three Layers, One Outcome</text>
+
+            <rect x="40" y="50" width="520" height="64" class="itn-h-box"/>
+            <text x="60" y="72" class="itn-h-head">1 &#x25A0; The egress layer (the only layer the industry talks about)</text>
+            <text x="60" y="90" class="itn-h-muted">Free Data Transfer Out For Leaving (5 Mar 2024): account in good standing, &gt; 100 GB, all data,</text>
+            <text x="60" y="104" class="itn-h-muted">90 days, account-level review &#x2014; EU Data Act Art. 25 prohibits all switching charges from 12 Jan 2027</text>
+
+            <rect x="40" y="124" width="520" height="64" class="itn-h-box"/>
+            <text x="60" y="146" class="itn-h-head">2 &#x25A0; The runtime layer (rarely discussed)</text>
+            <text x="60" y="164" class="itn-h-muted">Aurora 6-way replicated storage fabric &#x2022; Babelfish T-SQL &#x2022; Aurora ML &#x2022; Limitless Database</text>
+            <text x="60" y="178" class="itn-h-muted">DynamoDB without an on-prem equivalent &#x2022; Lambda wired to EventBridge, SQS, SNS, CloudWatch, X-Ray</text>
+
+            <rect x="40" y="198" width="520" height="64" class="itn-h-accent-box"/>
+            <text x="60" y="220" class="itn-h-head">3 &#x25A0; The identity layer (almost never discussed in the right terms)</text>
+            <text x="60" y="238" class="itn-h-muted">IAM policy language &#x2022; ARNs &#x2022; KMS keys that never leave AWS in plaintext, region-bound</text>
+            <text x="60" y="252" class="itn-h-muted">Identity Center permission sets translated into IAM roles &#x2014; five years of security history in JSON</text>
+        </svg>
+
+        <h2>The Egress Layer</h2>
+
+        <p>In March 2024, AWS published a blog post titled "Free data
+            transfer out to internet when moving out of AWS". The
+            programme is real. The conditions are also real. To
+            qualify, a customer must hold an account in good standing,
+            must have more than 100 GB of data stored in the account,
+            must be moving all of their data off AWS, and must
+            complete the move within 90 days; requests are reviewed at
+            account level, and AWS reserves the right to apply
+            additional scrutiny if the same account applies multiple
+            times.</p>
+
+        <p>The European Union's Data Act entered into force on
+            11 January 2024, became applicable on 12 September 2025,
+            and includes in Article 25 the most far-reaching
+            cloud-switching obligations any major jurisdiction has yet
+            legislated. By 12 January 2027, switching charges of any
+            kind, including data egress charges levied during a
+            switch, will be prohibited for in-scope providers. AWS'
+            programme arrived in the window before the regulator did,
+            with conditions the regulator will not, in fact, permit
+            when the relevant article reaches full force. This is not
+            an accusation of insincerity. It is an observation of
+            timing.</p>
+
+        <svg viewBox="0 0 600 200" aria-label="A horizontal timeline. 11 January 2024: EU Data Act enters into force. 5 March 2024: AWS Free Data Transfer Out For Leaving programme announced, less than two months later. 12 September 2025: Data Act becomes applicable. 12 January 2027: Article 25 prohibits all switching charges. The interval between 5 March 2024 and 12 January 2027 is shaded as the window in which the AWS programme exists with conditions the regulator will not permit at full force." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-tl-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-tl-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-tl-axis { stroke: var(--border); stroke-width: 1; fill: none; }
+                .itn-tl-tick { stroke: var(--muted); stroke-width: 1; }
+                .itn-tl-dot { fill: var(--accent); }
+                .itn-tl-band { fill: var(--accent); opacity: 0.12; }
+            </style>
+            <text x="300" y="22" class="itn-tl-title" text-anchor="middle">The Egress Layer, in Calendar Order</text>
+
+            <rect x="160" y="105" width="380" height="14" class="itn-tl-band"/>
+            <text x="350" y="100" class="itn-tl-muted" text-anchor="middle" font-style="italic">programme exists with conditions the regulator will not permit at full force</text>
+
+            <line x1="40" y1="125" x2="560" y2="125" class="itn-tl-axis"/>
+
+            <circle cx="80" cy="125" r="4" class="itn-tl-dot"/>
+            <line x1="80" y1="125" x2="80" y2="131" class="itn-tl-tick"/>
+            <text x="80" y="148" class="itn-tl-text" text-anchor="middle">11 Jan 2024</text>
+            <text x="80" y="164" class="itn-tl-muted" text-anchor="middle">EU Data Act</text>
+            <text x="80" y="176" class="itn-tl-muted" text-anchor="middle">enters into force</text>
+
+            <circle cx="160" cy="125" r="4" class="itn-tl-dot"/>
+            <line x1="160" y1="125" x2="160" y2="131" class="itn-tl-tick"/>
+            <text x="160" y="148" class="itn-tl-text" text-anchor="middle">5 Mar 2024</text>
+            <text x="160" y="164" class="itn-tl-muted" text-anchor="middle">AWS Free Data</text>
+            <text x="160" y="176" class="itn-tl-muted" text-anchor="middle">Transfer announced</text>
+
+            <circle cx="320" cy="125" r="4" class="itn-tl-dot"/>
+            <line x1="320" y1="125" x2="320" y2="131" class="itn-tl-tick"/>
+            <text x="320" y="148" class="itn-tl-text" text-anchor="middle">12 Sep 2025</text>
+            <text x="320" y="164" class="itn-tl-muted" text-anchor="middle">Data Act</text>
+            <text x="320" y="176" class="itn-tl-muted" text-anchor="middle">becomes applicable</text>
+
+            <circle cx="540" cy="125" r="4" class="itn-tl-dot"/>
+            <line x1="540" y1="125" x2="540" y2="131" class="itn-tl-tick"/>
+            <text x="540" y="148" class="itn-tl-text" text-anchor="middle">12 Jan 2027</text>
+            <text x="540" y="164" class="itn-tl-muted" text-anchor="middle">Art. 25 prohibits</text>
+            <text x="540" y="176" class="itn-tl-muted" text-anchor="middle">all switching charges</text>
+        </svg>
+
+        <p>The egress layer is the layer the industry has talked about
+            for fifteen years, the layer Cloudflare campaigned against
+            in 2021, the layer regulators eventually moved on. It is,
+            on the evidence, also the easiest layer to mitigate. The
+            cost of moving 50 TB out of AWS at standard rates is
+            around &euro;4,300; the cost of moving 50 TB across a slow
+            internet pipe is the duration of a few weekends. The
+            egress layer is not, and never was, the reason large
+            customers stay.</p>
+
+        <h2>The Runtime Layer</h2>
+
+        <p>AWS' managed services are the next layer down, and the
+            lock-in here is structural rather than fiscal.</p>
+
+        <p>Amazon Aurora is documented as "PostgreSQL-compatible" and
+            "MySQL-compatible". On the wire and at the SQL surface,
+            this is true for the overwhelming majority of standard
+            operations. Beneath the wire, Aurora is its own database.
+            The storage layer is not PostgreSQL's; it is AWS' six-way
+            replicated, log-structured shared-storage fabric. Aurora's
+            Babelfish module accepts Microsoft SQL Server's T-SQL on
+            top of the Aurora engine. Aurora Machine Learning calls
+            SageMaker and Bedrock directly from SQL. Aurora Limitless
+            Database introduces horizontal scaling semantics that
+            have no PostgreSQL equivalent. None of these features
+            ports off Aurora; each of them, once adopted in a
+            production schema, becomes a one-way commitment.</p>
+
+        <p>Amazon DynamoDB has no on-prem equivalent. It is sold as a
+            managed NoSQL database, but it is, more precisely, an API
+            and a billing model wrapped around a proprietary key-value
+            store with proprietary indexing semantics, proprietary
+            stream semantics, and proprietary integration with Lambda,
+            EventBridge, S3 and CloudWatch. The closest open-source
+            replacements (Apache Cassandra, ScyllaDB, MongoDB) require
+            non-trivial schema translation, and each has a meaningfully
+            different consistency, availability and operational
+            model. There are migration paths; there is no drop-in
+            equivalent.</p>
+
+        <p>AWS Lambda is wired into the ecosystem at the point of
+            event delivery. Lambda functions consume from EventBridge,
+            S3 events, DynamoDB streams, SQS queues, SNS topics,
+            Kinesis streams; they emit to CloudWatch logs and
+            CloudWatch metrics; they are observed by X-Ray. Each of
+            these dependencies is a service-specific protocol with no
+            portable replacement that ships in the box. OpenTelemetry,
+            Prometheus and Grafana exist and work; they are not,
+            however, the path of least resistance inside AWS, and
+            adopting them in addition to the AWS-native instrumentation
+            is a deliberate engineering choice that adds cost in the
+            short term and pays back only at migration time.</p>
+
+        <p>The runtime layer is the layer where the lock-in compounds.
+            Each AWS-specific decision is locally rational. The
+            cumulative effect, at the scale of a production estate, is
+            that the workload is no longer a "PostgreSQL workload" or
+            a "Linux workload"; it is an "AWS workload", and the noun
+            matters.</p>
+
+        <h2>The Identity Layer</h2>
+
+        <p>The third layer is the layer most engineering leads
+            underestimate, and it is, on this analysis, the most
+            expensive layer to migrate.</p>
+
+        <p>AWS Identity and Access Management is two distinct things.
+            At the level of resources, it is a policy language: a JSON
+            document grammar that grants and denies actions on
+            <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference-arns.html" target="_blank" rel="noopener">Amazon Resource Names (ARNs)</a>
+            under specified conditions. At the level of organisations,
+            it is an account model: a hierarchy of accounts,
+            organisational units, service control policies and trust
+            relationships that, taken together, constitute the
+            security perimeter of every workload running on AWS.</p>
+
+        <p>Neither half is portable. The policy language is
+            AWS-specific. ARNs are AWS-specific. The account hierarchy
+            is AWS-specific.
+            <a href="https://aws.amazon.com/kms/faqs/" target="_blank" rel="noopener">KMS keys</a>,
+            the cryptographic substrate that secures most of what an
+            enterprise stores on AWS, never leave the service in
+            plaintext (by AWS' own KMS documentation); they cannot be
+            exported, only used through API calls. KMS keys are
+            region-bound; they cannot be shared across regions, let
+            alone across providers. Re-encrypting a large estate with
+            new keys held by a different provider, while keeping data
+            continuously available, is not a 90-day operation.</p>
+
+        <p>IAM Identity Center, AWS' successor to AWS SSO, adds
+            another layer: permission sets, assigned through the AWS
+            organisation hierarchy, are translated at session time
+            into IAM roles inside individual accounts. The permission
+            set is the abstraction; the role is the artefact.
+            Migrating off Identity Center means reconstructing the
+            permission set semantics in a different identity system
+            (Keycloak, Zitadel, Authentik, or a commercial product)
+            and then re-grounding every workload's authorisation
+            against the new system. The permission model is not a
+            thousand lines of JSON; it is the encoded security
+            history of an organisation, often built across several
+            years and several reorganisations, and rarely documented
+            outside the JSON itself.</p>
+
+        <p>A senior architect priced the migration in EC2 hours. The
+            actual migration is in the permission model, and that
+            took five years to build. The bill for moving compute is
+            the bill the FinOps team will quote. The bill for moving
+            identity is the bill the security team will quote, much
+            later, and quietly.</p>
+
+        <h2>The Standing</h2>
+
+        <p>AWS holds approximately 30 per cent of the global cloud
+            infrastructure market in Q1 2026, ahead of Microsoft Azure
+            (around 21 per cent) and Google Cloud (around 13 per
+            cent), according to
+            <a href="https://www.srgresearch.com/articles/cloud-market-share-trends-big-three-together-hold-63-while-oracle-and-the-neoclouds-inch-higher" target="_blank" rel="noopener">Synergy Research Group</a>;
+            aggregated estimates from the same period place the Big
+            Three together at around 65 per cent of the market, with
+            the global cloud-infrastructure spend running at about
+            $129 billion for the quarter and a year-on-year growth
+            rate of 35 per cent driven largely by AI workloads. The
+            market is, on any reasonable description, an oligopoly.
+            AWS is the senior partner in that oligopoly.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A horizontal stacked bar of the Q1 2026 global cloud infrastructure market. AWS holds approximately 30 per cent of the bar in orange. Microsoft Azure holds approximately 21 per cent. Google Cloud holds approximately 13 per cent. The remaining 36 per cent is split among Oracle Cloud, IBM Cloud, Alibaba, Tencent, and the long tail of neoclouds. Below the bar, a smaller annotation observes that the Big Three together hold about 65 per cent and that the global quarterly spend is approximately $129 billion, growing 35 per cent year on year." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-ms-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-ms-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-ms-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-ms-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-ms-aws { fill: var(--accent); opacity: 0.85; }
+                .itn-ms-azure { fill: var(--muted); opacity: 0.65; }
+                .itn-ms-gcp { fill: var(--muted); opacity: 0.45; }
+                .itn-ms-rest { fill: var(--muted); opacity: 0.25; }
+            </style>
+            <text x="300" y="22" class="itn-ms-title" text-anchor="middle">Global Cloud Infrastructure, Q1 2026</text>
+
+            <rect x="40" y="80" width="156" height="50" class="itn-ms-aws"/>
+            <text x="118" y="100" class="itn-ms-text" text-anchor="middle">AWS</text>
+            <text x="118" y="116" class="itn-ms-text" text-anchor="middle">~30%</text>
+
+            <rect x="196" y="80" width="109" height="50" class="itn-ms-azure"/>
+            <text x="250" y="100" class="itn-ms-text" text-anchor="middle">Azure</text>
+            <text x="250" y="116" class="itn-ms-text" text-anchor="middle">~21%</text>
+
+            <rect x="305" y="80" width="68" height="50" class="itn-ms-gcp"/>
+            <text x="339" y="100" class="itn-ms-text" text-anchor="middle">GCP</text>
+            <text x="339" y="116" class="itn-ms-text" text-anchor="middle">~13%</text>
+
+            <rect x="373" y="80" width="187" height="50" class="itn-ms-rest"/>
+            <text x="466" y="100" class="itn-ms-text" text-anchor="middle">Oracle, IBM, Alibaba, Tencent, neoclouds</text>
+            <text x="466" y="116" class="itn-ms-text" text-anchor="middle">~36% combined</text>
+
+            <text x="300" y="160" class="itn-ms-head" text-anchor="middle">Big Three together: ~65%</text>
+            <text x="300" y="180" class="itn-ms-muted" text-anchor="middle">Q1 2026 spend: ~$129B / quarter, +35% YoY (Synergy Research Group)</text>
+            <text x="300" y="210" class="itn-ms-muted" text-anchor="middle" font-style="italic">The contract is offered from the senior seat at the oligopoly's table.</text>
+        </svg>
+
+        <p>This matters for the same reason that
+            <a href="/blog/the-subscription-you-did-not-ask-for">Adobe's 80 per cent of the creative-software market matters in Episode 01</a>,
+            and the same reason that
+            <a href="/blog/linkedin-reach-you-did-not-earn">LinkedIn's billion-plus users matter in Episode 02</a>.
+            The contract is offered from a position. The position
+            determines what kind of contract is offered, and how much
+            leverage the customer has to negotiate any of it. A
+            startup signing an AWS Enterprise Agreement is not
+            negotiating peer-to-peer with the platform that decides
+            whether its product can run.</p>
+
+        <p>There is a second observation worth making. The European
+            Union has, in the same eighteen-month window, designated
+            Microsoft, Alphabet, Apple, Amazon, Meta and ByteDance as
+            Digital Markets Act gatekeepers. Amazon is on the list.
+            AWS' core services, however, are not in scope of the DMA's
+            gatekeeper obligations; the DMA addresses Amazon's
+            marketplace, not Amazon's cloud. The cloud was instead
+            addressed, with some lag, by the Data Act, which applies
+            to a far broader set of providers and is not enforced
+            through the same designation mechanism. The architecture
+            of the cloud sits in a regulatory space that the EU has,
+            in essence, conceded to a sector-specific instrument
+            rather than the DMA's gatekeeper apparatus.</p>
+
+        <h2>How the User Is Treated</h2>
+
+        <p>The dignity dimension this series tracks has a quieter
+            shape on AWS than it had on Adobe or LinkedIn. AWS does
+            not, in the main, scrape its customers' workloads for AI
+            training. AWS does not, by default, repurpose customer
+            data. The AWS Customer Agreement is, by the standards of
+            the platforms this series has previously examined,
+            restrained.</p>
+
+        <p>What it does instead is shape the entire interaction around
+            the assumption that the customer has chosen, and continues
+            to choose, the AWS architecture. The Free Data Transfer
+            Out For Leaving programme is structured as an exception to
+            the default, granted at AWS' discretion, with conditions
+            ("more than 100 GB", "all data", "90 days",
+            "account-level review", "additional scrutiny on repeated
+            applications") that read more like a creditor's conditions
+            on a workout than a vendor's facilitation of a switch. The
+            customer who wishes to leave is, by the structure of the
+            programme, treated as a customer asking for a concession.
+            The Data Act, when it reaches full force in January 2027,
+            will remove this framing. Until then, the framing is the
+            architecture.</p>
+
+        <h2>The Exit That Isn't</h2>
+
+        <p>A customer can leave AWS. By the time this sentence ends,
+            the customer will have understood several things they did
+            not understand at the start.</p>
+
+        <p>The customer <em>can</em> move the data. Free Data Transfer
+            Out For Leaving will, in most cases, be granted. The data
+            will arrive on the receiving infrastructure, in a
+            reasonable amount of time, at no charge. This is the easy
+            part.</p>
+
+        <p>The customer <em>cannot</em> move the permission model.
+            IAM policies are not portable; ARNs do not resolve outside
+            AWS; KMS keys do not export; Identity Center permission
+            sets have no direct equivalent on competitor platforms.
+            Reconstructing the authorisation surface on a new identity
+            provider is a multi-month engineering exercise that
+            touches every workload.</p>
+
+        <p>The customer <em>cannot</em> move the managed-services
+            semantics. Aurora's AWS-specific features must be
+            rewritten or removed. DynamoDB schemas must be re-modelled
+            for Cassandra, ScyllaDB or MongoDB. Lambda functions must
+            be re-hosted, often as containers, with their EventBridge,
+            SQS and SNS dependencies replaced by Kafka, NATS or a
+            workflow engine. CloudWatch monitoring must be re-built on
+            OpenTelemetry, Prometheus and Grafana. Each of these is
+            tractable; in aggregate, on a 50-application estate, the
+            work is 8 to 12 months and around &euro;1.2M of effort by
+            independent industry averages.</p>
+
+        <p>This is a lock-in by design. Not in the sense that someone
+            in a boardroom said "let us trap our users". In the sense
+            that the architecture, taken as a whole, produces the
+            outcome that customers do not leave even when the cost of
+            staying has, on their own honest accounting, exceeded the
+            value of staying. That is what an architecture is: the
+            outcome the structure makes likely, regardless of intent.</p>
+
+        <h2>The Price</h2>
+
+        <p>The price of staying is the AWS bill, the trajectory of
+            which is documented quarterly. The Big Three's combined
+            revenue grew 35 per cent year-on-year in Q1 2026, and the
+            customer's share of that growth, on any given account,
+            tracks broadly with the customer's adoption of AWS-specific
+            services.</p>
+
+        <p>The price of leaving is the migration. By industry
+            averages, a 50-application enterprise migration runs
+            around &euro;1.2M and 8 to 12 months; large waves with
+            100-plus applications run &euro;1M to &euro;3M and span
+            longer. Optimised post-migration run-rates are 20 to 35
+            per cent lower than the pre-migration cloud bill; FinOps
+            reports also document persistent 20 to 30 per cent waste
+            in unoptimised AWS estates.</p>
+
+        <p>37signals, the maker of Basecamp and HEY, published a
+            detailed account of its AWS departure across 2023 and
+            2024. The company's annual AWS spend, on its own figures,
+            was around $3.2 million in 2022, fell to "well under a
+            million" on-prem in 2024, and the company reported
+            approximately $2 million in annual savings ongoing.
+            Hardware spend, around $700,000 on Dell servers and around
+            $1.5 million on Pure Storage for 18 petabytes, was
+            recouped inside one year. This is one case; it is also a
+            public, documented, mid-scale case.</p>
+
+        <svg viewBox="0 0 600 240" aria-label="A bar comparison of 37signals' cloud spending before and after repatriation. The first bar represents the 2022 AWS spend at approximately $3.2 million per year. The second bar, shorter, represents the post-repatriation on-premise spend at well under one million per year. Annotations record the one-time hardware costs of approximately $700,000 for Dell servers and approximately $1.5 million for 18 petabytes of Pure Storage, and that the hardware was recouped inside one year." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-rp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-rp-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-rp-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-rp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-rp-bar-bad { fill: var(--muted); opacity: 0.55; }
+                .itn-rp-bar-good { fill: var(--accent); opacity: 0.85; }
+            </style>
+            <text x="300" y="22" class="itn-rp-title" text-anchor="middle">37signals, Before and After Repatriation</text>
+
+            <text x="40" y="64" class="itn-rp-head">AWS 2022</text>
+            <rect x="40" y="72" width="480" height="32" class="itn-rp-bar-bad"/>
+            <text x="530" y="93" class="itn-rp-text" text-anchor="end">~$3.2M / y</text>
+
+            <text x="40" y="128" class="itn-rp-head">On-prem 2024</text>
+            <rect x="40" y="136" width="140" height="32" class="itn-rp-bar-good"/>
+            <text x="190" y="157" class="itn-rp-text">&lt; $1M / y</text>
+
+            <text x="300" y="192" class="itn-rp-muted" text-anchor="middle">Hardware: ~$700k Dell servers + ~$1.5M Pure Storage for 18 PB</text>
+            <text x="300" y="206" class="itn-rp-muted" text-anchor="middle">Recouped inside year one. ~$2M annual savings ongoing.</text>
+            <text x="300" y="226" class="itn-rp-muted" text-anchor="middle" font-style="italic">One documented mid-scale case; not every workload, but a real one.</text>
+        </svg>
+
+        <p>Twenty-one per cent of cloud workloads have been
+            repatriated, on the
+            <a href="https://duplocloud.com/blog/cloud-migration-statistics/" target="_blank" rel="noopener">Flexera 2025 State of the Cloud report</a>.
+            This is not a wholesale reversal of cloud adoption; it is
+            a documented re-weighting of workloads back to private or
+            hybrid infrastructure where the economics, latency, or
+            data-gravity warrant it. The repatriation trend is the
+            empirical answer to the question of whether the AWS
+            architecture can be left. It can, for the customers who
+            choose to.</p>
+
+        <h2>The Escape Route</h2>
+
+        <p>The escape route from AWS is not a single product. It is
+            an architectural posture: build identity, policy, and the
+            data layer on portable substrates from the beginning, and
+            treat each managed AWS service as a deliberate, named,
+            scoped exception to portability.</p>
+
+        <svg viewBox="0 0 600 280" aria-label="A four-layer stack of the portable escape route. Top: identity, with Keycloak, Authentik and Zitadel speaking OIDC, SAML and SCIM. Second: policy as code, with Open Policy Agent and Crossplane providing vendor-neutral provisioning and admission control. Third: EU IaaS, with Hetzner, Scaleway, OVHcloud and IONOS as the established providers. Bottom: open-source data services, with PostgreSQL, Apache Cassandra, ScyllaDB, MongoDB, MinIO and Garage covering the relational, wide-column, document and object-storage axes." role="img" style="max-width:600px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .itn-er-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-er-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-er-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-er-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .itn-er-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="300" y="22" class="itn-er-title" text-anchor="middle">A Portable Stack, Built From the Start</text>
+
+            <rect x="40" y="50" width="520" height="50" class="itn-er-accent-box"/>
+            <text x="60" y="72" class="itn-er-head">1 &#x25A0; Identity (portable from day one)</text>
+            <text x="60" y="90" class="itn-er-muted">Keycloak (Red Hat) &#x2022; Authentik &#x2022; Zitadel (event-sourced) &#x2014; OIDC, SAML 2.0, SCIM</text>
+
+            <rect x="40" y="110" width="520" height="50" class="itn-er-accent-box"/>
+            <text x="60" y="132" class="itn-er-head">2 &#x25A0; Policy as code (vendor-neutral)</text>
+            <text x="60" y="150" class="itn-er-muted">Open Policy Agent (CNCF, Rego language) + Crossplane (Kubernetes-native multi-cloud)</text>
+
+            <rect x="40" y="170" width="520" height="50" class="itn-er-accent-box"/>
+            <text x="60" y="192" class="itn-er-head">3 &#x25A0; EU IaaS for sovereignty</text>
+            <text x="60" y="210" class="itn-er-muted">Hetzner (~14&#x00D7; AWS value-per-compute) &#x2022; Scaleway (~5&#x00D7;, free egress) &#x2022; OVHcloud &#x2022; IONOS</text>
+
+            <rect x="40" y="230" width="520" height="50" class="itn-er-accent-box"/>
+            <text x="60" y="252" class="itn-er-head">4 &#x25A0; Open-source data services</text>
+            <text x="60" y="270" class="itn-er-muted">PostgreSQL &#x2022; Apache Cassandra / ScyllaDB &#x2022; MongoDB &#x2022; MinIO / Garage (S3 API)</text>
+        </svg>
+
+        <p><strong>Identity, portable from day one.</strong>
+            <a href="/blog/auth0-identity-tax">Keycloak</a> is the
+            established open-source identity provider, Java-based,
+            with SAML, OIDC and SCIM out of the box; it is heavy to
+            operate and widely deployed. Authentik is a more recent,
+            lighter alternative with a cleaner administrative
+            interface. Zitadel is a Go-based, event-sourced
+            alternative built for multi-tenant SaaS. All three speak
+            the standards a modern enterprise identity provider must
+            speak (OIDC, SAML 2.0, SCIM); all three can sit in front
+            of AWS IAM and any other cloud's IAM, so that the
+            customer's permission model is, from the start, defined
+            in a system the customer owns.</p>
+
+        <p><strong>Policy as code, vendor-neutral.</strong>
+            <a href="https://www.openpolicyagent.org/" target="_blank" rel="noopener">Open Policy Agent</a>
+            (OPA), a CNCF graduated project, is a general-purpose
+            policy engine with a declarative policy language (Rego)
+            and integration with Kubernetes, service meshes,
+            application admission controllers and infrastructure
+            provisioning.
+            <a href="https://www.crossplane.io/" target="_blank" rel="noopener">Crossplane</a>,
+            also CNCF, is a Kubernetes-native control plane for
+            provisioning cloud resources across multiple providers
+            through a consistent declarative interface. OPA plus
+            Crossplane is the closest the open ecosystem has come to
+            a portable replacement for AWS-specific IaC plus IAM, and
+            the combination scales to the kind of estate where the
+            question is meaningful.</p>
+
+        <p><strong>EU IaaS for sovereignty.</strong>
+            <a href="/blog/why-the-cloud-is-the-default">Hetzner</a>,
+            OVHcloud, Scaleway and IONOS are the established EU-native
+            infrastructure providers with no US parent and no CLOUD
+            Act exposure. An independent Callista benchmark in
+            February 2026 found Hetzner delivering approximately 14.3
+            times AWS' value-per-compute-unit and Scaleway
+            approximately 4.8 times; Scaleway publishes free egress
+            where AWS bills it. OVHcloud has the widest service range
+            and the largest European data-centre footprint. None of
+            these providers matches AWS' managed-services depth; all
+            of them match AWS for compute, storage, networking, and
+            the basic primitives an honest production workload needs.</p>
+
+        <p><strong>Open-source data services.</strong> PostgreSQL
+            replaces Aurora on the relational side, with the engine
+            actively maintained by the community and used at
+            multi-terabyte scale in production. Apache Cassandra and
+            ScyllaDB replace DynamoDB on the wide-column side. MongoDB
+            replaces it on the document side. MinIO and Garage replace
+            S3 on the object-storage side, with the S3 API as a de
+            facto portability surface that, ironically, AWS itself
+            does not control. PostgreSQL plus one of the wide-column
+            or document stores covers most production data-layer
+            workloads with no managed-service dependency on any
+            single cloud.</p>
+
+        <p><strong>Repatriation as a documented option.</strong>
+            37signals' case is not a recommendation that every
+            workload return on-prem. It is evidence that the option
+            exists and produces measurable results when chosen with
+            engineering and operational discipline. The Flexera figure
+            of 21 per cent repatriated workloads is the broader
+            signal: cloud is the right answer for a great many
+            workloads, and not the right answer for all of them.</p>
+
+        <h2>Coda</h2>
+
+        <p>The bill arrives every month. The data the customer has
+            uploaded is portable as of March 2024, and will be free to
+            move from January 2027. The architecture the customer has
+            built inside AWS, taken whole, is not.</p>
+
+        <p>The cloud opened in 2006 with a promise to remove the
+            racks. It removed the racks. It built, in their place, a
+            permission model, a data layer and an identity layer that
+            constitute the customer's actual production architecture.
+            The architecture is, on this evidence, the larger part of
+            what the customer pays for. The architecture is also the
+            part the customer cannot fully take with them.</p>
+
+        <blockquote>
+            <p>You can take your data with you. The architecture
+                stays behind. The architecture is, on this evidence,
+                the more expensive part.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>Escape routes that exist today:</strong></p>
+            <ul>
+                <li><strong>Identity, portable</strong>: Keycloak, Authentik, Zitadel speak OIDC, SAML 2.0 and SCIM and sit in front of any cloud's IAM</li>
+                <li><strong>Policy as code</strong>: Open Policy Agent (CNCF graduated, Rego) plus Crossplane for vendor-neutral, Kubernetes-native provisioning</li>
+                <li><strong>EU IaaS</strong>: Hetzner (~14&#x00D7; AWS value-per-compute, Callista Feb 2026), Scaleway (~5&#x00D7;, free egress), OVHcloud (largest EU footprint), IONOS</li>
+                <li><strong>Open-source data services</strong>: PostgreSQL, MongoDB, Apache Cassandra, ScyllaDB, MinIO or Garage for the S3 API surface</li>
+                <li><strong>Repatriation works</strong>: 37signals saved ~$2M/y leaving AWS, hardware recouped inside year one; Flexera 2025 records 21% of cloud workloads already repatriated</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

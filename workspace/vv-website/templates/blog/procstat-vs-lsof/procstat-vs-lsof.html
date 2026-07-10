@@ -1,0 +1,566 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}procstat vs lsof &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="You go to delete a file. The system tells you it is busy. df disagrees with du by twenty gigabytes. Both refuse the same question: which process is holding it open? FreeBSD answers with procstat (built on libprocstat, the stable C library every tool can link against; Robert N M Watson, FreeBSD 9.0, 2012) and fstat (in base since 4.3BSD-Tahoe, 1988). Linux answers with lsof, written by Vic Abell at Purdue in 1991, a generalisation of BSD's fstat. The Unix way prefers parts that compose; lsof prefers parts that arrive together. Both ship with the OS. Neither asks you to write JSON. Learn the flags before the page goes off.">
+{( endslot )}
+
+{( slot canonical )}/blog/procstat-vs-lsof{( endslot )}
+
+{( slot og-title )}procstat vs lsof &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The Unix Way Episode 19. Cannot remove text file busy, address already in use, mount point is busy, df disagrees with du by twenty gigabytes: four different refusals, one shared question, which process holds this open? FreeBSD splits the work. procstat is the modern per-process introspection front-end, shipped with FreeBSD 9.0 in 2012 by Robert N M Watson and built on top of libprocstat, a stable C library every tool can link against; the next utility that needs to know what a process is holding asks the library, not the text output. fstat is the classical sibling, in the base system since 4.3BSD-Tahoe in 1988, the system-wide ledger of every open file by every process. Linux folds the same job into lsof, written by Vic Abell at Purdue and first released to comp.sources.unix in 1991, two years after he had ported BSD's fstat and ofiles to DYNIX, SunOS and ULTRIX. lsof is, in the kindest sense, the universal hammer; it understands regular files, directories, sockets (TCP, UDP, raw, Unix-domain), pipes, anonymous inodes, character and block devices, and the synthetic entries the kernel exposes through proc, and it presents them as one consistent output. lsof plus L1 is the canonical answer to the deleted-but-held file (link count below one) that pins disk space until the fd closes; on FreeBSD the same shape is fstat -p pid piped to awk dollar-five equals dash. Neither shape is wrong; the Linux model trades modularity at the C-library layer for completeness at the command-line layer, the FreeBSD model trades single-binary breadth for a layered design in which procstat, fstat, top, gstat and debuggers are all thin clients of the same library. Both ship with the OS. Neither asks you to write JSON. Learn the flags before the page goes off.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "procstat vs lsof",
+    "datePublished": "2026-06-01",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/procstat-vs-lsof",
+    "description": "The Unix Way Episode 19. There is a class of error message every engineer who has touched a long-running system knows by reflex: Cannot remove text file busy, Address already in use, Mount point is busy; and best of all the silent contradiction in which df reports a filesystem at ninety per cent while du can only account for half the bytes. Four different refusals, all refusing the same question: which process is holding this open? FreeBSD and Linux both answer it properly, keeping their own tools in their own shapes for what is at heart the same enquiry to the kernel. The modern FreeBSD tool is procstat(1), introduced by Robert N M Watson and shipped with FreeBSD 9.0 in 2012; it is built on top of libprocstat(3), a stable, well-documented C library every program needing process state can link against directly, so the entire FreeBSD ecosystem (top, gstat, debugger front-ends, monitoring tools) draws from one common source rather than parsing text or scraping /proc. procstat is the per-process introspection front-end: -f for file descriptors, -t for threads with states, -v for virtual-memory map, -k for kernel stack, -s for security credentials; different flag, same tool, same library underneath. Its classical sibling is fstat(1), which has served the base system since 4.3BSD-Tahoe in 1988 and is still installed by default: a system-wide ledger of every open file by every process, narrowed by -p pid, -u user, an exact path, or -f mountpoint. The case that most often justifies either tool in production is the deleted-but-held file: a long-running daemon (a database, a log forwarder, a web server) opens a logfile and someone unlinks the file from the filesystem while the daemon still holds it open, so the directory entry is gone (du cannot see the bytes) but the inode and its blocks remain allocated until the last fd is closed (df still counts them). fstat shows such a file with a dash in the inode column; fstat -p pid piped to awk dollar-five equals dash names it. The cure is to close the fd: a graceful restart, a SIGHUP to a daemon that knows how to reopen its log, or a deliberate logrotate hook. On Linux the same question is answered by lsof(8), written by Vic Abell at Purdue University and first released to comp.sources.unix in 1991; two years before that, in 1989, he had published ports of BSD's fstat and ofiles to DYNIX, SunOS and ULTRIX, and lsof is in a direct line of descent, a generalisation of the BSD idea written to work across the many Unix-likes of the early 1990s. lsof is the universal hammer: it understands regular files, directories, sockets (TCP, UDP, raw, Unix-domain), pipes, anonymous inodes, character and block devices, and the synthetic entries the kernel exposes through /proc. Basics: lsof -p pid, lsof +D path (recursive, slow), lsof -i :port, lsof -u user, lsof +L1 (link count below one: deleted but held), lsof -n -P (skip DNS and service-name lookups). lsof +L1 is the Linux answer to the FreeBSD awk dollar-five-equals-dash pattern; it is the right reach the first time when df and du disagree. Almost everything lsof reports is derived from /proc: each running process has /proc/pid/ containing fd/, a directory of symbolic links to the actual files or sockets or pipes, and the kernel-maintained net/ files describe socket state; lsof is, in a real sense, a structured tour of /proc presented as one consistent output. Two answers to the same question, two different shapes. FreeBSD splits the work between procstat (focused per-process), fstat (broad system view since 1988), and libprocstat (the C library any tool can link against); each piece does one thing and the pieces compose, and the next tool does not need to parse text. Linux folds the same work into one large lovingly maintained binary; lsof understands every kind of open file and every kind of socket, reads from /proc and kernel symbol tables and netlink, and presents the union as one consistent output. There is no liblsof because lsof is itself the interface; its sustained existence as one program is what makes its breadth possible. Neither shape is wrong; the Linux model trades modularity at the C-library layer for completeness at the command-line layer, the FreeBSD model trades single-binary breadth for a layered design where every program that needs process state asks the same library in the same way. The first is delightful when you have one weird question and a hurry to answer it; the second is delightful when you are writing the next tool, or when you want to be sure that top and your monitoring agent and your shell prompt are all reading the same kernel reality. Both ship with the OS. Neither asks you to install a runtime. Neither wants JSON. When a system refuses to do what you asked, ask it precisely what is in the way; the kernel will tell you, plainly, on either platform. The Unix way prefers parts that compose; lsof prefers parts that arrive together. The right answer to which one is whichever ships with the box in front of you, and learn its flags before the page goes off.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-06-01">1 June 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>procstat vs lsof</h1>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Unix Way</em> &#x22A3; Episode 19</p>
+
+        <p>There is a class of error message that every engineer who
+            has touched a long-running system knows by reflex.
+            "Cannot remove: text file busy." "Address already in
+            use." "Mount point is busy." And, perhaps best of all,
+            the silent contradiction in which <code>df</code>
+            reports a filesystem at ninety per cent while
+            <code>du</code> can only account for half the bytes.
+            They are different messages, but they all refuse the
+            same question: which process is holding this open?</p>
+
+        <p>FreeBSD and Linux both answer the question, and they
+            answer it properly. They keep their own tools, in their
+            own shapes, for what is at heart the same enquiry to the
+            kernel. The tools, and the shapes they prefer, are the
+            substance of this episode.</p>
+
+        <svg viewBox="0 0 640 240" aria-label="A diagram of four different system refusals that all conceal the same question. Cannot remove text file busy, Address already in use, Mount point is busy, and df disagrees with du by twenty gigabytes each lead to a single shared question: which process is holding this open. The legend notes that both FreeBSD and Linux can answer the question, in their own shapes." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-rf-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-rf-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-rf-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-rf-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-rf-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uw-rf-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .uw-rf-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#uw-rf-arrow); }
+            </style>
+            <defs>
+                <marker id="uw-rf-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="uw-rf-title" text-anchor="middle">Four Refusals, One Question</text>
+
+            <rect x="10" y="50" width="180" height="34" class="uw-rf-box"/>
+            <text x="100" y="71" class="uw-rf-text" text-anchor="middle">text file busy</text>
+
+            <rect x="10" y="94" width="180" height="34" class="uw-rf-box"/>
+            <text x="100" y="115" class="uw-rf-text" text-anchor="middle">address already in use</text>
+
+            <rect x="10" y="138" width="180" height="34" class="uw-rf-box"/>
+            <text x="100" y="159" class="uw-rf-text" text-anchor="middle">mount point is busy</text>
+
+            <rect x="10" y="182" width="180" height="34" class="uw-rf-box"/>
+            <text x="100" y="200" class="uw-rf-text" text-anchor="middle">df vs du gap</text>
+            <text x="100" y="212" class="uw-rf-muted" text-anchor="middle">twenty gigabytes missing</text>
+
+            <line x1="190" y1="67" x2="250" y2="125" class="uw-rf-arr"/>
+            <line x1="190" y1="111" x2="250" y2="130" class="uw-rf-arr"/>
+            <line x1="190" y1="155" x2="250" y2="138" class="uw-rf-arr"/>
+            <line x1="190" y1="199" x2="250" y2="145" class="uw-rf-arr"/>
+
+            <rect x="250" y="110" width="200" height="50" class="uw-rf-accent-box"/>
+            <text x="350" y="132" class="uw-rf-head" text-anchor="middle">which process holds it?</text>
+            <text x="350" y="148" class="uw-rf-muted" text-anchor="middle">the kernel knows</text>
+
+            <line x1="450" y1="135" x2="500" y2="135" class="uw-rf-arr"/>
+
+            <rect x="500" y="110" width="130" height="50" class="uw-rf-accent-box"/>
+            <text x="565" y="130" class="uw-rf-text" text-anchor="middle">procstat / fstat</text>
+            <text x="565" y="148" class="uw-rf-text" text-anchor="middle">lsof</text>
+        </svg>
+
+        <h2>FreeBSD: procstat (and fstat)</h2>
+
+        <p>The modern tool is
+            <a href="https://man.freebsd.org/cgi/man.cgi?procstat(1)" target="_blank" rel="noopener"><code>procstat(1)</code></a>,
+            introduced by Robert N M Watson and shipped with FreeBSD
+            9.0 in 2012. It is built on top of
+            <a href="https://man.freebsd.org/cgi/man.cgi?libprocstat(3)" target="_blank" rel="noopener"><code>libprocstat(3)</code></a>,
+            a stable, well-documented C library that every program
+            needing process state can link against directly. The
+            FreeBSD ecosystem (<code>top</code>, <code>gstat</code>,
+            debugger front-ends, monitoring tools) draws from one
+            common source, and the command-line utility is itself a
+            thin client of that library. <code>procstat</code> is
+            the per-process introspection front-end:</p>
+
+        <pre><code>procstat -f 4711               # file-descriptor view, one process
+procstat -af                   # file-descriptor view, all processes
+procstat -t 4711               # thread view, with states
+procstat -v 4711               # virtual-memory map
+procstat -k 4711               # kernel stack
+procstat -s 4711               # security credentials</code></pre>
+
+        <p>Different flag, same tool, same library underneath.
+            <code>procstat</code> is the focused interview with one
+            process; the library is the quietly important half,
+            because the next tool that needs to ask the same
+            questions does not have to parse text or scrape
+            <code>/proc</code>. It links against
+            <code>libprocstat</code>, like every other tool on the
+            system.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A layered-architecture diagram of FreeBSD's process-state stack. At the bottom the kernel exposes process state. Above it sits libprocstat, the stable C library. Five thin client utilities draw from libprocstat: procstat for per-process interview, fstat as the classical system-wide view in base since 1988, top for live process list, gstat for GEOM statistics, and debugger front-ends. Each utility is one box wide; the legend notes that every program that needs process state asks the same library." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-fb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-fb-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-fb-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-fb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-fb-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uw-fb-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .uw-fb-line { stroke: var(--accent); stroke-width: 1.2; fill: none; }
+            </style>
+            <text x="320" y="22" class="uw-fb-title" text-anchor="middle">FreeBSD: One Library, Many Thin Clients</text>
+
+            <rect x="50" y="50" width="100" height="46" class="uw-fb-accent-box"/>
+            <text x="100" y="72" class="uw-fb-head" text-anchor="middle">procstat</text>
+            <text x="100" y="88" class="uw-fb-muted" text-anchor="middle">per-process</text>
+
+            <rect x="160" y="50" width="100" height="46" class="uw-fb-accent-box"/>
+            <text x="210" y="72" class="uw-fb-head" text-anchor="middle">fstat</text>
+            <text x="210" y="88" class="uw-fb-muted" text-anchor="middle">system-wide</text>
+
+            <rect x="270" y="50" width="100" height="46" class="uw-fb-box"/>
+            <text x="320" y="72" class="uw-fb-head" text-anchor="middle">top</text>
+            <text x="320" y="88" class="uw-fb-muted" text-anchor="middle">live</text>
+
+            <rect x="380" y="50" width="100" height="46" class="uw-fb-box"/>
+            <text x="430" y="72" class="uw-fb-head" text-anchor="middle">gstat</text>
+            <text x="430" y="88" class="uw-fb-muted" text-anchor="middle">GEOM</text>
+
+            <rect x="490" y="50" width="100" height="46" class="uw-fb-box"/>
+            <text x="540" y="72" class="uw-fb-head" text-anchor="middle">debugger</text>
+            <text x="540" y="88" class="uw-fb-muted" text-anchor="middle">front-end</text>
+
+            <line x1="100" y1="96" x2="100" y2="130" class="uw-fb-line"/>
+            <line x1="210" y1="96" x2="210" y2="130" class="uw-fb-line"/>
+            <line x1="320" y1="96" x2="320" y2="130" class="uw-fb-line"/>
+            <line x1="430" y1="96" x2="430" y2="130" class="uw-fb-line"/>
+            <line x1="540" y1="96" x2="540" y2="130" class="uw-fb-line"/>
+
+            <rect x="40" y="130" width="560" height="46" class="uw-fb-accent-box"/>
+            <text x="320" y="152" class="uw-fb-head" text-anchor="middle">libprocstat(3)</text>
+            <text x="320" y="168" class="uw-fb-muted" text-anchor="middle">stable C library &#x2014; FreeBSD 9.0, 2012, Robert N M Watson</text>
+
+            <line x1="320" y1="176" x2="320" y2="200" class="uw-fb-line"/>
+
+            <rect x="40" y="200" width="560" height="46" class="uw-fb-box"/>
+            <text x="320" y="222" class="uw-fb-text" text-anchor="middle">kernel: process tables, fd tables, vm-map, sockets</text>
+            <text x="320" y="238" class="uw-fb-muted" text-anchor="middle">one source of truth</text>
+
+            <text x="320" y="270" class="uw-fb-muted" text-anchor="middle">Every tool that needs process state asks the same library, in the same way.</text>
+        </svg>
+
+        <p>Its classical sibling is
+            <a href="https://man.freebsd.org/cgi/man.cgi?fstat(1)" target="_blank" rel="noopener"><code>fstat(1)</code></a>,
+            which has served the base system since 4.3BSD-Tahoe in
+            1988 and is still installed by default. Where
+            <code>procstat</code> is the per-process interview,
+            <code>fstat</code> is the system-wide ledger: every open
+            file, by every process, on every filesystem the kernel
+            knows. A handful of flags narrows the listing:</p>
+
+        <pre><code>fstat -p 4711                  # every open file held by pid 4711
+fstat -u www                   # everything the www user has open
+fstat /var/log/messages        # every process holding this exact path
+fstat -f /var                  # everything open under the /var mountpoint</code></pre>
+
+        <p><code>fstat</code> is wonderfully general, and for one
+            specific diagnostic it remains the first reach. The case
+            that most often justifies either tool in production is
+            the deleted-but-held file. A long-running daemon (a
+            database, a log forwarder, a web server) opens a
+            logfile, then someone or something unlinks the file from
+            the filesystem while the daemon still holds it open. The
+            directory entry is gone, so <code>du</code> cannot see
+            the bytes; but the inode and its blocks remain allocated
+            until the last fd is closed, so <code>df</code> still
+            counts them. The disk fills, the alert fires, no obvious
+            file is to blame.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A lifecycle diagram of the deleted-but-held file. A daemon opens a logfile (the inode has one link count); something unlinks the file, the directory entry is removed and du can no longer see the bytes, but the inode link count is still above zero because the daemon holds the fd and the blocks remain allocated, so df still counts them; the daemon eventually closes the fd, the link count reaches zero and the kernel frees the blocks. fstat shows such a file with a dash in the inode column; lsof reports it under L1 because the link count is below one." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-dh-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-dh-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-dh-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-dh-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-dh-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uw-dh-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .uw-dh-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#uw-dh-arrow); }
+            </style>
+            <defs>
+                <marker id="uw-dh-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="uw-dh-title" text-anchor="middle">The Deleted-But-Held File</text>
+
+            <rect x="10" y="50" width="140" height="80" class="uw-dh-box"/>
+            <text x="80" y="70" class="uw-dh-head" text-anchor="middle">1. open</text>
+            <text x="80" y="88" class="uw-dh-muted" text-anchor="middle">daemon opens log</text>
+            <text x="80" y="104" class="uw-dh-muted" text-anchor="middle">link count = 1</text>
+            <text x="80" y="120" class="uw-dh-muted" text-anchor="middle">fd held</text>
+
+            <line x1="150" y1="90" x2="180" y2="90" class="uw-dh-arr"/>
+
+            <rect x="180" y="50" width="140" height="80" class="uw-dh-accent-box"/>
+            <text x="250" y="70" class="uw-dh-head" text-anchor="middle">2. unlink</text>
+            <text x="250" y="88" class="uw-dh-muted" text-anchor="middle">directory entry gone</text>
+            <text x="250" y="104" class="uw-dh-muted" text-anchor="middle">du cannot see it</text>
+            <text x="250" y="120" class="uw-dh-muted" text-anchor="middle">df still counts blocks</text>
+
+            <line x1="320" y1="90" x2="350" y2="90" class="uw-dh-arr"/>
+
+            <rect x="350" y="50" width="140" height="80" class="uw-dh-accent-box"/>
+            <text x="420" y="70" class="uw-dh-head" text-anchor="middle">3. pinned</text>
+            <text x="420" y="88" class="uw-dh-muted" text-anchor="middle">link count = 0</text>
+            <text x="420" y="104" class="uw-dh-muted" text-anchor="middle">refcount &gt; 0</text>
+            <text x="420" y="120" class="uw-dh-muted" text-anchor="middle">blocks allocated</text>
+
+            <line x1="490" y1="90" x2="520" y2="90" class="uw-dh-arr"/>
+
+            <rect x="520" y="50" width="110" height="80" class="uw-dh-box"/>
+            <text x="575" y="70" class="uw-dh-head" text-anchor="middle">4. close</text>
+            <text x="575" y="88" class="uw-dh-muted" text-anchor="middle">refcount = 0</text>
+            <text x="575" y="104" class="uw-dh-muted" text-anchor="middle">kernel frees</text>
+            <text x="575" y="120" class="uw-dh-muted" text-anchor="middle">blocks</text>
+
+            <rect x="40" y="170" width="270" height="80" class="uw-dh-accent-box"/>
+            <text x="175" y="190" class="uw-dh-head" text-anchor="middle">FreeBSD</text>
+            <text x="175" y="210" class="uw-dh-text" text-anchor="middle">fstat -p 4711 | awk '$5=="-"'</text>
+            <text x="175" y="228" class="uw-dh-muted" text-anchor="middle">"-" in the inode column</text>
+            <text x="175" y="244" class="uw-dh-muted" text-anchor="middle">file held but no longer linked</text>
+
+            <rect x="330" y="170" width="270" height="80" class="uw-dh-accent-box"/>
+            <text x="465" y="190" class="uw-dh-head" text-anchor="middle">Linux</text>
+            <text x="465" y="210" class="uw-dh-text" text-anchor="middle">lsof +L1</text>
+            <text x="465" y="228" class="uw-dh-muted" text-anchor="middle">link count below 1</text>
+            <text x="465" y="244" class="uw-dh-muted" text-anchor="middle">deleted but held</text>
+        </svg>
+
+        <p><code>fstat</code> will show such a file with a
+            <code>-</code> in the inode column where the link
+            normally lives:</p>
+
+        <pre><code>fstat -p 4711 | awk '$5=="-"'  # files this pid holds but that are unlinked</code></pre>
+
+        <p>The cure is to close the fd. In practice that means a
+            graceful restart, a <code>SIGHUP</code> to a daemon that
+            knows how to reopen its log, or in well-designed
+            services a deliberate logrotate hook. Identifying the
+            offender takes seconds with the right tool. Without it,
+            it takes an evening.</p>
+
+        <h2>Linux: lsof</h2>
+
+        <p>On Linux the same question is answered by
+            <a href="https://man7.org/linux/man-pages/man8/lsof.8.html" target="_blank" rel="noopener"><code>lsof(8)</code></a>,
+            written by Vic Abell at Purdue University and first
+            released to <code>comp.sources.unix</code> in 1991. Two
+            years before that, in 1989, he had published ports of
+            BSD's <code>fstat</code> and <code>ofiles</code>
+            commands to DYNIX, SunOS and ULTRIX, and
+            <code>lsof</code> is in a direct line of descent: it is,
+            recognisably, a generalisation of the BSD idea, written
+            to work across the many Unix-likes that the early 1990s
+            contained.</p>
+
+        <p><code>lsof</code> is, in the kindest sense, the universal
+            hammer. It understands regular files, directories,
+            sockets (TCP, UDP, raw, Unix-domain), pipes, anonymous
+            inodes, character and block devices, the various
+            synthetic entries the kernel exposes through
+            <code>/proc</code>, and a great many things besides. The
+            flag vocabulary is dense; the basics suffice for most
+            working questions:</p>
+
+        <pre><code>lsof -p 4711                   # everything pid 4711 has open
+lsof +D /var/log               # everything open beneath a directory tree
+lsof -i :443                   # processes holding TCP/UDP port 443
+lsof -u www-data               # everything one user has open
+lsof +L1                       # files with link count &lt; 1: deleted but held
+lsof -n -P                     # skip DNS and service-name lookups (faster)</code></pre>
+
+        <p><code>lsof +L1</code> is the Linux answer to the FreeBSD
+            <code>awk '$5=="-"'</code> pattern: name the
+            deleted-but-held files and the processes holding them.
+            It is the command you reach for when <code>df</code> and
+            <code>du</code> disagree, and it is the right reach the
+            first time.</p>
+
+        <p>The thing to understand about <code>lsof</code> on modern
+            Linux is that almost everything it reports is derived
+            from <code>/proc</code>. Each running process has a
+            directory <code>/proc/&lt;pid&gt;/</code> containing a
+            <code>fd/</code> subdirectory of symbolic links to the
+            actual files (or sockets, or pipes) that file
+            descriptors point to, and the kernel-maintained
+            <code>net/</code> files describe socket state.
+            <code>lsof</code> is, in a real sense, a structured tour
+            of <code>/proc</code>, presented as one consistent
+            output. If <code>/proc</code> is the kernel's public
+            filing cabinet, <code>lsof</code> is the librarian who
+            knows where everything is.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="A diagram of how lsof on Linux assembles its output. Several kernel-exposed sources feed into one lsof binary: /proc/pid/fd for file descriptors, /proc/pid/maps for memory mappings, /proc/net/tcp and /proc/net/udp for sockets, kernel symbol tables, and netlink. The binary produces one consistent output. The legend notes that there is no liblsof because lsof is itself the interface." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-lx-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-lx-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-lx-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-lx-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-lx-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uw-lx-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .uw-lx-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#uw-lx-arrow); }
+            </style>
+            <defs>
+                <marker id="uw-lx-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="uw-lx-title" text-anchor="middle">Linux: One Binary, Many Sources</text>
+
+            <rect x="10" y="50" width="160" height="34" class="uw-lx-box"/>
+            <text x="90" y="71" class="uw-lx-text" text-anchor="middle">/proc/&lt;pid&gt;/fd/</text>
+
+            <rect x="10" y="92" width="160" height="34" class="uw-lx-box"/>
+            <text x="90" y="113" class="uw-lx-text" text-anchor="middle">/proc/&lt;pid&gt;/maps</text>
+
+            <rect x="10" y="134" width="160" height="34" class="uw-lx-box"/>
+            <text x="90" y="155" class="uw-lx-text" text-anchor="middle">/proc/net/{tcp,udp}</text>
+
+            <rect x="10" y="176" width="160" height="34" class="uw-lx-box"/>
+            <text x="90" y="197" class="uw-lx-text" text-anchor="middle">kernel symbol tables</text>
+
+            <rect x="10" y="218" width="160" height="34" class="uw-lx-box"/>
+            <text x="90" y="239" class="uw-lx-text" text-anchor="middle">netlink</text>
+
+            <line x1="170" y1="67" x2="280" y2="140" class="uw-lx-arr"/>
+            <line x1="170" y1="109" x2="280" y2="143" class="uw-lx-arr"/>
+            <line x1="170" y1="151" x2="280" y2="146" class="uw-lx-arr"/>
+            <line x1="170" y1="193" x2="280" y2="149" class="uw-lx-arr"/>
+            <line x1="170" y1="235" x2="280" y2="152" class="uw-lx-arr"/>
+
+            <rect x="280" y="125" width="160" height="46" class="uw-lx-accent-box"/>
+            <text x="360" y="148" class="uw-lx-head" text-anchor="middle">lsof binary</text>
+            <text x="360" y="164" class="uw-lx-muted" text-anchor="middle">the librarian</text>
+
+            <line x1="440" y1="148" x2="470" y2="148" class="uw-lx-arr"/>
+
+            <rect x="470" y="125" width="160" height="46" class="uw-lx-accent-box"/>
+            <text x="550" y="148" class="uw-lx-head" text-anchor="middle">one output</text>
+            <text x="550" y="164" class="uw-lx-muted" text-anchor="middle">every kind of fd</text>
+
+            <text x="360" y="240" class="uw-lx-muted" text-anchor="middle">There is no liblsof. lsof is itself the interface; one program is what makes the breadth possible.</text>
+        </svg>
+
+        <h2>The Shape</h2>
+
+        <p>Two answers to the same question, two different shapes.</p>
+
+        <p>FreeBSD splits the work. <code>procstat</code> is the
+            focused per-process introspection, <code>fstat</code>
+            the broad system view that has been part of the base
+            system since 1988, <code>libprocstat</code> the C
+            library that any tool can link against to ask the same
+            questions in its own way. Each piece does one thing and
+            does it well; the pieces compose, and the next tool that
+            needs to know what process holds what does not need to
+            parse text or scrape <code>/proc</code>. It reads from
+            <code>libprocstat</code>, like everyone else on the
+            system.</p>
+
+        <p>Linux folds the same work into one large, lovingly
+            maintained binary. <code>lsof</code> understands every
+            kind of open file and every kind of socket; it reads
+            from <code>/proc</code> and from kernel symbol tables
+            and from netlink and from a great many other places, and
+            it presents the union as one consistent output. There is
+            no <code>liblsof</code>, because <code>lsof</code> is
+            itself the interface; its sustained existence as one
+            program, with one author and now one maintainer
+            organisation, is what makes its breadth possible.</p>
+
+        <p>Neither shape is wrong. The Linux model trades modularity
+            at the C-library layer for completeness at the
+            command-line layer, and the result is a single tool that
+            handles every variety of "open" the kernel exposes. The
+            FreeBSD model trades that single-binary breadth for a
+            layered design in which every program that needs process
+            state asks the same library, in the same way, and the
+            user-facing tools (<code>procstat</code>,
+            <code>fstat</code>, <code>top</code>, <code>gstat</code>,
+            debuggers) are thin clients of that library. The first
+            is delightful when you have one weird question and a
+            hurry to answer it. The second is delightful when you
+            are writing the next tool, or when you want to be sure
+            that <code>top</code> and your monitoring agent and your
+            shell prompt are all reading the same kernel reality.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="A side-by-side comparison of the FreeBSD and Linux shapes. On the FreeBSD side, libprocstat is the wide base layer and the procstat, fstat, top, gstat and debugger front-ends are thin client boxes above it, illustrating one library and many thin clients. On the Linux side, a single tall lsof binary box stands alone, with arrows pointing into it from /proc, kernel symbol tables and netlink, illustrating one binary that reaches into every source. The legend notes that both ship with the OS and neither asks for JSON." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .uw-cm-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-cm-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-cm-text { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-cm-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .uw-cm-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .uw-cm-accent-box { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .uw-cm-line { stroke: var(--accent); stroke-width: 1.2; fill: none; }
+                .uw-cm-arr { stroke: var(--accent); stroke-width: 1.2; fill: none; marker-end: url(#uw-cm-arrow); }
+            </style>
+            <defs>
+                <marker id="uw-cm-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="320" y="22" class="uw-cm-title" text-anchor="middle">Same Question, Two Shapes</text>
+
+            <text x="155" y="48" class="uw-cm-head" text-anchor="middle">FreeBSD: layered</text>
+            <rect x="20" y="60" width="270" height="200" class="uw-cm-box"/>
+
+            <rect x="34" y="76" width="60" height="32" class="uw-cm-accent-box"/>
+            <text x="64" y="96" class="uw-cm-text" text-anchor="middle">procstat</text>
+            <rect x="100" y="76" width="60" height="32" class="uw-cm-accent-box"/>
+            <text x="130" y="96" class="uw-cm-text" text-anchor="middle">fstat</text>
+            <rect x="166" y="76" width="50" height="32" class="uw-cm-box"/>
+            <text x="191" y="96" class="uw-cm-text" text-anchor="middle">top</text>
+            <rect x="222" y="76" width="60" height="32" class="uw-cm-box"/>
+            <text x="252" y="96" class="uw-cm-text" text-anchor="middle">gstat</text>
+
+            <line x1="64" y1="108" x2="64" y2="130" class="uw-cm-line"/>
+            <line x1="130" y1="108" x2="130" y2="130" class="uw-cm-line"/>
+            <line x1="191" y1="108" x2="191" y2="130" class="uw-cm-line"/>
+            <line x1="252" y1="108" x2="252" y2="130" class="uw-cm-line"/>
+
+            <rect x="34" y="130" width="248" height="34" class="uw-cm-accent-box"/>
+            <text x="158" y="150" class="uw-cm-head" text-anchor="middle">libprocstat</text>
+
+            <line x1="158" y1="164" x2="158" y2="180" class="uw-cm-line"/>
+
+            <rect x="34" y="180" width="248" height="34" class="uw-cm-box"/>
+            <text x="158" y="200" class="uw-cm-text" text-anchor="middle">kernel</text>
+
+            <text x="155" y="240" class="uw-cm-muted" text-anchor="middle">one library, many thin clients</text>
+            <text x="155" y="254" class="uw-cm-muted" text-anchor="middle">parts that compose</text>
+
+            <text x="485" y="48" class="uw-cm-head" text-anchor="middle">Linux: one binary</text>
+            <rect x="350" y="60" width="270" height="200" class="uw-cm-box"/>
+
+            <rect x="364" y="80" width="100" height="28" class="uw-cm-box"/>
+            <text x="414" y="98" class="uw-cm-text" text-anchor="middle">/proc</text>
+            <rect x="364" y="114" width="100" height="28" class="uw-cm-box"/>
+            <text x="414" y="132" class="uw-cm-text" text-anchor="middle">netlink</text>
+            <rect x="364" y="148" width="100" height="28" class="uw-cm-box"/>
+            <text x="414" y="166" class="uw-cm-text" text-anchor="middle">ksyms</text>
+
+            <line x1="464" y1="94" x2="490" y2="138" class="uw-cm-arr"/>
+            <line x1="464" y1="128" x2="490" y2="142" class="uw-cm-arr"/>
+            <line x1="464" y1="162" x2="490" y2="146" class="uw-cm-arr"/>
+
+            <rect x="490" y="118" width="110" height="50" class="uw-cm-accent-box"/>
+            <text x="545" y="140" class="uw-cm-head" text-anchor="middle">lsof</text>
+            <text x="545" y="156" class="uw-cm-muted" text-anchor="middle">one binary</text>
+
+            <text x="485" y="200" class="uw-cm-muted" text-anchor="middle">there is no liblsof</text>
+            <text x="485" y="216" class="uw-cm-muted" text-anchor="middle">lsof is itself the interface</text>
+            <text x="485" y="240" class="uw-cm-muted" text-anchor="middle">parts that arrive together</text>
+        </svg>
+
+        <h2>The Point</h2>
+
+        <p>Both ship with the OS. Neither asks you to install a
+            runtime. Neither wants JSON. Whether your daily reach is
+            <code>procstat -f</code> or <code>lsof +L1</code>, the
+            operative discipline is the same: when a system refuses
+            to do what you asked, ask it precisely what is in the
+            way. The kernel will tell you, plainly, on either
+            platform.</p>
+
+        <blockquote>
+            <p>The Unix way prefers parts that compose;
+                <code>lsof</code> prefers parts that arrive
+                together. The right answer to "which one?" is
+                "whichever ships with the box in front of you, and
+                learn its flags before the page goes off."</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The "who has this open?" toolkit:</strong></p>
+            <p><strong>FreeBSD (procstat + fstat):</strong></p>
+            <ul>
+                <li><code>procstat -f &lt;pid&gt;</code> &#x2014; fd
+                    view per process</li>
+                <li><code>procstat -af</code> &#x2014; all processes
+                    (grep-friendly)</li>
+                <li><code>procstat -t &lt;pid&gt;</code> &#x2014;
+                    thread states</li>
+                <li><code>fstat -p &lt;pid&gt;</code> &#x2014; every
+                    fd for one process (classic, since 1988)</li>
+                <li><code>fstat -u &lt;user&gt;</code> &#x2014;
+                    every fd for one user</li>
+                <li><code>fstat /var/log/messages</code> &#x2014;
+                    processes holding this path</li>
+            </ul>
+            <p><strong>Linux (lsof):</strong></p>
+            <ul>
+                <li><code>lsof -p &lt;pid&gt;</code> &#x2014; one
+                    process's fds</li>
+                <li><code>lsof +D /path</code> &#x2014; recursive,
+                    slow</li>
+                <li><code>lsof -i :&lt;port&gt;</code> &#x2014; who
+                    has a network port</li>
+                <li><code>lsof +L1</code> &#x2014; deleted-but-held
+                    files (the df/du gap)</li>
+                <li><code>lsof -n -P</code> &#x2014; no DNS, no
+                    service-name lookups</li>
+            </ul>
+            <p>Fair notes: <code>lsof</code> speaks sockets natively;
+                FreeBSD uses <code>sockstat</code> for that
+                (Episode 16). <code>procstat</code> covers more than
+                file descriptors &#x2014; threads, vm-map, kernel
+                stacks, signals.</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
