@@ -1,0 +1,215 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Bug in the Gap &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="When regreSSHion landed in July 2024, FreeBSD corrected six branches in five minutes and forty seconds under one advisory; the same fix reached Linux fleets as a week of scattered distribution advisories. That gap is not only where the answer lives. It is where the bug lived: the November 2025 runc break-outs happened in the seam between the kernel, the namespaces and the runtime, where each part was individually correct. The assembled model manufactures the bug class and scatters the repair; the integrated tree leaves no gap for either. The third and last of three Fridays on what makes a server operating system dependable.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-bug-in-the-gap{( endslot )}
+
+{( slot og-title )}The Bug in the Gap &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Security Review, the third and last of three Fridays on what makes a server operating system dependable. When one of these surfaces gives, who patches it, and how fast can you trust the patch? On 1 July 2024, regreSSHion (CVE-2024-6387) was answered on FreeBSD in one advisory, six branches corrected inside five minutes and forty seconds; on Linux the same fix arrived as a week of separate distribution advisories. That gap between one coherent answer and a scattered one is also where the bug lives: the November 2025 runc break-outs, and the faccessat2 seccomp gap before them, happened between individually correct parts, in the seam no one was minding. The assembled model manufactures the bug and scatters the repair, with 4,594 upstream fixes never back-ported into RHEL 8.8's kernel; the integrated tree, kernel and libc from one commit, leaves no gap to open. You do not choose your bugs; you choose your defect density.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Bug in the Gap",
+    "datePublished": "2026-07-10",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-bug-in-the-gap",
+    "description": "Security Review, the third and last of three Fridays on what makes a server operating system dependable, and the close of the Boring on Purpose series. Last week ended on a question: when one of these surfaces finally gives, who patches it, and how fast can you trust the patch? On 1 July 2024 Qualys published regreSSHion, CVE-2024-6387, a signal-handler race in OpenSSH's server. On FreeBSD it was answered in a single advisory, FreeBSD-SA-24:04, six supported branches corrected between 08:22:13 and 08:27:53 UTC the same morning, a window of five minutes and forty seconds. On a fleet of Linux machines the same fix arrived as a week of separate distribution advisories, each on its own calendar. That gap between one coherent answer and a scattered one is also where the bug lived in the first place. The November 2025 runc break-outs, CVE-2025-31133, CVE-2025-52565 and CVE-2025-52881 reported by Aleksa Sarai of SUSE, work by swapping a device file for a symlink into procfs so that runc bind-mounts a procfs target read-write; the kernel, the namespaces and the runtime were each individually correct, and the break-out lived in the seam between them, the writable procfs surface each assumed another was minding. The pattern is older than containers: in 2020 the kernel added faccessat2, in 2021 glibc 2.33 preferred it, and the default container seccomp allow-list did not permit it, so three correct decisions produced a locked door nobody ordered. The repair scatters too: CIQ engineers Sahlberg, Maple and Allison counted 4,594 known upstream-fixed bugs never back-ported into the RHEL 8.8 kernel as of May 2024. FreeBSD is not without sin; weeks after regreSSHion it shipped CVE-2024-7589, an unauthenticated root hole in its own sshd from its own blocklistd integration. But a jail, from FreeBSD 4.0 in 2000, is one kernel object with the boundary in the syscall layer, not assembled from namespaces and cgroups and a runtime and a procfs convention read three ways, so there is no seam to slip between; and one tree, kernel and libc from the same commit, closes the faccessat2 gap and is why regreSSHion was answered in six branches inside five minutes. You do not choose your bugs; you choose your defect density, decided the day the system was designed. Boring is not the absence of engineering. It is engineering, banked early, paying out on your worst morning.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-10">10 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Bug in the Gap</h1>
+        <p class="vv-article-meta"><em>Security Review &#x22A3; Boring on Purpose, 3 of 3.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">containers</span>
+            <span class="vv-pill">openssh</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Last Friday ended on a question. When one of these surfaces finally gives, who patches it, and how fast can you trust the patch? The honest way to answer it is to pick a morning everyone in this trade remembers, and watch what each kind of system actually did with it.</p>
+
+        <p>The morning is 1 July 2024. Qualys publishes <a href="https://blog.qualys.com/vulnerabilities-threat-research/2024/07/01/regresshion-remote-unauthenticated-code-execution-vulnerability-in-openssh-server" target="_blank" rel="noopener">regreSSHion</a>, CVE-2024-6387: a signal-handler race in OpenSSH's server that, on glibc-based Linux, hands an unauthenticated stranger the ability to run code as root. This is the OpenSSH on every server you own. The bug is not the interesting part; bugs arrive like weather. The interesting part is the answer, and how long it took to become one you could trust.</p>
+
+        <p>On FreeBSD the answer was a single advisory, <a href="https://lists.freebsd.org/archives/freebsd-security-notifications/2024-July/000038.html" target="_blank" rel="noopener">FreeBSD-SA-24:04</a>, and six supported branches corrected between 08:22:13 and 08:27:53 UTC the same morning. That is a window of five minutes and forty seconds: one team, one tree, one commit typed once and used six times, done before most of the people affected had finished their coffee. On a fleet of Linux machines the same fix was equally real and equally arriving, but it arrived as a week of separate advisories, each distribution on its own calendar and its own maintenance window, like guests answering an invitation whenever it happens to suit them. Same upstream patch. Two rather different amounts of time before you could say, and mean it, that the thing was handled.</p>
+
+        <p>Hold on to that gap between one coherent answer and a scattered one, because it is the subject of this last piece. And it turns out the gap is not only where the answer lives. It is where the bug lived in the first place.</p>
+
+        <h2>The Breach</h2>
+
+        <p>Take the container break-outs disclosed in November 2025 by Aleksa Sarai, a runc maintainer and OCI board member at SUSE: <a href="https://seclists.org/oss-sec/2025/q4/138" target="_blank" rel="noopener">CVE-2025-31133, CVE-2025-52565 and CVE-2025-52881</a>. The mechanism deserves one careful look, because the shape of it is the entire argument. An attacker who can start a container with a crafted mount swaps something innocent, <code>/dev/null</code> or a console device, for a symlink pointing into <code>procfs</code>. runc, doing precisely and only what it was told, bind-mounts the target read-write, and a write meant for a device file lands instead in <code>/proc/sys/kernel/core_pattern</code> or <code>/proc/sysrq-trigger</code>. From inside the container, that is a door to the outside.</p>
+
+        <p>Now put each component in the witness box and ask whose fault it is. The kernel? <code>procfs</code> behaved exactly as documented. The namespace layer? It isolated precisely what it promised to isolate. runc? It performed a mount it was validly instructed to perform. The image? Crafted mounts are a supported feature. Every component, cross-examined alone, has a complete alibi. And yet the prisoner escaped. The break-out happened in the one place nobody was cross-examining: the <strong>seam</strong> between them, the writable <code>procfs</code> surface that the kernel, the namespaces and the runtime each assumed one of the others was minding.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="A diagram of the container break-out. Three boxes sit in a row, each drawn in green and marked as behaving correctly: the kernel and procfs, the namespace layer, and the runtime runc. Between them runs a shared surface, the writable procfs, drawn in the accent colour as the seam. An escape arrow rises out of the seam, not out of any box. The legend notes that every part was correct and the break-out lived in the gap between them." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sm-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sm-good-h { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sm-good { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .sm-bad { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sm-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sm-good-box { fill: #4ab542; opacity: 0.12; stroke: #4ab542; stroke-width: 1.5; rx: 4; }
+                .sm-seam { fill: var(--accent); opacity: 0.16; stroke: var(--accent); stroke-width: 1.3; rx: 3; }
+            </style>
+            <text x="320" y="22" class="sm-title" text-anchor="middle">Every Part Correct. The Gap Was Not.</text>
+
+            <rect x="40" y="70" width="150" height="70" class="sm-good-box"/>
+            <text x="115" y="98" class="sm-good-h" text-anchor="middle">kernel + procfs</text>
+            <text x="115" y="120" class="sm-good" text-anchor="middle">behaved as documented</text>
+
+            <rect x="245" y="70" width="150" height="70" class="sm-good-box"/>
+            <text x="320" y="98" class="sm-good-h" text-anchor="middle">namespaces</text>
+            <text x="320" y="120" class="sm-good" text-anchor="middle">isolated as promised</text>
+
+            <rect x="450" y="70" width="150" height="70" class="sm-good-box"/>
+            <text x="525" y="98" class="sm-good-h" text-anchor="middle">runc</text>
+            <text x="525" y="120" class="sm-good" text-anchor="middle">mounted as asked</text>
+
+            <rect x="40" y="158" width="560" height="26" class="sm-seam"/>
+            <text x="320" y="175" class="sm-bad" text-anchor="middle">the seam: one writable procfs surface, minded by no one</text>
+
+            <path d="M 320 158 L 320 130" stroke="var(--accent)" stroke-width="2" marker-end="url(#sm-arrow)"/>
+            <defs><marker id="sm-arrow" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="var(--accent)"/></marker></defs>
+
+            <line x1="20" y1="208" x2="620" y2="208" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="228" class="sm-muted" text-anchor="middle" font-style="italic">The break-out lived in none of the parts. It lived in the gap between them.</text>
+        </svg>
+
+        <p>That is one seam, held up as a specimen and not a census. The point is never how many there are. It is where they are, and it is always the same place. Never inside a component. Always in the gap.</p>
+
+        <h2>The Pattern</h2>
+
+        <p>There is a phrase for this, older than containers: individually correct decisions that produce a collectively incorrect result. The purest specimen has nothing to do with security at all.</p>
+
+        <p>In 2020 the Linux kernel gained a new system call, <code>faccessat2</code>. Entirely correct: it fixed a real flag-handling gap in the old one. In early 2021 the GNU C library, version 2.33, began calling <code>faccessat2</code> first and only falling back on older kernels. Also correct: prefer the better primitive. And the <a href="https://github.com/moby/moby/pull/41353" target="_blank" rel="noopener">default seccomp profile</a> shipped by the container runtimes of the day did not list <code>faccessat2</code> among the permitted calls, because a conservative allow-list naturally omits a syscall that did not exist when it was written. Correct a third time. Put the three impeccably correct decisions in one container and a program asking a question as mild as <em>may I read this file</em> is met with a refusal the C library never budgeted for, and <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1900021" target="_blank" rel="noopener">builds fail with errors that make no earthly sense</a>. Four parties, every one of them in the right, had between them fitted a locked door where none was wanted. Nobody had ordered a door. That is simply what happens when everybody is minding their own component and nobody is minding the gaps between them.</p>
+
+        <p>And the assembled model does not merely manufacture the bug; it scatters the repair to the four winds. Engineers at <a href="https://ciq.com/blog/new-research-the-red-hat-linux-kernel-model-is-broken-and-cant-be-fixed/" target="_blank" rel="noopener">CIQ</a>, a firm that ships its own enterprise Linux and therefore has a horse very much in this race, went looking for how faithfully a frozen vendor kernel keeps up with upstream fixes. In the RHEL 8.8 kernel, as of May 2024, they counted 4,594 known bugs for which a fix already existed upstream and had simply never been back-ported. Read that number twice. It is not a queue that a brisk fortnight clears; it is a standing condition, and the sentence the researchers set beside it explains why: individual changes are never tested alone, but only as part of a larger kernel. Cherry-picking four and a half thousand fixes across dozens of independently maintained trees is not work someone has been idle about. It is work the architecture makes structurally unaffordable, which is a deeper and more permanent thing than slowness. Whatever else 4,594 unshipped fixes may be, they are not a rounding error.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="A comparison of two repairs to the same regreSSHion patch. On the top track, FreeBSD: a single short green bar marked one advisory, six branches, corrected between 08:22 and 08:28 UTC. On the bottom track, a Linux fleet: a long row of scattered red marks spread across a week, each a separate distribution advisory on its own calendar. The legend notes that 4,594 upstream fixes never reached the RHEL 8.8 kernel, a standing condition rather than a backlog." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pc-good-h { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pc-bad-h { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .pc-good-bar { fill: #4ab542; opacity: 0.85; rx: 3; }
+                .pc-axis { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="320" y="22" class="pc-title" text-anchor="middle">One Advisory, or a Week of Them</text>
+
+            <text x="30" y="66" class="pc-good-h">FreeBSD</text>
+            <rect x="120" y="56" width="60" height="16" class="pc-good-bar"/>
+            <text x="196" y="68" class="pc-muted">one advisory, six branches, 08:22 to 08:28 UTC</text>
+
+            <text x="30" y="116" class="pc-bad-h">Linux fleet</text>
+            <line x1="120" y1="112" x2="600" y2="112" class="pc-axis"/>
+            <rect x="126" y="106" width="8" height="12" fill="var(--accent)" rx="1"/>
+            <rect x="188" y="106" width="8" height="12" fill="var(--accent)" rx="1"/>
+            <rect x="250" y="106" width="8" height="12" fill="var(--accent)" rx="1"/>
+            <rect x="322" y="106" width="8" height="12" fill="var(--accent)" rx="1"/>
+            <rect x="404" y="106" width="8" height="12" fill="var(--accent)" rx="1"/>
+            <rect x="486" y="106" width="8" height="12" fill="var(--accent)" rx="1"/>
+            <rect x="566" y="106" width="8" height="12" fill="var(--accent)" rx="1"/>
+            <text x="120" y="134" class="pc-muted">a week of separate advisories, each distro on its own calendar</text>
+
+            <line x1="20" y1="176" x2="620" y2="176" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="196" class="pc-muted" text-anchor="middle">And 4,594 upstream fixes never reached the RHEL 8.8 kernel at all.</text>
+            <text x="320" y="228" class="pc-muted" text-anchor="middle" font-style="italic">Not two work ethics. Two architectures.</text>
+        </svg>
+
+        <h2>The Limit</h2>
+
+        <p>Two honesties are owed before the turn.</p>
+
+        <p>The first is that the container ecosystem earned its place, and none of the above is a brief against it. Portability across wildly unlike hosts, density, a tooling culture that made deployment legible to a whole generation: these are real goods, they are why the model won, and a symlink trick through <code>procfs</code> un-wins none of them. The people who found and fixed these break-outs are the same community that built the thing, which is precisely the point.</p>
+
+        <p>The second is that FreeBSD does not get to fold its arms and look serene. Weeks after regreSSHion it shipped its own advisory, <a href="https://thehackernews.com/2024/08/freebsd-releases-urgent-patch-for-high.html" target="_blank" rel="noopener">CVE-2024-7589</a>: another unauthenticated remote path to root in its own sshd, and the fault lay in FreeBSD's own integration of blocklistd into OpenSSH, a signal handler reaching for code that was never safe to call there. An integrated project that extends a component can plant a fault in the very act of integrating it. So the claim here has never been that one system is without sin. It is narrower, and it survives the confession: one system has fewer <em>classes</em> of bug, and answers the ones it has from a single place. Lower defect density. Not zero. Anyone selling zero has something else to sell you.</p>
+
+        <h2>The BSD Angle</h2>
+
+        <p>Now the turn, and it is worth making without flinching.</p>
+
+        <p>A FreeBSD <a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener">jail</a>, from FreeBSD 4.0 in 2000, is one kernel object. The isolation boundary lives inside the kernel's own system-call layer, enforced in the same place the kernel enforces everything else. There is no runtime process interpreting mount instructions to be tricked, no namespace subsystem to be composed with a control-group subsystem to be composed with a <code>procfs</code> convention that three parties read three ways. The break-out this piece opened with needs four parties holding four slightly different pictures of one shared surface. A jail has no seam of that kind for the plain reason that it has no four parties. The boundary is one thing, in one object, in one tree, and a bug cannot hide in a gap that was never opened.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="A comparison of where a seam can open. On the left, the assembled container: four separate layers stacked, namespaces, control groups, the runtime and the procfs convention, with accent-coloured seams drawn between each, four places a bug can live. On the right, the FreeBSD jail and one tree: a single green object with the boundary in the syscall layer and kernel and libc from one commit, no seam anywhere. The legend notes that a gap that is never opened has nothing to hide in." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .gp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .gp-bad-h { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .gp-good-h { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .gp-cell { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .gp-good { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .gp-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .gp-layer { fill: var(--accent); opacity: 0.12; stroke: var(--accent); stroke-width: 1; rx: 3; }
+                .gp-seam { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 3 3; }
+                .gp-good-box { fill: #4ab542; opacity: 0.14; stroke: #4ab542; stroke-width: 1.5; rx: 4; }
+            </style>
+            <text x="320" y="22" class="gp-title" text-anchor="middle">Where a Seam Can Open</text>
+
+            <text x="165" y="50" class="gp-bad-h" text-anchor="middle">assembled &#x2014; four parties</text>
+            <rect x="80" y="60" width="170" height="20" class="gp-layer"/><text x="165" y="74" class="gp-cell" text-anchor="middle">namespaces</text>
+            <line x1="80" y1="83" x2="250" y2="83" class="gp-seam"/>
+            <rect x="80" y="86" width="170" height="20" class="gp-layer"/><text x="165" y="100" class="gp-cell" text-anchor="middle">control groups</text>
+            <line x1="80" y1="109" x2="250" y2="109" class="gp-seam"/>
+            <rect x="80" y="112" width="170" height="20" class="gp-layer"/><text x="165" y="126" class="gp-cell" text-anchor="middle">the runtime</text>
+            <line x1="80" y1="135" x2="250" y2="135" class="gp-seam"/>
+            <rect x="80" y="138" width="170" height="20" class="gp-layer"/><text x="165" y="152" class="gp-cell" text-anchor="middle">procfs convention</text>
+            <text x="165" y="178" class="gp-cell" text-anchor="middle">four seams, four places to hide</text>
+
+            <text x="475" y="50" class="gp-good-h" text-anchor="middle">integrated &#x2014; one object</text>
+            <rect x="390" y="60" width="170" height="98" class="gp-good-box"/>
+            <text x="475" y="100" class="gp-good" text-anchor="middle">jail: boundary in the</text>
+            <text x="475" y="116" class="gp-good" text-anchor="middle">syscall layer, one tree,</text>
+            <text x="475" y="132" class="gp-good" text-anchor="middle">kernel + libc, one commit</text>
+            <text x="475" y="178" class="gp-cell" text-anchor="middle">no seam anywhere</text>
+
+            <line x1="20" y1="204" x2="620" y2="204" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="226" class="gp-muted" text-anchor="middle" font-style="italic">A bug cannot hide in a gap that was never opened.</text>
+        </svg>
+
+        <p>And the tree is the other half of it. <a href="https://docs.freebsd.org/en/books/handbook/cutting-edge/" target="_blank" rel="noopener"><code>src.freebsd.org</code></a> holds the kernel, the C library, the userland, the firewall and the documentation in a single repository, built together with <code>make buildworld</code>. A <code>faccessat2</code>-shaped gap cannot open between the kernel and libc when the kernel and the libc that calls it are cut from the same commit and tested as one object. There is no daylight between them for a bug to occupy. And when something does break in the open, that same coherence is the whole reason regreSSHion was answered in six branches inside five minutes and forty seconds: not heroics, not faster typists, but the flat mechanical consequence of one team owning the entire tree and therefore being able to fix all of it at once, in one advisory, before nine in the morning. The scattered week and the five-minute window are not two work ethics. They are two architectures, doing exactly what their shapes require.</p>
+
+        <h2>The Point</h2>
+
+        <p>Three Fridays, one argument, and it closes here. First the surface a kernel takes on for speed, the async machinery it admits into Ring 0. Then the programmability it takes on for capability, the foreign programs it agrees to run there. And now the seam, where the answer has to live when either of those finally gives. Three faces of one shape: a system assembled from many sovereign parts accretes surface, retrofits its containment, and scatters its repair across every project that must agree before anything is truly fixed; a system built as one integrated tree adds less, plans the capability it does add, and answers from a single place, fast enough that the answer is trustworthy while it still matters.</p>
+
+        <p>Which is the question this whole series was ever really about. Not what a server operating system can do. What it will not do to you, at three in the morning, eighteen months after you chose it. You do not get to choose your bugs. You choose your defect density, and it was chosen the day the system was designed, by how it was built and not by how clever its newest part contrives to be. When regreSSHion lands on the integrated system, the difficult morning is over before it began, and nobody writes the incident up, because there is no incident. That is the entire, unglamorous, load-bearing point.</p>
+
+        <blockquote>
+            <p><strong>Boring is not the absence of engineering. It is engineering, banked early, paying out on the worst morning of your year. And it was a choice, made by someone, long before it was ever yours.</strong></p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>References:</strong></p>
+            <ul>
+                <li>Qualys Threat Research Unit, <em>regreSSHion: RCE in OpenSSH's server</em> (CVE-2024-6387), 1 July 2024. <a href="https://blog.qualys.com/vulnerabilities-threat-research/2024/07/01/regresshion-remote-unauthenticated-code-execution-vulnerability-in-openssh-server" target="_blank" rel="noopener">blog.qualys.com</a></li>
+                <li>FreeBSD-SA-24:04.openssh, 1 July 2024; six branches corrected 08:22:13 to 08:27:53 UTC. <a href="https://lists.freebsd.org/archives/freebsd-security-notifications/2024-July/000038.html" target="_blank" rel="noopener">lists.freebsd.org</a></li>
+                <li>runc container break-outs via procfs writes: CVE-2025-31133, CVE-2025-52565, CVE-2025-52881 (Aleksa Sarai, SUSE / OCI, November 2025). <a href="https://seclists.org/oss-sec/2025/q4/138" target="_blank" rel="noopener">seclists.org</a> &#x00B7; <a href="https://www.sysdig.com/blog/runc-container-escape-vulnerabilities" target="_blank" rel="noopener">sysdig.com</a></li>
+                <li><code>faccessat2</code> (Linux 5.8, 2020) preferred by glibc 2.33, absent from the default container seccomp allow-list. <a href="https://github.com/moby/moby/pull/41353" target="_blank" rel="noopener">github.com/moby/moby</a> &#x00B7; <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1900021" target="_blank" rel="noopener">bugzilla.redhat.com</a></li>
+                <li>Sahlberg, Maple, Allison (CIQ), <em>Vendor Kernels, Bugs and Stability</em>: 4,594 upstream-fixed bugs unapplied in the RHEL 8.8 kernel, May 2024. <a href="https://ciq.com/blog/new-research-the-red-hat-linux-kernel-model-is-broken-and-cant-be-fixed/" target="_blank" rel="noopener">ciq.com</a></li>
+                <li>FreeBSD-SA-24:08.openssh (CVE-2024-7589), 7 August 2024; signal-handler race from FreeBSD's blocklistd integration in sshd. <a href="https://thehackernews.com/2024/08/freebsd-releases-urgent-patch-for-high.html" target="_blank" rel="noopener">thehackernews.com</a></li>
+                <li>FreeBSD Handbook, <em>Jails</em> and <em>Updating FreeBSD from Source</em> (one source tree, <code>make buildworld</code>). <a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener">docs.freebsd.org</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

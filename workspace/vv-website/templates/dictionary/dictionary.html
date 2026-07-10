@@ -182,6 +182,14 @@
             <dt>Ambient Authority</dt>
             <dd>The security property where a process inherits all the permissions of the user who launched it. The default Unix model since 1969. Capsicum eliminates it; seccomp restricts it.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="backporting">
+            <dt>backporting</dt>
+            <dd>Applying a fix from a newer upstream version to an older, frozen one, the maintenance model of enterprise Linux distributions. Done across dozens of independently maintained trees it is structurally hard, which is why a 2024 study counted 4,594 upstream-fixed bugs never back-ported into the RHEL 8.8 kernel.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="blocklistd">
+            <dt>blocklistd</dt>
+            <dd>A FreeBSD daemon that blocks abusive network clients, the successor to blacklistd. Its integration into FreeBSD's OpenSSH introduced CVE-2024-7589, an unauthenticated root race: an integrated project planting a fault in the very act of integrating a component.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="capsicum">
             <dt>Capsicum</dt>
             <dd>A capability-based security framework in FreeBSD. One syscall (cap_enter) permanently removes all access to global namespaces. The process keeps only its existing file descriptors, each restricted via cap_rights_limit(). Irreversible. Compiled into FreeBSD 10.0 by default since 2014.</dd>
@@ -205,6 +213,10 @@
         <dl class="vv-dict-entry" id="computer-systems-research-group">
             <dt>Computer Systems Research Group</dt>
             <dd>The group at the University of California, Berkeley (CSRG) that from 1977 produced the Berkeley Software Distribution and, before disbanding in the 1990s, the clean 4.4BSD-Lite release from which the modern BSDs descend.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="ciq">
+            <dt>CIQ</dt>
+            <dd>The company behind Rocky Linux and enterprise Linux support. Its engineers' 2024 white paper, Vendor Kernels, Bugs and Stability, counted 4,594 upstream-fixed bugs never back-ported into the RHEL 8.8 kernel. A partisan source with a competing product, cited for its own primary finding.</dd>
         </dl>
         <dl class="vv-dict-entry" id="copyleft">
             <dt>Copyleft</dt>
@@ -295,6 +307,10 @@
             <dt>Deno</dt>
             <dd>A secure JavaScript/TypeScript runtime by the creator of Node.js. Built-in TypeScript support, URL imports, and sandboxed permissions.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="defect-density">
+            <dt>defect density</dt>
+            <dd>The rate of faults a system carries, as against its feature list. The argument of a dependable server OS: you do not choose your bugs, you choose your defect density, and it is decided by how the system was built, not by how clever its newest part contrives to be.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="distinfo">
             <dt>distinfo</dt>
             <dd>The FreeBSD ports file that pins the SHA256 checksum and size of every distribution file a port downloads. A tampered upstream tarball fails the checksum and the port never builds.</dd>
@@ -364,6 +380,10 @@
         <dl class="vv-dict-entry" id="fabrication">
             <dt>fabrication</dt>
             <dd>The manufacturing of chips from a design, carried out at a foundry. Leading-edge fabrication is dominated by TSMC, Samsung and Intel, with SMIC advancing in China.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="faccessat2">
+            <dt>faccessat2</dt>
+            <dd>A Linux system call added in kernel 5.8 (2020) to fix a flag-handling gap in faccessat. glibc 2.33 began preferring it in 2021; container seccomp allow-lists written earlier blocked it, so a correct kernel, a correct C library and a correct filter together broke ordinary file-access checks inside containers. A bug in the gap.</dd>
         </dl>
         <dl class="vv-dict-entry" id="fetch-api">
             <dt>Fetch API</dt>
@@ -693,6 +713,10 @@
             <dt>nftables</dt>
             <dd>The Linux packet classification framework replacing iptables. Uses a unified syntax for filtering, NAT, and mangling.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="namespaces">
+            <dt>namespaces</dt>
+            <dd>The Linux kernel feature that gives a process its own isolated view of resources (mounts, network, PIDs), the primitive containers are built from. Isolation holds only while the kernel, the runtime and procfs all agree on the same picture; the seam between them is where the November 2025 runc break-outs escaped.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="nginx">
             <dt>nginx</dt>
             <dd>A high-performance HTTP server and reverse proxy using an event-driven, non-blocking architecture. Serves static files and proxies upstream applications.</dd>
@@ -827,6 +851,10 @@
             <dt>Prometheus</dt>
             <dd>A time-series monitoring system with a pull-based model, PromQL query language, and built-in alerting.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="procfs">
+            <dt>procfs</dt>
+            <dd>The Linux /proc filesystem, a kernel interface exposed as files: writing to /proc/sys/kernel/core_pattern or /proc/sysrq-trigger changes kernel behaviour. Its writable surface is the seam the November 2025 runc break-outs escaped through, redirecting a mount into procfs.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="provenance">
             <dt>provenance</dt>
             <dd>A signed attestation recording how a software artifact was built, for example which pipeline produced it and from which source. Useful but not a trust boundary: provenance certifies the build, not that the identity permitted to publish is still in the right hands, as the Miasma attack showed.</dd>
@@ -900,6 +928,10 @@
         <dl class="vv-dict-entry" id="rsync">
             <dt>rsync</dt>
             <dd>A fast, incremental file transfer utility. Transfers only the differences between source and destination using a rolling checksum algorithm.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="runc">
+            <dt>runc</dt>
+            <dd>The low-level Open Container Initiative runtime that actually creates Linux containers, used beneath Docker and Kubernetes. It sets up namespaces, cgroups and mounts as instructed; the November 2025 break-outs (CVE-2025-31133, -52565, -52881) turned its valid mount handling into a write into procfs.</dd>
         </dl>
         <dl class="vv-dict-entry" id="rust">
             <dt>Rust</dt>
