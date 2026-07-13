@@ -1,0 +1,220 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Discipline Without Descent &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="QNX is not descended from Unix, holds no UNIX certificate, and keeps the Unix discipline more strictly than several systems that do. Its kernel was written from nothing by two Waterloo students; it shipped as QUNIX in 1982 and was renamed QNX in 1984 to keep clear of the trademark. Neutrino is a microkernel: scheduling, IPC, interrupts and memory in the kernel, and the drivers, filesystems and network stack turned out to user space, so a failed driver restarts without a reboot. It is POSIX PSE52 certified, runs in over a hundred million vehicles, and holds the first ISO 26262 ASIL D hypervisor. Discipline is a stance, not an inheritance. Branch three of four in the Unix Family.">
+{( endslot )}
+
+{( slot canonical )}/blog/discipline-without-descent{( endslot )}
+
+{( slot og-title )}Discipline Without Descent &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Unix Universe, the third of four portraits of the Unix family. QNX is the outsider with none of the blood: no line of it runs back to Bell Labs or Berkeley, its kernel written from nothing by two Waterloo students who shipped it as QUNIX in 1982 and renamed it QNX in 1984 to dodge the trademark. It went and got the certificate for the rules while holding none for the family, certified to the POSIX PSE52 realtime profile but never to the Single UNIX Specification. Its Neutrino microkernel keeps only scheduling, IPC, interrupts and low-level memory, and turns the drivers, filesystems and network stack out into user-space processes, so a misbehaving driver is killed and restarted while everything else runs. It borrowed the NetBSD stack for io-pkt rather than reinvent it, went into the car, the medical device and the satellite, and in 2019 became the first hypervisor certified to ISO 26262 ASIL D. It keeps company with MINIX, which runs quietly inside nearly every Intel chip, GNU Hurd, which never shipped, and Redox, in Rust. Descent is where the code came from; the paper records who measured it; discipline is how a system is built and kept, and it is the only one of the three a stranger can adopt by deciding to. Next Monday: the most successful system in the world, and how far it drifted.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Discipline Without Descent",
+    "datePublished": "2026-07-13",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/discipline-without-descent",
+    "description": "Unix Universe, the third of four portraits of the Unix family, the outsider with none of the blood. QNX is not descended from Unix; no line of it runs back to Bell Labs or Berkeley, and its kernel was written from nothing by two students who had taken a real-time course at Waterloo. In 1982 Gordon Bell and Dan Dodge shipped their first system as QUNIX, and in 1984 renamed it QNX to keep clear of the Unix trademark, close enough in spirit to want the syllable and honest enough not to claim the descent it lacked. Their 1999 demo put a whole graphical operating system, the Photon microGUI, a TCP/IP stack and the Voyager web browser on a single 1.44 MB floppy that booted with no hard drive. Unix discipline is a few load-bearing habits: small parts that each do one thing, a clean line between promise and implementation, and the POSIX contract. QNX went and got the certificate for the rules while holding none for the family; its Neutrino kernel is certified to the POSIX PSE52 realtime profile, a paper about conduct, not the Single UNIX Specification certificate that licenses the word UNIX, which QNX has never claimed. Traditional Unix, and Linux after it, runs the drivers, filesystems, network stack and scheduler inside the kernel; QNX made the choice Unix declined to, keeping only scheduling, interrupts, low-level memory and the message-passing by which everything talks, and turning the rest out into user-space processes, so a driver is an ordinary program reached by sending it a message, and a misbehaving one is killed and restarted while everything else runs. Real-time determinism falls out of the same design: you reach it not by tuning a large kernel but by not having one. Its io-pkt stack was built to follow the NetBSD networking code, so BSD drivers and BSD-sockets applications port with little change. QNX went where a crash is an incident rather than an inconvenience, above all into the car: BlackBerry, which bought it in 2010, reports it in well over a hundred million vehicles, and in December 2019 its hypervisor became the first certified to ISO 26262 ASIL D. It is not the only one to keep the rules without the blood: MINIX, Andrew Tanenbaum's 1987 teaching microkernel with a reincarnation server, runs a version inside the management engine of nearly every Intel chip; GNU Hurd set out in 1990 to be the same thing and never shipped a 1.0; Redox carries the argument into the present in Rust. Descent is where the code came from; the paper records who measured it; discipline is how a system is built and kept over time, and it is the only one of the three a stranger can adopt by deciding to. Next Monday: the most successful system in the world, and how far it drifted.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-13">13 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Discipline Without Descent</h1>
+        <p class="vv-article-meta"><em>Unix discipline turns out to be separable from Unix blood and from the Unix name. QNX keeps the rules more strictly than some certified members, in a kernel Unix never chose. Unix Universe &#x22A3; The Unix Family, 3 of 4.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">qnx</span>
+            <span class="vv-pill">microkernel</span>
+            <span class="vv-pill">rtos</span>
+            <span class="vv-pill">posix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Last Monday closed on the BSDs, four forks off one Berkeley source that stayed whole, and it pointed here, to an outsider with none of the blood. QNX is not descended from Unix. No line of it runs back to Bell Labs or to Berkeley; its kernel was written from nothing by two students who had taken a course and formed an opinion. And yet it keeps the rules Unix wrote more strictly than several systems that hold the certificate, which is the puzzle worth explaining: how a family's discipline comes to be inherited by someone outside the family.</p>
+
+        <p>Begin with the name, since the name tells the story in miniature. In 1980 Gordon Bell and Dan Dodge, fresh from a real-time operating-systems course at the University of Waterloo, started a company in Kanata, Ontario, and in 1982 shipped their first system for the Intel 8088. They called it QUNIX. Two years later they renamed it QNX, to keep clear of the Unix trademark. The edit is the whole thesis in miniature: a system close enough to Unix in spirit to want the syllable, and honest enough not to claim the descent it did not have.</p>
+
+        <p>If you want the discipline made physical, the 1999 demo disk is the artefact. Quantum put an entire graphical operating system onto a single 1.44-megabyte floppy: a windowing system, a TCP/IP stack, a file manager, a handful of small applications, and a web browser that rendered real pages, all self-booting on a machine with no hard drive and eight megabytes of memory. The image was downloaded well over a million times, which for a firm that did not otherwise advertise was not a small return. One could read the floppy as a stunt. It is more useful read as a proof of what the discipline buys, since a browser and an operating system do not fit into that space by luck, and they certainly do not get there assembled from a hundred other people's parts.</p>
+
+        <h2>The Rules Without the Blood</h2>
+
+        <p>It helps to say plainly what the discipline is, because the word gets used loosely. Unix discipline is a small set of load-bearing habits: build the system from small parts that each do one thing; keep a clean line between what a component promises and how it works; prefer text and simple interfaces a person can inspect; and hold to the <strong>POSIX</strong> contract, the published specification of what a Unix-shaped system does when a program asks it for something. None of that requires the original source code, and none of it requires membership.</p>
+
+        <p>QNX shows the separation with unusual precision, having gone and got the certificate for the rules while holding none of the certificate for the family. Its Neutrino kernel is certified to the <strong>POSIX PSE52</strong> realtime profile, IEEE 1003.13-2003, under the conformance programme the IEEE and The Open Group run together, and it implements several hundred further POSIX interfaces besides. The paper it carries is a paper about behaviour, that the system does what a POSIX system is specified to do. It is not the Single UNIX Specification certificate the first Monday of this series described, the one that lets a vendor print the word UNIX in capitals; QNX has never claimed it, having no claim to make. Here, then, is a family member, if the word still means anything, carrying a certificate for the conduct and none for the bloodline. The rules were the inheritable part all along.</p>
+
+        <p>A distinction keeps this from meaning anything with a POSIX layer bolted on. Plenty of systems have offered POSIX for compatibility, so that Unix software would compile against them, without being built to the discipline underneath; BeOS did exactly that, and so, for a stretch, did Windows NT. Offering the rules as a courtesy to visiting software is a lesser thing than keeping them as the design, and that lesser story is one for another Monday. QNX kept them as the design.</p>
+
+        <h2>The Microkernel Choice</h2>
+
+        <p>The kernel is where the outsider stops resembling its cousins and starts, in one respect, outdoing them. Traditional Unix, and Linux after it, runs a great deal inside the kernel: the drivers, the filesystems, the network stack, the scheduler, all in one privileged address space, because putting them there is fast and was, for decades, simply how it was done. QNX made the choice Unix declined to make. Its microkernel keeps only the few things that genuinely cannot live elsewhere, the scheduler, interrupt handling, low-level memory, and the message-passing by which everything talks, and it turns the rest out into ordinary user-space processes.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="Where the operating system runs. In a monolithic kernel the scheduler, the drivers, the filesystems and the network stack all sit inside one privileged kernel address space, so a fault in any of them can take the whole system down. In the QNX microkernel only scheduling, interprocess communication, interrupts and low-level memory sit in the kernel, and the drivers, filesystems and network stack run outside it as ordinary user-space processes that talk to the kernel by message-passing, so a failed one can be restarted without a reboot. The legend notes that a driver becomes a program you can kill and restart." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .mk-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .mk-bad-h { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .mk-good-h { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .mk-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9.5px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .mk-core { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .mk-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .mk-bad-box { fill: var(--accent); opacity: 0.08; rx: 4; }
+                .mk-bad-stroke { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .mk-in { fill: none; stroke: var(--accent); stroke-width: 1; rx: 3; }
+                .mk-good-box { fill: #4ab542; opacity: 0.08; rx: 4; }
+                .mk-good-stroke { fill: none; stroke: #4ab542; stroke-width: 1.5; rx: 4; }
+                .mk-out { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+            </style>
+            <text x="320" y="22" class="mk-title" text-anchor="middle">Where the operating system runs</text>
+
+            <text x="30" y="52" class="mk-bad-h">Monolithic kernel</text>
+            <rect x="30" y="60" width="270" height="180" class="mk-bad-box"/>
+            <rect x="30" y="60" width="270" height="180" class="mk-bad-stroke"/>
+            <text x="46" y="80" class="mk-item" font-style="italic">one privileged address space</text>
+            <rect x="46" y="92" width="112" height="34" class="mk-in"/><text x="102" y="113" class="mk-core" text-anchor="middle">scheduler</text>
+            <rect x="172" y="92" width="112" height="34" class="mk-in"/><text x="228" y="113" class="mk-core" text-anchor="middle">drivers</text>
+            <rect x="46" y="134" width="112" height="34" class="mk-in"/><text x="102" y="155" class="mk-core" text-anchor="middle">filesystems</text>
+            <rect x="172" y="134" width="112" height="34" class="mk-in"/><text x="228" y="155" class="mk-core" text-anchor="middle">network stack</text>
+            <text x="165" y="196" class="mk-item" text-anchor="middle">a fault in any one</text>
+            <text x="165" y="212" class="mk-item" text-anchor="middle">can take the whole down</text>
+
+            <text x="340" y="52" class="mk-good-h">QNX microkernel</text>
+            <rect x="392" y="120" width="146" height="60" class="mk-good-box"/>
+            <rect x="392" y="120" width="146" height="60" class="mk-good-stroke"/>
+            <text x="465" y="145" class="mk-core" text-anchor="middle">kernel: scheduling,</text>
+            <text x="465" y="160" class="mk-core" text-anchor="middle">IPC, interrupts, memory</text>
+            <rect x="345" y="66" width="90" height="26" class="mk-out"/><text x="390" y="83" class="mk-core" text-anchor="middle">driver</text>
+            <rect x="345" y="200" width="90" height="26" class="mk-out"/><text x="390" y="217" class="mk-core" text-anchor="middle">filesystem</text>
+            <rect x="500" y="200" width="110" height="26" class="mk-out"/><text x="555" y="217" class="mk-core" text-anchor="middle">network stack</text>
+            <line x1="415" y1="92" x2="450" y2="120" stroke="var(--border)" stroke-width="1"/>
+            <line x1="405" y1="200" x2="440" y2="180" stroke="var(--border)" stroke-width="1"/>
+            <line x1="530" y1="200" x2="500" y2="180" stroke="var(--border)" stroke-width="1"/>
+            <text x="465" y="248" class="mk-item" text-anchor="middle">the rest are user-space processes</text>
+
+            <text x="320" y="270" class="mk-muted" text-anchor="middle" font-style="italic">A driver becomes a program you can kill and restart.</text>
+        </svg>
+
+        <p>Put that concretely, since it sounds abstract and is nothing of the kind. On QNX a disk driver is an ordinary program with no special privileges, and the filesystem and the whole TCP/IP stack are the same, each one reached by sending it a message and waiting for the reply. The arrangement reads like the Unix philosophy taken at its word and then turned on the kernel itself, which is the one place Unix had declined to apply it. And it pays in the currency that matters at three in the morning: a driver on a monolithic system that corrupts memory it does not own takes the system down with it, whereas on QNX the same misbehaving driver is a process you can kill and restart while everything else keeps running, debugged with the ordinary <code>gdb</code> you would point at any other program. The line Unix draws between programs, QNX draws between the parts of the operating system, one level down.</p>
+
+        <p>There is a second dividend, and it explains why the aerospace and medical engineers were interested long before the carmakers were. A kernel that small, doing that little, can be reasoned about, and a system whose response time can be bounded can be certified. Real-time determinism, the guarantee that a thing happens inside a fixed and provable window, falls out of the same design that gives the fault isolation. You do not reach it by tuning a large kernel. You reach it by not having one.</p>
+
+        <h2>The Code It Borrowed</h2>
+
+        <p>Discipline and pride are different things, and QNX is refreshingly short of the second. When it wanted a modern network stack it did not sit down to reinvent one for the pleasure of having written it. The <code>io-pkt</code> stack was built to follow the NetBSD networking code and architecture as closely as it reasonably could, so that a NetBSD driver ports across with little drama and a program written to the BSD sockets interface finds itself at home. That is the NetBSD from last Monday, the sibling whose entire personality was portability, lending its network code to a system outside the family altogether.</p>
+
+        <p>It is worth a moment on how in character that is for both parties. NetBSD wrote a stack meant to travel; QNX, needing one, took the well-travelled stack over a homemade one. The purist reading, that a true original writes everything itself, has the discipline backwards. The Unix tradition was always one of reuse, of small good parts composed rather than rebuilt, and adopting a proven stack rather than nursing a new one into correctness observes that tradition rather than breaking it. Part of how QNX kept the rules was in knowing which code it did not need to own.</p>
+
+        <h2>Where It Lives</h2>
+
+        <p>All of this would be a curiosity had it stayed on the floppy, and it did not. QNX went where a crash counts as an incident rather than an inconvenience: industrial controllers, medical devices, the surgical robot, the reactor monitor, and above all the car. BlackBerry, which bought QNX in 2010, reports it running in well over a hundred million vehicles, and in December 2019 its hypervisor became the first commercial hypervisor certified to <strong>ISO 26262 ASIL D</strong>, the highest automotive safety-integrity level, by T&#xDC;V Rheinland. The instrument cluster that must draw your speed correctly every time, and the domain controller charged with keeping the entertainment system's failures away from the brakes, are as often as not sitting on it.</p>
+
+        <p>The honest question is why QNX rather than Linux, since Linux is in cars too, and the answer owes nothing to marketing. It is the microkernel once more, read from the buyer's side. Where the requirement is a bounded response time you can prove, and a fault in one component that cannot reach another, and a certification body willing to put its name to both, a small kernel with the drivers held outside it becomes the short path to that signature, aesthetics quite beside the point. Linux runs the dashboard you tap; the layer that must not fail while you are doing seventy on the motorway tends to be the outsider with no Unix blood in it.</p>
+
+        <h2>The Others Who Kept the Rules</h2>
+
+        <p>QNX is the most successful instance of the pattern, and it is not the only one; the company it keeps is instructive. MINIX, which Andrew Tanenbaum wrote in 1987 to teach the subject and to prove that a working operating system need not run to millions of lines, is a microkernel of the same conviction, its drivers in user space and a dedicated server whose whole task is to notice a dead one and restart it. It also holds the strangest deployment record in the field, since a version of it has run since about 2015 inside the management engine of essentially every Intel processor, which makes a teaching system, on one accounting, the most widely installed operating system nobody ever chose to install. GNU's Hurd set out in 1990 to be precisely this, a POSIX system on a microkernel, and remains the cautionary member of the class, the ambition intact and the 1.0 release still, a Stallman promise of 2002 notwithstanding, unshipped. Redox carries the argument into the present, a Unix-like microkernel written from scratch in Rust since 2015, its drivers outside the kernel and whole classes of memory bug designed out of the language beneath, the rules kept and the blood once more entirely absent. QNX is not alone in its commercial niche either, where real-time systems such as LynxOS and VxWorks have kept a POSIX face over hard deadlines for decades.</p>
+
+        <svg viewBox="0 0 640 230" aria-label="The microkernel family that kept the Unix rules without the Unix blood, and their different fortunes. QNX shipped and runs in over a hundred million vehicles. MINIX is a teaching system that runs quietly inside nearly every Intel chip. GNU Hurd began in 1990 and has never reached a 1.0 release. Redox carries the idea into the present, written in Rust. The legend notes the same conviction met different fortunes." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sb-name { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sb-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9.5px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .sb-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="320" y="22" class="sb-title" text-anchor="middle">Same conviction, different fortunes</text>
+
+            <rect x="24" y="40" width="290" height="72" class="sb-box"/>
+            <text x="40" y="62" class="sb-name">QNX</text>
+            <text x="40" y="84" class="sb-item">shipped; runs in 100M+ vehicles,</text>
+            <text x="40" y="100" class="sb-item">first ISO 26262 ASIL D hypervisor</text>
+
+            <rect x="326" y="40" width="290" height="72" class="sb-box"/>
+            <text x="342" y="62" class="sb-name">MINIX (1987)</text>
+            <text x="342" y="84" class="sb-item">a teaching microkernel, and quietly</text>
+            <text x="342" y="100" class="sb-item">inside nearly every Intel chip</text>
+
+            <rect x="24" y="120" width="290" height="72" class="sb-box"/>
+            <text x="40" y="142" class="sb-name">GNU Hurd (1990)</text>
+            <text x="40" y="164" class="sb-item">the ambition intact,</text>
+            <text x="40" y="180" class="sb-item">the 1.0 release still unshipped</text>
+
+            <rect x="326" y="120" width="290" height="72" class="sb-box"/>
+            <text x="342" y="142" class="sb-name">Redox (2015)</text>
+            <text x="342" y="164" class="sb-item">the same idea in Rust,</text>
+            <text x="342" y="180" class="sb-item">drivers outside the kernel</text>
+
+            <text x="320" y="216" class="sb-muted" text-anchor="middle" font-style="italic">The rules kept, the blood absent, the fortunes far apart.</text>
+        </svg>
+
+        <h2>The Point</h2>
+
+        <p>The family portrait so far has hung on two kinds of belonging, the certificate and the bloodline, and QNX has neither in the sense the first two Mondays meant. It holds the discipline more faithfully than some who have both, which is not the ranking anyone drawing the family tree would have predicted, and which forces the axes apart. Descent is a matter of where the code came from. The paper measures the behaviour against a specification and says who checked. Discipline is a third thing again, the way a system is built and kept over time, and it is the only one of the three a stranger can pick up by deciding to, as two students in Ontario did with a course behind them and nobody's permission.</p>
+
+        <svg viewBox="0 0 640 210" aria-label="Three kinds of belonging in the Unix family, and where QNX stands on each. Descent is the code lineage, and QNX has none. The paper is the certificate, and QNX holds a POSIX certificate but not the Single UNIX Specification. Discipline is the living practice, and QNX keeps it more strictly than some certified members. The legend notes that only discipline can be adopted from outside the family." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ax-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ax-head { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ax-item { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9.5px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ax-no { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .ax-yes { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; }
+                .ax-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ax-box { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="320" y="22" class="ax-title" text-anchor="middle">Three kinds of belonging, and where QNX stands</text>
+
+            <rect x="24" y="40" width="592" height="40" class="ax-box"/>
+            <text x="40" y="58" class="ax-head">Descent</text>
+            <text x="40" y="73" class="ax-item">the code lineage, back to Bell Labs or Berkeley</text>
+            <text x="600" y="66" class="ax-no" text-anchor="end">none</text>
+
+            <rect x="24" y="86" width="592" height="40" class="ax-box"/>
+            <text x="40" y="104" class="ax-head">The paper</text>
+            <text x="40" y="119" class="ax-item">the certificate, and who measured it</text>
+            <text x="600" y="112" class="ax-no" text-anchor="end">POSIX, not UNIX</text>
+
+            <rect x="24" y="132" width="592" height="40" class="ax-box"/>
+            <text x="40" y="150" class="ax-head">Discipline</text>
+            <text x="40" y="165" class="ax-item">the living practice of how a system is built and kept</text>
+            <text x="600" y="158" class="ax-yes" text-anchor="end">stricter than most</text>
+
+            <text x="320" y="196" class="ax-muted" text-anchor="middle" font-style="italic">Only discipline can be adopted from outside the family.</text>
+        </svg>
+
+        <p>That leaves the largest member of all, the one that took the resemblance and the reach and went somewhere the discipline did not follow.</p>
+
+        <blockquote>
+            <p><strong>Next Monday: the most successful system in the world, and how far it drifted.</strong></p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>References:</strong></p>
+            <ul>
+                <li>QNX history: Gordon Bell and Dan Dodge founded Quantum Software Systems in 1980; the first system, QUNIX, shipped for the Intel 8088 in 1982 and was renamed QNX in 1984 to avoid the Unix trademark. <a href="https://en.wikipedia.org/wiki/QNX" target="_blank" rel="noopener">en.wikipedia.org</a></li>
+                <li>The 1999 demo disk: a self-booting 1.44 MB floppy carrying the OS, the Photon microGUI, a TCP/IP stack and the Voyager web browser, downloaded over a million times. <a href="https://www.osnews.com/story/27413/qnx-14-mb-floppy-disk-demo/" target="_blank" rel="noopener">osnews.com</a> &#x25A0; <a href="http://toastytech.com/guis/qnxdemo.html" target="_blank" rel="noopener">toastytech.com</a></li>
+                <li>POSIX conformance: the QNX Neutrino RTOS is certified to the POSIX PSE52 Realtime Controller System profile (IEEE 1003.13-2003), not the Single UNIX Specification. <a href="https://www.qnx.com/developers/docs/6.5.0SP1.update/com.qnx.doc.neutrino_prog/posix_conformance.html" target="_blank" rel="noopener">qnx.com</a></li>
+                <li>Neutrino microkernel: scheduling, IPC, interrupts and low-level memory in the kernel; drivers, filesystems and the network stack as user-space processes; a failed driver restarts without a reboot. <a href="https://www.qnx.com/developers/docs/6.5.0SP1.update/com.qnx.doc.neutrino_sys_arch/kernel.html" target="_blank" rel="noopener">qnx.com</a></li>
+                <li>io-pkt: QNX's user-space stack follows the NetBSD networking code and architecture, so NetBSD drivers and BSD-sockets applications port with little change. <a href="https://www.qnx.com/developers/docs/6.5.0SP1.update/com.qnx.doc.io-pkt_en_user_guide/overview.html" target="_blank" rel="noopener">qnx.com</a></li>
+                <li>Automotive and safety: BlackBerry acquired QNX in 2010; it runs in well over a hundred million vehicles, and its hypervisor was certified by T&#xDC;V Rheinland in December 2019 as the first commercial hypervisor to reach ISO 26262 ASIL D. <a href="https://www.prnewswire.com/news-releases/blackberry-qnx-hypervisor-awarded-worlds-first-automotive-safety-integrity-level-asil-d-certification-300969956.html" target="_blank" rel="noopener">prnewswire.com</a></li>
+                <li>The microkernel siblings: MINIX 3, Tanenbaum's 1987 educational microkernel, runs inside the Intel Management Engine; GNU Hurd (1990) has never reached a 1.0 release; Redox is a Rust microkernel begun in 2015. <a href="https://en.wikipedia.org/wiki/Minix_3" target="_blank" rel="noopener">en.wikipedia.org</a> &#x25A0; <a href="https://www.bleepingcomputer.com/news/hardware/intels-secret-cpu-on-chip-management-engine-me-runs-on-minix-os/" target="_blank" rel="noopener">bleepingcomputer.com</a> &#x25A0; <a href="https://en.wikipedia.org/wiki/GNU_Hurd" target="_blank" rel="noopener">en.wikipedia.org</a> &#x25A0; <a href="https://en.wikipedia.org/wiki/Redox_(operating_system)" target="_blank" rel="noopener">en.wikipedia.org</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
