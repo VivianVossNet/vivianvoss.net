@@ -1,0 +1,215 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Registry as Business Model &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="npm began in 2010 as a small tool for fetching JavaScript packages from a registry anyone could write to, and that openness became the ground a business had to stand on. The public registry is given away; the revenue is private packages and enterprise, so the free thing has to be as large and easy to enter as possible, because its size is the asset. A trust boundary would mean gatekeeping and review, friction at the entrance that shaves the growth of the count, which is why the responsibility line node_modules never had was never quite an accident. Through a seed round, a Series A, an on-premises product and the 2020 GitHub acquisition, the trust model went unrevised, because it was never the thing on sale. The sixth of eighteen Wednesdays on how we got here, and the first of five on npm.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-registry-as-business-model{( endslot )}
+
+{( slot og-title )}The Registry as Business Model &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Lean Software, the sixth of eighteen Wednesdays on how we got here, and the first of five on npm. In January 2010 Isaac Schlueter released a small program for fetching JavaScript packages from a registry anyone could write to, and four years later npm, Inc. had to earn a living beside an inventory it gave away. The answer is freemium: the public registry is free because free is what fills the inventory, and the paid tiers, private packages and enterprise, are sold against its size. A real trust boundary would cost gatekeeping and review, friction that shaves the growth of the count, so the responsibility line node_modules never drew was consistent with the number the business existed to grow. Through the 2018 Microsoft purchase of GitHub and the 2020 acquisition of npm, the permission for a stranger's package to run code as you on install went unrevised, because it was never the thing on sale.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Registry as Business Model",
+    "datePublished": "2026-07-15",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-registry-as-business-model",
+    "description": "Lean Software, the sixth of eighteen Wednesdays on how we got here, and the first of five on npm. In January 2010 Isaac Schlueter released a small program for fetching JavaScript packages, and the thing it fetched them from was a registry anyone could write to; that openness was the entire idea. Four years later npm, Inc. was incorporated in Oakland by Schlueter and Laurie Voss, and had to earn a living next to an inventory it gave away. The shape of that answer is freemium: the public registry costs real money to run and earns nothing on its own, while the revenue lives in private packages, organisations and an on-premises product, so the free thing has to be as large and as easy to enter as possible, because its size is what makes the paid thing plausible to a buyer. The asset is the count. A real boundary would cost gatekeeping at publish time, review by someone accountable, and a slower path from writing a thing to the world installing it, all friction that shaves the growth of the count, so the responsibility line node_modules never drew was never quite an accident but consistent with the number the business existed to grow. None of the hazards are abstract: a package's install script runs as you, with your shell, your environment variables, your SSH keys and your cloud tokens, in one blast radius with every stranger it pulled in, and the register of compromises has the regularity of something structural, the dividend of a model paid to ask nothing at the door. In June 2018 Microsoft agreed to buy GitHub for USD 7.5 billion, and in March 2020 GitHub bought npm, then over 1.3 million packages and some 75 billion downloads a month; through a seed round, a Series A, an on-premises product and a purchase by one of the largest software companies on earth, the trust model went unrevised, because it was never once the thing on sale. libc is the proof the line is not a fantasy: you do not read it and you still know where it lives and who is accountable when it breaks. The missing boundary was the business working as designed. Next Wednesday: the code quality question, with names attached.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-15">15 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Registry as Business Model</h1>
+        <p class="vv-article-meta"><em>Lean Software &#x22A3; How We Got Here, 6 of 18.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">npm</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">nodejs</span>
+            <span class="vv-pill">supplychain</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>In January 2010 Isaac Schlueter released a small program for fetching JavaScript packages, bundled with a young runtime called Node.js, and the thing it fetched them from was a <a href="https://en.wikipedia.org/wiki/Npm" target="_blank" rel="noopener">registry that anyone could write to</a>. That openness was the entire idea. You published and the world installed, with nobody at the door. Four years later the registry had a company around it, <a href="https://en.wikipedia.org/wiki/Npm,_Inc." target="_blank" rel="noopener">npm, Inc.</a>, incorporated in Oakland by Schlueter and Laurie Voss, and the openness that had made the tool useful was now the ground a business had to be built upon. A registry that anyone can add to is, from a certain angle, an inventory that grows for free. The problem npm, Inc. had to solve was how to earn a living next to something it gave away, and the shape of that answer is most of the reason the trust model looks the way it does today.</p>
+
+        <p>This is the sixth of eighteen Wednesdays and the first of five on npm. The diagnosis is behind us: four things broke at once, and three carriers hold the whole arrangement up. npm is the first carrier, and the honest place to start with it is the ledger that made publishing free. The code that gets published comes later, and it comes next week.</p>
+
+        <h2>The Free Thing and the Till</h2>
+
+        <p>The public registry costs real money to run and earns nothing on its own. It is bandwidth and storage handed out for nothing, and the moderation of abuse is not free either. The revenue lived elsewhere, to one side of a quiet line: private packages for individuals and organisations, and an on-premises product for firms that wanted the registry behind their own firewall. npm Enterprise arrived in 2014. In the spring of 2015 the company <a href="https://venturebeat.com/2015/04/14/node-startup-npm-inc-scores-8m-launches-private-modules-for-handling-code" target="_blank" rel="noopener">raised eight million dollars and launched its first mass paid tier</a>, Private Modules, at seven dollars per developer each month, a year after a seed round of <a href="https://www.finsmes.com/2014/02/npm-raises-2-6m-in-seed-funding.html" target="_blank" rel="noopener">two and a half million</a> led by True Ventures. Everything you could pay for sat on one side; the public registry, the part nearly everyone actually touched, stayed on the other, free.</p>
+
+        <p>This is the ordinary shape of freemium, and there is nothing disreputable about it in itself. The free thing draws the crowd, the paid thing pays the wages, and the free thing therefore has to be as large and as easy to enter as it can possibly be made, because its size is what makes the paid thing plausible to a buyer. The asset is the crowd. In npm's case the crowd is measured in packages, and a company measured by how much it holds has little reason to hold less.</p>
+
+        <svg viewBox="0 0 640 300" aria-label="A diagram of the freemium shape. A wide bar at the top marks the public registry, free to publish and free to install, holding millions of packages, with the note that the asset is its size. A funnel narrows down to a small block at the bottom marked paid tiers, private packages and enterprise, the revenue. The legend notes that the free registry is the funnel, and its size is what makes the paid tier plausible to a buyer." role="img" style="max-width:620px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ft-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ft-free { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ft-paid { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ft-cell { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .ft-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ft-free-fill { fill: var(--accent); opacity: 0.13; stroke: var(--accent); stroke-width: 1.3; rx: 4; }
+                .ft-paid-fill { fill: #4ab542; opacity: 0.15; stroke: #4ab542; stroke-width: 1.3; rx: 4; }
+            </style>
+            <text x="320" y="24" class="ft-title" text-anchor="middle">The Free Thing and the Till</text>
+
+            <rect x="60" y="44" width="520" height="66" class="ft-free-fill"/>
+            <text x="320" y="72" class="ft-free" text-anchor="middle">PUBLIC REGISTRY &#x2014; free to publish, free to install</text>
+            <text x="320" y="94" class="ft-cell" text-anchor="middle">millions of packages &#xB7; the asset is its size</text>
+
+            <path d="M 60 110 L 320 190 L 580 110" fill="var(--accent)" opacity="0.06"/>
+            <path d="M 60 110 L 320 190" stroke="var(--border)" stroke-width="1"/>
+            <path d="M 580 110 L 320 190" stroke="var(--border)" stroke-width="1"/>
+            <path d="M 320 150 L 320 208" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ft-arrow)"/>
+            <defs><marker id="ft-arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="var(--accent)"/></marker></defs>
+
+            <rect x="210" y="214" width="220" height="52" class="ft-paid-fill"/>
+            <text x="320" y="238" class="ft-paid" text-anchor="middle">paid: private packages, enterprise</text>
+            <text x="320" y="256" class="ft-cell" text-anchor="middle">the revenue</text>
+
+            <line x1="40" y1="284" x2="600" y2="284" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="298" class="ft-muted" text-anchor="middle" font-style="italic">The free registry is the funnel. Its size is what makes the paid tier plausible.</text>
+        </svg>
+
+        <h2>Where the Money Meets the Boundary</h2>
+
+        <p>Recall the boundary the third Wednesday went looking for and could not find. The responsibility line, the place where you can say where a component's accountability ends, is simply absent from <code>node_modules</code>. In June that read as an oversight of the architecture. It reads at least as well as a property of the economics.</p>
+
+        <p>Consider what an actual boundary would cost: gatekeeping at publish time, review by someone accountable, namespaces that mean something because a person has vouched for them, and a slower path from &#x201C;I have written a thing&#x201D; to &#x201C;the world may install it&#x201D;. Every one of those is friction at the entrance, and friction at the entrance shaves the growth of the count. A boundary is, among its other duties, a mechanism for keeping things out, which is an awkward device to fit to an inventory you are valued by the size of. The registry that grows quickest is the one that asks least on the way in.</p>
+
+        <svg viewBox="0 0 640 290" aria-label="A chart of two paths as the registry grows. The accent-coloured line rises steeply, labelled no boundary, the count grows unchecked. The green line stays low and flat, drawn faint and dotted, labelled with a boundary, checked at the door, and it is the path not taken. The legend notes that a boundary is friction at the entrance, and the registry that asks least on the way in grows quickest." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .mb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .mb-bad { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .mb-good { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .mb-axis { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .mb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+            </style>
+            <text x="320" y="24" class="mb-title" text-anchor="middle">A Boundary Costs the Count</text>
+
+            <line x1="70" y1="56" x2="70" y2="212" stroke="var(--border)" stroke-width="1"/>
+            <line x1="70" y1="212" x2="600" y2="212" stroke="var(--border)" stroke-width="1"/>
+            <text x="62" y="62" class="mb-axis" text-anchor="end">packages</text>
+            <text x="70" y="228" class="mb-axis">day one</text>
+            <text x="600" y="228" class="mb-axis" text-anchor="end">today</text>
+
+            <path d="M 70 202 C 240 190, 380 120, 600 52" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+            <text x="592" y="44" class="mb-bad" text-anchor="end">no boundary: the count grows unchecked</text>
+
+            <path d="M 70 202 L 600 188" fill="none" stroke="#4ab542" stroke-width="2" stroke-dasharray="5 4" opacity="0.85"/>
+            <text x="360" y="182" class="mb-good" text-anchor="middle">with a boundary: checked at the door (not taken)</text>
+
+            <line x1="40" y1="238" x2="600" y2="238" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="256" class="mb-muted" text-anchor="middle" font-style="italic">The registry that asks least on the way in grows quickest.</text>
+        </svg>
+
+        <p>So the absent line was never quite an accident. It was consistent, at every point, with the number the business existed to grow. The count as a choice, from the second Wednesday, turns out to have had a balance sheet standing behind it the whole time. And the small hazards that follow from an open door followed too. The install script that runs arbitrary code on your machine, the <code>latest</code> tag that can be moved over a release people already depend on, the ordinary permission for one maintainer's package to reach into another, the transitive dependency you never chose and could not name: these are the terms of an open till. Closing any of them would cost throughput at the entrance, which is the one thing a growth business will not spend.</p>
+
+        <p>None of that is a hazard in the abstract. A package's install script runs as you, with your shell, your environment variables, your SSH keys and your cloud tokens, in the moment the install finishes and before you have run a line yourself, and your code shares one set of permissions and one blast radius with every stranger it pulled in. So a single compromised maintainer reaches a very long way, and the register of it has the regularity of something structural: a stolen publish key, a maintainer's recovery domain left to lapse and re-registered for the cost of a renewal, a <a href="https://www.cisa.gov/news-events/alerts/2026/04/20/supply-chain-compromise-impacts-axios-node-package-manager" target="_blank" rel="noopener">backdoored release shipping under the <code>latest</code> tag</a> for the better part of a fortnight, a typosquat under a fresh alias within the hour. The mechanisms differ and the shape beneath them does not, because there was no line to cross. It is among the more consequential security problems in modern software, and it is the dividend of a model paid to ask nothing at the door.</p>
+
+        <h2>What Changed Hands, and What Did Not</h2>
+
+        <p>In June 2018 Microsoft agreed to <a href="https://news.microsoft.com/source/2018/06/04/microsoft-to-acquire-github-for-7-5-billion/" target="_blank" rel="noopener">buy GitHub for seven and a half billion dollars</a> in stock, a sum that raised a good many eyebrows at the time and, with hindsight, looks unremarkable. Not quite two years later, in March 2020, GitHub, by then a Microsoft subsidiary, <a href="https://github.blog/news-insights/company-news/npm-is-joining-github/" target="_blank" rel="noopener">bought npm, Inc.</a> The registry it acquired held over 1.3 million packages and served on the order of seventy-five billion downloads a month, and Nat Friedman's announcement made the customary promise that the public registry would always be available and always be free. Microsoft paid for the size. The size was the point.</p>
+
+        <p>What arrived with the sale was new ownership and a considerable quantity of language about securing the software supply chain. A year before, GitHub had shipped <a href="https://github.blog/news-insights/product-news/announcing-github-sponsors-a-new-way-to-contribute-to-open-source/" target="_blank" rel="noopener">Sponsors</a>, a tidy way to send maintainers a little money, which was a decent thing to build and did not move a single permission. The releases spoke of an end-to-end secured supply chain; the install script stayed precisely where it had always been.</p>
+
+        <svg viewBox="0 0 660 260" aria-label="A timeline of npm changing hands. From 2010 the tool, to 2014 npm Inc with a two point six million seed, to 2015 an eight million Series A and Private Modules, to 2018 Microsoft buying GitHub for seven and a half billion, to 2020 GitHub buying npm at over 1.3 million packages. Above the line a green arrow marks the registry growing. Below every milestone runs one unbroken accent line marked the trust model, unrevised. The legend notes that through every owner, a stranger's package still runs as you on install." role="img" style="max-width:660px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tl-year { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tl-cell { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .tl-grow { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tl-line { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+            </style>
+            <text x="330" y="22" class="tl-title" text-anchor="middle">Changed Hands, Not the Model</text>
+
+            <path d="M 60 70 C 250 62, 470 50, 610 42" fill="none" stroke="#4ab542" stroke-width="2" marker-end="url(#tl-arrow)"/>
+            <defs><marker id="tl-arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#4ab542"/></marker></defs>
+            <text x="330" y="52" class="tl-grow" text-anchor="middle">the registry grows</text>
+
+            <line x1="60" y1="128" x2="610" y2="128" stroke="var(--border)" stroke-width="1"/>
+            <g>
+                <circle cx="70" cy="128" r="4" fill="var(--accent)"/>
+                <text x="70" y="150" class="tl-year" text-anchor="middle">2010</text>
+                <text x="70" y="164" class="tl-cell" text-anchor="middle">the tool</text>
+            </g>
+            <g>
+                <circle cx="200" cy="128" r="4" fill="var(--accent)"/>
+                <text x="200" y="150" class="tl-year" text-anchor="middle">2014</text>
+                <text x="200" y="164" class="tl-cell" text-anchor="middle">npm, Inc. &#xB7; $2.6M seed</text>
+            </g>
+            <g>
+                <circle cx="330" cy="128" r="4" fill="var(--accent)"/>
+                <text x="330" y="150" class="tl-year" text-anchor="middle">2015</text>
+                <text x="330" y="164" class="tl-cell" text-anchor="middle">$8M Series A &#xB7; Private Modules</text>
+            </g>
+            <g>
+                <circle cx="460" cy="128" r="4" fill="var(--accent)"/>
+                <text x="460" y="150" class="tl-year" text-anchor="middle">2018</text>
+                <text x="460" y="164" class="tl-cell" text-anchor="middle">MS buys GitHub &#xB7; $7.5B</text>
+            </g>
+            <g>
+                <circle cx="600" cy="128" r="4" fill="var(--accent)"/>
+                <text x="600" y="150" class="tl-year" text-anchor="middle">2020</text>
+                <text x="600" y="164" class="tl-cell" text-anchor="middle">GitHub buys npm &#xB7; 1.3M pkgs</text>
+            </g>
+
+            <line x1="60" y1="196" x2="610" y2="196" stroke="var(--accent)" stroke-width="2.5"/>
+            <text x="330" y="212" class="tl-line" text-anchor="middle">the trust model &#x2014; unrevised</text>
+
+            <line x1="40" y1="232" x2="620" y2="232" stroke="var(--border)" stroke-width="1"/>
+            <text x="330" y="250" class="tl-muted" text-anchor="middle" font-style="italic">Through every owner, a stranger's package still runs as you on install.</text>
+        </svg>
+
+        <p>The trust model, then, outlived every change of owner, for the plain reason that it was never once the thing on sale. A start-up built it to grow a free registry as fast as possible. An acquirer bought that registry because it had grown. Neither party had an interest in the line whose absence made the growth cheap, and so, through a start-up, a Series A, an on-premises product and a purchase by one of the largest software companies on earth, the permission for a stranger's package to run code on your laptop went unrevised. Continuity, of a sort one does not often celebrate.</p>
+
+        <h2>The Price of a Line</h2>
+
+        <p>A registry with a responsibility line is not a fantasy. It is merely one that decided its size was not the only thing worth having. A distribution's package repository carries named maintainers, a review path, signing, and a base released as a single tested whole. libc reaches you that way, which is why the earlier Wednesdays kept returning to it: you do not read it, and you still know where it lives and who is accountable when it breaks. That accountability has a price. Someone is paid, or funding is found, so that a person can stand at the door and occasionally say no, and standing at the door saying no is exactly the expense a registry valued by its count would rather not carry.</p>
+
+        <p>There is a version of npm that drew the line early and stayed smaller for it, and it is not the version that got bought for the size of its inventory. This is the awkward part of the diagnosis, and worth stating plainly rather than as a grievance: the missing boundary was the business working as designed, and calling it a failure mistakes the machine for a bug in it. Reduction, as the fifth Wednesday put it, is the work nobody is funded to do, and drawing a boundary is reduction wearing a different coat. The market had every incentive to add packages and none to bound them, and it behaved accordingly, which is roughly what markets do.</p>
+
+        <h2>The Point</h2>
+
+        <p>npm did what its incentives asked. The public registry was free because free is what fills an inventory, the inventory was the asset, and a trust boundary would have cost the asset the one number it was built to grow. No owner since has found a reason to draw the line, because each of them bought the registry for the same size that the missing line made cheap to reach. The result is the ungoverned middle the third Wednesday named, holding steady through three sets of hands, priced into the thing from the start.</p>
+
+        <p>That is the registry. The next question is what it lets through, and here the record has names on it.</p>
+
+        <blockquote>
+            <p><strong>Next Wednesday: the code quality question, with names attached.</strong></p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>References:</strong></p>
+            <ul>
+                <li>npm first released 12 January 2010, created by Isaac Z. Schlueter, distributed with Node.js. <a href="https://en.wikipedia.org/wiki/Npm" target="_blank" rel="noopener">en.wikipedia.org</a></li>
+                <li>npm, Inc. incorporated 2014 in Oakland, California, by Isaac Z. Schlueter and Laurie Voss. <a href="https://en.wikipedia.org/wiki/Npm,_Inc." target="_blank" rel="noopener">en.wikipedia.org</a></li>
+                <li>Seed round of USD 2.6 million, February 2014, led by True Ventures. <a href="https://www.finsmes.com/2014/02/npm-raises-2-6m-in-seed-funding.html" target="_blank" rel="noopener">finsmes.com</a></li>
+                <li>npm Enterprise (2014); Series A of USD 8 million, April 2015, with Private Modules at USD 7 per developer per month. <a href="https://venturebeat.com/2015/04/14/node-startup-npm-inc-scores-8m-launches-private-modules-for-handling-code" target="_blank" rel="noopener">venturebeat.com</a></li>
+                <li>Microsoft to acquire GitHub for USD 7.5 billion in stock, announced 4 June 2018, closed 26 October 2018. <a href="https://news.microsoft.com/source/2018/06/04/microsoft-to-acquire-github-for-7-5-billion/" target="_blank" rel="noopener">news.microsoft.com</a></li>
+                <li>GitHub (a Microsoft subsidiary) acquires npm, Inc., 16 March 2020; then over 1.3 million packages and around 75 billion downloads a month. <a href="https://github.blog/news-insights/company-news/npm-is-joining-github/" target="_blank" rel="noopener">github.blog</a></li>
+                <li>GitHub Sponsors announced 23 May 2019; recurring payments to maintainers, no change to registry permissions. <a href="https://github.blog/news-insights/product-news/announcing-github-sponsors-a-new-way-to-contribute-to-open-source/" target="_blank" rel="noopener">github.blog</a></li>
+                <li>The 2026 npm supply-chain register; representatively, the axios hijack of 31 March 2026 tagged malicious versions as <code>latest</code> and drew a CISA alert. <a href="https://www.cisa.gov/news-events/alerts/2026/04/20/supply-chain-compromise-impacts-axios-node-package-manager" target="_blank" rel="noopener">cisa.gov</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
