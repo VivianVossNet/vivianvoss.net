@@ -12,8 +12,8 @@ function route()
 
 Vivian Voss builds minimal, high-performance web tools inspired by the demoscene
 and guided by Unix philosophy. Based in Germany. Currently Senior Frontend Developer
-at HORNBACH (React, TypeScript, Spryker). Privately building min2max, a suite of
-ultralight web frameworks.
+at HORNBACH (React, TypeScript, Spryker). Privately building small tools for
+testing ideas, a suite of ultralight web frameworks.
 
 ## Philosophy
 
@@ -22,7 +22,7 @@ ultralight web frameworks.
 - Demoscene aesthetics: maximum elegance from minimum resources
 - Every byte must earn its place
 
-## min2max Ecosystem
+## Ecosystem
 
 | Product     | What                                      |
 |-------------|-------------------------------------------|
@@ -35,7 +35,7 @@ ultralight web frameworks.
 
 - / — Home (introduction, performance metrics, Lighthouse scores)
 - /about — Philosophy, career path, demoscene background
-- /ecosystem — min2max products (public ones)
+- /ecosystem — ultralight web tools (public ones)
 - /writing — LinkedIn series overview with links
 - /blog — Selected articles on architecture, Unix, performance, frontend
 - /contact — LinkedIn, GitHub, email
