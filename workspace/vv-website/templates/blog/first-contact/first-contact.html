@@ -1,0 +1,207 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}First Contact &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="You arrive on FreeBSD, and the floor turns out to be all one piece. One manual page, man hier, lays out the whole system, because the base is a single source tree: kernel, userland, firewall and manual built and released together by one team, not assembled from four projects introduced by a distributor. The coherence is quiet, and you almost certainly run a cousin of it already, since macOS stands on Darwin and the BSDs share one Berkeley root. On Linux the honest answer to where things live is that it depends, and it depends early, across three or four families wearing the same kernel. The first of the BSD Field Guide, and the first of three on The Ground.">
+{( endslot )}
+
+{( slot canonical )}/blog/first-contact{( endslot )}
+
+{( slot og-title )}First Contact &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The BSD Field Guide, first of three on The Ground. Half an hour ago this was an empty disk; now there is a login prompt, and the oldest question a new machine invites is where anything actually lives. On FreeBSD the answer is short, because the base is one source tree: man hier maps the whole geography on a single page, and the kernel, the userland, the firewall and the manual ship from one repository, built and tested and released together by one team. That coherence is felt as an absence, the small standing tax of wondering which tool and which version applies simply gone. You already run a cousin of it, since macOS stands on Darwin and OpenBSD and NetBSD kept the same one-tree habit from the Berkeley group that closed in 1995. On Linux the honest answer is that it depends, and it depends early, across Debian-based and Red Hat-based systems and the wild new ones. Arriving is the one moment you get to choose which floor to stand on.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "First Contact",
+    "datePublished": "2026-07-17",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/first-contact",
+    "description": "The BSD Field Guide, first of three on The Ground. You install FreeBSD, and getting to the login prompt asks nothing you had to look up: no standoff over which bootloader, no negotiation over which daemon minds the network. The oldest question a new machine invites is where anything actually lives, and on FreeBSD that has a short answer. man hier is a single manual page that lays out the whole geography, and it is accurate because it ships from the same source tree it describes. That is a base system: FreeBSD keeps the kernel, the shell, the core utilities, the C library, the network stack, the firewall and the manual in one repository, built and tested and released together, designed by one team as a unit rather than a kernel from one project married to a userland from another and an init from a third, introduced by a distributor to see whether they get on. When one team owns the whole of it, a decision is made once, by people who can see everything it touches; integrated systems solve problems once, assembled systems solve them repeatedly. You experience it as an absence, the standing tax of wondering which tool, which version and which file applies simply gone. You almost certainly run a cousin already: every Mac stands on Darwin, whose userland is BSD, and OpenBSD and NetBSD are the other children of the Berkeley group that closed in 1995, each of which kept the one-tree habit. On Linux the honest answer to where things live is that it depends, and it depends early, across a Debian-based floor, a Red Hat-based one, and the wild new ones such as Arch, NixOS, Alpine and Silverblue, so learn Linux is not one thing but three or four families wearing the same kernel. Ports keep third-party software apart from the base, 37,958 as of the Q1 2026 status report. Arriving is the one moment you get to choose which floor to stand on, and the coherent one has run quietly under Netflix and every PlayStation and every Mac while the argument went on elsewhere. Next Friday: the manual that answers.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-17">17 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>First Contact</h1>
+        <p class="vv-article-meta"><em>BSD Field Guide &#x22A3; The Ground, 1 of 3.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">bsd</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">sysadmin</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Half an hour ago this was an empty disk. Now there is a login prompt, and getting here asked you nothing you had to look up on the way: no standoff over which of four bootloaders you preferred, no negotiation with the installer about whether the network should be minded by this daemon or that one. You log in. The shell is plain, almost austere. And the first thing you do, because everyone does it, is look around and ask the oldest question a new machine invites: what is here, and where does anything actually live?</p>
+
+        <p>On FreeBSD that question has a short answer, and the short answer is the whole of this first piece. You are not standing in a heap of software that somebody bundled together last Tuesday. You are standing in a system that was built as one thing, and you can feel it before you can explain it. This is the first of the BSD Field Guide, and the first of three on The Ground: the floor you stand on, and why it holds.</p>
+
+        <h2>One Tree</h2>
+
+        <p>Type <code>man hier</code>. It is a single manual page, and it lays out the entire geography of the system: where the kernel lives, where the C library lives, where configuration goes, where the software you add later is kept politely apart from the system's own. One page, and it is accurate, because it ships from the same source tree as the thing it describes. Nothing on the disk quietly contradicts it, for the plain reason that nothing on the disk arrived from somewhere else.</p>
+
+        <p>That is what a base system is. FreeBSD keeps the kernel, the shell, the core utilities, the C library, the network stack, the firewall and the manual in one repository, built and tested and released together with a single <code>make buildworld</code>. When you installed it, you installed something one team designed as a unit, and not a kernel from here married to a userland from there and an init from a third address, introduced by a distributor and sent out to see whether the three of them get along.</p>
+
+        <svg viewBox="0 0 640 300" aria-label="A comparison of two floors. On the left, one box marked base system, one source tree, holding a stack of rows: kernel, C library, shell, utilities, network stack, firewall, manual, with a green note that it is built and released together. On the right, four separate mismatched boxes, kernel, userland, init and bootloader, joined by dashed lines, marked assembled by a distributor. The legend notes that one tree ships as a whole, while the assembled floor is four projects introduced to see whether they get on." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ot-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ot-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ot-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ot-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9.5px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .ot-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .ot-one   { fill: #4ab542; opacity: 0.10; stroke: #4ab542; stroke-width: 1.4; rx: 5; }
+                .ot-part  { fill: var(--accent); opacity: 0.08; stroke: var(--accent); stroke-width: 1.2; rx: 4; }
+            </style>
+            <text x="320" y="22" class="ot-title" text-anchor="middle">One Tree, Not Assembled</text>
+
+            <rect x="40" y="44" width="250" height="216" class="ot-one"/>
+            <text x="165" y="66" class="ot-good" text-anchor="middle">BASE SYSTEM &#xB7; one source tree</text>
+            <text x="165" y="92" class="ot-item" text-anchor="middle">kernel</text>
+            <text x="165" y="112" class="ot-item" text-anchor="middle">C library</text>
+            <text x="165" y="132" class="ot-item" text-anchor="middle">shell &#x2022; core utilities</text>
+            <text x="165" y="152" class="ot-item" text-anchor="middle">network stack</text>
+            <text x="165" y="172" class="ot-item" text-anchor="middle">firewall</text>
+            <text x="165" y="192" class="ot-item" text-anchor="middle">manual</text>
+            <line x1="70" y1="210" x2="260" y2="210" stroke="#4ab542" stroke-width="1" opacity="0.5"/>
+            <text x="165" y="230" class="ot-good" text-anchor="middle">built &amp; released together</text>
+            <text x="165" y="248" class="ot-muted" text-anchor="middle">make buildworld</text>
+
+            <rect x="360" y="52" width="110" height="40" class="ot-part"/>
+            <text x="415" y="76" class="ot-item" text-anchor="middle">kernel</text>
+            <rect x="500" y="52" width="110" height="40" class="ot-part"/>
+            <text x="555" y="76" class="ot-item" text-anchor="middle">userland</text>
+            <rect x="360" y="140" width="110" height="40" class="ot-part"/>
+            <text x="415" y="164" class="ot-item" text-anchor="middle">init</text>
+            <rect x="500" y="140" width="110" height="40" class="ot-part"/>
+            <text x="555" y="164" class="ot-item" text-anchor="middle">bootloader</text>
+            <path d="M 415 92 L 555 140 M 555 92 L 415 140 M 470 72 L 500 72 M 470 160 L 500 160" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3" opacity="0.7" fill="none"/>
+            <text x="485" y="210" class="ot-bad" text-anchor="middle">assembled by a distributor</text>
+            <text x="485" y="228" class="ot-muted" text-anchor="middle">four projects, introduced</text>
+
+            <line x1="30" y1="278" x2="610" y2="278" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="294" class="ot-muted" text-anchor="middle" font-style="italic">One tree ships as a whole. The other floor is four projects, sent out to see whether they get on.</text>
+        </svg>
+
+        <h2>Why It Is So</h2>
+
+        <p>The reason matters more than the neatness, and it is worth saying without decoration. When one team owns the kernel and the userland and the firewall and the manual, a decision is made once, in one place, by people who can see the whole of what it touches. I put the claim at its sharpest in the book: integrated systems solve problems once, assembled systems solve them repeatedly (<a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener"><em>Integrated by Design</em></a>, ch. 1). The manual page for a system call is updated in the same commit that changes the call. The firewall is tested against the very kernel it will ship beside.</p>
+
+        <p>You do not experience that as a newcomer in the form of a lecture. You experience it as an absence, which is a harder thing to notice and a better thing to have: the absence of the small, standing tax of wondering which tool, which version, which file and which of several equally documented answers applies to the machine in front of you. The coherence is quiet. Most good design is.</p>
+
+        <h2>In the Family</h2>
+
+        <p>If this feels foreign, it needn't, because you almost certainly run a cousin of it already. Every Mac in the building stands on Darwin, and Darwin's userland is BSD; the <code>ls</code> on a Mac is nearer kin to FreeBSD's than to the GNU one on a Linux server. OpenBSD and NetBSD are the other two children of the same Berkeley research group, the CSRG, that shut its doors in 1995, and each kept the one-tree habit, each ships its base as a whole. OpenBSD made a discipline of it that the rest of the family quietly admires, auditing that single tree by hand, year after year, which is a thing you can only do when there is a single tree to audit.</p>
+
+        <p>The point is not that FreeBSD stands alone. It is that the integrated way is older and more widely carried than the assembled one, and a version of it is sitting in your pocket.</p>
+
+        <svg viewBox="0 0 640 270" aria-label="A family tree. At the top, one root marked Berkeley CSRG, to 1995. Three branches descend to FreeBSD, NetBSD and OpenBSD, and a fourth to Darwin, which carries down to macOS. A green band beneath them all reads each kept the one-tree habit. The legend notes that a version of the integrated way is sitting in your pocket." role="img" style="max-width:620px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .fam-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .fam-root  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .fam-node  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10.5px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .fam-leaf  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .fam-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .fam-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+            </style>
+            <text x="320" y="22" class="fam-title" text-anchor="middle">One Family, One Habit</text>
+
+            <circle cx="320" cy="52" r="4" fill="var(--accent)"/>
+            <text x="320" y="46" class="fam-root" text-anchor="middle">Berkeley CSRG &#x2014; to 1995</text>
+
+            <path d="M 320 56 C 200 76, 120 84, 110 104 M 320 56 C 270 80, 250 84, 245 104 M 320 56 C 360 80, 380 84, 388 104 M 320 56 C 460 76, 520 84, 540 104" fill="none" stroke="var(--border)" stroke-width="1.2"/>
+
+            <text x="110" y="120" class="fam-node" text-anchor="middle">FreeBSD</text>
+            <text x="245" y="120" class="fam-node" text-anchor="middle">NetBSD</text>
+            <text x="388" y="120" class="fam-node" text-anchor="middle">OpenBSD</text>
+            <text x="540" y="120" class="fam-node" text-anchor="middle">Darwin</text>
+            <path d="M 540 128 L 540 150" fill="none" stroke="var(--border)" stroke-width="1.2"/>
+            <text x="540" y="164" class="fam-leaf" text-anchor="middle">macOS &#x2014; in your pocket</text>
+
+            <rect x="60" y="188" width="520" height="34" rx="5" fill="#4ab542" opacity="0.12" stroke="#4ab542" stroke-width="1.2"/>
+            <text x="320" y="210" class="fam-good" text-anchor="middle">each kept the one-tree habit</text>
+
+            <line x1="40" y1="246" x2="600" y2="246" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="262" class="fam-muted" text-anchor="middle" font-style="italic">The integrated way is older and more widely carried than the assembled one.</text>
+        </svg>
+
+        <h2>Across the Fence</h2>
+
+        <p>The contrast is easiest to feel on the very question you began with: where do things live, and how do you get in. On Linux the honest answer is that it depends, and it starts depending remarkably early. A <a href="https://en.wikipedia.org/wiki/Debian" target="_blank" rel="noopener">Debian</a>-based system, Ubuntu and its many relations, arranges the floor one way and tends its services with one set of habits. A Red Hat-based system, Fedora or RHEL, arranges it another. And then the wild new ones, Arch on a rolling release, NixOS with the whole machine written into one functional file, Alpine pared to a few megabytes, Silverblue shipped as an immutable image, each rethink the ground from first principles, now and then brilliantly.</p>
+
+        <p>Not one of them is wrong. But &#x201C;learn Linux&#x201D; is not a single thing a person can learn; it is three or four families wearing the same kernel, and the family has already decided where you are standing before you type a command. That is nobody's fault in particular, and it is the cost of a floor that no single team owns, landing first and hardest on whoever is trying to learn it.</p>
+
+        <svg viewBox="0 0 640 290" aria-label="A branching diagram. One question at the left, where do things live, splits into three families. The first branch, Debian-based, lists Ubuntu. The second, Red Hat-based, lists Fedora and RHEL. The third, the wild new ones, lists Arch, NixOS, Alpine and Silverblue. Each branch arranges the floor differently. The legend notes that learn Linux is three or four families wearing the same kernel." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .lx-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lx-q     { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10.5px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lx-fam   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lx-leaf  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+                .lx-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+                .lx-box   { fill: var(--accent); opacity: 0.07; stroke: var(--accent); stroke-width: 1.2; rx: 4; }
+            </style>
+            <text x="320" y="22" class="lx-title" text-anchor="middle">On Linux, It Depends Early</text>
+
+            <rect x="24" y="112" width="120" height="52" rx="5" fill="none" stroke="var(--border)" stroke-width="1.2"/>
+            <text x="84" y="134" class="lx-q" text-anchor="middle">where do</text>
+            <text x="84" y="150" class="lx-q" text-anchor="middle">things live?</text>
+
+            <path d="M 144 138 C 200 138, 210 72, 264 72 M 144 138 C 200 138, 210 138, 264 138 M 144 138 C 200 138, 210 214, 264 214" fill="none" stroke="var(--border)" stroke-width="1.2"/>
+
+            <rect x="264" y="50" width="344" height="44" class="lx-box"/>
+            <text x="280" y="70" class="lx-fam">Debian-based</text>
+            <text x="280" y="86" class="lx-leaf">Ubuntu and its many relations</text>
+
+            <rect x="264" y="116" width="344" height="44" class="lx-box"/>
+            <text x="280" y="136" class="lx-fam">Red Hat-based</text>
+            <text x="280" y="152" class="lx-leaf">Fedora &#xB7; RHEL</text>
+
+            <rect x="264" y="182" width="344" height="60" class="lx-box"/>
+            <text x="280" y="202" class="lx-fam">the wild new ones</text>
+            <text x="280" y="218" class="lx-leaf">Arch &#xB7; NixOS &#xB7; Alpine &#xB7; Silverblue</text>
+            <text x="280" y="232" class="lx-leaf">each rethinks the ground, now and then brilliantly</text>
+
+            <line x1="40" y1="266" x2="600" y2="266" stroke="var(--border)" stroke-width="1"/>
+            <text x="320" y="282" class="lx-muted" text-anchor="middle" font-style="italic">&#x201C;Learn Linux&#x201D; is three or four families wearing the same kernel.</text>
+        </svg>
+
+        <h2>The Point</h2>
+
+        <p>So the ground under FreeBSD is worth naming for what it is: one tree, one manual, one place a thing lives, one way in. That asks nothing of you the assembled world does not, save that you learn it a single time, and it hands back something the assembled world cannot, which is that what you learned on one machine holds on the next. Third-party software, meanwhile, is kept deliberately apart from the base, out in <a href="https://www.freebsd.org/ports/" target="_blank" rel="noopener">ports and packages</a>, 37,958 of them as of the Q1 2026 status report, so that the line between the system and the things you added to it never blurs.</p>
+
+        <p>Almost nobody set out to build a fragmented system; the assembly accreted for sound reasons, project by honourable project. But you have just arrived, and arriving is the one moment you get to choose which floor to stand on. The coherent one is the more considered design, and it gives up nothing to get there; it has been running quietly under Netflix and every PlayStation and every Mac while the argument went on elsewhere.</p>
+
+        <p>You have had your look around. The next thing you will want is to make the machine actually do something, and the moment you try, you will reach for the manual to find out how. On FreeBSD that is a better instinct than the last decade has trained you to expect.</p>
+
+        <blockquote>
+            <p><strong>Next Friday: the manual that answers.</strong></p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>References:</strong></p>
+            <ul>
+                <li><code>man hier</code>, the FreeBSD filesystem layout, shipped in the base system. <a href="https://man.freebsd.org/hier" target="_blank" rel="noopener">man.freebsd.org</a></li>
+                <li>The base as one source tree (kernel, C library, shell, utilities, network stack, firewall, bootloader, documentation), built with <code>make buildworld</code>. <a href="https://docs.freebsd.org/en/books/handbook/" target="_blank" rel="noopener">docs.freebsd.org</a></li>
+                <li>Third-party software lives apart in ports and packages: 37,958 as of the FreeBSD Q1 2026 status report. <a href="https://www.freebsd.org/status/report-2026-01-2026-03/" target="_blank" rel="noopener">freebsd.org</a></li>
+                <li>macOS on Darwin, whose userland derives from BSD; FreeBSD, NetBSD and OpenBSD descend from Berkeley's CSRG, which ran to 1995. <a href="https://en.wikipedia.org/wiki/Berkeley_Software_Distribution" target="_blank" rel="noopener">en.wikipedia.org</a></li>
+                <li>Vivian Voss, <em>Integrated by Design</em> (Voss'scher Verlag, 2026), ch. 1, &#x201C;Assembled vs Integrated&#x201D;. <a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">vossscher-verlag.com</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
