@@ -1,0 +1,223 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Bytes of Art: 0mix by 0b5vr &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="0mix by 0b5vr fits a seven-minute techno set, picture and sound alike, into sixty-four kilobytes of browser code. Polygons and raymarching for the visuals, wavetable synthesis for the audio, all generated at runtime. Fifth in the PC Demo compo at Revision 2023; Best Soundtrack at The Meteoriks 2024.">
+{( endslot )}
+
+{( slot canonical )}/blog/bytes-of-art-0b5vr-0mix{( endslot )}
+
+{( slot og-title )}Bytes of Art: 0mix by 0b5vr &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}0mix by 0b5vr fits a seven-minute techno set, picture and sound alike, into sixty-four kilobytes of browser code. Polygons and raymarching for the visuals, wavetable synthesis for the audio, all generated at runtime. Fifth in the PC Demo compo at Revision 2023; Best Soundtrack at The Meteoriks 2024.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Bytes of Art: 0mix by 0b5vr",
+    "datePublished": "2026-07-25",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/bytes-of-art-0b5vr-0mix",
+    "description": "0mix, by the Japanese scener 0b5vr, is a 64K intro: a seven-minute techno live set, music and moving image at once, running at 140 BPM in a browser tab from sixty-four kilobytes of code. Nothing is loaded, because there is nothing to load. Every shape is built in code, some scenes modelled in polygons and others raymarched with signed distance fields, lit and post-processed in real time. The sound is synthesised in code and rendered on the graphics card, wavetable synthesis rather than samples. It was shown at Revision 2023 in Saarbruecken, where it ran in the PC Demo competition against productions of unlimited size and came fifth; the following spring The Meteoriks named it Best Soundtrack, judged against every production of the year regardless of size. The source is on GitHub. The demoscene has been UNESCO Intangible Cultural Heritage since 2020.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-25">25 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Bytes of Art: 0mix by 0b5vr</h1>
+        <p class="vv-article-meta"><em>A seven-minute techno set, sound and vision alike, that fits inside sixty-four kilobytes. Bytes of Art, E1.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">demoscene</span>
+            <span class="vv-pill">64K intro</span>
+            <span class="vv-pill">WebGL</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Bytes of Art</em> &#x25A0; E1</p>
+
+        <p>Sixty-four kilobytes. That is less than the thumbnail your browser
+            loaded to show this page, and a good deal less than the page
+            itself. Inside that budget lives an entire techno performance, and
+            the rest of this piece is an attempt to say how.</p>
+
+        <h2>The Work</h2>
+
+        <p><a href="https://www.youtube.com/watch?v=3lOptjAeA2w&amp;t=35" target="_blank" rel="noopener">0mix</a>
+            is a seven-minute techno live set, music and moving image at once,
+            running at 140 BPM in a browser tab. It is the work of one person: a
+            Japanese scener who goes by
+            <a href="https://github.com/0b5vr" target="_blank" rel="noopener">0b5vr</a>,
+            and who wrote all of it, the code, the visuals, the music, down to
+            the flyer. Nothing in it was assembled by a team or bought in. He
+            built the whole of it himself, and it runs for seven minutes and
+            twenty seconds without repeating itself into the ground.</p>
+
+        <h2>The Category</h2>
+
+        <p>The number is the whole of the story, so a word on where it sits. The
+            demoscene competes in classes, and most of them are drawn by size. A
+            demo may be nearly any size it likes. An intro may not: the classic
+            intro competitions cap the finished program at sixty-four kilobytes,
+            or at four, and the stubborn press on to one kilobyte, to 256 bytes,
+            to 32. Sixty-four kilobytes is 65,536 bytes exactly, a figure with a
+            pedigree: the size of a single segment on the old 16-bit x86, the
+            whole world a DOS .COM program had to live inside. 0mix is a 64K
+            intro for the PC. What that label promises is not a small download
+            but a small seed: at that size the work cannot carry its art with
+            it, so it has to grow the art on the spot, the instant it runs.</p>
+
+        <svg id="omix-classes" viewBox="0 0 520 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The demoscene size classes as a bar chart. A 256-byte intro, a 4K intro at 4096 bytes, a 64K intro at 65536 bytes (0mix sits here), and a demo with no size limit at all. The bars are drawn on a logarithmic sense of scale; the point is that 0mix lives near the small end and grows all of its art at runtime." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #omix-classes .cl-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #omix-classes .cl-label { font: 400 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #omix-classes .cl-value { font: 400 11px/1 ui-monospace, monospace; fill: var(--muted); }
+                #omix-classes .cl-bar { fill: var(--muted); opacity: 0.25; }
+                #omix-classes .cl-bar-accent { fill: var(--accent); opacity: 0.8; }
+                #omix-classes .cl-note { font: italic 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <text class="cl-title" x="0" y="16">The intro classes, and where 0mix sits</text>
+            <text class="cl-label" x="0" y="48">256-byte intro</text>
+            <rect class="cl-bar" x="0" y="54" width="24" height="16" rx="2"/>
+            <text class="cl-value" x="30" y="67">256 B</text>
+            <text class="cl-label" x="0" y="94">4K intro</text>
+            <rect class="cl-bar" x="0" y="100" width="70" height="16" rx="2"/>
+            <text class="cl-value" x="76" y="113">4 KB</text>
+            <text class="cl-label" x="0" y="140">64K intro &#x2014; 0mix</text>
+            <rect class="cl-bar-accent" x="0" y="146" width="150" height="16" rx="2"/>
+            <text class="cl-value" x="156" y="159">64 KB</text>
+            <text class="cl-label" x="0" y="186">demo</text>
+            <rect class="cl-bar" x="0" y="192" width="360" height="16" rx="2"/>
+            <text class="cl-value" x="366" y="205">no size limit</text>
+            <text class="cl-note" x="0" y="236">Smaller class, same ambition: everything grown from code at runtime.</text>
+        </svg>
+
+        <h2>Made, Not Shipped</h2>
+
+        <p>Which is the quiet marvel of it. Nothing here is loaded, because there
+            is nothing to load: no textures, no image files, no models on disk,
+            not a single asset. Every shape is built in code. Some of the scenes
+            are modelled the classic way, in polygons; others use raymarching,
+            the picture worked out ray by ray from a mathematical description of
+            the scene, with a signed distance field setting the forms; and the
+            whole is lit and post-processed in real time, depth of field and
+            all.</p>
+
+        <p>The sound is no more stored than the picture. It too is generated in
+            code and rendered on the graphics card, wavetable synthesis in place
+            of samples, not a WAV kept in reserve. Picture and sound move
+            together, because the same program produces both and the audio it
+            generates is read back to steer what you see. A complete techno set,
+            written from first principles, then minified and packed down until
+            the whole of it fits inside sixty-four kilobytes of browser code.</p>
+
+        <svg id="omix-pipeline" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="0mix pipeline: a single body of GLSL and code, sixty-four kilobytes in total, produces two outputs. The visuals are built from polygon geometry and raymarched signed distance fields, then lit with deferred shading and depth of field. The audio is wavetable synthesis rendered on the GPU. The generated audio is analysed and fed back to drive the visuals. Both run in the browser through WebGL, with no plugin and no install." style="max-width: 520px; width: 100%; height: auto; margin: 2em 0;">
+            <style>
+                #omix-pipeline .pp-title { font: 600 12px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #omix-pipeline .pp-box { fill: none; stroke: var(--border); stroke-width: 1.5; rx: 4; }
+                #omix-pipeline .pp-box-accent { fill: none; stroke: var(--accent); stroke-width: 2; rx: 4; }
+                #omix-pipeline .pp-label { font: 600 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #omix-pipeline .pp-sub { font: 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #omix-pipeline .pp-arrow { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#omix-pp-arrow); }
+                #omix-pipeline .pp-note { font: italic 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+            </style>
+            <defs>
+                <marker id="omix-pp-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                    <path d="M0,0 L8,3 L0,6" fill="var(--muted)"/>
+                </marker>
+            </defs>
+            <text class="pp-title" x="0" y="16">64 KB of code, two outputs, one tab</text>
+            <rect class="pp-box-accent" x="160" y="34" width="200" height="46"/>
+            <text class="pp-label" x="260" y="54" text-anchor="middle">GLSL &amp; code</text>
+            <text class="pp-sub" x="260" y="70" text-anchor="middle">64 KB total &#x2014; everything below is grown from this</text>
+            <rect class="pp-box" x="0" y="128" width="200" height="52"/>
+            <text class="pp-label" x="100" y="148" text-anchor="middle">Visuals</text>
+            <text class="pp-sub" x="100" y="163" text-anchor="middle">polygons + raymarched SDF</text>
+            <text class="pp-sub" x="100" y="175" text-anchor="middle">deferred shading, depth of field</text>
+            <rect class="pp-box" x="320" y="128" width="200" height="52"/>
+            <text class="pp-label" x="420" y="148" text-anchor="middle">Audio</text>
+            <text class="pp-sub" x="420" y="163" text-anchor="middle">wavetable synthesis</text>
+            <text class="pp-sub" x="420" y="175" text-anchor="middle">rendered on the GPU, no samples</text>
+            <line class="pp-arrow" x1="210" y1="80" x2="120" y2="126"/>
+            <line class="pp-arrow" x1="310" y1="80" x2="400" y2="126"/>
+            <path class="pp-arrow" d="M320,168 L202,168" style="stroke-dasharray: 4 3;"/>
+            <text class="pp-note" x="212" y="162">audio analysed, fed back to the visuals</text>
+            <rect class="pp-box" x="130" y="222" width="260" height="46"/>
+            <text class="pp-label" x="260" y="242" text-anchor="middle">Browser (WebGL)</text>
+            <text class="pp-sub" x="260" y="258" text-anchor="middle">no plugin, no install, one tab</text>
+            <line class="pp-arrow" x1="100" y1="180" x2="210" y2="220"/>
+            <line class="pp-arrow" x1="420" y1="180" x2="310" y2="220"/>
+        </svg>
+
+        <h2>The Event</h2>
+
+        <p>It was shown at
+            <a href="https://revision-party.net" target="_blank" rel="noopener">Revision</a>,
+            the largest demoparty in the world, held each Easter in the German
+            city of Saarbr&#xFC;cken and drawing well over a thousand sceners.
+            There it ran in the PC Demo competition, where size is unlimited, and
+            a sixty-four-kilobyte intro held its own among productions many times
+            its weight to come fifth. The following spring
+            <a href="https://meteoriks.org" target="_blank" rel="noopener">The Meteoriks</a>,
+            the scene's own awards, named it Best Soundtrack, judged against
+            every production of the year regardless of size. A soundtrack smaller
+            than a couple of seconds of ordinary MP3 was called the best of them
+            all. One does rather enjoy it when the constraint wins.</p>
+
+        <p>0b5vr put the source
+            <a href="https://github.com/0b5vr" target="_blank" rel="noopener">on GitHub</a>,
+            so how it was done is open to anyone who cares to read it: the
+            geometry, the shaders, the synthesis, all of it. This is the
+            demoscene at its most generous. The art is free, the technique is
+            documented, and the only barrier to entry is the willingness to
+            learn.</p>
+
+        <blockquote>
+            <p>Sixty-four kilobytes, and not one of them spent on anything you
+                might merely have downloaded. The demoscene has never needed
+                your gigabytes.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The details behind 0mix</strong></p>
+            <p>Author: 0b5vr, working alone (code, visuals, music, flyer).
+                Size class: 64K intro (65,536 bytes). Platform: WebGL, running
+                in the browser. Runtime: seven minutes twenty seconds at 140
+                BPM.</p>
+            <p>Visuals: a mix of polygon geometry and raymarched signed distance
+                fields, lit with deferred shading and finished with depth of
+                field, all in real time. Audio: synthesised in code and rendered
+                on the GPU, wavetable synthesis rather than samples. There are no
+                textures, models or audio files on disk; everything is generated
+                at runtime.</p>
+            <p>Shown: fifth in the PC Demo compo at
+                <a href="https://revision-party.net" target="_blank" rel="noopener">Revision 2023</a>
+                (competing without a size limit). Award: Best Soundtrack at
+                <a href="https://meteoriks.org" target="_blank" rel="noopener">The Meteoriks</a>
+                2024; nominated for Best High-End Intro and Outstanding Concept.</p>
+            <p>The demoscene has been
+                <a href="https://demoscene-the-art-of-coding.net" target="_blank" rel="noopener">UNESCO Intangible Cultural Heritage</a>
+                since 2020 in Germany, Finland and Poland.</p>
+            <p>Production pages:
+                <a href="https://www.pouet.net/prod.php?which=94135" target="_blank" rel="noopener">Pou&#xEB;t</a>,
+                <a href="https://demozoo.org/productions/322650/" target="_blank" rel="noopener">Demozoo</a>.
+                Video:
+                <a href="https://www.youtube.com/watch?v=3lOptjAeA2w&amp;t=35" target="_blank" rel="noopener">YouTube</a>
+                (the set proper begins around 0:35).</p>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
