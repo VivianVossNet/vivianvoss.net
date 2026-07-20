@@ -1,7 +1,8 @@
 -- contact_form — server-side contact form via cn.mail.send()
 -- Copyright 2026 Vivian Voss. All rights reserved.
 
-local MAILTO = "0xc411@vivianvoss.net"
+-- The mailboxes moved to aliases; mx@ is the only real box (2026-07-20).
+local MAILTO = "mx@vivianvoss.net"
 
 local function url_decode(s)
     s = s:gsub("+", " ")
