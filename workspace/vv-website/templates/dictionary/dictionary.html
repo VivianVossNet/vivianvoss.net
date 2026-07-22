@@ -185,6 +185,14 @@
             <dt>blast radius</dt>
             <dd>Everything an attacker reaches once a single component is compromised. In npm there is no privilege boundary between your code and its dependencies: a package's install script runs with your full user rights, so one compromised maintainer's blast radius is your shell, your environment, your SSH keys and your cloud tokens.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="build-step">
+            <dt>build step</dt>
+            <dd>The compile-and-bundle stage between source code and the artefact a web server ships: transpiling, bundling, minification, sourcemaps. No longer required by the platform itself, since browsers run ES modules natively; kept alive by tooling defaults and metered CI minutes.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="bundler">
+            <dt>bundler</dt>
+            <dd>A tool that combines many JavaScript source files, and often CSS and assets, into fewer optimised files for delivery. Rational under HTTP/1.1 and before native modules; the lineage runs Grunt, Gulp, webpack, Rollup, Parcel, esbuild, Vite, Turbopack, Rolldown.</dd>
+        </dl>
         <h3 id="letter-C">C</h3>
         <dl class="vv-dict-entry" id="caddy">
             <dt>Caddy</dt>
@@ -258,6 +266,10 @@
             <dt>container</dt>
             <dd>A packaged unit that bundles a process with a slice of userland (libraries, shell, tools) and runs it in an isolated view of a shared kernel; convenient for deployment, but often a small operating system shipped to run one process.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="control-groups">
+            <dt>control groups</dt>
+            <dd>A Linux kernel feature, begun at Google in 2006 and merged into the mainline kernel in 2008, that limits and accounts for the CPU, memory and I/O a group of processes may use. With namespaces, one of the two primitives Linux containers are assembled from.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="cqrs">
             <dt>CQRS</dt>
             <dd>Command Query Responsibility Segregation. Separates read models from write models, allowing independent optimisation of each path.</dd>
@@ -293,6 +305,10 @@
         <dl class="vv-dict-entry" id="css-in-js">
             <dt>CSS-in-JS</dt>
             <dd>A pattern where CSS is authored inside JavaScript files, generating styles at runtime. Adds bundle weight and runtime overhead.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="create-react-app">
+            <dt>Create React App</dt>
+            <dd>The React project's official scaffold from 2016, retired on 14 February 2025; the farewell notice pointed newcomers to frameworks and to build tools such as Vite, keeping the compiler in the default path.</dd>
         </dl>
         <h3 id="letter-D">D</h3>
         <dl class="vv-dict-entry" id="cyber-resilience-act">
@@ -391,6 +407,10 @@
         <dl class="vv-dict-entry" id="exascale">
             <dt>exascale</dt>
             <dd>A class of supercomputer capable of a billion billion operations per second. Europe's first, JUPITER, is intended to run on SiPearl's Rhea processor.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="es-modules">
+            <dt>ES modules</dt>
+            <dd>JavaScript's native module system (import and export), standardised with ES2015. Every major browser has executed ES modules natively since May 2018, Firefox 60 completing the set, which removed the module gap that bundlers were built to bridge.</dd>
         </dl>
         <h3 id="letter-F">F</h3>
         <dl class="vv-dict-entry" id="fabrication">
@@ -502,6 +522,14 @@
             <dt>GitHub</dt>
             <dd>A web platform for hosting Git repositories and collaborative software development, founded in 2008 and acquired by Microsoft in 2018 for USD 7.5 billion. Owner of the npm registry since 2020.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="grunt">
+            <dt>Grunt</dt>
+            <dd>An early JavaScript task runner, from 2012, that automated build chores through configured plugins. The first link in the bundler lineage that runs, so far, to Rolldown.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="gulp">
+            <dt>Gulp</dt>
+            <dd>A JavaScript task runner from 2013 built on streams, the code-over-configuration answer to Grunt; the second link in the build-tooling lineage.</dd>
+        </dl>
         <h3 id="letter-H">H</h3>
         <dl class="vv-dict-entry" id="hammer2">
             <dt>HAMMER2</dt>
@@ -571,6 +599,10 @@
         <dl class="vv-dict-entry" id="install-script">
             <dt>install script</dt>
             <dd>A script a package declares to run automatically during npm install, such as a postinstall hook. It executes with the installing user's full permissions the moment installation finishes, before the installed code is deliberately run, which is what makes a malicious one so effective.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="import-maps">
+            <dt>import maps</dt>
+            <dd>A browser feature that maps bare import specifiers such as 'lodash' onto URLs, letting native ES modules resolve dependencies without a bundler. Native in every major browser since Safari 16.4 in March 2023.</dd>
         </dl>
         <h3 id="letter-J">J</h3>
         <dl class="vv-dict-entry" id="jails">
@@ -943,6 +975,10 @@
             <dt>PyCon</dt>
             <dd>The annual Python community conference. Held in multiple countries, featuring talks, sprints, and community gatherings.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="parcel">
+            <dt>Parcel</dt>
+            <dd>A zero-configuration JavaScript bundler from 2017 that sold convenience where webpack sold configurability.</dd>
+        </dl>
         <h3 id="letter-Q">Q</h3>
         <dl class="vv-dict-entry" id="quantum-software-systems">
             <dt>Quantum Software Systems</dt>
@@ -1020,6 +1056,14 @@
         <dl class="vv-dict-entry" id="registry">
             <dt>registry</dt>
             <dd>A central index that stores and serves software packages for a package manager. The npm registry is the largest, free to publish to and free to install from; anyone can add a package, and that openness, with no responsibility line drawn between callers and what they pull in, is both its reach and its central security problem.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="rolldown">
+            <dt>Rolldown</dt>
+            <dd>A Rust rewrite of Rollup, begun for Vite; the latest generation of the bundler lineage. The industry's newest answer to slow builds is, once again, a faster bundler.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="rollup">
+            <dt>Rollup</dt>
+            <dd>A JavaScript bundler from 2015 focused on ES modules and tree-shaking; its engine long underpinned Vite's production builds.</dd>
         </dl>
         <h3 id="letter-S">S</h3>
         <dl class="vv-dict-entry" id="saas">
@@ -1158,6 +1202,10 @@
             <dt>Series A</dt>
             <dd>The first substantial priced round of venture funding a start-up raises after seed capital, usually to scale a model that is already working. npm, Inc. raised an eight-million-dollar Series A in April 2015.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="sourcemap">
+            <dt>sourcemap</dt>
+            <dd>A file that maps compiled, bundled or minified code back to the source a human wrote, so that debugging production means translating through the build step's output.</dd>
+        </dl>
         <h3 id="letter-T">T</h3>
         <dl class="vv-dict-entry" id="tape-out">
             <dt>tape-out</dt>
@@ -1187,6 +1235,10 @@
             <dt>tmux</dt>
             <dd>A terminal multiplexer. Runs multiple shell sessions in one terminal, supports detaching and reattaching, split panes, and session persistence.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="top500">
+            <dt>TOP500</dt>
+            <dd>The twice-yearly ranking of the world's five hundred fastest supercomputers, published since 1993. Every machine on the list has run Linux since November 2017, when the last two non-Linux systems dropped off it; a plain measure of how far the kernel reaches at the largest scale.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="transitive-closure">
             <dt>transitive closure</dt>
             <dd>The full set of dependencies a project pulls in: not only the packages you declared, but everything they depend on, recursively. A package.json of 30 to 50 entries routinely resolves to a transitive closure of well over a thousand packages.</dd>
@@ -1214,6 +1266,10 @@
         <dl class="vv-dict-entry" id="true-ventures">
             <dt>True Ventures</dt>
             <dd>An early-stage venture capital firm based in San Francisco. Led npm, Inc.'s USD 2.6 million seed round in February 2014.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="type-stripping">
+            <dt>type stripping</dt>
+            <dd>Running TypeScript by deleting its type annotations instead of compiling: the types are replaced with whitespace and the remaining JavaScript runs directly. Node.js has shipped it unflagged since version 23.6, January 2025.</dd>
         </dl>
         <h3 id="letter-U">U</h3>
         <dl class="vv-dict-entry" id="uefi">
@@ -1301,6 +1357,10 @@
         <dl class="vv-dict-entry" id="wireguard">
             <dt>WireGuard</dt>
             <dd>A modern VPN protocol using state-of-the-art cryptography. One C file, ~4,000 lines, replaces IPsec and OpenVPN.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="webpack">
+            <dt>webpack</dt>
+            <dd>The bundler that defined the build-step era. Begun by Tobias Koppers in March 2012 as a side project of a master's thesis, version 1.0 in February 2014; it faked modules before browsers had them and became the default toolchain of a decade.</dd>
         </dl>
         <h3 id="letter-X">X</h3>
         <dl class="vv-dict-entry" id="x-open">
@@ -1476,6 +1536,10 @@
         <dl class="vv-dict-entry" id="alan-mycroft">
             <dt>Alan Mycroft</dt>
             <dd>Professor of Computing at the University of Cambridge. Supervised Stephen Dolan's PhD in Algebraic Subtyping. Co-designed the Nanopass framework and contributed to static analysis research spanning four decades.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="sebastian-mckenzie">
+            <dt>Sebastian McKenzie</dt>
+            <dd>Creator of Babel: released in September 2014 as 6to5, the compiler that translated tomorrow's JavaScript for yesterday's browsers and became standard equipment of the build-step era. Later the initial author of Rome.</dd>
         </dl>
         <h3 id="person-P">P</h3>
         <dl class="vv-dict-entry" id="david-parnas">

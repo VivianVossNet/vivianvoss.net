@@ -1,0 +1,169 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Build Step Nobody Ordered &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="The web's only mandatory compile step outlived the platform gap it was built to bridge. Browsers have run ES modules natively since 2018, import maps closed the last hole in 2023, and Node has run TypeScript unflagged since January 2025. The scaffold still installs the compiler first. An audit of who still pays for the build step, and who collects.">
+{( endslot )}
+
+{( slot canonical )}/blog/the-build-step-nobody-ordered{( endslot )}
+
+{( slot og-title )}The Build Step Nobody Ordered &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Lean Software, a cost audit. Every other compile step in software serves a machine that cannot run the source; the web's build step serves a platform that has run the source natively for years. The decade that made it reasonable ended quietly: native ES modules everywhere by May 2018, import maps everywhere by March 2023, Node running TypeScript unflagged since January 2025, Rails shipping no-build as the default since December 2021. Yet the mainstream scaffold still installs the compiler first and writes hello world second, and the industry's answer to slow builds has been a faster bundler nine generations running. Meanwhile the step is metered: GitHub bills hosted runners per minute, Netlify sells build minutes, Vercel bills overage up to $0.126 a minute. A build step nobody can justify is a standing order, renewed on every push.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Build Step Nobody Ordered",
+    "datePublished": "2026-07-22",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/the-build-step-nobody-ordered",
+    "description": "Lean Software, a cost audit of the decision that a website must be compiled before it may be a website. The concession first, in full: in 2012 half your visitors ran browsers that understood only ES5 and none understood a module; webpack began that year as a side project of a master's thesis, Babel arrived in 2014 as 6to5 to translate tomorrow's JavaScript for yesterday's browsers, TypeScript is a language whose premise is a compiler, and under HTTP/1.1 bundling was good manners towards the network. For that decade the compile step was the only professional answer. Then the gap closed: by May 2018 every major browser executed ES modules natively; import maps closed the last practical hole in March 2023 with Safari 16.4; Node.js has stripped TypeScript types natively, unflagged, since 23.6 in January 2025; Rails made no-build the default for new applications in December 2021. The mainstream default never noticed: when Create React App was retired in February 2025 the farewell notice pointed to frameworks and build tools, and the industry's remedy for slow builds has been a faster bundler nine generations running, Grunt to Rolldown, with esbuild advertising 10 to 100 times the previous generation. The step is also metered: GitHub Actions bills hosted Linux runners at $0.006 a minute, Netlify includes 300 build minutes a month on its free tier, Vercel bills overage at up to $0.126 a minute on its fastest hardware; none of these meters runs when there is nothing to build. The counter keeps its strongest case: a 400,000-line TypeScript codebase or a genuinely large single-page application earns its compiler daily. For the large share of the web that is server-rendered pages, content sites and internal tools, the default deserves inversion: start with no build, add one when something measured demands it. A build step nobody can justify is a standing order, renewed on every push.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-22">22 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Build Step Nobody Ordered</h1>
+        <p class="vv-article-meta"><em>The web's only mandatory compile step outlived the platform gap it was built to bridge. Lean Software, a cost audit.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">bundlers</span>
+            <span class="vv-pill">import maps</span>
+            <span class="vv-pill">node.js</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>The pull request fixes a typo in a heading. One word, one file. The pipeline that ships it runs for eleven minutes, spends most of them downloading and compiling, and bills every one of those minutes to the team's account. The site itself is a handful of templates and a stylesheet. Somewhere in the gap between the size of the change and the size of the ceremony sits a decision almost nobody remembers making: that a website, before it is allowed to be a website, must first be compiled.</p>
+
+        <p>That is the decision worth auditing this week. Every other compile step in software serves a machine that cannot run the source. This one serves a platform that has been able to run the source for years.</p>
+
+        <h2>The Decade That Made It Reasonable</h2>
+
+        <p>Grant the build step its decade in full, because it earned it. In 2012 the browser landscape was a disagreement with a user interface: half your visitors ran engines that understood only ES5, and none of them understood a module. The word <code>import</code> meant nothing to any shipping browser. So the tooling arrived, and it was rational from the first commit. webpack began in March 2012 as a side project of a master's thesis, by Tobias Koppers, precisely because modules had to be faked before they could be used. In September 2014 a tool called 6to5, written by Sebastian McKenzie and soon renamed Babel, made a career of translating tomorrow's JavaScript for yesterday's browsers. TypeScript, from 2012, is a language whose entire premise is a compiler. And under HTTP/1.1, gluing a hundred files into one bundle was simply good manners towards the network.</p>
+
+        <p>None of that was cargo cult. For that decade, the build step was the only professional way to write modern code for the browsers people actually used. The counter had a real product on the shelf, and everyone bought it for a reason.</p>
+
+        <h2>The Platform Caught Up; The Default Did Not</h2>
+
+        <p>Then the gap closed, quietly and completely. By May 2018, when Firefox 60 joined the rest of the field, every major browser executed ES modules natively. Import maps closed the last practical hole in March 2023, when Safari 16.4 shipped them and bare import specifiers began working everywhere without a bundler. Node.js stopped needing a compiler for TypeScript's types in January 2025: since version 23.6 it strips them natively, unflagged, and simply runs the <code>.ts</code> file. This is what type stripping means: the annotations are replaced with whitespace and the file runs as the JavaScript it always was.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="Timeline: the tooling era and the platform catching up. 2012: webpack begins as a master's thesis side project; TypeScript is released. 2014: Babel arrives as 6to5. December 2021: Ruby on Rails makes no-build the default for new applications. May 2018: every major browser runs ES modules natively. March 2023: import maps work everywhere, Safari 16.4 last. January 2025: Node.js 23.6 runs TypeScript natively, unflagged. The tooling era entries are shown in orange, the platform milestones in green. The note reads: the gap the build step bridged closed years ago." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bs-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .bs-year  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .bs-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; }
+                .bs-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .bs-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+            </style>
+            <text x="0" y="16" class="bs-title">The gap opens, the gap closes</text>
+            <line x1="70" y1="30" x2="70" y2="215" stroke="var(--border)" stroke-width="1"/>
+            <text x="0" y="48" class="bs-year">2012</text>
+            <text x="80" y="48" class="bs-item">webpack begins (a thesis side project); TypeScript ships. The gap is real.</text>
+            <text x="0" y="76" class="bs-year">2014</text>
+            <text x="80" y="76" class="bs-item">6to5 becomes Babel: tomorrow's JavaScript for yesterday's browsers.</text>
+            <text x="0" y="104" class="bs-good">2018</text>
+            <text x="80" y="104" class="bs-item">May: every major browser runs ES modules natively.</text>
+            <text x="0" y="132" class="bs-good">2021</text>
+            <text x="80" y="132" class="bs-item">December: Rails ships no-build as the default for new applications.</text>
+            <text x="0" y="160" class="bs-good">2023</text>
+            <text x="80" y="160" class="bs-item">March: import maps everywhere, Safari 16.4 the last to arrive.</text>
+            <text x="0" y="188" class="bs-good">2025</text>
+            <text x="80" y="188" class="bs-item">January: Node 23.6 runs TypeScript natively, unflagged.</text>
+            <line x1="0" y1="228" x2="640" y2="228" stroke="var(--border)" stroke-width="1"/>
+            <text x="0" y="244" class="bs-muted" font-style="italic">The gap the build step bridged closed years ago. The step stayed.</text>
+        </svg>
+
+        <p>Some platforms drew the conclusion. Ruby on Rails made no-build the default for new applications back in December 2021, serving plain ES modules through import maps; its author, David Heinemeier Hansson, put the argument in one line: <a href="https://world.hey.com/dhh/you-can-t-get-faster-than-no-build-7a44131c" target="_blank" rel="noopener">you can't get faster than No Build</a>.</p>
+
+        <p>And the JavaScript mainstream? When the React team retired Create React App in February 2025, the farewell notice pointed to frameworks and to build tools such as Vite. The scaffold still installs the compiler first and writes hello world second. The industry has treated slow builds as the problem for a decade and answered with a faster bundler every time: Grunt, Gulp, webpack, Rollup, Parcel, esbuild, Vite, Turbopack, Rolldown (call it nine generations, or eight, depending on whether you count Vite's two engines separately). esbuild advertises itself as 10 to 100 times faster than the generation before it. A faster build step has always been on offer. The option of no build step, for a large class of projects, somehow never made the menu.</p>
+
+        <svg viewBox="0 0 640 210" aria-label="Two paths for the same one-word change. The build path: install dependencies, compile and transpile, bundle, minify, generate sourcemaps, deploy; eleven metered minutes. The direct path: edit the file, serve it; the browser runs the source; no meter runs. Both paths end in the same page in the same browser." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tm-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tm-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .tm-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; }
+                .tm-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .tm-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tm-box   { fill: none; stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="0" y="16" class="tm-title">One typo, two roads to the same page</text>
+            <rect x="0" y="30" width="640" height="70" class="tm-box" rx="4"/>
+            <text x="12" y="48" class="tm-head">THE BUILD PATH</text>
+            <text x="12" y="66" class="tm-item">install &#x2192; compile &#x2192; bundle &#x2192; minify &#x2192; sourcemaps &#x2192; deploy</text>
+            <text x="12" y="84" class="tm-muted">eleven minutes, every one of them on somebody's meter</text>
+            <rect x="0" y="115" width="640" height="70" class="tm-box" rx="4"/>
+            <text x="12" y="133" class="tm-good">THE DIRECT PATH</text>
+            <text x="12" y="151" class="tm-item">edit &#x2192; serve; the browser runs the source</text>
+            <text x="12" y="169" class="tm-muted">no meter runs when there is nothing to build</text>
+            <text x="0" y="203" class="tm-muted" font-style="italic">Both roads end in the same page in the same browser.</text>
+        </svg>
+
+        <h2>The Meter</h2>
+
+        <p>Here is the part of the audit where the invoice arrives, because the build step is also a billable unit. GitHub meters hosted Linux runners at $0.006 per minute once the free allowance is spent. Netlify's free tier includes 300 build minutes a month; the next tier costs $19. Vercel includes 6,000 minutes and then charges per additional minute, up to $0.126 on its fastest hardware. None of these meters runs when there is nothing to build. The eleven-minute pipeline for the one-word typo is not an accident of your configuration; it is the business model working as designed. The platforms did not invent the build step, and to be fair they also sell you the cache against it, but they have no earthly reason to ask whether you need it at all.</p>
+
+        <svg viewBox="0 0 640 190" aria-label="What the build minute costs in 2026. GitHub Actions: $0.006 per minute for hosted Linux runners after the free allowance. Netlify: 300 free build minutes a month, the Pro tier from $19 a month. Vercel: 6,000 minutes included, overage billed per minute up to $0.126 on Turbo hardware. The note reads: no meter runs when there is nothing to build." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .mt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .mt-name  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .mt-price { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 16px; font-weight: 700; }
+                .mt-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .mt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+            </style>
+            <text x="0" y="16" class="mt-title">The build minute, priced (July 2026)</text>
+            <text x="0" y="52" class="mt-name">GitHub Actions</text>
+            <text x="0" y="74" class="mt-price">$0.006/min</text>
+            <text x="0" y="92" class="mt-item">hosted Linux runners,</text>
+            <text x="0" y="104" class="mt-item">past the free allowance</text>
+            <text x="230" y="52" class="mt-name">Netlify</text>
+            <text x="230" y="74" class="mt-price">300 min free</text>
+            <text x="230" y="92" class="mt-item">per month; the Pro tier</text>
+            <text x="230" y="104" class="mt-item">starts at $19/month</text>
+            <text x="460" y="52" class="mt-name">Vercel</text>
+            <text x="460" y="74" class="mt-price">to $0.126/min</text>
+            <text x="460" y="92" class="mt-item">overage on Turbo hardware;</text>
+            <text x="460" y="104" class="mt-item">6,000 minutes included</text>
+            <line x1="0" y1="160" x2="640" y2="160" stroke="var(--border)" stroke-width="1"/>
+            <text x="0" y="178" class="mt-muted" font-style="italic">No meter runs when there is nothing to build.</text>
+        </svg>
+
+        <p>What the installer pays is broader than the meter. The onboarding day lost to assembling a toolchain before the first line of product code. The production bug you debug through a sourcemap into code whose shape you never wrote. The half-day a broken lockfile takes out of a release. The compiler chain that is itself a dependency tree with its own maintenance and its own supply-chain surface. And the counter's strongest case deserves saying plainly: a 400,000-line TypeScript codebase or a genuinely large single-page application earns its compiler every day. This audit questions the default, and leaves the tool its earned place.</p>
+
+        <h2>The Point</h2>
+
+        <p>A large share of the working web is server-rendered pages, content sites, internal tools, and the modest sites that are three templates and a stylesheet. For that share, in 2026, the compile step is a habit with a meter attached, carried forward from a browser landscape that stopped existing years ago. The default deserves to be inverted: start with no build, and add one when something you can measure demands it. Plenty of projects will pass that test honestly. The rest are paying for a gap that closed years ago.</p>
+
+        <blockquote><p>Every other compile step in software serves a machine that cannot run the source. This one serves a platform that has been able to run the source for years. A build step nobody can justify is a standing order, renewed on every push.</p></blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The audit, in short:</strong></p>
+            <ul>
+                <li><strong>The concession:</strong> from 2012 to roughly 2018, compiling was the only professional way to write modern code for the browsers people actually used.</li>
+                <li><strong>The platform:</strong> native ES modules everywhere since May 2018; import maps since March 2023; Node runs TypeScript unflagged since January 2025.</li>
+                <li><strong>The default:</strong> the mainstream scaffold still installs the compiler first; nine bundler generations answered slow builds, none answered the question.</li>
+                <li><strong>The bill:</strong> metered CI minutes, onboarding days, sourcemap debugging, and a toolchain with its own supply chain.</li>
+                <li><a href="https://www.infoq.com/news/2025/03/node-23-runs-typescript-natively/" target="_blank" rel="noopener">Node.js runs TypeScript natively (InfoQ)</a></li>
+                <li><a href="https://world.hey.com/dhh/you-can-t-get-faster-than-no-build-7a44131c" target="_blank" rel="noopener">DHH: You can't get faster than No Build</a></li>
+                <li><a href="https://react.dev/blog/2025/02/14/sunsetting-create-react-app" target="_blank" rel="noopener">Sunsetting Create React App (React team)</a></li>
+                <li><a href="https://esbuild.github.io/" target="_blank" rel="noopener">esbuild benchmark</a></li>
+                <li><a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">Vivian Voss, Integrated by Design</a> &#x2014; the reduction argument in full</li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
