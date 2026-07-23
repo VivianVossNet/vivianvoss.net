@@ -14,6 +14,7 @@ local pages = {
     { loc = "/print",      priority = "0.6",  changefreq = "monthly" },
     { loc = "/print/integrated-by-design", priority = "0.7", changefreq = "monthly" },
     -- blog articles
+    { loc = "/blog/the-evaluation-penalty",         priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-build-step-nobody-ordered",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-drift",                              priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-skill-we-stopped-needing",           priority = "0.7", changefreq = "yearly" },
