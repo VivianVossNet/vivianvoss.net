@@ -1,0 +1,326 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}How We Learned to Install Software &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Four answers to one question, each cleaning up after the last: Slackware's refusal to resolve dependencies, the recipe trees of Portage and Ports, binary packages with automatic resolution, and the modern bundling of Flatpak, Snap, AppImage and Nix. Then the step below the first rung, where a shell script installs and records nothing at all.">
+{( endslot )}
+
+{( slot canonical )}/blog/installing-software{( endslot )}
+
+{( slot og-title )}How We Learned to Install Software &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}On 17 July 1993 Slackware 1.00 went out on twenty-four floppy disks, and it still ships a package system that will not resolve a dependency for you. That refusal is the first honest answer to one question: what should happen when software needs other software? Three answers follow it, each solving what the last one broke and charging for the privilege. Then comes the step below the first rung, which most of us take daily.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "How We Learned to Install Software",
+    "datePublished": "2026-07-27",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/installing-software",
+    "description": "A ladder of four answers to the question of what should happen when software needs other software, and a fifth position below its first rung. Slackware 1.00 shipped on 17 July 1993 on twenty-four floppy disks and is the oldest surviving Linux distribution; its package tools make no attempt to track dependencies, a refusal justified by the circular requirement and the unsatisfiable version conflict that automatic resolution can produce. What survives that refusal is complete bookkeeping: a plain text record of every installed package under /var/log/packages, moved aside rather than deleted on removal. The second answer declares what the first left implicit: Gentoo's Portage and the FreeBSD Ports Collection describe per program where the source comes from, what it depends on and which optional features may be switched on or off, as USE flags or options, buying control that no binary can offer at the price of compilation time. The third answer removes the waiting by having someone else compile: FreeBSD's pkg serves binaries built from the same ports tree, Debian pairs dpkg with apt, Red Hat pairs rpm with dnf, scaling to archives of some seventy thousand packages, at the price that every build option becomes somebody else's decision. The fourth answers a different problem, software that must run across distributions: Flatpak shares runtimes so that patching a runtime patches every application on it, Snap bundles more per application, AppImage bundles everything into a single file whose libraries freeze when a project is abandoned, and Nix stores each build under a hash of its complete dependency tree, allowing incompatible versions to coexist and making upgrades and rollbacks atomic. Their common thread is the abandonment of one shared library serving every program, the premise that once made a security fix arrive a single time and cover everything. Below all of it sits the install script piped into a shell, offered officially by rustup and by Docker: it resolves no dependencies, records nothing, verifies no signature, offers no removal and appears in no audit, doing less than a floppy disk distribution managed in 1993. A package manager is not a downloader; it is the memory of what you did to the machine.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-27">27 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>How We Learned to Install Software</h1>
+        <p class="vv-article-meta"><em>Four answers to one question, each cleaning up after the last, and a fifth that stopped answering it. Unix Universe.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">package management</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">sysadmin</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Unix Universe</em></p>
+
+        <p>On 17 July 1993, <a href="https://en.wikipedia.org/wiki/Slackware" target="_blank" rel="noopener">Slackware 1.00</a>
+            went out on twenty-four floppy disks. It is still maintained,
+            which makes it the oldest surviving Linux distribution, and it
+            still ships a package system that will not resolve a dependency
+            for you. <code>installpkg</code> unpacks an archive, writes down
+            what it put where, and stops. If the program wants a library you
+            do not have, you find that out when you run it.</p>
+
+        <p>Three decades of packaging progress have gone past this arrangement
+            without changing its mind. That is worth a moment of respect
+            before we climb, because it is the first honest answer to the
+            question everything else in this piece is arguing about: what
+            should happen when software needs other software?</p>
+
+        <h2>The Floor: Bookkeeping Without Automation</h2>
+
+        <p>The refusal is deliberate, and the reasoning given for it has always
+            been that automatic resolution buys convenience with a worse class
+            of failure, the circular requirement and the version conflict that
+            cannot be satisfied at all. Anyone who has watched a package
+            manager propose removing half the desktop in order to install a
+            text editor will grant the point some sympathy.</p>
+
+        <p>What is easy to miss is how much bookkeeping survives the refusal.
+            <a href="https://www.slackbook.org/html/package-management.html" target="_blank" rel="noopener">Slackware</a>
+            writes a plain text record of every installed package into
+            <code>/var/log/packages</code>, and on removal it moves that record
+            aside rather than deleting it. The system knows precisely what is
+            on it and when it arrived. It simply declines to act on that
+            knowledge unattended.</p>
+
+        <p>Complete records, no automation. Hold on to that pairing; we come
+            back to it at the bottom of the piece, and the return is not
+            flattering to us.</p>
+
+        <h2>The Recipe: Declaring What Was Previously Guessed</h2>
+
+        <p>The obvious complaint about the floor is that the machine knows the
+            dependency exists and still makes you find it by hand. The second
+            answer fixes exactly that, and adds something better while it is
+            there.</p>
+
+        <p>Gentoo's Portage and the FreeBSD Ports Collection do the same thing
+            in different accents. A small file per program declares where the
+            source comes from, what it needs, which patches apply, and which
+            optional features may be switched on or off. Gentoo calls those
+            switches <a href="https://wiki.gentoo.org/wiki/USE_flag" target="_blank" rel="noopener">USE flags</a>;
+            <a href="https://docs.freebsd.org/en/books/handbook/ports/" target="_blank" rel="noopener">FreeBSD</a>
+            calls them options. The dependency is no longer inferred after the
+            fact. It is written down before anything is built, by the person
+            who understood the program well enough to package it.</p>
+
+        <p>That buys control no binary can offer. Want the database without the
+            graphics libraries, or a daemon compiled with a feature nobody
+            enables by default? Change the declaration, rebuild that one thing,
+            and the tree carries your decision into the next update. You are
+            not off the map; you are still on it, holding the pen.</p>
+
+        <p>The cost is hours, and it is not a rounding error. A browser
+            compiled from source is an afternoon you will not get back, and the
+            learning curve is genuine. Anyone who tells you this stage is free
+            has not shipped to a deadline.</p>
+
+        <svg id="pkg-ladder" viewBox="0 0 640 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The ladder of package management. Rung one, the floor: Slackware installpkg, no dependency resolution but complete records. Rung two, the recipe: Gentoo Portage and FreeBSD Ports declare dependencies and build options, at the cost of compilation time. Rung three, the convenience: pkg, dpkg with apt, rpm with dnf install prebuilt binaries with automatic resolution, at the cost of the build options being decided by someone else. Rung four, the taming: Flatpak, Snap, AppImage and Nix carry software across distributions, at the cost of the shared library. Below the first rung sits the install script piped into a shell, which resolves nothing and records nothing." style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                #pkg-ladder .ld-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #pkg-ladder .ld-rung  { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #pkg-ladder .ld-what  { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #pkg-ladder .ld-cost  { font: italic 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #pkg-ladder .ld-bad   { font: 700 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #pkg-ladder .ld-line  { stroke: var(--border); stroke-width: 1; }
+                #pkg-ladder .ld-good  { fill: #4ab542; }
+                #pkg-ladder .ld-acc   { fill: var(--accent); }
+            </style>
+            <text class="ld-title" x="0" y="16">Four rungs, and the step below the first</text>
+
+            <rect class="ld-good" x="0" y="34" width="4" height="46"/>
+            <text class="ld-rung" x="16" y="48">4 &#x00B7; THE TAMING</text>
+            <text class="ld-what" x="16" y="64">Flatpak, Snap, AppImage, Nix: run across distributions</text>
+            <text class="ld-cost" x="16" y="78">cost: the shared library, so a fix now arrives many times</text>
+
+            <line class="ld-line" x1="0" y1="90" x2="640" y2="90"/>
+            <rect class="ld-good" x="0" y="98" width="4" height="46"/>
+            <text class="ld-rung" x="16" y="112">3 &#x00B7; THE CONVENIENCE</text>
+            <text class="ld-what" x="16" y="128">pkg, dpkg with apt, rpm with dnf: prebuilt, resolved for you</text>
+            <text class="ld-cost" x="16" y="142">cost: every build option is somebody else's decision</text>
+
+            <line class="ld-line" x1="0" y1="154" x2="640" y2="154"/>
+            <rect class="ld-good" x="0" y="162" width="4" height="46"/>
+            <text class="ld-rung" x="16" y="176">2 &#x00B7; THE RECIPE</text>
+            <text class="ld-what" x="16" y="192">Portage and Ports: dependencies and options declared, built by you</text>
+            <text class="ld-cost" x="16" y="206">cost: hours, and a genuine learning curve</text>
+
+            <line class="ld-line" x1="0" y1="218" x2="640" y2="218"/>
+            <rect class="ld-good" x="0" y="226" width="4" height="46"/>
+            <text class="ld-rung" x="16" y="240">1 &#x00B7; THE FLOOR</text>
+            <text class="ld-what" x="16" y="256">Slackware installpkg: no resolution, but a complete written record</text>
+            <text class="ld-cost" x="16" y="270">cost: you find the missing library when the program will not start</text>
+
+            <line class="ld-line" x1="0" y1="282" x2="640" y2="282"/>
+            <rect class="ld-acc" x="0" y="290" width="4" height="34"/>
+            <text class="ld-bad" x="16" y="304">BELOW &#x00B7; curl into a shell</text>
+            <text class="ld-what" x="16" y="320">no resolution, no record, no signature, no removal, no audit</text>
+        </svg>
+
+        <h2>The Convenience: Somebody Else's Afternoon</h2>
+
+        <p>So the third answer keeps the declarations and removes the waiting.
+            Someone else compiles; you install the result. FreeBSD's
+            <code>pkg</code> serves binaries built from the very same ports
+            tree. Debian keeps dpkg for putting packages on disk and apt above
+            it for solving the graph, along the lines its
+            <a href="https://www.debian.org/doc/debian-policy/" target="_blank" rel="noopener">policy document</a>
+            has held for three decades. Red Hat's rpm and dnf do the
+            equivalent. This is where the working world lives, and for good
+            reasons: it is quick, it is transactional, and it scales to an
+            archive of some seventy thousand packages tended by thousands of
+            hands.</p>
+
+        <p>The price is quiet enough to miss. Every build option is now
+            somebody else's decision, made once, for everyone. Disagree with it
+            and you are back to compiling, except now you are also the sole
+            maintainer of a package the archive does not expect to see. The
+            recipe still exists. You are simply no longer the one reading
+            it.</p>
+
+        <h2>The Taming: Giving Up the Shared Library</h2>
+
+        <p>Then the ground moved. The genuinely hard problem was never
+            resolution inside a distribution; it was software that must run
+            across all of them, each with its own library versions and its own
+            opinions about where things live. Four answers arrived, and they
+            disagree with one another more than their advocates admit.</p>
+
+        <p><a href="https://docs.flatpak.org/en/latest/basic-concepts.html" target="_blank" rel="noopener">Flatpak</a>
+            keeps a shared runtime: applications are built against a runtime,
+            that runtime is installed once on the host, and further
+            applications on the same runtime add little to it. Patch the
+            runtime and every application sitting on it is patched at once,
+            which is the old distribution virtue rebuilt one storey up. Snap
+            bundles rather more per application, so ten of them mean ten
+            near-copies of much the same thing. AppImage bundles everything
+            into one file, which is precisely why it runs anywhere and
+            precisely why a library inside it is only ever fixed when the
+            author rebuilds; when a project is abandoned, its bundled libraries
+            are frozen in the state they were abandoned in.
+            <a href="https://wiki.nixos.org/wiki/Nix_Package_Manager" target="_blank" rel="noopener">Nix</a>
+            takes a different road entirely and stores every build under a hash
+            of its complete dependency tree, which lets incompatible versions
+            sit side by side and makes both upgrades and rollbacks atomic.</p>
+
+        <p>Notice the common thread in most of that. The central premise of a
+            distribution, one copy of a library serving every program on the
+            machine, has been quietly abandoned as unworkable across
+            ecosystems. That premise was doing real work: it was the reason a
+            security fix arrived once and covered everything. Give it up and
+            the fix must now arrive many times, from many people, on their
+            schedules rather than yours.</p>
+
+        <h2>The Step Below the First</h2>
+
+        <p>Which brings the ladder back down to the ground, and then some.</p>
+
+        <p>Ask how you installed your last five development tools. For a good
+            number of readers the honest answer is a line copied off a
+            documentation page: fetch a script over HTTPS, pipe it straight
+            into a shell. Rust's official installer is offered that way. So is
+            Docker's convenience script, and plenty besides. The reasons are
+            not disreputable, either. Upstream will not maintain packages for a
+            dozen distributions with a dozen conventions, and the
+            distribution's version is frequently a year behind what the project
+            actually supports.</p>
+
+        <p>But look where the thing sits on the ladder we have just climbed. It
+            does not resolve dependencies, which puts it on the floor with
+            Slackware. It also does not write down what it installed, does not
+            verify a signature before executing, offers no way to remove what
+            it left, and shows up in no audit afterwards. Slackware, declining
+            to guess in 1993, at least kept the receipts. We have arrived at a
+            method that does less than a floppy-disk distribution managed
+            thirty-three years ago, and we run it deliberately, as root, on
+            machines that matter.</p>
+
+        <svg id="pkg-matrix" viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="What each approach actually provides. Columns: resolves dependencies, keeps a record of installed files, verifies a signature, supports clean removal, appears in a vulnerability audit. Slackware's installpkg: no resolution, but record, removal and audit are present. Ports and Portage: all five present. Binary package managers such as pkg, apt and dnf: all five present. Flatpak, Snap and Nix: resolution, record, signature and removal present, with audit coverage depending on the tooling. An install script piped into a shell: none of the five." style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                #pkg-matrix .mx-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #pkg-matrix .mx-head  { font: 700 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #pkg-matrix .mx-row   { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #pkg-matrix .mx-bad-r { font: 700 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #pkg-matrix .mx-note  { font: italic 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #pkg-matrix .mx-line  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text class="mx-title" x="0" y="16">What each one actually gives you</text>
+            <text class="mx-head" x="205" y="44">RESOLVES</text>
+            <text class="mx-head" x="290" y="44">RECORDS</text>
+            <text class="mx-head" x="370" y="44">SIGNATURE</text>
+            <text class="mx-head" x="465" y="44">REMOVAL</text>
+            <text class="mx-head" x="550" y="44">AUDIT</text>
+            <line class="mx-line" x1="0" y1="52" x2="640" y2="52"/>
+
+            <text class="mx-row" x="0" y="74">installpkg (1993)</text>
+            <text class="mx-bad-r" x="205" y="74">no</text>
+            <text class="mx-row" x="290" y="74" fill="#4ab542">yes</text>
+            <text class="mx-bad-r" x="370" y="74">no</text>
+            <text class="mx-row" x="465" y="74" fill="#4ab542">yes</text>
+            <text class="mx-row" x="550" y="74" fill="#4ab542">yes</text>
+
+            <text class="mx-row" x="0" y="102">Ports, Portage</text>
+            <text class="mx-row" x="205" y="102" fill="#4ab542">yes</text>
+            <text class="mx-row" x="290" y="102" fill="#4ab542">yes</text>
+            <text class="mx-row" x="370" y="102" fill="#4ab542">yes</text>
+            <text class="mx-row" x="465" y="102" fill="#4ab542">yes</text>
+            <text class="mx-row" x="550" y="102" fill="#4ab542">yes</text>
+
+            <text class="mx-row" x="0" y="130">pkg, apt, dnf</text>
+            <text class="mx-row" x="205" y="130" fill="#4ab542">yes</text>
+            <text class="mx-row" x="290" y="130" fill="#4ab542">yes</text>
+            <text class="mx-row" x="370" y="130" fill="#4ab542">yes</text>
+            <text class="mx-row" x="465" y="130" fill="#4ab542">yes</text>
+            <text class="mx-row" x="550" y="130" fill="#4ab542">yes</text>
+
+            <text class="mx-row" x="0" y="158">Flatpak, Snap, Nix</text>
+            <text class="mx-row" x="205" y="158" fill="#4ab542">yes</text>
+            <text class="mx-row" x="290" y="158" fill="#4ab542">yes</text>
+            <text class="mx-row" x="370" y="158" fill="#4ab542">yes</text>
+            <text class="mx-row" x="465" y="158" fill="#4ab542">yes</text>
+            <text class="mx-note" x="550" y="158">varies</text>
+
+            <line class="mx-line" x1="0" y1="172" x2="640" y2="172"/>
+            <text class="mx-row" x="0" y="194">curl into a shell</text>
+            <text class="mx-bad-r" x="205" y="194">no</text>
+            <text class="mx-bad-r" x="290" y="194">no</text>
+            <text class="mx-bad-r" x="370" y="194">no</text>
+            <text class="mx-bad-r" x="465" y="194">no</text>
+            <text class="mx-bad-r" x="550" y="194">no</text>
+
+            <text class="mx-note" x="0" y="228">The oldest row on the board beats the newest one in four columns out of five.</text>
+        </svg>
+
+        <h2>The Point</h2>
+
+        <p>Every step up this ladder solved something real and charged honestly
+            for it: records without automation, control at the price of hours,
+            speed at the price of the build, portability at the price of the
+            shared library. A working engineer can defend any of those on a
+            given Tuesday, and most of us have.</p>
+
+        <p>The trade at the bottom is the only one nobody made on purpose. It
+            arrived dressed as a convenience, and it quietly costs the one
+            thing every stage above it kept.</p>
+
+        <blockquote>
+            <p>A package manager is not a downloader. It is the memory of what
+                you did to the machine.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The ladder, in short:</strong></p>
+            <ul>
+                <li><strong>The floor:</strong> Slackware, released 17 July 1993 on twenty-four floppy disks, still resolves nothing and still records everything.</li>
+                <li><strong>The recipe:</strong> Portage and Ports declare dependencies and build options before anything is compiled, and charge you the hours.</li>
+                <li><strong>The convenience:</strong> pkg, apt and dnf hand you somebody else's build, and with it somebody else's options.</li>
+                <li><strong>The taming:</strong> Flatpak, Snap, AppImage and Nix carry software across distributions by giving up the shared library, and with it the single security fix that covered everything.</li>
+                <li><a href="https://www.slackbook.org/html/package-management.html" target="_blank" rel="noopener">The Slackware Book on package management</a></li>
+                <li><a href="https://wiki.gentoo.org/wiki/USE_flag" target="_blank" rel="noopener">Gentoo USE flags</a></li>
+                <li><a href="https://docs.freebsd.org/en/books/handbook/ports/" target="_blank" rel="noopener">FreeBSD Handbook: packages and ports</a></li>
+                <li><a href="https://docs.flatpak.org/en/latest/basic-concepts.html" target="_blank" rel="noopener">Flatpak: runtimes and applications</a></li>
+                <li><a href="https://wiki.nixos.org/wiki/Nix_Package_Manager" target="_blank" rel="noopener">Nix, the functional package manager</a></li>
+                <li><a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">Vivian Voss, Integrated by Design</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
