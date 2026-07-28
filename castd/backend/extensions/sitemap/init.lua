@@ -14,6 +14,7 @@ local pages = {
     { loc = "/print",      priority = "0.6",  changefreq = "monthly" },
     { loc = "/print/integrated-by-design", priority = "0.7", changefreq = "monthly" },
     -- blog articles
+    { loc = "/blog/browser-you-patch-yourself", priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/installing-software", priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/bytes-of-art-kewlers-mfx-1995", priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/the-evaluation-penalty",         priority = "0.7", changefreq = "yearly" },

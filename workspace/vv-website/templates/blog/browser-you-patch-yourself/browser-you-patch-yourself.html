@@ -1,0 +1,311 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Browsers You Have to Patch Yourself &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A password manager on this machine occupies 553 MB, of which one megabyte is the password manager. Measured across one Mac: bundle sizes, runtime share, and the Chromium version inside each bundled engine. Two applications on the same laptop ship Chromium 148 and 142, and neither is patched by the operating system.">
+{( endslot )}
+
+{( slot canonical )}/blog/browser-you-patch-yourself{( endslot )}
+
+{( slot og-title )}Browsers You Have to Patch Yourself &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}What a desktop application weighs before it starts, and who is on the hook for it afterwards. Measured on one Mac with du: Proton Pass at 553 MB of which 1 MB is the application, Slack at 310 MB, against 62 MB and 44 MB for applications that use the system web view. The figure that matters is the version: Chromium 148 in one bundle, 142 in another, on the same machine.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Browsers You Have to Patch Yourself",
+    "datePublished": "2026-07-28",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/browser-you-patch-yourself",
+    "description": "A measurement of what desktop applications weigh before they start, taken on one Mac running macOS 26.5.2 using du, with the bundled runtime measured separately from the application's own code and the bundled Chromium version read out of the framework binary. Proton Pass occupies 553 MB, of which 457 MB is the Electron framework and 1 MB is the application itself; Slack occupies 310 MB, of which 274 MB is framework. Against those, Strongbox, which does the same job as Proton Pass using the system web view, is 62 MB, and Typora, whose entire interface is a web view, is 44 MB. The figure that matters is not size but version: the Chromium inside Slack reports 148 while the one inside Proton Pass reports 142, six major versions apart on the same machine, with Chromium shipping a major version roughly every four weeks. The usual defence of bundling, identical rendering everywhere, has weakened: WKWebView is WebKit, WebKitGTK is WebKit, and WebView2 is Blink, a 2013 fork of WebKit which itself came from KHTML in 2001, while the Interop programme has spent years closing the remaining gaps for ordinary markup. The honest reason to bundle is versions on Linux, documented by Tauri itself, whose guidance is to build against the oldest base system you intend to support because the WebKitGTK version is whatever the distribution shipped, and whose AppImage packaging embeds a runtime for that reason. That is a Linux problem paid for on every platform, since WKWebView ships with macOS and WebView2 is maintained on an evergreen channel. The cost is not disk space but patch responsibility: a frozen browser engine renders whatever arrives, and by June 2026 Google had fixed the fifth actively exploited Chrome zero-day of the year, CVE-2026-11645 entering the CISA catalogue on 9 June. A package manager is not a downloader, and a bundled engine is not a frozen library.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-28">28 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Browsers You Have to Patch Yourself</h1>
+        <p class="vv-article-meta"><em>What a desktop application weighs before it starts, and who is on the hook for it afterwards. The Bench Marker.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">electron</span>
+            <span class="vv-pill">tauri</span>
+            <span class="vv-pill">desktop apps</span>
+            <span class="vv-pill">security</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Bench Marker</em></p>
+
+        <p>A password manager on this machine occupies 553 megabytes. Its own
+            program code, the part that actually knows about passwords, is one
+            megabyte. The remaining 552 are a web browser it brought with
+            it.</p>
+
+        <p>That is not an accusation, it is a measurement, and the rest of this
+            piece is about what the number means. The claim under examination
+            is the one every engineering team makes when it picks this route,
+            usually in a single line of a decision document: bundling a browser
+            engine costs nothing worth arguing about.</p>
+
+        <h2>How This Was Measured</h2>
+
+        <p>Every application in <code>/Applications</code> on one Mac running
+            macOS 26.5.2, sized with the Unix tool <code>du -sm</code>. For each
+            one, the bundled runtime under <code>Contents/Frameworks</code> was
+            measured separately from the application's own code in
+            <code>app.asar</code>. Engine linkage was read with
+            <code>otool -L</code> against the main binary, which shows whether
+            an application draws on the system's WebKit or ships an engine of
+            its own. Bundled Chromium versions were read out of the framework
+            binary with <code>strings</code>.</p>
+
+        <p>No timings, no memory figures, nothing that depends on what else the
+            machine was doing. These are numbers on disk, and anyone with a Mac
+            can reproduce every one of them in about two minutes. That matters
+            here more than sophistication: a measurement you cannot repeat is an
+            anecdote with decimal places.</p>
+
+        <pre><code>du -sm /Applications/*.app
+du -sm "&lt;App&gt;.app/Contents/Frameworks"
+du -sm "$(find "&lt;App&gt;.app" -name app.asar | head -1)"
+otool -L "&lt;App&gt;.app/Contents/MacOS/&lt;binary&gt;" | grep WebKit
+strings "&lt;App&gt;.app/Contents/Frameworks/Electron Framework.framework/Electron Framework" \
+  | grep -oE "Chrome/[0-9.]+"</code></pre>
+
+        <h2>The Numbers</h2>
+
+        <p>Two applications ship their own engine. Proton Pass comes to 553 MB,
+            of which 457 MB is the Electron framework and 1 MB is the
+            application itself, so ninety-nine per cent of what was downloaded
+            is scaffolding. Slack comes to 310 MB, of which 274 MB is framework
+            and 10 MB is Slack.</p>
+
+        <p>Against that, applications drawing on the system's own engine:
+            Strongbox, which does the same job as Proton Pass, is 62 MB. Typora,
+            which renders its entire interface as a web view, is 44 MB. A Safari
+            extension in the same category is 7 MB.</p>
+
+        <svg id="wv-sizes" viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart of application sizes on disk in megabytes. Proton Pass with a bundled Electron engine is 553 megabytes, of which 457 is the framework and only 1 megabyte is the application itself. Slack with a bundled engine is 310 megabytes, of which 274 is framework. Strongbox, doing the same job as Proton Pass on the system web view, is 62 megabytes. Typora, whose whole interface is a web view, is 44 megabytes. A Safari extension is 7 megabytes. The note reads: the bundled engine alone is seven times the size of the entire native competitor." style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                #wv-sizes .sz-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #wv-sizes .sz-lbl   { font: 400 11px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #wv-sizes .sz-val   { font: 700 11px/1 ui-monospace, monospace; fill: var(--accent); }
+                #wv-sizes .sz-good  { font: 700 11px/1 ui-monospace, monospace; fill: #4ab542; }
+                #wv-sizes .sz-note  { font: italic 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #wv-sizes .sz-bar   { fill: var(--accent); opacity: .85; rx: 2; }
+                #wv-sizes .sz-bar-own { fill: var(--muted); opacity: .35; rx: 2; }
+                #wv-sizes .sz-bar-sys { fill: #4ab542; opacity: .8; rx: 2; }
+            </style>
+            <text class="sz-title" x="0" y="16">Megabytes on disk, and what they are</text>
+            <text class="sz-lbl" x="0" y="52">Proton Pass</text>
+            <rect class="sz-bar" x="130" y="40" width="380" height="16"/>
+            <rect class="sz-bar-own" x="510" y="40" width="1" height="16"/>
+            <text class="sz-val" x="520" y="53">553 MB</text>
+            <text class="sz-note" x="130" y="72">457 MB of that is the bundled engine; 1 MB is the application</text>
+
+            <text class="sz-lbl" x="0" y="108">Slack</text>
+            <rect class="sz-bar" x="130" y="96" width="213" height="16"/>
+            <text class="sz-val" x="352" y="109">310 MB</text>
+            <text class="sz-note" x="130" y="128">274 MB engine, 10 MB Slack</text>
+
+            <text class="sz-lbl" x="0" y="164">Strongbox</text>
+            <rect class="sz-bar-sys" x="130" y="152" width="43" height="16"/>
+            <text class="sz-good" x="182" y="165">62 MB</text>
+            <text class="sz-note" x="130" y="184">same job as Proton Pass, on the system web view</text>
+
+            <text class="sz-lbl" x="0" y="220">Typora</text>
+            <rect class="sz-bar-sys" x="130" y="208" width="30" height="16"/>
+            <text class="sz-good" x="169" y="221">44 MB</text>
+            <text class="sz-note" x="130" y="240">entire interface is a web view, no bundled engine</text>
+
+            <line x1="0" y1="256" x2="640" y2="256" stroke="var(--border)" stroke-width="1"/>
+            <text class="sz-note" x="0" y="274">The bundled engine alone is seven times the size of the entire native competitor.</text>
+        </svg>
+
+        <p>So a password manager that ships its own browser is roughly nine
+            times the size of a password manager that does not, and the browser
+            it brought along is on its own seven times the size of the entire
+            native competitor.</p>
+
+        <p>One more figure, and it is the one that matters. The Chromium inside
+            Slack reports version 148. The Chromium inside Proton Pass reports
+            142. Two applications, one machine, six major versions apart.
+            Chromium ships a major version roughly every four weeks.</p>
+
+        <h2>The Obvious Explanation, Which No Longer Holds</h2>
+
+        <p>The standard defence is that bundling guarantees identical rendering
+            everywhere, and that the alternative means fighting three different
+            engines. It is worth taking that seriously for a moment, because it
+            used to be true and is now mostly not.</p>
+
+        <p>The three system web views are not three unrelated engines.
+            <a href="https://developer.apple.com/documentation/webkit/wkwebview" target="_blank" rel="noopener">WKWebView</a>
+            on macOS is WebKit. WebKitGTK on Linux is WebKit.
+            <a href="https://learn.microsoft.com/en-us/microsoft-edge/webview2/" target="_blank" rel="noopener">WebView2</a>
+            on Windows is Blink, which is a fork of WebKit taken in 2013, which
+            was itself a fork of KDE's KHTML from 2001. They are cousins, not
+            strangers, and Gecko does not appear in this picture at all. On top
+            of that, the browser vendors have spent the last several years
+            deliberately closing the remaining gaps through the
+            <a href="https://wpt.fyi/interop" target="_blank" rel="noopener">Interop</a>
+            programme, which exists precisely so that ordinary HTML and CSS
+            behave the same across implementations.</p>
+
+        <p>For an interface built from standard markup, layout and styling, "it
+            will look different on the other engine" is a much weaker argument
+            in 2026 than the folklore suggests. Anyone who has shipped a form, a
+            list and a settings pane knows how far you get on plain CSS these
+            days without touching a vendor prefix.</p>
+
+        <h2>The Real Reason, Documented by the Alternative Itself</h2>
+
+        <p>The honest reason to bundle is not rendering. It is versions, and
+            specifically Linux.</p>
+
+        <p><a href="https://v2.tauri.app/reference/webview-versions/" target="_blank" rel="noopener">Tauri</a>,
+            the framework that exists to use the system web view instead of
+            bundling one, says so in its own documentation. Its
+            <a href="https://v2.tauri.app/distribute/debian/" target="_blank" rel="noopener">guidance</a>
+            is to build against the oldest base system you intend to support,
+            because the WebKitGTK version is whatever the distribution shipped
+            and not what you would choose. Ubuntu 22.04 sat on WebKit2GTK 2.34
+            for its whole supported life. Distributions could not force
+            migrations onto systems with years of support left, so applications
+            adapt downwards. The project's own AppImage packaging embeds a
+            WebKitGTK runtime for exactly this reason, which is to say the
+            escape from bundling ends in bundling again on the platform that
+            made bundling necessary.</p>
+
+        <p>That is a real problem and a fair defence. It is also a Linux
+            problem, and it is paid for on every platform. WKWebView arrives
+            with macOS and is updated with it. WebView2 is maintained by
+            Microsoft on an evergreen channel. On two of the three targets, the
+            argument for carrying your own engine mostly evaporates, and the
+            engine is carried anyway because the build is one build.</p>
+
+        <h2>Who Patches V8</h2>
+
+        <p>Which brings us to the part that is not about disk space at all.</p>
+
+        <p>A bundled engine is not a frozen library. A frozen library renders
+            the data your application hands it. A frozen browser engine renders
+            whatever arrives: link previews, embedded content, files somebody
+            shared with you. That is a different category of component, and its
+            vulnerability record reflects it. By June of this year Google had
+            shipped fixes for the fifth actively exploited Chrome zero-day of
+            2026; CVE-2026-11645, an out-of-bounds access in V8, went into the
+            <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">CISA catalogue of known exploited vulnerabilities</a>
+            on 9 June.</p>
+
+        <svg id="wv-patch" viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two patch paths compared. With a system web view, one fix from the operating system covers every application that uses it. With bundled engines, the same fix must arrive once per application, from each vendor, on that vendor's own schedule; the measurement found Chromium 148 in one application and 142 in another on the same machine. The note reads: six major versions apart, roughly six months of releases." style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                #wv-patch .pt-title { font: 700 13px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #wv-patch .pt-head  { font: 700 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #wv-patch .pt-good  { font: 700 10px/1 'Oxanium', system-ui, sans-serif; fill: #4ab542; }
+                #wv-patch .pt-bad   { font: 700 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--accent); }
+                #wv-patch .pt-item  { font: 400 10px/1 'Oxanium', system-ui, sans-serif; fill: var(--text); }
+                #wv-patch .pt-note  { font: italic 400 9px/1 'Oxanium', system-ui, sans-serif; fill: var(--muted); }
+                #wv-patch .pt-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text class="pt-title" x="0" y="16">One fix, or one fix per vendor</text>
+            <rect class="pt-box" x="0" y="30" width="300" height="96"/>
+            <text class="pt-good" x="14" y="52">SYSTEM WEB VIEW</text>
+            <text class="pt-item" x="14" y="74">The operating system ships the fix once.</text>
+            <text class="pt-item" x="14" y="92">Every application on it is covered.</text>
+            <text class="pt-note" x="14" y="112">WKWebView with macOS; WebView2 evergreen</text>
+
+            <rect class="pt-box" x="340" y="30" width="300" height="96"/>
+            <text class="pt-bad" x="354" y="52">BUNDLED ENGINE</text>
+            <text class="pt-item" x="354" y="74">Each vendor ships its own fix, or does not.</text>
+            <text class="pt-item" x="354" y="92">Your machine holds several versions at once.</text>
+            <text class="pt-note" x="354" y="112">measured: Chromium 148 and 142, same laptop</text>
+
+            <line x1="0" y1="150" x2="640" y2="150" stroke="var(--border)" stroke-width="1"/>
+            <text class="pt-item" x="0" y="172">Six major versions apart is roughly six months of Chromium releases.</text>
+            <text class="pt-note" x="0" y="196">A frozen library renders the data you chose. A frozen engine renders whatever arrives.</text>
+        </svg>
+
+        <p>When that engine belongs to the operating system, the fix arrives
+            from the operating system, once, for everything that uses it. When
+            each application carries its own, the fix arrives once per
+            application, from the vendor of that application, on that vendor's
+            release schedule. The measurement above is what that looks like in
+            practice: 148 in one application, 142 in another, on the same
+            laptop, on the same afternoon.</p>
+
+        <p>It also makes a distinction the industry rarely draws. Slack renders
+            content that other people sent, and Slack is current. A password
+            manager mostly renders its own interface, and can afford to be less
+            current, which raises the more awkward question: if the interface is
+            one megabyte of its own code, what is the browser doing there at
+            all?</p>
+
+        <h2>Two Honest Caveats</h2>
+
+        <p>A counter-finding from the same measurement, which complicates the
+            easy version of this argument: Microsoft Teams occupies 1090 MB on
+            this machine and does not use Electron at all. It carries its own
+            WebView2 framework instead. Bringing a web runtime along makes an
+            application heavy regardless of which runtime it is, and "native" is
+            not a synonym for small.</p>
+
+        <p>And the limits of the setup, since this series lives on
+            reproducibility: one machine, one operating system, one afternoon.
+            Bundle sizes say nothing about memory use or start-up time, neither
+            of which was measured here. Strongbox and Proton Pass both manage
+            passwords, but they are not feature-for-feature equivalent, and a
+            fair size comparison would need to account for that.</p>
+
+        <h2>The Point</h2>
+
+        <p>The measurement does not say that shipping an engine is wrong. It
+            says the trade has been mispriced.</p>
+
+        <p>What is actually bought is version control on one difficult platform.
+            What is actually paid is a browser per application, at several
+            hundred megabytes each, and a standing obligation to patch a
+            component whose exploit record is among the busiest in the industry.
+            That obligation is rarely written into the decision document, and it
+            does not expire.</p>
+
+        <p>So the default deserves inverting. Draw on the engine the operating
+            system already maintains, and bring your own only where you can name
+            the platform, the version and the reason. Anything else is a browser
+            you have quietly agreed to maintain.</p>
+
+        <blockquote>
+            <p>You did not install a password manager. You installed a browser
+                that happens to know your passwords.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The measurement, in short:</strong></p>
+            <ul>
+                <li><strong>Setup:</strong> one Mac, macOS 26.5.2, sizes from <code>du -sm</code>; runtime measured separately from application code; Chromium version read from the framework binary. No timings, nothing load-dependent.</li>
+                <li><strong>Sizes:</strong> Proton Pass 553 MB (457 MB engine, 1 MB application); Slack 310 MB (274 MB engine); Strongbox 62 MB; Typora 44 MB.</li>
+                <li><strong>Versions:</strong> Chromium 148 in one bundle, 142 in another, on the same machine.</li>
+                <li><strong>The counter-finding:</strong> Teams at 1090 MB uses WebView2, not Electron. Carrying a runtime is what costs, not the brand of runtime.</li>
+                <li><a href="https://wpt.fyi/interop" target="_blank" rel="noopener">Interop, the cross-browser compatibility effort</a></li>
+                <li><a href="https://v2.tauri.app/reference/webview-versions/" target="_blank" rel="noopener">Tauri on web view versions and Linux fragmentation</a></li>
+                <li><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">CISA Known Exploited Vulnerabilities catalogue</a></li>
+                <li><a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">Vivian Voss, Integrated by Design</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
