@@ -1,0 +1,311 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Cost That Changes Owner &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Cache invalidation is the strongest argument for keeping a build step. When a bundler fingerprints a file, the new name appears inside every file that imports it, so one small change invalidates the chain above it. An import map moves the hashes to one place, where a change costs one line.">
+{( endslot )}
+
+{( slot canonical )}/blog/cost-that-changes-owner{( endslot )}
+
+{( slot og-title )}The Cost That Changes Owner &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The best objection to dropping the build step is that whoever owns the build owns the cache invalidation. It is correct in its premise and wrong in its conclusion. Fingerprinting writes hashes into the files that import them, which is why one changed utility can cost a returning visitor a large part of your application. An import map holds the hashes in one document instead of in every file.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Cost That Changes Owner",
+    "datePublished": "2026-07-29",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/cost-that-changes-owner",
+    "description": "An accounting of the strongest argument for keeping a build step in the browser, which is that whoever owns the build step also owns the cache invalidation, and that a browser may notice a raw file has changed while an optimised import is left exactly as it was. The mechanism earns its keep first: HTTP caching is unforgiving, older remedies such as query strings and hand-raised version numbers failed inconsistently, and fingerprinting solved it by putting a hash of the contents into the filename so that any cache treats a changed file as a different file, which in turn allows HTML to be served with no-cache while fingerprinted assets carry max-age=31536000, immutable. The line item underneath is cascading cache invalidation, documented by Philip Walton: because the hash appears inside every file that imports it, changing one small module changes the text of each importing chunk and therefore their hashes, so a returning visitor downloads a substantial part of the application because one utility gained a line. Walton's own recommended remedy is an indirection layer, of which he calls import maps the simplest to implement. An import map is a small block of JSON in the page answering one question, which file to fetch when code asks for a module by name, so that sources go on importing utils while the map alone knows that utils currently means utils.7f3a91.js. Moving the hashes there leaves the cascade nowhere to travel: one module changes, one entry in the map changes, and every other file keeps its name and its cached copy, which the team at Banno report from production, with the map now also able to carry integrity metadata for subresource integrity. The distinction holds as long as the process only hashes files and writes a catalogue rather than rewriting sources, and the limits are real, since preload scanners do not discover imports, the plumbing is not a first-class build output, and beyond a few dozen entries maintaining a map is genuine work. Cache invalidation therefore does not disappear when the compile step does; it changes owner, from a factory that reprints the whole edition over one word to a catalogue where somebody corrects a single card.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-07-29">29 July 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Cost That Changes Owner</h1>
+        <p class="vv-article-meta"><em>Cache invalidation is the strongest argument for keeping a build step, and it survives the build step's departure in better shape than anyone expects. Lean Software.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">caching</span>
+            <span class="vv-pill">import maps</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">web performance</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Lean Software</em></p>
+
+        <p>Argue that a website does not need a compile step and the reply
+            arrives within the hour, usually polite and always the same shape.
+            An engineer put it to me recently in a single clause that is hard
+            to improve on: if you own the build step for the browser, you also
+            own the cache invalidation. He added the detail that makes it bite.
+            The browser may well work out that the raw file changed. An
+            optimised import is often left exactly as it was.</p>
+
+        <p>It is the best objection in the set, which is why it deserves a full
+            accounting rather than a shrug. The answer is not that the problem
+            goes away. It does not. The answer is that the bill lands on a
+            different desk, and that it is smaller when it gets there.</p>
+
+        <h2>The Job the Bundler Does Well</h2>
+
+        <p>Grant the mechanism its due first, because it is genuinely good
+            engineering.</p>
+
+        <p>HTTP caching is unforgiving. A stale asset served from a browser
+            cache is a production fault that nobody can recall, and the
+            traditional remedies were all a bit of a palaver: query strings
+            that proxies handled inconsistently, and version numbers that
+            somebody eventually forgot to raise. Fingerprinting solved it
+            properly. Put a hash of the file's contents into its name, and any
+            cache anywhere treats a changed file as a different file, with no
+            ambiguity to negotiate.</p>
+
+        <p>That unlocks the pairing every serious deployment uses now: HTML
+            served with <code>no-cache</code> so it is always revalidated, and
+            every fingerprinted asset served with
+            <code>max-age=31536000, immutable</code>, which tells the browser
+            not to so much as ask for a year. Webpack, Vite and Rollup do all
+            of this without being asked. If the question is whether the build
+            step earned its keep here, the honest answer is that it did.</p>
+
+        <h2>The Part of the Bill Nobody Reads Out</h2>
+
+        <p>Now the line item underneath.</p>
+
+        <p>When a bundler fingerprints a file, the new name has to appear
+            somewhere, and where it appears is inside every file that imports
+            it. Change one small module and its hash changes, which changes the
+            text of each importing chunk, which changes their hashes, which
+            changes the text of anything importing those. Philip Walton, who
+            documented this in detail, puts the mechanism plainly: the hashes
+            appear in the contents of other files, which causes those files to
+            be invalidated when the hashes change.</p>
+
+        <svg viewBox="0 0 560 250"
+             aria-label="Diagram of cascading cache invalidation. A small utility module changes, so its filename hash changes from utils.7f3a91.js to utils.b204ce.js. Because that name is written inside the chunk that imports it, the chunk's own contents change and its hash changes too, and because the chunk's name is written inside the entry file, the entry file changes as well. All three files lose their cached copies, although only one of them was edited."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ci-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ci-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .ci-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .ci-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ci-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .ci-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .ci-boxbad { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .ci-line  { stroke: var(--accent); stroke-width: 1.5; }
+            </style>
+            <text x="280" y="22" class="ci-title" text-anchor="middle">One edit, three invalidations</text>
+
+            <rect x="30" y="45" width="150" height="46" class="ci-boxbad"/>
+            <text x="42" y="62" class="ci-head">EDITED</text>
+            <text x="42" y="76" class="ci-item">utils.7f3a91.js</text>
+            <text x="42" y="87" class="ci-bad">&#x2192; utils.b204ce.js</text>
+
+            <line x1="180" y1="68" x2="215" y2="68" class="ci-line"/>
+            <text x="197" y="60" class="ci-muted" text-anchor="middle">name</text>
+
+            <rect x="215" y="45" width="150" height="46" class="ci-boxbad"/>
+            <text x="227" y="62" class="ci-head">NOT EDITED</text>
+            <text x="227" y="76" class="ci-item">chunk.a91f04.js</text>
+            <text x="227" y="87" class="ci-bad">&#x2192; chunk.6dd28b.js</text>
+
+            <line x1="365" y1="68" x2="400" y2="68" class="ci-line"/>
+            <text x="382" y="60" class="ci-muted" text-anchor="middle">name</text>
+
+            <rect x="400" y="45" width="130" height="46" class="ci-boxbad"/>
+            <text x="412" y="62" class="ci-head">NOT EDITED</text>
+            <text x="412" y="76" class="ci-item">main.0c17ea.js</text>
+            <text x="412" y="87" class="ci-bad">&#x2192; main.f38b55.js</text>
+
+            <text x="30" y="125" class="ci-muted">The hash of each file is written into the file that imports it,</text>
+            <text x="30" y="140" class="ci-muted">so a changed name changes the contents of its parent.</text>
+
+            <line x1="30" y1="158" x2="530" y2="158" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="30" y="180" class="ci-head">WHAT THE RETURNING VISITOR DOWNLOADS</text>
+            <rect x="30" y="192" width="440" height="14" fill="var(--accent)" rx="2"/>
+            <text x="30" y="222" class="ci-item">Everything above the edit, because one utility gained a line.</text>
+            <text x="30" y="237" class="ci-muted">The edited file is the smallest part of the bill.</text>
+        </svg>
+
+        <p>The practical shape of that is a returning visitor downloading a
+            substantial part of your application because one utility function
+            gained a line. Not the changed file. The chain above it, on their
+            mobile data, for a change they will never see.</p>
+
+        <p>And the failure runs in the other direction too, which is the
+            observation that opened this piece. The browser is perfectly
+            capable of noticing that a raw file has changed. What it cannot
+            notice is that an optimised import still points where it always
+            pointed. Correctness here has never depended on the browser being
+            clever. It depends on somebody keeping the names honest.</p>
+
+        <p>Walton's recommended remedy is worth quoting for its provenance as
+            much as its content, since it comes from the person describing the
+            problem rather than from anyone selling the alternative: an
+            indirection layer, and of the available ones he calls import maps
+            the simplest and easiest to implement.</p>
+
+        <h2>One Place Instead of Every Place</h2>
+
+        <p>An import map is a small block of JSON sitting in the page, and all
+            it does is answer one question: when this code asks for a module by
+            name, which file do you actually fetch? Source files go on
+            importing something called <code>utils</code>. The map, and only
+            the map, knows that <code>utils</code> currently means
+            <code>utils.7f3a91.js</code>. Change the file, change that one
+            line, and every importer is redirected without having been
+            touched.</p>
+
+        <pre><code>&lt;script type="importmap"&gt;
+{
+  "imports": {
+    "utils": "/js/utils.7f3a91.js",
+    "cart":  "/js/cart.a91f04.js"
+  }
+}
+&lt;/script&gt;</code></pre>
+
+        <svg viewBox="0 0 560 250"
+             aria-label="Diagram of the same edit under an import map. The utility module changes and its hash changes, but only one line of the import map is rewritten. The chunk and the entry file import the module by its plain name, so their contents are untouched, their hashes are unchanged, and their cached copies survive. The returning visitor downloads only the edited file and the page itself."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .im-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .im-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .im-ok    { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .im-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .im-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .im-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .im-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .im-boxbad { fill: none; stroke: var(--accent); stroke-width: 1.5; rx: 4; }
+                .im-boxok { fill: none; stroke: #4ab542; stroke-width: 1.5; rx: 4; }
+                .im-line  { stroke: var(--border); stroke-width: 1.5; }
+            </style>
+            <text x="280" y="22" class="im-title" text-anchor="middle">One edit, one line</text>
+
+            <rect x="30" y="45" width="150" height="46" class="im-boxbad"/>
+            <text x="42" y="62" class="im-head">EDITED</text>
+            <text x="42" y="76" class="im-item">utils.7f3a91.js</text>
+            <text x="42" y="87" class="im-bad">&#x2192; utils.b204ce.js</text>
+
+            <line x1="180" y1="68" x2="215" y2="68" class="im-line"/>
+            <text x="197" y="60" class="im-muted" text-anchor="middle">name</text>
+
+            <rect x="215" y="45" width="150" height="46" class="im-boxbad"/>
+            <text x="227" y="62" class="im-head">ONE LINE REWRITTEN</text>
+            <text x="227" y="76" class="im-item">the import map</text>
+            <text x="227" y="87" class="im-item">"utils": &#x2026;b204ce.js</text>
+
+            <line x1="365" y1="68" x2="400" y2="68" class="im-line"/>
+            <text x="382" y="60" class="im-muted" text-anchor="middle">name</text>
+
+            <rect x="400" y="45" width="130" height="46" class="im-boxok"/>
+            <text x="412" y="62" class="im-ok">UNCHANGED</text>
+            <text x="412" y="76" class="im-item">chunk.a91f04.js</text>
+            <text x="412" y="87" class="im-item">main.0c17ea.js</text>
+
+            <text x="30" y="125" class="im-muted">Importers ask for the plain name, so their contents never change,</text>
+            <text x="30" y="140" class="im-muted">their hashes hold, and their cached copies survive the deploy.</text>
+
+            <line x1="30" y1="158" x2="530" y2="158" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="30" y="180" class="im-head">WHAT THE RETURNING VISITOR DOWNLOADS</text>
+            <rect x="30" y="192" width="46" height="14" fill="#4ab542" rx="2"/>
+            <text x="30" y="222" class="im-item">The edited file, and the page carrying the map.</text>
+            <text x="30" y="237" class="im-muted">The cost now scales with what changed, not with what did not.</text>
+        </svg>
+
+        <p>Move the hashes there and the cascade has nowhere to travel. One
+            module changes, its entry in the map changes, and every other file
+            on the machine keeps the name it had and therefore keeps its place
+            in the cache. The team at Banno, who run this in production, report
+            exactly that: the unchanged parents retain their hashes and their
+            cached copies while the map points them at the new child. Since
+            last year the map can carry integrity metadata as well, so the same
+            block that resolves the name also states the expected hash for
+            subresource integrity.</p>
+
+        <p>Notice what the work has become. Something still has to compute
+            hashes and write them into a map. That something reads your files
+            and produces a catalogue entry. It does not rewrite your sources,
+            and what it emits is one small document rather than a new edition
+            of everything.</p>
+
+        <h2>Where Bookkeeping Turns Back into Building</h2>
+
+        <p>The distinction holds precisely as long as that stays true, and it
+            is worth being strict about the boundary, because it is easy to
+            cross without noticing.</p>
+
+        <p>A process that hashes files and updates a map is bookkeeping. A
+            process that rewrites your source into something else and ships
+            that instead is a build, whatever you call the script. If your map
+            generation starts transpiling, or quietly bundles the vendor chunk
+            on the way past, then the build step has not gone anywhere. It has
+            changed its name and kept its habits.</p>
+
+        <p>And the limits deserve stating, since the alternative has them.
+            Browsers discover imports by executing the module graph rather than
+            by scanning the HTML, so a preload scanner will not find them for
+            you and the first visit needs help through preloading or a service
+            worker. Build tooling has never treated the map as a first-class
+            output, which means the plumbing is yours. And beyond a few dozen
+            entries, maintaining a map is real work rather than a rounding
+            error. For an application with a genuinely large module graph, the
+            bundler is still doing something for you that you would have to
+            replace deliberately.</p>
+
+        <h2>The Point</h2>
+
+        <p>The objection was correct in its premise and wrong in its
+            conclusion. Cache invalidation is neither optional nor free, and it
+            does not disappear when the compile step does.</p>
+
+        <p>What happens instead is that it changes owner. It moves out of a
+            factory that reprints the whole edition because one word changed on
+            page four, and into a catalogue where somebody corrects a single
+            card. Both are work. Only one of them scales with the size of
+            everything you did not touch.</p>
+
+        <blockquote>
+            <p>A build step compiles. A map remembers. The difference shows up
+                in what your users have to download when you fix a typo.</p>
+        </blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The point:</strong></p>
+            <ul>
+                <li><strong>Fingerprinting earned its place:</strong> a hash in the filename lets any cache treat a changed file as a different file, which is what makes <code>max-age=31536000, immutable</code> safe to serve.</li>
+                <li><strong>The cascade is the hidden charge:</strong> the hash lives inside every importing file, so one edited module rewrites the chain above it and costs a returning visitor far more than the edit.</li>
+                <li><strong>An import map holds the names in one document:</strong> sources import by plain name, one entry changes per deploy, and unchanged files keep their cached copies.</li>
+                <li><strong>The boundary is sharp:</strong> hashing files and writing a catalogue is bookkeeping; rewriting sources and shipping those instead is a build under a new name.</li>
+                <li><strong>The limits are real:</strong> no preload scanner discovery, no first-class tooling support, and genuine maintenance work past a few dozen entries.</li>
+                <li><a href="https://philipwalton.com/articles/cascading-cache-invalidation/" target="_blank" rel="noopener">Philip Walton on cascading cache invalidation</a></li>
+                <li><a href="https://banno.com/articles/improving-caching-with-import-maps/" target="_blank" rel="noopener">Banno on import maps for caching in production</a></li>
+                <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap" target="_blank" rel="noopener">MDN on import maps</a></li>
+                <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control" target="_blank" rel="noopener">MDN on Cache-Control and immutable</a></li>
+                <li><a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">Integrated by Design, the reduction argument at book length</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
