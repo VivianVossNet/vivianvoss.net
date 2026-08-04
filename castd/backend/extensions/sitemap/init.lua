@@ -14,6 +14,9 @@ local pages = {
     { loc = "/print",      priority = "0.6",  changefreq = "monthly" },
     { loc = "/print/integrated-by-design", priority = "0.7", changefreq = "monthly" },
     -- blog articles
+    { loc = "/blog/bill-after-the-free-tier",   priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/compiled-for-everyone",   priority = "0.7", changefreq = "yearly" },
+    { loc = "/blog/bytes-of-art-razor1911",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/merge-is-the-signature",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/cost-that-changes-owner", priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/browser-you-patch-yourself", priority = "0.7", changefreq = "yearly" },

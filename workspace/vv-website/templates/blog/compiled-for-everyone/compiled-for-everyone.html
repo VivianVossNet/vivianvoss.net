@@ -1,0 +1,198 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Compiled for Everyone but You &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A binary package is compiled with conservative options because it has to run on the maximum number of systems. FreeBSD keeps the recipe as the primary object, so hardening flags, omitted components and kernel facilities stay decisions you can make and inspect. Debian and Fedora answer a different question, and answer it well.">
+{( endslot )}
+
+{( slot canonical )}/blog/compiled-for-everyone{( endslot )}
+
+{( slot og-title )}Compiled for Everyone but You &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Unix Universe. The FreeBSD installer asks ten hardening questions before the first reboot, and none of the answers are on by default. That posture runs through the whole system: ports keep the build recipe as the primary object, src.conf removes base components before they are compiled, and a single make.conf carries the hardening switches. Above that sit Capsicum, the MAC framework, securelevels and mac_veriexec. Poudriere keeps those decisions, because the official package repository is built with the same tool from the same tree. Debian and Fedora answer a different question, one audited binary set for an enormous unknown fleet, and their tools belong to whoever maintains the package.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Compiled for Everyone but You",
+    "datePublished": "2026-08-03",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/compiled-for-everyone",
+    "description": "Unix Universe, on source package systems and where a hardening decision actually lives. The FreeBSD installer contains a hardening menu with ten switches: hide processes of other user IDs, the same for group IDs, hide processes in jails, block unprivileged reading of the kernel message buffer, disable process debugging for unprivileged users, randomise process IDs, clear tmp at boot, run syslogd without a network socket, put a password prompt on the console, and disallow the destructive mode of DTrace. None are on by default, and the answers land in sysctl.conf and rc.conf where they stay readable. The FreeBSD Handbook explains the ports collection with the observation that packages are compiled with conservative options because they must run on the maximum number of systems, and that building from the port lets you change them. Ports keep the recipe as the primary object: make config opens the options, make showconfig reports them, make rmconfig discards them. src.conf governs the base system as well as the kernel, and its WITHOUT_ switches remove components before they are compiled at all. Hardening switches for third-party software live in make.conf as WITH_PIE, WITH_RELRO, WITH_BIND_NOW, WITH_FORTIFY, WITH_STACK_AUTOINIT and WITH_ZEROREGS, with stack protection already enabled; the same mechanic covers base and kernel through src.conf and src-env.conf. Ports that cannot be built position-independent carry a PIE_UNSAFE marker, so the knowledge of what breaks lives with the port maintainers, which is also why the flags are not enabled by default. Above the build options the base system carries Capsicum for capability mode, the MAC framework for mandatory access control, securelevels that take capabilities from root itself, chflags schg for immutability, event auditing and mtree for integrity checking, plus mac_veriexec, in the tree since FreeBSD 10, which loads a signature list of paths and hashes into the kernel and checks contents at exec and open across four enforcement levels. A hand-built port stays in the package database so pkg audit keeps checking it against VuXML, but pkg upgrade will replace it with the official binary, which is why the Handbook advises against mixing the two and why Poudriere exists: it builds in clean jails from the same ports tree using your make.conf and produces a repository your machines install from, exactly as the official repository is produced. Gentoo reaches a similar place through its hardened profile, implemented mostly through the compiler specs, adjusted through CFLAGS or per package with filter-flags. Debian sets hardening through dpkg-buildflags and DEB_BUILD_MAINT_OPTIONS, Fedora through central macros with rpmbuild, mock and fedpkg against Koji; these belong to the package maintainer, because their task is one audited binary set for an enormous unknown fleet with fixes delivered in hours. The honest difference is not existence, since Linux has SELinux, AppArmor, seccomp and auditd. It is where the knowledge lives and what it costs to acquire.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-03">3 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Compiled for Everyone but You</h1>
+        <p class="vv-article-meta"><em>A binary package is built for the widest possible set of machines, which is a sensible thing to build and a peculiar thing to receive. Unix Universe.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">ports</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">sysadmin</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Somewhere in the FreeBSD installer, after the disk layout and before the first reboot, there is a menu that asks what sort of machine this is going to be. Not the hostname. Whether unprivileged users should be able to see other people's processes. Whether the kernel message buffer stays readable. Whether process IDs come out in order or scattered.</p>
+
+        <p>Ten questions, each a checkbox, each landing in a configuration file you can read afterwards.</p>
+
+        <p>Most installers stopped asking. The reasonable explanation is that most users would not know the answers, and that is fair enough. The interesting part is what the asking implies about everything downstream.</p>
+
+        <h2>The Question at Install Time</h2>
+
+        <p>The hardening menu in bsdinstall offers to hide processes belonging to other user IDs, to do the same for group IDs, and to hide processes running inside jails. It offers to stop unprivileged users reading the kernel message buffer through <code>dmesg</code>, and to switch off process debugging facilities for them. It can randomise the process ID of anything newly created. It will clean <code>/tmp</code> at every boot, run <code>syslogd</code> with no network socket open at all, put a password prompt on the console, and forbid the destructive mode of DTrace.</p>
+
+        <p>None of that is switched on by default. Randomised PIDs are the clearest case: OpenBSD does it from the outset, FreeBSD puts the switch in front of you and lets you decide. Ticking the boxes leaves no hidden state behind, only a handful of lines in <code>/etc/sysctl.conf</code> and <code>/etc/rc.conf</code> that you can read six months later and understand.</p>
+
+        <svg viewBox="0 0 640 304" aria-label="The ten hardening switches offered by the FreeBSD installer, all off by default. Hide processes of other user IDs. Hide processes of other group IDs. Hide processes running inside jails. Block unprivileged reading of the kernel message buffer. Disable process debugging for unprivileged users. Randomise the process ID of new processes. Clear the tmp filesystem at boot. Run syslogd with no network socket. Put a password prompt on the console. Disallow the destructive mode of DTrace. The note reads: none are enabled by default, and every answer lands in a file you can read." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .hd-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .hd-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .hd-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .hd-box   { fill: none; stroke: var(--accent); stroke-width: 1.2; rx: 2; }
+            </style>
+            <text x="0" y="16" class="hd-title">The hardening menu, ten switches, all off by default</text>
+            <rect x="0" y="36" width="11" height="11" class="hd-box"/><text x="22" y="46" class="hd-item">hide processes of other user IDs</text>
+            <rect x="0" y="60" width="11" height="11" class="hd-box"/><text x="22" y="70" class="hd-item">hide processes of other group IDs</text>
+            <rect x="0" y="84" width="11" height="11" class="hd-box"/><text x="22" y="94" class="hd-item">hide processes running inside jails</text>
+            <rect x="0" y="108" width="11" height="11" class="hd-box"/><text x="22" y="118" class="hd-item">block unprivileged reading of the kernel message buffer</text>
+            <rect x="0" y="132" width="11" height="11" class="hd-box"/><text x="22" y="142" class="hd-item">disable process debugging for unprivileged users</text>
+            <rect x="0" y="156" width="11" height="11" class="hd-box"/><text x="22" y="166" class="hd-item">randomise the process ID of new processes</text>
+            <rect x="0" y="180" width="11" height="11" class="hd-box"/><text x="22" y="190" class="hd-item">clear the tmp filesystem at boot</text>
+            <rect x="0" y="204" width="11" height="11" class="hd-box"/><text x="22" y="214" class="hd-item">run syslogd with no network socket open</text>
+            <rect x="0" y="228" width="11" height="11" class="hd-box"/><text x="22" y="238" class="hd-item">put a password prompt on the console</text>
+            <rect x="0" y="252" width="11" height="11" class="hd-box"/><text x="22" y="262" class="hd-item">disallow the destructive mode of DTrace</text>
+            <line x1="0" y1="280" x2="640" y2="280" stroke="var(--border)" stroke-width="1"/>
+            <text x="0" y="298" class="hd-muted" font-style="italic">Every answer lands in sysctl.conf, rc.conf or loader.conf, where it stays readable.</text>
+        </svg>
+
+        <p>The menu is set out in full, screenshot and all, in chapter sixteen of <a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">Integrated by Design</a>, page 191, where the advice is short: enable all ten.</p>
+
+        <p>That is a small thing on its own. It stops being small when you notice the same posture running through the entire system.</p>
+
+        <h2>A Recipe, Not a Binary</h2>
+
+        <p>The FreeBSD Handbook explains the <a href="https://docs.freebsd.org/en/books/handbook/ports/" target="_blank" rel="noopener">ports collection</a> with a sentence worth reading twice. Packages, it says, are normally compiled with conservative options, because they have to run on the maximum number of systems. Compiling from the port lets you change those options.</p>
+
+        <p>That is not a complaint about binary packages. It is a description of what a binary package is: a build made for everybody, which necessarily means a build made for nobody in particular. Somebody chose the middle of the distribution curve, and they chose well, because the alternative is a package that breaks on a machine they never saw.</p>
+
+        <p>What ports do is keep the recipe as the primary object. <code>make config</code> opens the options menu for a port. <code>make config-recursive</code> gathers the dependencies so you configure the whole tree in one sitting. <code>make showconfig</code> tells you what you chose, and <code>make rmconfig</code> throws it away. The build is not a black box you accept, it is a document you can interrogate.</p>
+
+        <p>The same idea reaches further down than most people expect. The file src.conf governs the build of the base system itself, not just the kernel, and its <code>WITHOUT_</code> switches remove components before they exist. Not built, not installed, not present. There is a wireless stack you can decline, a ZFS implementation you can decline, encryption support in <code>ed</code> you can decline. Attack surface that was never compiled needs neither patching nor monitoring, and it never comes up at the change advisory board.</p>
+
+        <p>And for third-party software the hardening switches live in one file. make.conf takes <code>WITH_PIE</code>, <code>WITH_RELRO</code>, <code>WITH_BIND_NOW</code>, <code>WITH_FORTIFY</code>, <code>WITH_STACK_AUTOINIT</code> and <code>WITH_ZEROREGS</code>. Stack smashing protection is already on. For the base system and the kernel the same mechanic lives in <code>/etc/src.conf</code> and <code>/etc/src-env.conf</code>, documented in the <a href="https://man.freebsd.org/src.conf" target="_blank" rel="noopener">manual page</a>.</p>
+
+        <p>Here is the detail that makes it a system rather than a gesture. Not every port survives being built as a position-independent executable, a PIE in the jargon, and the ports tree knows which ones. They carry a <code>PIE_UNSAFE</code> marker. The knowledge of what breaks sits in the package collection, maintained by the people who maintain the ports, not in your head and not in a wiki page somebody last touched in 2019. That is also precisely why the flags are not on by default, and the FreeBSD project <a href="https://www.freebsd.org/status/report-2025-04-2025-06/ports-security/" target="_blank" rel="noopener">says so plainly</a> in its own quarterly report.</p>
+
+        <h2>What the Kernel Already Has</h2>
+
+        <p>Above the build options sits an arsenal that ships whether you use it or not.</p>
+
+        <p>Capsicum puts a process into capability mode, where it keeps only the file descriptors it already holds and can no longer reach the global namespace. The MAC framework carries mandatory access control as loadable policy modules. A securelevel takes capabilities away from root itself as the machine settles into operation. <code>chflags schg</code> makes a file immutable in a way that survives being root. Event auditing is in the base system, and <code>mtree</code> will fingerprint a filesystem and tell you later what moved.</p>
+
+        <p>Then there is veriexec, which has been in the tree as <code>mac_veriexec</code> since FreeBSD 10 and does the thing people usually assume requires a commercial product. A signature list of paths, hashes and file types is loaded into the kernel through <code>/dev/veriexec</code>, and the kernel checks contents at <code>exec()</code> and <code>open()</code>. It runs at <a href="https://en.wikipedia.org/wiki/Veriexec" target="_blank" rel="noopener">four strictnesses</a>: complain about a mismatch, refuse access on a mismatch, refuse to let a signed file be overwritten or deleted, and at the top refuse to touch anything unsigned at all. The loader can verify a signed kernel against UEFI key databases before any of that starts.</p>
+
+        <p>Whether you want a machine on which nothing unsigned may execute is a real question with real operational costs. The point is that answering yes does not require leaving the operating system.</p>
+
+        <h2>Keeping the Decision</h2>
+
+        <p>A build option you cannot keep is a hobby. This is where the design either holds together or falls apart, and it is worth being precise, because the obvious answer is wrong.</p>
+
+        <p>Build a port by hand with <code>make install</code> and it lands in the package database like any other package, so <code>pkg audit</code> keeps checking it against the VuXML vulnerability database. What it does not do is survive contact with <code>pkg upgrade</code>, which will happily replace your carefully configured build with the official binary. The Handbook is blunt about this and advises against mixing the two.</p>
+
+        <p>The answer is Poudriere, and the reason it works is structural. Poudriere builds packages in clean jails from the same ports tree, taking per-jail and per-port configuration from files under <code>/usr/local/etc/poudriere.d</code> that are combined with the system make.conf at build time. <code>poudriere options</code> sets the choices, <code>poudriere bulk</code> builds the set, and the result is a package repository your machines install from.</p>
+
+        <p>The official FreeBSD package repository is built the same way, from the same tree, with the same tool. You are not stepping outside the distribution to get your own options. You are running the distribution's own machinery with your own configuration file, and you can sign the repository you produce.</p>
+
+        <h2>The Same Problem, Answered Differently</h2>
+
+        <p>Gentoo arrives at a similar place by another route. Its <a href="https://wiki.gentoo.org/wiki/Hardened/Toolchain" target="_blank" rel="noopener">hardened profile</a> turns on stack smashing protection with a lowered buffer threshold, position-independent executables, RELRO, immediate binding, <code>FORTIFY_SOURCE=3</code>, libstdc++ assertions and stack clash protection, with control-flow protection behind a USE flag. Most of it is implemented through the compiler's specs file, not by patching sources, and the operator adjusts it through <code>CFLAGS</code> and <code>LDFLAGS</code>, or per package with <code>filter-flags</code> in an ebuild. Different mechanism, same premise: the recipe is the thing you own.</p>
+
+        <p>Debian and Fedora answer a different question, and they answer it well. Debian sets hardening flags through dpkg-buildflags, <a href="https://wiki.debian.org/Hardening" target="_blank" rel="noopener">documented in its wiki</a>, and a maintainer widens them with <code>DEB_BUILD_MAINT_OPTIONS</code> in <code>debian/rules</code>. Fedora carries its flags centrally, with <code>rpmbuild</code>, <a href="https://fedoraproject.org/wiki/Using_Mock_to_test_package_builds" target="_blank" rel="noopener">mock</a> and <code>fedpkg</code> producing packages against Koji. These are excellent tools, and they belong to the person maintaining the package.</p>
+
+        <svg viewBox="0 0 640 240" aria-label="Where the hardening decision lives, by distribution. FreeBSD: the operator sets flags in make.conf and src.conf, and Poudriere keeps them, because the official repository is built with the same tool from the same tree. Gentoo: the operator sets them through the hardened profile, CFLAGS and per-package filter-flags. Debian: the package maintainer sets them through dpkg-buildflags and DEB_BUILD_MAINT_OPTIONS. Fedora: the package maintainer sets them through central macros with rpmbuild, mock and fedpkg against Koji. The note reads: a design decision, not an omission, because one audited binary set for an unknown fleet is a different task." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wd-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .wd-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .wd-op    { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; }
+                .wd-mt    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .wd-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .wd-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+            </style>
+            <text x="0" y="16" class="wd-title">Who sets the hardening flags</text>
+            <text x="0" y="46" class="wd-head">FreeBSD</text>
+            <text x="110" y="46" class="wd-op">THE OPERATOR</text>
+            <text x="230" y="46" class="wd-item">make.conf and src.conf; Poudriere keeps them</text>
+            <text x="0" y="76" class="wd-head">Gentoo</text>
+            <text x="110" y="76" class="wd-op">THE OPERATOR</text>
+            <text x="230" y="76" class="wd-item">hardened profile, CFLAGS, filter-flags per package</text>
+            <line x1="0" y1="96" x2="640" y2="96" stroke="var(--border)" stroke-width="1"/>
+            <text x="0" y="124" class="wd-head">Debian</text>
+            <text x="110" y="124" class="wd-mt">THE MAINTAINER</text>
+            <text x="230" y="124" class="wd-item">dpkg-buildflags, DEB_BUILD_MAINT_OPTIONS in debian/rules</text>
+            <text x="0" y="154" class="wd-head">Fedora</text>
+            <text x="110" y="154" class="wd-mt">THE MAINTAINER</text>
+            <text x="230" y="154" class="wd-item">central macros, rpmbuild and mock against Koji</text>
+            <line x1="0" y1="176" x2="640" y2="176" stroke="var(--border)" stroke-width="1"/>
+            <text x="0" y="200" class="wd-item">One audited binary set for an enormous unknown fleet is a different task, and it is done well.</text>
+            <text x="0" y="228" class="wd-muted" font-style="italic">A design decision, not an omission.</text>
+        </svg>
+
+        <p>That is the whole of the difference, and it is a design decision, not an omission. Their job is to produce one audited binary set that runs correctly on an enormous and unknown fleet, and to push a security fix through it in hours. Recompiling several thousand packages per site would make that job impossible. The Debian hardening documentation, consistently, describes no way for an operator to change the hardening of an installed official package, because within that design there is no reason there should be one.</p>
+
+        <h2>The Limit</h2>
+
+        <p>Several things push back, and they deserve saying properly.</p>
+
+        <p>Compiling is not free. It costs machine hours and it costs attention, and a security fix that arrives as a binary in twenty minutes beats one you compile for three hours. For most fleets that trade is correct, and the distributions that made it are not being lazy.</p>
+
+        <p>The flexibility cuts. Set <code>WITH_PIE</code> globally, pull in a port that cannot take it, and you have not hardened a machine, you have broken one. The <code>PIE_UNSAFE</code> marker helps and does not absolve you. Mixing hand-built ports with binary packages invites exactly the mess the Handbook warns about, and Poudriere is a service to run, not a checkbox.</p>
+
+        <p>The comparison also has a floor under it. Modern distribution defaults are good, and much of what needed doing by hand fifteen years ago is now simply on. And nothing here is exclusive in the sense of being impossible elsewhere: Linux has SELinux and AppArmor for mandatory access control, seccomp for confinement, <code>auditd</code>, <code>chattr +i</code>. The honest difference is not existence. It is where the knowledge lives, and what it costs to acquire. One manual page and one installer menu, against a set of separate projects each carrying its own configuration language, its own documentation and its own degree of polish.</p>
+
+        <h2>The Point</h2>
+
+        <p>An installer that asks ten questions is not being fussy. It is admitting that the answers depend on what the machine is for, and that the person putting it there is the one who knows.</p>
+
+        <p>Everything that follows repeats the admission. The recipe stays readable, the options stay inspectable, the components you do not want are never compiled, the flags live in a file you can grep, the things that break under those flags are recorded by the people who maintain them, and the tool that keeps your decisions is the same tool the project uses to build its own packages.</p>
+
+        <p>None of that makes a machine secure. It makes the decisions visible, which is a smaller claim and a more useful one.</p>
+
+        <blockquote><p>The conservative build is the right default, and somewhere in your estate is a machine whose job has been clear for years and whose build has never once reflected it.</p></blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The switches, in short:</strong></p>
+            <ul>
+                <li><strong>At install time:</strong> ten hardening questions in <code>bsdinstall</code>, none on by default, every answer landing in <code>sysctl.conf</code> or <code>rc.conf</code>.</li>
+                <li><strong>At build time:</strong> <code>WITH_PIE</code>, <code>WITH_RELRO</code>, <code>WITH_BIND_NOW</code>, <code>WITH_FORTIFY</code>, <code>WITH_STACK_AUTOINIT</code>, <code>WITH_ZEROREGS</code> in make.conf; <code>WITHOUT_</code> switches in <code>src.conf</code> remove base components entirely.</li>
+                <li><strong>In the kernel:</strong> Capsicum, the MAC framework, securelevels, <code>chflags schg</code>, event auditing, and <code>mac_veriexec</code> at four enforcement levels.</li>
+                <li><strong>To keep it:</strong> Poudriere, which is the same tool the project uses for the official repository.</li>
+                <li><a href="https://docs.freebsd.org/en/books/handbook/ports/" target="_blank" rel="noopener">FreeBSD Handbook, packages and ports</a></li>
+                <li><a href="https://docs.freebsd.org/en/books/handbook/security/" target="_blank" rel="noopener">FreeBSD Handbook, security</a></li>
+                <li><a href="https://www.freebsd.org/status/report-2025-04-2025-06/ports-security/" target="_blank" rel="noopener">Security hardening compiler options for the ports collection</a></li>
+                <li><a href="https://man.freebsd.org/src.conf" target="_blank" rel="noopener">src.conf(5)</a></li>
+                <li><a href="https://github.com/freebsd/freebsd-src/blob/main/usr.sbin/bsdinstall/scripts/hardening" target="_blank" rel="noopener">The bsdinstall hardening script, all ten options</a></li>
+                <li><a href="https://wiki.gentoo.org/wiki/Hardened/Toolchain" target="_blank" rel="noopener">Gentoo hardened toolchain</a></li>
+                <li><a href="https://wiki.debian.org/Hardening" target="_blank" rel="noopener">Debian hardening</a></li>
+                <li><a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">Integrated by Design, ch. 16, p. 191, the same menu in print</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

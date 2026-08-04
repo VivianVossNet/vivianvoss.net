@@ -1,0 +1,179 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Bill After the Free Tier &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="One machine against one machine, same cores, same memory, both prices taken from the vendors themselves. A Hetzner AX102-1 at 308.21 euros against an m7a.8xlarge in Frankfurt, with storage and egress counted properly. Ten terabytes of outbound traffic cost more than an entire 48-core server.">
+{( endslot )}
+
+{( slot canonical )}/blog/bill-after-the-free-tier{( endslot )}
+
+{( slot og-title )}The Bill After the Free Tier &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The Bench Marker. The claim being measured is the one every migration deck opens with: at this size, the cloud works out cheaper than your own iron. For bursty, unpredictable load that is simply true. For a steady workload it is not. A Hetzner AX102-1 with sixteen physical cores, 128 GB and 3.84 TB of NVMe costs 308.21 euros a month with traffic uncounted. The matched m7a.8xlarge in Frankfurt costs 1,406.08 euros in compute alone, before storage and before the line nobody puts in a calculator. All figures taken from Amazon's own price list API and Hetzner's product matrix on 3 August 2026.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Bill After the Free Tier",
+    "datePublished": "2026-08-04",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/bill-after-the-free-tier",
+    "description": "The Bench Marker, a measurement of cloud cost against rented iron for a steady workload. One machine against one machine, matched on physical cores and memory: a Hetzner AX102-1 with an AMD Ryzen 9 7950X3D, sixteen physical cores, 128 GB of DDR5, two 1.92 TB datacentre NVMe drives and uncounted traffic at 308.21 euros a month plus a one-off 153.51, against an m7a.8xlarge in Frankfurt with 32 vCPU, being those same sixteen cores with simultaneous multithreading, and 128 GiB, at 2.2218 dollars an hour on demand. All AWS figures were pulled from Amazon's public price list API on 3 August 2026, Hetzner figures from its product matrix, conversions at the ECB reference rate of the same day of 1 euro to 1.1535 dollars, over 730 hours to the month. Compute alone comes to 1,621.91 dollars or 1,406.08 euros, already four and a half times the entire Hetzner bill before anything else is charged. Storage adds 3,840 GB of gp3 at 9.52 cents per GB-month, or 365.57 dollars and 316.92 euros, because the NVMe is included on the other side. Outbound traffic to the internet costs nothing for the first 100 GB each month and nine cents per gigabyte to ten terabytes, falling through 8.5, seven and five cents in higher bands: one terabyte costs 83.16 dollars or 72.09 euros, ten terabytes cost 912.60 dollars or 791.16 euros, which exceeds the 730.66 euros that a complete Hetzner AX162-1 with forty-eight EPYC cores costs including its traffic. The totals for the same workload are 1,795.09 euros against 308.21 at one terabyte of egress, a factor of 5.8, and 2,514.16 against 308.21 at ten terabytes, a factor of 8.2; over thirty-six months including the setup fee, 64,623 euros against 11,249. The managed argument is answered by the vendor's own shared responsibility model: the provider owns what sits under the instance, and everything from the guest operating system upward, including packages, patches, configuration and application, remains the customer's. For data under European regulation the arithmetic is beside the point, because in June 2025 Microsoft France's director of public and legal affairs told the French Senate he could not guarantee that French citizens' data would never be handed to United States authorities, since the CLOUD Act obliges an American company to produce data regardless of storage location. The limit is stated honestly: on-demand is the dearest way to buy AWS and reserved terms narrow the gap without closing it, rented iron carries its own operational burden, and a machine is not a platform.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-04">4 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Bill After the Free Tier</h1>
+        <p class="vv-article-meta"><em>One machine against one machine, same cores, same memory, both prices taken from the vendors themselves. The Bench Marker.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">cloud</span>
+            <span class="vv-pill">cloud costs</span>
+            <span class="vv-pill">infrastructure</span>
+            <span class="vv-pill">sysadmin</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>The claim being measured today is the one every migration deck opens with: for a workload of this size, the cloud works out cheaper than running your own iron.</p>
+
+        <p>It is a claim worth taking seriously, because for a certain shape of load it is simply true. If demand arrives in bursts nobody can predict, or you need a second region by Thursday and have neither capital nor any appetite for hardware, then renting compute by the hour is the correct answer, and nobody should feel clever about disagreeing. An outage at three in the morning becomes somebody else's pager. That is worth money.</p>
+
+        <p>The measurement below is the other shape of load. Steady. Known. The one that never once calls on the elasticity it is paying for.</p>
+
+        <h2>The Setup</h2>
+
+        <p>One machine against one machine, matched on what matters.</p>
+
+        <p>On the rented iron side, a <a href="https://www.hetzner.com/dedicated-rootserver/matrix-ax/" target="_blank" rel="noopener">Hetzner AX102-1</a>: an AMD Ryzen 9 7950X3D with sixteen physical cores, 128 GB of DDR5, two 1.92 TB datacentre NVMe drives, a gigabit link, and traffic that is not counted at all. Three hundred and eight euros and twenty-one cents a month, plus a hundred and fifty-three euros fifty-one once.</p>
+
+        <p>On the hyperscaler side, an m7a.8xlarge in Frankfurt, Linux, billed on-demand. Thirty-two vCPUs, which is those same sixteen physical cores with simultaneous multithreading, and 128 GiB. Two dollars twenty-two per hour.</p>
+
+        <p>Every figure below comes from the vendor: the Hetzner numbers from its own product matrix, the AWS numbers pulled from Amazon's public price list API on 3 August 2026. Conversions use the ECB reference rate of the same day, 1 euro to 1.1535 dollars. Seven hundred and thirty hours to the month.</p>
+
+        <h2>The Arithmetic</h2>
+
+        <p>Compute alone: 1,621.91 dollars, or 1,406.08 euros.</p>
+
+        <p>That is already four and a half times the whole Hetzner bill, and the Hetzner machine has not yet been charged for anything else, because there is nothing else to charge for. The 3.84 TB of NVMe is in the price. On the other side it is not, so add 3,840 GB of EBS in the gp3 class at 9.52 cents per GB-month: 365.57 dollars, or 316.92 euros.</p>
+
+        <p>Then the part nobody puts in a calculator.</p>
+
+        <svg viewBox="0 0 640 300" aria-label="Monthly cost of one machine, both sides taken from vendor pricing on 3 August 2026. Hetzner AX102-1: 308.21 euros in total, with storage and traffic included. AWS m7a.8xlarge in Frankfurt: 1,406.08 euros of compute, plus 316.92 euros for 3,840 GB of gp3 storage, plus 72.09 euros for one terabyte of outbound traffic, totalling 1,795.09 euros. At ten terabytes of traffic the total rises to 2,514.16 euros. The note reads: the compute line is the one everybody compares, and it is not the line that decides the argument." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .bc-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .bc-num   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .bc-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; }
+                .bc-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; }
+                .bc-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .bc-bar   { fill: var(--accent); rx: 2; }
+                .bc-bar2  { fill: var(--border); rx: 2; }
+                .bc-bar-g { fill: #4ab542; rx: 2; }
+            </style>
+            <text x="0" y="16" class="bc-title">One machine, one month, euros</text>
+            <text x="0" y="44" class="bc-head">RENTED IRON, EVERYTHING INCLUDED</text>
+            <text x="0" y="70" class="bc-item">Hetzner AX102-1</text>
+            <rect x="180" y="59" width="63" height="15" class="bc-bar-g"/>
+            <text x="251" y="70" class="bc-good">308.21</text>
+            <line x1="0" y1="92" x2="640" y2="92" stroke="var(--border)" stroke-width="1"/>
+            <text x="0" y="116" class="bc-head">HYPERSCALER, ITEM BY ITEM</text>
+            <text x="0" y="142" class="bc-item">compute, m7a.8xlarge</text>
+            <rect x="180" y="131" width="287" height="15" class="bc-bar2"/>
+            <text x="475" y="142" class="bc-item">1,406.08</text>
+            <text x="0" y="168" class="bc-item">storage, 3,840 GB gp3</text>
+            <rect x="180" y="157" width="65" height="15" class="bc-bar2"/>
+            <text x="253" y="168" class="bc-item">316.92</text>
+            <text x="0" y="194" class="bc-item">egress, 1 TB</text>
+            <rect x="180" y="183" width="15" height="15" class="bc-bar2"/>
+            <text x="203" y="194" class="bc-item">72.09</text>
+            <text x="0" y="224" class="bc-item">total at 1 TB of egress</text>
+            <rect x="180" y="213" width="367" height="15" class="bc-bar"/>
+            <text x="555" y="224" class="bc-num">1,795.09</text>
+            <text x="0" y="250" class="bc-item">total at 10 TB of egress</text>
+            <rect x="180" y="239" width="514" height="15" class="bc-bar" opacity="0.55"/>
+            <text x="0" y="268" class="bc-muted">(the ten terabyte bar runs past the frame: 2,514.16)</text>
+            <line x1="0" y1="278" x2="640" y2="278" stroke="var(--border)" stroke-width="1"/>
+            <text x="0" y="296" class="bc-muted" font-style="italic">The compute line is the one everybody compares. It is not the line that decides the argument.</text>
+        </svg>
+
+        <h2>The Line the Calculators Leave Out</h2>
+
+        <p>Outbound traffic from Frankfurt to the internet: the first 100 GB each month are free, then nine cents per gigabyte up to ten terabytes, dropping to eight and a half, seven, and five cents as the volume climbs.</p>
+
+        <p>One terabyte a month therefore costs 83.16 dollars, or 72.09 euros. Ten terabytes cost 912.60 dollars, or 791.16 euros.</p>
+
+        <p>Sit with that second figure. <strong>Ten terabytes of outbound traffic cost more than a Hetzner AX162-1 with forty-eight EPYC cores costs in its entirety</strong>, and that machine also does not count its traffic. You are not comparing a bandwidth charge against a bandwidth charge. You are comparing a bandwidth charge against a whole server.</p>
+
+        <p>The totals, then, for the same workload. At one terabyte of egress, 2,070.64 dollars, or <strong>1,795.09 euros against 308.21</strong>, which is five point eight times. At ten terabytes, 2,900.08 dollars, or <strong>2,514.16 euros against 308.21</strong>, which is eight point two times.</p>
+
+        <p>Over thirty-six months, including the Hetzner setup fee: 11,249.07 euros against 64,623.42. The gap is fifty-three thousand euros, on one machine.</p>
+
+        <h2>The Managed Argument</h2>
+
+        <p>The usual reply at this point is that the comparison ignores what you get: it is managed, and managing things costs people.</p>
+
+        <p>Read the vendor's own shared responsibility model before accepting that, <a href="https://aws.amazon.com/compliance/shared-responsibility-model/" target="_blank" rel="noopener">published in full</a>. The provider is responsible for what sits underneath the instance. Everything from the guest operating system upward is yours: the packages, the patches, the configuration, the application. Running EC2 does not mean somebody else updates your Linux. It means somebody else updates the hypervisor.</p>
+
+        <p>So the work does not disappear, it moves house, and the container story makes that plainer rather than softer. A base image and a dependency tree carry their own attack surface onto whatever they land on. Nobody is patching that for you either.</p>
+
+        <p>There is a real difference in operational knowledge, but it does not run in the direction the sales deck implies. One side asks you to understand machines. The other asks you to understand machines and the platform that administers the machines. That second layer is genuine expertise and it has to be staffed. Whether that is cheaper than the first depends on your organisation, and it is not free in either direction.</p>
+
+        <h2>Not a Price Question at All</h2>
+
+        <p>For a portion of readers this arithmetic is beside the point, because the option is closed before the price is discussed.</p>
+
+        <p>On 10 June 2025, at a hearing of the French Senate, Microsoft France's director of public and legal affairs was asked whether he could guarantee that French citizens' data would never be handed to United States authorities without French authorisation. <a href="https://www.theregister.com/2025/07/25/microsoft_admits_it_cannot_guarantee/" target="_blank" rel="noopener">He answered that he could not guarantee it.</a> Under the CLOUD Act an American company is obliged to produce data regardless of where it is stored, and a European subsidiary cannot decline on its parent's behalf.</p>
+
+        <p>That answer was honest and it was not really news, but hearing it said aloud under questioning removed the last comfortable ambiguity. If your data sits under European regulation that forbids that exposure, then no American provider can sell you compliance, however many datacentres it builds in Frankfurt. The choice narrows to European operators or your own machines, and at that point the cost comparison is a bonus, not an argument.</p>
+
+        <h2>The Limit</h2>
+
+        <p>Several things push back, and they should be said properly.</p>
+
+        <p>On-demand is the most expensive way to buy AWS. A reserved instance or a savings plan cuts the compute line substantially for a committed term, and a serious comparison of a steady workload should assume a serious buyer would commit. That narrows the gap. It does not close it, because the storage and the traffic barely move, and the traffic was the larger surprise.</p>
+
+        <p>Rented iron is not free of operations either. There is no live migration off a dying host, spare parts and standby are yours, and backups do not happen because you meant well. If a disk fails at two in the morning, that is your night. The comparison above measures money, not sleep.</p>
+
+        <p>And a machine is not a platform. Nothing here delivers a managed database, a queue, an object store or a load balancer, and assembling those yourself is real work that the invoice does not show. For teams that genuinely use the managed estate, the honest figure is somewhere between the two columns.</p>
+
+        <p>Also worth saying plainly, since it works against the point: Hetzner has raised prices noticeably. The gap held anyway, which is the more interesting result. This is not a discounter measured against full service. It is one commercial rate against another.</p>
+
+        <h2>The Point</h2>
+
+        <p>The elasticity is the product. If your load is steady, you are paying for an option you never exercise, and paying for it every hour of every month.</p>
+
+        <p>The bill that decides the argument is not the compute line, which everybody compares and everybody expects. It is the traffic line, which almost nobody puts in the spreadsheet and which can exceed the cost of an entire additional server.</p>
+
+        <blockquote><p>Go and find the egress figure on your own invoice before you next repeat the sentence about the cloud being cheaper.</p></blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The measurement, in short:</strong></p>
+            <ul>
+                <li><strong>Matched pair:</strong> Hetzner AX102-1, sixteen physical cores, 128 GB, 3.84 TB NVMe, traffic uncounted, at 308.21 euros. Against m7a.8xlarge in Frankfurt, 32 vCPU being the same sixteen cores, 128 GiB, on demand.</li>
+                <li><strong>Compute:</strong> 1,406.08 euros, already four and a half times the whole other bill.</li>
+                <li><strong>Egress:</strong> 72.09 euros at one terabyte, 791.16 at ten. The second figure exceeds a complete forty-eight core machine.</li>
+                <li><strong>Totals:</strong> 5.8 times at one terabyte, 8.2 times at ten; fifty-three thousand euros over three years, on one machine.</li>
+                <li><a href="https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/region_index.json" target="_blank" rel="noopener">AWS Price List API, EC2, eu-central-1</a></li>
+                <li><a href="https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSDataTransfer/current/region_index.json" target="_blank" rel="noopener">AWS Price List API, Data Transfer, eu-central-1</a></li>
+                <li><a href="https://aws.amazon.com/ec2/pricing/on-demand/" target="_blank" rel="noopener">EC2 on-demand pricing, including the 100 GB free allowance</a></li>
+                <li><a href="https://www.hetzner.com/dedicated-rootserver/matrix-ax/" target="_blank" rel="noopener">Hetzner AX-line product matrix</a></li>
+                <li><a href="https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml" target="_blank" rel="noopener">ECB euro reference exchange rate</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
