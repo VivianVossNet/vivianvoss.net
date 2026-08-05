@@ -1,0 +1,304 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Nobody Chose These &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Somebody wanted buttons. Nine packages were requested and two hundred and eleven arrived. The scanner reports zero vulnerabilities, which is true and almost useless. Five incidents where the lookup was right and the answer was worthless, and the reason the green tick survives anyway.">
+{( endslot )}
+
+{( slot canonical )}/blog/nobody-chose-these{( endslot )}
+
+{( slot og-title )}Nobody Chose These &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Lean Software. A clean machine, nine direct dependencies for a small React front end with a bundler and a linter, and two hundred and eleven packages installed. Not one of the other two hundred and two was chosen by anybody: no meeting, no review, no name against the decision. Then npm audit reports zero vulnerabilities, which is a true statement about a database lookup and nothing more. Five incidents from 2018 to 2026 show what that lookup cannot see, ending with a worm that produced valid SLSA Build Level 3 provenance attestations for its own malicious packages.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Nobody Chose These",
+    "datePublished": "2026-08-05",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/nobody-chose-these",
+    "description": "Lean Software, an examination of what a dependency scanner actually answers and what it cannot. A measurement taken on a clean machine on 4 August 2026 with Node 26.0.0 and npm 11.12.1: five direct dependencies for a small React front end resolve to eighty-four installed packages, 45 MB and 5,925 files; adding a bundler, TypeScript and a linter takes nine direct dependencies to two hundred and eleven installed packages, 118 MB and 8,036 files, a ratio of one to twenty-three. Two hundred and two of them arrived because something else wanted them, with no meeting, no review and no name against the decision. An academic analysis of npm published in 2025 found that 17.92 per cent of packages are trivial, carrying minimal or no executable logic at vulnerability levels comparable to substantial packages. Against that, npm audit reports zero vulnerabilities, which means only that no installed version string matches an entry in a database of published advisories on the day it runs. Five incidents show the gap: the 2018 event-stream handover, where a tired maintainer of six unpaid years passed the package to a volunteer who added an obfuscated dependency one level down that woke only in the presence of a particular wallet library; the xz backdoor, cultivated from October 2021 through a two-year campaign of genuine contributions and sockpuppet pressure before shipping in February 2024 and being found by an engineer who noticed half a second of latency; the September 2025 takeover of eighteen packages including chalk and debug, together over 2.6 billion weekly downloads, through a phishing message imitating a two-factor reset, live for roughly two hours; Shai-Hulud, the first self-replicating supply chain worm, which spread through more than five hundred packages by harvesting registry tokens from build pipelines and drew a CISA advisory; and its successor in April and May 2026, which took 172 packages across 404 malicious versions on npm and PyPI, abused a pull-request trigger to lift OIDC tokens from build runner memory, and shipped packages carrying valid SLSA Build Level 3 provenance attestations. The reason the green tick survives is not technical: one group was never told what a scanner does, another knows and takes it anyway because it passes in eighty seconds, and the people best placed to object are usually the least able to afford it.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-05">5 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Nobody Chose These</h1>
+        <p class="vv-article-meta"><em>Somebody wanted buttons. What arrived was two hundred and eleven packages, and the scanner that guards them answers a question nobody asked. Lean Software.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">npm</span>
+            <span class="vv-pill">javascript</span>
+            <span class="vv-pill">supply chain</span>
+            <span class="vv-pill">software security</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Somebody on your team wanted fancy buttons. Nice ones, with the ripple effect, and a bit of reactivity so the form does not feel like 2004.</p>
+
+        <p>That is a perfectly reasonable thing to want, and nobody should sneer at it. I did exactly that this evening, on a clean machine, and counted what turned up.</p>
+
+        <h2>The Count</h2>
+
+        <p>Five packages requested: React, React DOM, a component library, and the two styling packages it insists on. Eighty-four installed. Forty-five megabytes, 5,925 files.</p>
+
+        <p>Then the same thing again, with the modest addition that somebody would like to build it: a bundler, TypeScript, a linter. Nine requested. <strong>Two hundred and eleven installed.</strong> One hundred and eighteen megabytes, 8,036 files, a ratio of one to twenty-three. Both counts come straight out of package-lock.json, which records the exact resolved version of everything that landed.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="Two installations measured on a clean machine on 4 August 2026 with Node 26 and npm 11.12.1. The first has five direct dependencies, React, React DOM, a component library and its two styling packages, and resolves to eighty-four installed packages at 45 megabytes and 5,925 files. The second adds a bundler, TypeScript and a linter for nine direct dependencies, and resolves to two hundred and eleven installed packages at 118 megabytes and 8,036 files. Nine were chosen. Two hundred and two arrived because something else wanted them." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ct-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ct-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .ct-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .ct-num   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .ct-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .ct-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; }
+                .ct-bar   { fill: var(--border); }
+                .ct-bar-a { fill: var(--accent); }
+                .ct-bar-g { fill: #4ab542; }
+            </style>
+            <text x="320" y="22" class="ct-title" text-anchor="middle">What was asked for, and what was installed</text>
+
+            <text x="20" y="52" class="ct-head">FRONT END ONLY</text>
+            <rect x="20" y="62" width="12" height="14" class="ct-bar-g"/>
+            <text x="40" y="73" class="ct-good">5</text>
+            <text x="58" y="73" class="ct-item">requested</text>
+            <rect x="20" y="84" width="202" height="14" class="ct-bar"/>
+            <text x="230" y="95" class="ct-num">84</text>
+            <text x="256" y="95" class="ct-item">installed</text>
+            <text x="330" y="95" class="ct-muted">45 MB &#x00B7; 5,925 files</text>
+
+            <line x1="20" y1="118" x2="620" y2="118" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="146" class="ct-head">PLUS A BUILD: BUNDLER, TYPESCRIPT, LINTER</text>
+            <rect x="20" y="156" width="22" height="14" class="ct-bar-g"/>
+            <text x="50" y="167" class="ct-good">9</text>
+            <text x="68" y="167" class="ct-item">requested</text>
+            <rect x="20" y="178" width="506" height="14" class="ct-bar-a"/>
+            <text x="534" y="189" class="ct-num">211</text>
+            <text x="566" y="189" class="ct-item">installed</text>
+            <text x="20" y="212" class="ct-muted">118 MB &#x00B7; 8,036 files &#x00B7; one chosen package for every twenty-three that arrived</text>
+            <text x="20" y="232" class="ct-item">Two hundred and two of them were never chosen by anybody.</text>
+        </svg>
+
+        <p>Not one of those two hundred and eleven was chosen. Two hundred and two of them arrived because something else wanted them, and that something else was itself chosen by something else. There is no meeting at which anyone said yes to them, no review, no name against the decision. They simply came with the buttons.</p>
+
+        <p>And the ecosystem they came from has an odd shape. An academic analysis of npm published last year found that <strong>17.92 per cent of packages are trivial</strong>, meaning modules with minimal or no executable logic, and that their vulnerability levels are comparable to those of the substantial ones. Roughly one package in five does almost nothing and carries the same risk as one that does everything.</p>
+
+        <h2>What the Scanner Says</h2>
+
+        <p>So I ran the thing everybody runs. <code>npm audit</code> reported <strong>zero vulnerabilities</strong>.</p>
+
+        <p>That is a true statement and it is worth understanding exactly what it means. It means: among the versions currently installed, none matches an entry in a database of publicly known and published advisories, as of tonight. npm audit is a lookup. A good one, quick and free and worth having.</p>
+
+        <p>What it does not mean is that anybody has looked at the code. It does not mean the combination has been tested, because nobody tests combinations. The maintainer of package A has never seen package B and has no idea their work will be shipped in the same bundle, executed in the same process, with the same permissions. Each piece is examined alone. The mixture is what gets deployed.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="What a dependency scanner checks and what it does not. It checks whether an installed version string matches an entry in a published advisory database, at the moment it runs, per package in isolation. It does not check whether anybody read the code, whether the combination of packages was ever tested together, whether a maintainer account changed hands, whether a package is malicious but not yet published as an advisory, or whether the answer still holds tomorrow." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .sc-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .sc-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .sc-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; }
+                .sc-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .sc-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="320" y="22" class="sc-title" text-anchor="middle">npm audit: zero vulnerabilities</text>
+
+            <rect x="20" y="40" width="290" height="200" class="sc-box"/>
+            <text x="36" y="62" class="sc-head">WHAT IT ANSWERS</text>
+            <text x="36" y="88" class="sc-good">&#x2713;</text>
+            <text x="54" y="88" class="sc-item">Does an installed version string match</text>
+            <text x="54" y="104" class="sc-item">a published advisory?</text>
+            <text x="36" y="132" class="sc-good">&#x2713;</text>
+            <text x="54" y="132" class="sc-item">Right now, today, at this moment.</text>
+            <text x="36" y="160" class="sc-good">&#x2713;</text>
+            <text x="54" y="160" class="sc-item">Per package, examined alone.</text>
+            <text x="36" y="200" class="sc-item">A lookup. Quick, free, worth having.</text>
+
+            <rect x="330" y="40" width="290" height="200" class="sc-box"/>
+            <text x="346" y="62" class="sc-head">WHAT IT DOES NOT</text>
+            <text x="346" y="88" class="sc-bad">&#x2717;</text>
+            <text x="364" y="88" class="sc-item">Has anybody read the code?</text>
+            <text x="346" y="112" class="sc-bad">&#x2717;</text>
+            <text x="364" y="112" class="sc-item">Was the combination ever tested?</text>
+            <text x="346" y="136" class="sc-bad">&#x2717;</text>
+            <text x="364" y="136" class="sc-item">Did an account change hands?</text>
+            <text x="346" y="160" class="sc-bad">&#x2717;</text>
+            <text x="364" y="160" class="sc-item">Malicious, but not yet an advisory?</text>
+            <text x="346" y="184" class="sc-bad">&#x2717;</text>
+            <text x="364" y="184" class="sc-item">Does the answer hold tomorrow?</text>
+            <text x="346" y="220" class="sc-item">The mixture is what gets deployed.</text>
+        </svg>
+
+        <p>Nor does it mean the answer holds tomorrow. Which brings us to the interesting part.</p>
+
+        <h2>Five Times the Lookup Was Right and Useless</h2>
+
+        <p><strong>A handover, 2018.</strong> Dominic Tarr had <a href="https://blog.npmjs.org/post/180565383195/details-about-the-event-stream-incident" target="_blank" rel="noopener">maintained event-stream</a> since 2012 and had long since stopped needing it. In September a volunteer offered to take it over, and he agreed, which is what a tired maintainer does after six unpaid years. The new owner added a dependency one level down, flatmap-stream, carrying obfuscated code that appeared only in the minified build. It did nothing at all unless it found a particular Bitcoin wallet library in the same tree, at which point it went for the keys.</p>
+
+        <p>The payload was not in the package anyone installed. It was underneath, and it only woke up in company.</p>
+
+        <p><strong>A two-year courtship, 2024.</strong> The persona behind the <a href="https://en.wikipedia.org/wiki/XZ_Utils_backdoor" target="_blank" rel="noopener">xz backdoor</a> began contributing in October 2021 and had its first commit merged in January 2022. Then came months of genuine, useful work: reviews, translations, build maintenance. Sockpuppet accounts pressed the exhausted original maintainer to appoint a co-maintainer. The backdoor went in during 2023, shipped in February 2024, and was found in March by an engineer who noticed half a second of latency where there should not have been one. Severity ten out of ten.</p>
+
+        <p>At every moment before discovery, a scanner would have reported a clean, well-maintained, actively developed dependency, because that is precisely what it was.</p>
+
+        <p><strong>Two hours, September 2025.</strong> Eighteen packages were taken over, among them <a href="https://unit42.paloaltonetworks.com/monitoring-npm-supply-chain-attacks/" target="_blank" rel="noopener">chalk and debug</a>, together over 2.6 billion downloads a week. The route in was a phishing message imitating a two-factor reset, from a domain that looked close enough at a glance. The payload rewrote cryptocurrency transactions in the browser. The malicious versions were live for <strong>about two hours</strong> before the community spotted them and they were pulled.</p>
+
+        <p>A scanner running nightly would never have seen them at all. The report the next morning would have been green, and it would have been a lie.</p>
+
+        <svg viewBox="0 0 640 200" aria-label="A nightly scan against a two-hour exposure window. The malicious versions of chalk and debug were published and pulled again within roughly two hours in September 2025. A scan running once every twenty-four hours has a one in twelve chance of falling inside that window, and reports a clean result either side of it." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tw-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tw-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .tw-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tw-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .tw-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; }
+            </style>
+            <text x="320" y="22" class="tw-title" text-anchor="middle">A nightly scan against a two-hour window</text>
+
+            <line x1="20" y1="90" x2="620" y2="90" stroke="var(--border)" stroke-width="2"/>
+            <text x="20" y="112" class="tw-muted">00:00</text>
+            <text x="315" y="112" class="tw-muted">12:00</text>
+            <text x="592" y="112" class="tw-muted">24:00</text>
+
+            <rect x="270" y="78" width="50" height="24" fill="var(--accent)" rx="2"/>
+            <text x="295" y="68" class="tw-bad" text-anchor="middle">live</text>
+            <text x="295" y="136" class="tw-item" text-anchor="middle">the two hours it existed</text>
+
+            <line x1="60" y1="60" x2="60" y2="120" stroke="#4ab542" stroke-width="2"/>
+            <text x="60" y="52" class="tw-good" text-anchor="middle">scan</text>
+            <text x="60" y="136" class="tw-item" text-anchor="middle">clean</text>
+
+            <line x1="560" y1="60" x2="560" y2="120" stroke="#4ab542" stroke-width="2"/>
+            <text x="560" y="52" class="tw-good" text-anchor="middle">scan</text>
+            <text x="560" y="136" class="tw-item" text-anchor="middle">clean</text>
+
+            <text x="20" y="176" class="tw-item">Both reports are accurate. Both are worthless. The package was compromised in between.</text>
+        </svg>
+
+        <p><strong>A worm, September 2025.</strong> <a href="https://unit42.paloaltonetworks.com/npm-supply-chain-attack/" target="_blank" rel="noopener">Shai-Hulud</a> is, as far as anyone can tell, the first self-replicating supply chain attack. It spread through more than five hundred packages, and the mechanism deserves a moment: it propagates through the build pipeline. Landing in a repository, it looks for a registry token in the environment and publishes poisoned versions of whatever else that credential can reach. It scans for secrets with an off-the-shelf tool and makes private repositories public.</p>
+
+        <p>The automation that was supposed to be the control turned out to be the transport. <a href="https://www.cisa.gov/news-events/alerts/2025/09/23/widespread-supply-chain-compromise-impacting-npm-ecosystem" target="_blank" rel="noopener">CISA issued its own advisory</a>.</p>
+
+        <p><strong>A forged certificate of authenticity, spring 2026.</strong> The successor, catalogued as CVE-2026-45321, arrived in two waves, on 29 April and 11 May, taking <a href="https://www.tenable.com/blog/mini-shai-hulud-frequently-asked-questions" target="_blank" rel="noopener">172 packages across 404 malicious versions</a> on npm and PyPI together, among them the ecosystems of Mistral AI, TanStack and UiPath, with something over half a billion cumulative downloads behind them.</p>
+
+        <p>Two details deserve their own sentence. It abused a pull-request trigger to lift OIDC tokens out of the memory of the build runner and minted valid publishing credentials with them. And with those credentials it produced packages carrying <strong>valid SLSA Build Level 3 provenance attestations</strong>, which is the current gold standard for proving where a build came from.</p>
+
+        <p>The mechanism designed to certify origin certified the attack.</p>
+
+        <p>It also settles a fair objection, because it hit both registries: this is not an npm defect. Anything shipped as source and assembled at install time has the same shape.</p>
+
+        <svg viewBox="0 0 640 300" aria-label="Five incidents and what a scanner would have reported at the time. In 2018 the event-stream handover put obfuscated code one level down, dormant unless a wallet library was present, and the scanner would have reported clean. In 2024 the xz backdoor followed two years of genuine contributions, and the scanner would have reported an actively maintained dependency. In September 2025 the chalk and debug takeover lasted about two hours, too short for a nightly scan to see. Also in September 2025 the Shai-Hulud worm travelled through build pipelines rather than through package versions. In spring 2026 its successor produced valid SLSA Build Level 3 provenance attestations for its own malicious packages." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .fv-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .fv-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .fv-year  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .fv-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .fv-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+            </style>
+            <text x="320" y="22" class="fv-title" text-anchor="middle">What the scanner would have said at the time</text>
+
+            <text x="20" y="48" class="fv-head">WHEN</text>
+            <text x="130" y="48" class="fv-head">WHAT HAPPENED</text>
+            <text x="410" y="48" class="fv-head">THE REPORT</text>
+            <line x1="20" y1="56" x2="620" y2="56" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="82" class="fv-year">2018</text>
+            <text x="130" y="82" class="fv-item">event-stream changes hands</text>
+            <text x="130" y="96" class="fv-muted">payload one level down, dormant</text>
+            <text x="410" y="82" class="fv-item">clean</text>
+
+            <text x="20" y="128" class="fv-year">2024</text>
+            <text x="130" y="128" class="fv-item">xz backdoor, after two years</text>
+            <text x="130" y="142" class="fv-muted">of genuine, useful contributions</text>
+            <text x="410" y="128" class="fv-item">actively maintained</text>
+
+            <text x="20" y="174" class="fv-year">Sep 2025</text>
+            <text x="130" y="174" class="fv-item">chalk and debug taken over</text>
+            <text x="130" y="188" class="fv-muted">live for about two hours</text>
+            <text x="410" y="174" class="fv-item">clean, either side of it</text>
+
+            <text x="20" y="220" class="fv-year">Sep 2025</text>
+            <text x="130" y="220" class="fv-item">Shai-Hulud, self-replicating</text>
+            <text x="130" y="234" class="fv-muted">travels through the pipeline</text>
+            <text x="410" y="220" class="fv-item">nothing to match on</text>
+
+            <text x="20" y="266" class="fv-year">2026</text>
+            <text x="130" y="266" class="fv-item">successor forges provenance</text>
+            <text x="130" y="280" class="fv-muted">valid SLSA Build Level 3</text>
+            <text x="410" y="266" class="fv-item">verified origin</text>
+        </svg>
+
+        <h2>Why It Holds Anyway</h2>
+
+        <p>Every one of those was reported, discussed, post-mortemed. Nothing changed. That is the part worth explaining, and the explanation is not technical.</p>
+
+        <p>The green tick survives because two quite different groups need it.</p>
+
+        <p>The first has never been told what a scanner does. They see a check pass in the pipeline and read it as <em>this was examined</em>, which is a reasonable inference from the word &#x201C;audit&#x201D; and from the tick being green. Nobody sat them down and explained that it compares version strings against a list. They are not careless. They were handed a control and told it was a control.</p>
+
+        <p>The second group knows exactly what it is and takes it anyway, because it goes green in eighty seconds and the feature ships today. This is where the honest name for it is a discount rate. Whoever selected the dependencies is frequently not whoever will patch them in three years, and eighteen months is a long time in this industry. The cost is real, it is simply payable by somebody else, which is the oldest trick in capital allocation and works just as well on a sprint board.</p>
+
+        <p>And underneath both sits the quiet thing nobody puts in the retrospective. The people best placed to raise the objection are usually the people least able to afford it. If you are new, or on a contract, or in a team where questions are heard as delay, you take the library from the tutorial and you keep your reservations to yourself. That is not a character flaw. It is what happens when the person who can see the problem is also the person whose position depends on not being difficult.</p>
+
+        <p>So the argument here is not with them. It is with whoever ordered the pace and never asked what came with it.</p>
+
+        <h2>The Limit</h2>
+
+        <p>Several things push back, and they are stronger than this piece finds convenient.</p>
+
+        <p>Nobody should write their own date picker. The ones people write are worse, they fail on time zones and screen readers, and the ecosystem has saved a genuinely enormous amount of duplicated effort. That is not a concession, it is the reason the model won.</p>
+
+        <p>The maintainers are not the failure here. Tarr had given six years of unpaid work to something he no longer used. The xz maintainer was worn down and then deliberately worked on. The chalk maintainer was phished with a message that would have caught most of us before coffee. These are not lapses of character; they are the predictable stress points of a model that rests millions of installations on individuals who are paid nothing and thanked rarely.</p>
+
+        <p>The tools find real problems. When a published advisory affects a version you actually run, the scanner tells you, and that is worth having in the pipeline. The reachability analysis is sound as well, even if there is a certain wry symmetry in the fact that the firms now selling you a filter for the noise are largely the firms who sold you the noise.</p>
+
+        <p>And my count is a two-minute experiment, not a production system. Two hundred and eleven packages on a bare install proves the shape of the problem, not its severity in your codebase. Zero findings tonight is an argument against panic. It is not an argument against knowing what you run.</p>
+
+        <blockquote>
+            <p>The scanner reports zero vulnerabilities, which is the least useful true sentence you own.</p>
+        </blockquote>
+
+        <h2>The Point</h2>
+
+        <p>The scanner answers the question it can answer: is anything here on the list. That is a fine question. It is not the one that decides whether you are exposed, and the last few years have made the difference embarrassingly clear. A handover, a patient stranger, a phishing mail, a worm riding your own automation, and finally a worm that got your build system to vouch for it. None of those is a version string, and none of them was on any list at the moment it mattered.</p>
+
+        <p>The uncomfortable part is not that the check is imperfect. It is that a failing check makes people cautious and a passing one makes them certain, and certainty is the more expensive of the two.</p>
+
+        <p>So the modest proposal is not a better tool. It is a sentence in the definition of done that says who chose this, and a willingness to hear the answer &#x201C;nobody&#x201D; as a finding rather than as an inconvenience.</p>
+
+        <p>Two hundred and eleven packages, because somebody wanted buttons. That was never a security decision, which is exactly why it became one.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The point:</strong></p>
+            <ul>
+                <li><strong>Nine chosen, 211 installed:</strong> measured on a clean machine on 4 August 2026 with Node 26.0.0 and npm 11.12.1, counted from <code>package-lock.json</code>. 118 MB, 8,036 files, one chosen package for every twenty-three that arrived.</li>
+                <li><strong>Zero findings means one thing only:</strong> no installed version string matches a published advisory today. Not that the code was read, not that the combination was tested, not that the answer holds tomorrow.</li>
+                <li><strong>Five incidents, none visible to a lookup:</strong> a handover in 2018, a two-year infiltration ending in 2024, a two-hour window in 2025, a worm that travelled through build pipelines, and a worm that forged its own SLSA Build Level 3 provenance in 2026.</li>
+                <li><strong>Both registries were hit</strong> in the 2026 campaign, so this is not an npm defect. Anything assembled at install time has the same shape.</li>
+                <li><strong>The fix is not a better tool:</strong> a line in the definition of done that asks who chose this, and treating &#x201C;nobody&#x201D; as a finding.</li>
+                <li><a href="https://arxiv.org/abs/2510.04495" target="_blank" rel="noopener">Detecting and Characterizing Low and No Functionality Packages in the NPM Ecosystem</a> &#x2014; 17.92 per cent of npm packages are trivial, at comparable vulnerability levels</li>
+                <li><a href="https://blog.npmjs.org/post/180565383195/details-about-the-event-stream-incident" target="_blank" rel="noopener">npm on the event-stream incident</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/XZ_Utils_backdoor" target="_blank" rel="noopener">XZ Utils backdoor, timeline and CVE-2024-3094</a></li>
+                <li><a href="https://unit42.paloaltonetworks.com/monitoring-npm-supply-chain-attacks/" target="_blank" rel="noopener">Unit 42 on the chalk and debug compromise</a></li>
+                <li><a href="https://www.cisa.gov/news-events/alerts/2025/09/23/widespread-supply-chain-compromise-impacting-npm-ecosystem" target="_blank" rel="noopener">CISA advisory on the widespread npm compromise</a></li>
+                <li><a href="https://unit42.paloaltonetworks.com/npm-supply-chain-attack/" target="_blank" rel="noopener">Unit 42 on Shai-Hulud</a></li>
+                <li><a href="https://www.tenable.com/blog/mini-shai-hulud-frequently-asked-questions" target="_blank" rel="noopener">Tenable on Mini Shai-Hulud, CVE-2026-45321, and the forged attestations</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
