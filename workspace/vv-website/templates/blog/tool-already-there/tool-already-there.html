@@ -1,0 +1,281 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Tool That Was Already There &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="In 2004 three engineers wrote down what an observability tool must guarantee before anybody may switch it on in production: zero probe effect when disabled, absolutely safe when enabled. The Unix line got one, Linux built its own, and the dashboard still gets asked first.">
+{( endslot )}
+
+{( slot canonical )}/blog/tool-already-there{( endslot )}
+
+{( slot og-title )}The Tool That Was Already There &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Unix Universe. A service misbehaves, and somebody opens a web interface to guess at two curves. On that same machine sits a tool that could settle the question in forty seconds. DTrace shipped with Solaris 10 in 2005 after twenty-three months of work, promising zero probe effect when disabled and absolute safety when enabled, with thirty thousand instrumentation points in the kernel alone. Linux could not take it, because CDDL and GPLv2 do not sit together, so it built eBPF instead. Both work. And infrastructure monitoring still starts at fifteen dollars per host per month.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Tool That Was Already There",
+    "datePublished": "2026-08-10",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/tool-already-there",
+    "description": "Unix Universe, on dynamic instrumentation and what it costs not to use it. In 2001 Bryan Cantrill, Michael Shapiro and Adam Leventhal began work at Sun Microsystems on a facility for instrumenting production systems; DTrace took twenty-three months and shipped with Solaris 10 in March 2005, and their USENIX paper of 2004 states the guarantees plainly: the ability to instrument user-level and kernel-level software in a unified and absolutely safe fashion, zero probe effect when not explicitly enabled so that the system operates exactly as if DTrace were not present, and on the order of thirty thousand instrumentation points in the kernel of even the smallest system. Those two properties were held to deliberately, because to be acceptable in production an analysis infrastructure must have zero probe effect when disabled and be absolutely safe when enabled. That made it an architectural decision rather than a feature: a tool costing nothing while switched off can sit in the base system everywhere, which is where DTrace has been since Solaris 10 and where FreeBSD and macOS carry it still. Linux could not simply adopt it, because DTrace was published under the CDDL and the kernel is GPLv2; Oracle relicensed the kernel code under GPLv2 in August 2017, long after the question had been answered differently. The Berkeley Packet Filter of 1992, by Steven McCanne and Van Jacobson, was extended in 2014 by Alexei Starovoitov and Daniel Borkmann into eBPF, merged in Linux 3.18, with ten registers, a 512-byte stack, a JIT compiler and a verifier that walks every possible path at load time, and above it sits bpftrace by Alastair Robertson with Brendan Gregg among its principal contributors. Mateusz Piotrowski measured both at AsiaBSDCon 2024 and concluded that no comparison can name a winner, since any such comparison would be unfair and misinformed, and that the two are entirely different pieces of software that merely look similar. Meanwhile infrastructure monitoring lists at fifteen dollars per host per month, application performance monitoring at thirty-one, log ingestion at ten cents per gigabyte and indexing at one dollar seventy per million events, and a Datadog earnings call of May 2023 pointed to a sixty-five million dollar annual bill later confirmed as Coinbase's for 2021.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-10">10 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Tool That Was Already There</h1>
+        <p class="vv-article-meta"><em>In 2004 three engineers wrote down what an observability tool must guarantee before anybody may switch it on in production. The Unix line got one, and Linux eventually built its own. The dashboard still gets asked first. Unix Universe.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">observability</span>
+            <span class="vv-pill">unix</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>A production system is behaving oddly. Not broken, just odd: response times have grown a second hump, and nobody knows what from.</p>
+
+        <p>What happens next? In most shops somebody opens a web interface, hunts for the right time window, lays two curves on top of one another and begins to guess. If the quantity they want is not among them, a ticket gets written so that it will be emitted from the next deployment onwards. An answer in a fortnight, with luck.</p>
+
+        <p>On that same machine sits a tool that could settle the question in forty seconds. It is installed. It costs nothing. It does not ask whether anybody instrumented a field in advance.</p>
+
+        <p>This piece is about why nobody reaches for it.</p>
+
+        <h2>What Was Written Down in 2004</h2>
+
+        <p>In 2001 three kernel engineers at Sun Microsystems began work on a problem as old as running computers for a living. You can measure a system while it sits in a lab, and you can watch it while it is small. Once it is large and customers are on it, both of those stop.</p>
+
+        <p>Bryan Cantrill, Michael Shapiro and Adam Leventhal took twenty-three months to the first integration, which puts it at 2003. It shipped with Solaris 10 in March 2005. A year before that they presented their paper at USENIX, <a href="https://www.usenix.org/legacy/event/usenix04/tech/general/full_papers/cantrill/cantrill.pdf" target="_blank" rel="noopener">under the title Dynamic Instrumentation of Production Systems</a>, and its abstract reads like a specification somebody actually met.</p>
+
+        <p>Three sentences from it repay a careful reading.</p>
+
+        <svg viewBox="0 0 640 250" aria-label="The three guarantees stated in the 2004 DTrace paper. First, it instruments user-level and kernel-level software in a unified and absolutely safe fashion. Second, when not explicitly enabled it has zero probe effect, so the system operates exactly as if DTrace were not present at all. Third, even the smallest system offers on the order of thirty thousand instrumentation points in the kernel alone. The authors state the reason: to be acceptable in production, an analysis infrastructure must have zero probe effect when disabled and be absolutely safe when enabled." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .gu-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .gu-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .gu-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .gu-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .gu-num   { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; }
+                .gu-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="320" y="22" class="gu-title" text-anchor="middle">The 2004 specification, and why</text>
+
+            <rect x="20" y="40" width="600" height="52" class="gu-box"/>
+            <text x="36" y="62" class="gu-head">WHEN ENABLED</text>
+            <text x="36" y="82" class="gu-item">&#x201C;in a unified and absolutely safe fashion&#x201D;</text>
+            <text x="380" y="82" class="gu-note">not handle with care, not test systems only</text>
+
+            <rect x="20" y="104" width="600" height="52" class="gu-box"/>
+            <text x="36" y="126" class="gu-head">WHEN DISABLED</text>
+            <text x="36" y="146" class="gu-item">&#x201C;zero probe effect&#x201D;</text>
+            <text x="380" y="146" class="gu-note">exactly as if DTrace were not present at all</text>
+
+            <rect x="20" y="168" width="600" height="52" class="gu-box"/>
+            <text x="36" y="190" class="gu-head">HOW MUCH</text>
+            <text x="36" y="210" class="gu-num">30,000</text>
+            <text x="100" y="210" class="gu-item">instrumentation points in the kernel alone</text>
+            <text x="380" y="210" class="gu-note">on even the smallest system</text>
+
+            <text x="20" y="240" class="gu-note">Their reason, in their words: to be acceptable in production it must cost nothing when off and be safe when on.</text>
+        </svg>
+
+        <p>The first: DTrace can instrument both user-level and kernel-level software "in a unified and absolutely safe fashion". Absolutely safe. Not handle with care, not recommended on test systems.</p>
+
+        <p>The second: "When not explicitly enabled, DTrace has zero probe effect", and the paper spells out what that means, namely that the system operates exactly as if DTrace were not present at all. Switched off, it is gone. Not one per cent, not half of one, nothing.</p>
+
+        <p>The third concerns quantity. The facility allows for many tens of thousands of instrumentation points, and even the smallest of systems offers "on the order of 30,000 such points in the kernel alone".</p>
+
+        <p>And in the same passage the authors say why they held themselves to those two properties: "To be acceptable for use on production systems, performance analysis infrastructure must have zero probe effect when disabled, and must be absolutely safe when enabled."</p>
+
+        <p>Cantrill later <a href="https://klarasystems.com/articles/freebsd-history-understanding-the-origins-of-dtrace/" target="_blank" rel="noopener">put it more casually</a>, and in that form it sticks: if you run a tool and the system dies as a result, you will never be allowed to run that tool again.</p>
+
+        <h2>Not a Feature, a Decision About Where Things Live</h2>
+
+        <p>You can read that abstract as marketing copy. It is an architectural commitment, and the difference shows in where the thing belongs. What they built is dynamic instrumentation, which is a capability rather than a product, and a capability has to live somewhere.</p>
+
+        <p>An observability tool that gets installed afterwards is always one step late. It is not there when you need it; you procure it once something has happened. It has requirements of its environment. It goes through an approval. It costs money the moment it runs, and so it runs only where somebody managed to justify the cost.</p>
+
+        <p>A tool that costs nothing while switched off can sit everywhere. That was precisely the intention. DTrace has been part of the base system since Solaris 10, and wherever it travelled that property travelled with it. FreeBSD took it in. macOS has it. In neither case is it a product you buy; it is something you type.</p>
+
+        <p>Which is the Unix way of building things, demonstrated in a single example. Not one large program that answers everything, but a capability in the system from which you assemble the question yourself.</p>
+
+        <h2>The Other Answer</h2>
+
+        <p>Linux went another way, and telling that story fairly means going back further than 2014, and starting with why it had to go another way at all.</p>
+
+        <p>DTrace was published under the CDDL. The Linux kernel is GPLv2. <a href="https://softwarefreedom.org/resources/2016/linux-kernel-cddl.html" target="_blank" rel="noopener">The two licences do not sit together</a>, and no amount of goodwill on either side changes that; a CDDL-licensed tracing framework cannot simply be merged into a GPLv2 kernel. Oracle released the DTrace kernel code under GPLv2 and later in August 2017, by which time the question had long since been answered differently.</p>
+
+        <p>The Berkeley Packet Filter dates from 1992, from Steven McCanne and Van Jacobson, and was originally exactly what the name says: a small virtual machine in the kernel deciding which network packets travel upwards. A frugal, handsome thing with a narrow purpose.</p>
+
+        <p>In 2014 Alexei Starovoitov and Daniel Borkmann took that mechanism and <a href="https://ebpf.io/what-is-ebpf/" target="_blank" rel="noopener">made something considerably larger of it</a>. Ten registers, a 512-byte stack, a JIT compiler, and above all a verifier. It went into Linux 3.18.</p>
+
+        <svg viewBox="0 0 640 300" aria-label="Two routes to the same guarantee. On the Unix side, DTrace was developed at Sun from 2001, shipped with Solaris 10 in 2005, and travelled into FreeBSD and macOS as part of the base system; it solves the safety problem with a purpose-built language that cannot express dangerous operations. On the Linux side, the Berkeley Packet Filter of 1992 was extended in 2014 into eBPF and merged in Linux 3.18; it solves the same problem with a verifier that statically checks every possible path at load time, and bpftrace sits on top as a high-level front end. The two lines are separate because the CDDL licence of DTrace and the GPLv2 of the kernel are incompatible." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tw-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tw-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .tw-year  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .tw-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .tw-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tw-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="320" y="22" class="tw-title" text-anchor="middle">Two routes, one guarantee</text>
+
+            <rect x="20" y="40" width="290" height="210" class="tw-box"/>
+            <text x="36" y="62" class="tw-head">THE UNIX LINE</text>
+            <text x="36" y="88" class="tw-year">2001</text>
+            <text x="90" y="88" class="tw-item">work begins at Sun</text>
+            <text x="36" y="112" class="tw-year">2005</text>
+            <text x="90" y="112" class="tw-item">ships in Solaris 10</text>
+            <text x="36" y="136" class="tw-year">later</text>
+            <text x="90" y="136" class="tw-item">FreeBSD, macOS</text>
+            <text x="36" y="172" class="tw-head">SAFETY VIA</text>
+            <text x="36" y="192" class="tw-item">a language that cannot express</text>
+            <text x="36" y="207" class="tw-item">the dangerous operations</text>
+            <text x="36" y="232" class="tw-note">part of the base system, nothing to procure</text>
+
+            <rect x="330" y="40" width="290" height="210" class="tw-box"/>
+            <text x="346" y="62" class="tw-head">LINUX</text>
+            <text x="346" y="88" class="tw-year">1992</text>
+            <text x="400" y="88" class="tw-item">BPF, packet filtering</text>
+            <text x="346" y="112" class="tw-year">2014</text>
+            <text x="400" y="112" class="tw-item">extended into eBPF</text>
+            <text x="346" y="136" class="tw-year">3.18</text>
+            <text x="400" y="136" class="tw-item">merged into the kernel</text>
+            <text x="346" y="172" class="tw-head">SAFETY VIA</text>
+            <text x="346" y="192" class="tw-item">a verifier that walks every path</text>
+            <text x="346" y="207" class="tw-item">before the code may run</text>
+            <text x="346" y="232" class="tw-note">bpftrace sits on top as the front end</text>
+
+            <text x="320" y="278" class="tw-note" text-anchor="middle">Separate lines by necessity: CDDL and GPLv2 are incompatible.</text>
+        </svg>
+
+        <p>That verifier is where the two answer the same question by opposite means, and the distinction is worth stating precisely. DTrace constrains what can be written: its language has no loops and no arbitrary control flow, so a dangerous script is not expressible in the first place. eBPF admits arbitrary programs and then proves them safe, with <a href="https://docs.kernel.org/bpf/verifier.html" target="_blank" rel="noopener">static analysis at load time</a> that walks every possible path, forbidding loops, invalid jumps, invalid memory access and the leaking of kernel data.</p>
+
+        <p>Those are not the same guarantee. One is enforced by construction, the other by an analyser that grows with every new capability, and an analyser is software like any other. That difference has a record, and it is not a quiet one, but it belongs to a different piece than this.</p>
+
+        <p>On top of that sits <a href="https://www.brendangregg.com/blog/2019-08-19/bpftrace.html" target="_blank" rel="noopener">bpftrace</a> today, written by Alastair Robertson with Brendan Gregg among its principal contributors, and deliberately shaped so that somebody with DTrace in their fingers finds their way about at once.</p>
+
+        <p>Which matters for the bill further down: both sides can trace a live production system without stopping it. On capability there is nothing to choose between them.</p>
+
+        <h2>What Happens When Somebody Measures Both</h2>
+
+        <p>The temptation at this point is to look for a winner, and there is even a paper that would seem to offer one if you read it in a hurry.</p>
+
+        <p>Mateusz Piotrowski presented work at AsiaBSDCon in 2024, <a href="https://papers.freebsd.org/2024/asiabsdcon/" target="_blank" rel="noopener">published in the conference proceedings</a>, measuring the overhead of DTrace on FreeBSD against eBPF on Linux, with a microbenchmark and an application benchmark built on the experiments from Gregg's book.</p>
+
+        <p>And then he writes the sentence that keeps this whole piece honest: it is not possible to say which system is faster. There are too many factors he did not account for, and any performance comparison between DTrace and bpftrace "would be unfair and misinformed".</p>
+
+        <blockquote>
+            <p>His conclusion is equally unexcitable. The two are entirely different pieces of software, even though they might look similar.</p>
+        </blockquote>
+
+        <p>You can pour a great deal of work into a study and end up establishing that the question you started with was the wrong one. That is not a failure. That is a result.</p>
+
+        <p>One aside from his future-work section deserves a place all the same, because it concerns operations rather than arithmetic. During early experimentation bpftrace took roughly ten minutes to print its collected statistics and quit, where DTrace, when signalled, was done in a few seconds. He records it as an open question for the bpftrace community rather than as a verdict, and that is how I pass it on.</p>
+
+        <h2>The Bill</h2>
+
+        <p>So the Unix line has a tool in the core of the system that can answer any question at all about a running machine, immediately, locally, with no preparation and no running cost, and Linux has built itself an equivalent.</p>
+
+        <p>And what do people reach for?</p>
+
+        <svg viewBox="0 0 640 240" aria-label="What the same capability costs when bought as a platform, from the Datadog list price of 9 August 2026. Infrastructure monitoring fifteen dollars per host per month. Application performance monitoring thirty-one dollars per host per month. Log ingestion ten cents per gigabyte. Log indexing one dollar seventy per million events. Against that, the tool in the kernel costs nothing when disabled and is already installed." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bi-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .bi-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .bi-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .bi-num   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 12px; font-weight: 700; }
+                .bi-free  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 12px; font-weight: 700; }
+                .bi-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+            </style>
+            <text x="320" y="22" class="bi-title" text-anchor="middle">The same question, bought instead of typed</text>
+            <text x="20" y="50" class="bi-head">AS A PLATFORM</text>
+            <line x1="20" y1="58" x2="620" y2="58" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="82" class="bi-item">Infrastructure monitoring</text>
+            <text x="430" y="82" class="bi-num">$15</text>
+            <text x="470" y="82" class="bi-note">per host, per month</text>
+
+            <text x="20" y="108" class="bi-item">Application performance monitoring</text>
+            <text x="430" y="108" class="bi-num">$31</text>
+            <text x="470" y="108" class="bi-note">per host, per month</text>
+
+            <text x="20" y="134" class="bi-item">Log ingestion</text>
+            <text x="430" y="134" class="bi-num">$0.10</text>
+            <text x="480" y="134" class="bi-note">per ingested GB</text>
+
+            <text x="20" y="160" class="bi-item">Log indexing</text>
+            <text x="430" y="160" class="bi-num">$1.70</text>
+            <text x="480" y="160" class="bi-note">per million events</text>
+
+            <text x="20" y="196" class="bi-head">IN THE KERNEL</text>
+            <line x1="20" y1="204" x2="620" y2="204" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="226" class="bi-item">The same question, asked locally</text>
+            <text x="430" y="226" class="bi-free">nothing</text>
+            <text x="500" y="226" class="bi-note">already installed</text>
+        </svg>
+
+        <p><a href="https://www.datadoghq.com/pricing/" target="_blank" rel="noopener">Infrastructure monitoring</a> starts at fifteen dollars per host per month. Application performance monitoring at thirty-one. Logs cost ten cents per ingested gigabyte, and are then charged a second time at one dollar seventy per million indexed events. Multiply that by a fleet and a generous logging policy and you get an invoice nobody can estimate in their head any more.</p>
+
+        <p>How large that can grow is now a matter of record. On a Datadog earnings call on 4 May 2023, an analyst worked out from a remark by the finance chief about a large non-recurring bill that the figure must be about sixty-five million dollars. <a href="https://blog.pragmaticengineer.com/datadog-65m-year-customer-mystery/" target="_blank" rel="noopener">Gergely Orosz went after it</a> and had it confirmed by current and former engineers: Coinbase, for the year 2021.</p>
+
+        <p>That is an extreme from the height of the crypto boom, and I do not raise it to sit in judgement on Coinbase. I raise it because it demonstrates that there is no ceiling in that direction. Upwards, the thing is open.</p>
+
+        <p>The everyday finding is the smaller one. When a service misbehaves, the first question in most shops is not "what is this process actually doing" but "have we got that in the dashboard". And if it is not in the dashboard the question is treated as unanswerable, while on every one of those machines sits a tool built for exactly that purpose, by people who sat down twenty-two years earlier and wrote out which guarantees it would have to keep.</p>
+
+        <h2>The Limit</h2>
+
+        <p>Now the honest part, because the opposing case is strong.</p>
+
+        <p>A local tool answers local questions. It will tell you everything about this one machine and nothing whatsoever about the four hundred beside it. Aggregating across a fleet, retaining months of history, following one request through seven services: those are real problems, and DTrace solves not a single one of them. It was never built to.</p>
+
+        <p>The timing is just as real. Somebody woken at three in the morning wants to see a curve, not write a script. The platforms are not merely selling storage, they are selling readiness: somebody decided in advance what would be measured, so the answer is already sitting there when the question arrives. That is worth money, and anybody who disputes it has never carried a pager.</p>
+
+        <p>And these tools are not free merely because they cost nothing. Asking a running system a sensible question requires knowing what you are looking for. That is a skill, it needs practice, and it decays when nobody has occasion to use it.</p>
+
+        <p>Nor is the DTrace side without a loaded weapon of its own. <code>dtrace -w</code> is a destructive mode that can modify a running kernel. It is separately gated and requires a deliberate decision, but it exists, and an operator who grants it has granted something serious.</p>
+
+        <p>So the complaint is not with the platform. It is with the order of operations.</p>
+
+        <h2>The Point</h2>
+
+        <p>In 2004 somebody wrote down the two properties an observability tool must have before you are entitled to switch it on when it matters: nothing at all when disabled, absolute safety when enabled. Both sides of that divide went after those properties, by opposite means, over twenty years and with a licence quarrel in the middle.</p>
+
+        <p>The result is sitting on every machine you run.</p>
+
+        <p>When the next service misbehaves, the first question is not whether the quantity is in the dashboard. The first question is whether anybody in the room can drive the tool that is already there. If somebody can, the answer costs forty seconds. If nobody can, it costs a fortnight and a line item on an invoice with no known ceiling.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The point:</strong></p>
+            <ul>
+                <li><strong>The 2004 specification:</strong> zero probe effect when disabled, absolutely safe when enabled, and thirty thousand instrumentation points in the kernel of even the smallest system.</li>
+                <li><strong>It is where it is on purpose.</strong> A tool that costs nothing while switched off can live in the base system, which is why DTrace is in FreeBSD and macOS as something you type rather than something you buy.</li>
+                <li><strong>Linux had to build its own,</strong> because CDDL and GPLv2 are incompatible. eBPF answers the same question by the opposite route: a verifier that proves arbitrary programs safe, rather than a language in which the dangerous thing cannot be said.</li>
+                <li><strong>No winner.</strong> The one published comparison declines to name one, on the grounds that any such comparison would be unfair and misinformed.</li>
+                <li><strong>The bill:</strong> fifteen dollars per host per month for infrastructure, thirty-one for APM, ten cents per ingested gigabyte and a dollar seventy per million indexed events. The kernel tool costs nothing and is already installed.</li>
+                <li><a href="https://www.usenix.org/legacy/event/usenix04/tech/general/full_papers/cantrill/cantrill.pdf" target="_blank" rel="noopener">Cantrill, Shapiro and Leventhal, Dynamic Instrumentation of Production Systems, USENIX ATC 2004</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/DTrace" target="_blank" rel="noopener">DTrace history, Solaris 10, and the 2017 GPLv2 relicensing</a></li>
+                <li><a href="https://softwarefreedom.org/resources/2016/linux-kernel-cddl.html" target="_blank" rel="noopener">The CDDL and GPLv2 incompatibility</a></li>
+                <li><a href="https://ebpf.io/what-is-ebpf/" target="_blank" rel="noopener">eBPF, from BPF 1992 to Linux 3.18</a></li>
+                <li><a href="https://papers.freebsd.org/2024/asiabsdcon/" target="_blank" rel="noopener">Piotrowski, benchmarking DTrace and eBPF, AsiaBSDCon 2024</a></li>
+                <li><a href="https://www.datadoghq.com/pricing/" target="_blank" rel="noopener">Datadog list pricing, retrieved 9 August 2026</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
