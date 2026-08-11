@@ -14,6 +14,7 @@ local pages = {
     { loc = "/print",      priority = "0.6",  changefreq = "monthly" },
     { loc = "/print/integrated-by-design", priority = "0.7", changefreq = "monthly" },
     -- blog articles
+    { loc = "/blog/wait-before-work",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/tool-already-there",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/bytes-of-art-bitbendaz-laevitas",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/door-you-came-in-by",   priority = "0.7", changefreq = "yearly" },

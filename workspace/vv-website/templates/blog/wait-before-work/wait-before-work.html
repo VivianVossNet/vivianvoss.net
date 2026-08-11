@@ -1,0 +1,309 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Wait Before the Work &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="An empty Next.js project declares 11 dependencies and receives 438 packages, 21,229 files and 468 MB. Checking that nothing takes 12.4 seconds on hardware faster than any CI runner. A measurement of what a pipeline spends before it reaches your code, and of why most of those steps exist to repair the tooling rather than to build the product.">
+{( endslot )}
+
+{( slot canonical )}/blog/wait-before-work{( endslot )}
+
+{( slot og-title )}The Wait Before the Work &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The Bench Marker. Create an empty Next.js project: 11 direct dependencies are declared, 438 packages arrive, 21,229 files, 468 MB. Running the checks that guard it on every push takes 12.4 seconds on an M1 Max, and the standard GitHub runner has 2 vCPUs against these 10 cores. An empty Node process needs 64.7 milliseconds to accomplish nothing, 19 times what awk needs for the same absence of work. Spryker&#x2019;s reference shop declares 266 dependencies and receives 1,202 packages. Magento invokes one style checker six times, because six notations share one project. Every one of those steps is a repair.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Wait Before the Work",
+    "datePublished": "2026-08-11",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/wait-before-work",
+    "description": "The Bench Marker, on what a build pipeline spends before it reaches any product code. An empty Next.js project generated with create-next-app declares 11 direct dependencies and receives 438 packages, 21,229 files and 468 megabytes on disk. Running the checks that guard that project on every push takes 12.4 seconds, made up of 6,962 milliseconds for npm ci against an empty cache, 961 for tsc, 1,205 for eslint and 3,276 for next build, measured on an Apple M1 Max with 10 cores and 32 GB, where the standard GitHub-hosted Linux runner has 2 virtual CPUs and 7 GB of memory. A modest matrix of 3 Node versions across 3 operating systems is 9 jobs sharing no cache, so 12 seconds becomes nearly 2 minutes of machine time for one push. The reason the seconds resist better hardware is visible in the smallest measurement available: an empty program that reads nothing and prints nothing costs 3.4 milliseconds in awk, 4.2 in a compiled Swift binary, 5.9 in sh, 26.5 in python3, 30.9 in deno and 64.7 in node, because every pipeline step is a fresh process in a fresh container paying the full price of arriving. A commit through the usual husky and lint-staged chain takes 824 milliseconds against 100 with hooks disabled, of which npx lint-staged alone accounts for 464, and 262 of that is the wrapper starting a Node process to locate a binary that a relative path finds for nothing; subtract every bootstrap and about 70 milliseconds of actual formatting remains, 8.5 per cent of the wait. The same arithmetic holds where the revenue is: the Spryker B2C reference shop declares 266 direct dependencies and receives 1,202 packages, 899 of them its own modules, Magento replaces 241 modules in its monorepo and Shopware declares 165 direct, while Magento&#x2019;s published quality gate invokes one code-style checker six times for PHP, XML and XSD, HTML, GraphQL and LESS, and Shopware keeps 55 workflow files including one whose purpose is to warm the static-analysis cache. Each of those checks stands in for a guarantee the tooling declined to give: style because the language has no canonical form, static analysis because types are optional, an architecture sniffer because the architecture is a convention no framework enforces by itself.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-11">11 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Wait Before the Work</h1>
+        <p class="vv-article-meta"><em>A new project with nothing in it, and the 12 seconds a machine needs before anybody has written a line. The Bench Marker.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">performance</span>
+            <span class="vv-pill">benchmarking</span>
+            <span class="vv-pill">nodejs</span>
+            <span class="vv-pill">tooling</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Create an empty Next.js project. No features, no pages beyond the template, no business logic at all. 11 direct dependencies are declared.</p>
+
+        <p>438 packages arrive. 21,229 files. 468 megabytes.</p>
+
+        <p>Now run the checks that guard that project on every push. On an M1 Max with a gigabit line, which is faster than the machine your pipeline actually uses, it takes 12.4 seconds. Nothing in that time produces a feature, and nothing in it is your code.</p>
+
+        <h2>What an Empty Project Costs Per Run</h2>
+
+        <svg viewBox="0 0 640 260" aria-label="Breakdown of a single pipeline run over an empty Next.js project, total 12,404 milliseconds. Installing dependencies with npm ci against an empty cache takes 6,962 milliseconds, which is 56 per cent of the run. The TypeScript compiler in check-only mode takes 961 milliseconds. ESLint takes 1,205 milliseconds. The Next.js build takes 3,276 milliseconds. Measured on an Apple M1 Max with 10 cores and 32 gigabytes, where the standard GitHub-hosted runner has 2 virtual CPUs and 7 gigabytes." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pr-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pr-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .pr-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; }
+                .pr-num   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .pr-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .pr-total { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 13px; font-weight: 700; }
+                .pr-bar   { fill: var(--border); rx: 2; }
+                .pr-bar-a { fill: var(--accent); rx: 2; }
+            </style>
+            <text x="320" y="22" class="pr-title" text-anchor="middle">One pipeline run, empty project</text>
+
+            <text x="20" y="48" class="pr-head">STEP</text>
+            <text x="620" y="48" class="pr-head" text-anchor="end">MILLISECONDS</text>
+            <line x1="20" y1="56" x2="620" y2="56" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="80" class="pr-item">npm ci (empty cache)</text>
+            <rect x="200" y="70" width="336" height="12" class="pr-bar-a"/>
+            <text x="620" y="80" class="pr-num" text-anchor="end">6,962</text>
+
+            <text x="20" y="110" class="pr-item">tsc --noEmit</text>
+            <rect x="200" y="100" width="46" height="12" class="pr-bar"/>
+            <text x="620" y="110" class="pr-num" text-anchor="end">961</text>
+
+            <text x="20" y="140" class="pr-item">eslint</text>
+            <rect x="200" y="130" width="58" height="12" class="pr-bar"/>
+            <text x="620" y="140" class="pr-num" text-anchor="end">1,205</text>
+
+            <text x="20" y="170" class="pr-item">next build</text>
+            <rect x="200" y="160" width="158" height="12" class="pr-bar"/>
+            <text x="620" y="170" class="pr-num" text-anchor="end">3,276</text>
+
+            <line x1="20" y1="188" x2="620" y2="188" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="210" class="pr-total">TOTAL</text>
+            <text x="620" y="210" class="pr-total" text-anchor="end">12,404</text>
+
+            <text x="20" y="238" class="pr-note">Apple M1 Max, 10 cores, 32 GB. The standard GitHub runner has 2 vCPUs and 7 GB, so read every figure as a floor.</text>
+        </svg>
+
+        <p>Then the multiplication begins, and it is not a rhetorical multiplication. A modest matrix of 3 Node versions across 3 operating systems is 9 jobs, none of which share a cache with the others, so 12 seconds becomes nearly 2 minutes of machine time for one push. A monorepo with 10 packages multiplies it again. 20 pushes in a working day, which is a quiet day for 6 people, and the pipeline has spent well over half an hour doing arithmetic that produced nothing anybody asked for.</p>
+
+        <p>Nobody experiences it that way, of course. Each individual wait is short enough to check messages through.</p>
+
+        <h2>The Same Arithmetic Where the Revenue Is</h2>
+
+        <p>An empty template is the friendly case. The systems that actually take orders keep the ratios and enlarge every number, and the point of what follows is the shape they share, not the badge on any one of them.</p>
+
+        <p>3 commerce platforms, 3 published manifests. Spryker&#x2019;s <a href="https://github.com/spryker-shop/b2c-demo-shop/blob/master/composer.json" target="_blank" rel="noopener">reference shop</a> declares 266 direct dependencies and receives 1,202 packages, 899 of them its own modules. Magento&#x2019;s <a href="https://github.com/magento/magento2/blob/2.4-develop/composer.json" target="_blank" rel="noopener">monorepo</a> replaces 241 modules. Shopware declares 165 direct.</p>
+
+        <svg viewBox="0 0 640 240" aria-label="What is asked for against what arrives, in three commerce platforms and one empty Next.js template. The empty Next.js project declares 11 direct dependencies and receives 438 packages. Spryker's B2C reference shop declares 266 direct dependencies and receives 1,202 packages, of which 899 are Spryker's own modules. Magento's monorepo replaces 241 modules of its own. Shopware declares 165 direct dependencies. In every case the number that arrives is far larger than the number requested." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .dp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .dp-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .dp-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; }
+                .dp-ask   { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; }
+                .dp-got   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .dp-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .dp-bar-a { fill: #4ab542; rx: 2; }
+                .dp-bar-g { fill: var(--accent); rx: 2; }
+            </style>
+            <text x="320" y="22" class="dp-title" text-anchor="middle">Asked for, and arrived</text>
+
+            <text x="20" y="48" class="dp-head">PROJECT</text>
+            <text x="300" y="48" class="dp-head" text-anchor="end">DECLARED</text>
+            <text x="620" y="48" class="dp-head" text-anchor="end">RESOLVED</text>
+            <line x1="20" y1="56" x2="620" y2="56" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="82" class="dp-item">Next.js template</text>
+            <rect x="310" y="72" width="3" height="12" class="dp-bar-a"/>
+            <text x="300" y="82" class="dp-ask" text-anchor="end">11</text>
+            <rect x="330" y="72" width="109" height="12" class="dp-bar-g"/>
+            <text x="620" y="82" class="dp-got" text-anchor="end">438</text>
+
+            <text x="20" y="112" class="dp-item">Spryker B2C shop</text>
+            <rect x="310" y="102" width="66" height="12" class="dp-bar-a"/>
+            <text x="300" y="112" class="dp-ask" text-anchor="end">266</text>
+            <rect x="330" y="102" width="300" height="12" class="dp-bar-g"/>
+            <text x="620" y="112" class="dp-got" text-anchor="end">1,202</text>
+
+            <text x="20" y="142" class="dp-item">Magento monorepo</text>
+            <rect x="310" y="132" width="23" height="12" class="dp-bar-a"/>
+            <text x="300" y="142" class="dp-ask" text-anchor="end">91</text>
+            <rect x="330" y="132" width="60" height="12" class="dp-bar-g"/>
+            <text x="620" y="142" class="dp-got" text-anchor="end">241</text>
+
+            <text x="20" y="172" class="dp-item">Shopware</text>
+            <rect x="310" y="162" width="41" height="12" class="dp-bar-a"/>
+            <text x="300" y="172" class="dp-ask" text-anchor="end">165</text>
+            <text x="620" y="172" class="dp-note" text-anchor="end">direct only</text>
+
+            <line x1="20" y1="190" x2="620" y2="190" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="212" class="dp-note">Read from the published lockfiles and manifests on 11 August 2026. Magento counts modules replaced by the monorepo.</text>
+        </svg>
+
+        <p>Their published pipelines show where the minutes come from. Magento&#x2019;s <a href="https://github.com/magento/magento2/blob/2.4-develop/.github/workflows/pr-quality-gates.yml" target="_blank" rel="noopener">quality gate</a> lints PHP syntax, then runs its code-style checker, then runs it again for XML and XSD, again for HTML, again for GraphQL, again for LESS: one tool invoked 6 times because 6 notations share one project. Shopware <a href="https://github.com/shopware/shopware/tree/trunk/.github/workflows" target="_blank" rel="noopener">keeps 55 workflow files</a>, one of which exists to warm the static-analysis cache, an optimisation for the checking rather than for the product. Spryker&#x2019;s <a href="https://docs.spryker.com/docs/ca/dev/configure-deployment-pipelines/configure-azure-pipelines.html" target="_blank" rel="noopener">documented pipeline</a> clones a Docker SDK, boots the containers, validates style, schema, XML names and transfer objects, runs PHPStan at level 4 and PHPMD against an architecture sniffer, then hands over to Codeception, with containers seeded and torn down around the whole affair.</p>
+
+        <p>Now add what a real deployment brings and the vendor documentation cannot: a staging environment and an integration environment, each with its own database, each running the suite again against its own data. At that point the wall clock has stopped counting in seconds, and the engineers waiting on it can tell you which stage is slowest without looking it up.</p>
+
+        <p>None of this is incompetence, and reading it that way would be cheap. These platforms carry real money for real merchants, they solve genuinely hard problems in tax, pricing and catalogue structure, and every check in those pipelines was added by somebody who had been burned by its absence.</p>
+
+        <h2>Why Every Step Starts From Nothing</h2>
+
+        <p>The reason those seconds cannot be optimised away by better hardware is visible further down, in the smallest measurement available: the emptiest program that can be written. Nothing is read and nothing is printed. Start, and stop.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="Time to start and stop a runtime that does nothing at all, median of 50 runs with warm-up runs discarded. awk takes 3.4 milliseconds, a compiled Swift binary 4.2, perl 5.0, sh 5.9, python3 26.5, deno 30.9 and node 64.7. Node therefore needs 19 times what awk needs for an identical absence of work. Measured on an Apple M1 Max under macOS 26.5.2." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bs-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .bs-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .bs-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; }
+                .bs-num   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .bs-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .bs-bar   { fill: #4ab542; rx: 2; }
+                .bs-bar-a { fill: var(--accent); rx: 2; }
+            </style>
+            <text x="320" y="22" class="bs-title" text-anchor="middle">Starting up to do nothing</text>
+
+            <text x="20" y="48" class="bs-head">RUNTIME</text>
+            <text x="620" y="48" class="bs-head" text-anchor="end">MILLISECONDS</text>
+            <line x1="20" y1="56" x2="620" y2="56" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="80" class="bs-item">awk</text>
+            <rect x="180" y="70" width="19" height="12" class="bs-bar"/>
+            <text x="620" y="80" class="bs-num" text-anchor="end">3.4</text>
+
+            <text x="20" y="106" class="bs-item">swift binary</text>
+            <rect x="180" y="96" width="23" height="12" class="bs-bar"/>
+            <text x="620" y="106" class="bs-num" text-anchor="end">4.2</text>
+
+            <text x="20" y="132" class="bs-item">perl</text>
+            <rect x="180" y="122" width="28" height="12" class="bs-bar"/>
+            <text x="620" y="132" class="bs-num" text-anchor="end">5.0</text>
+
+            <text x="20" y="158" class="bs-item">sh</text>
+            <rect x="180" y="148" width="33" height="12" class="bs-bar"/>
+            <text x="620" y="158" class="bs-num" text-anchor="end">5.9</text>
+
+            <text x="20" y="184" class="bs-item">python3</text>
+            <rect x="180" y="174" width="147" height="12" class="bs-bar-a"/>
+            <text x="620" y="184" class="bs-num" text-anchor="end">26.5</text>
+
+            <text x="20" y="210" class="bs-item">deno</text>
+            <rect x="180" y="200" width="172" height="12" class="bs-bar-a"/>
+            <text x="620" y="210" class="bs-num" text-anchor="end">30.9</text>
+
+            <text x="20" y="236" class="bs-item">node</text>
+            <rect x="180" y="226" width="360" height="12" class="bs-bar-a"/>
+            <text x="620" y="236" class="bs-num" text-anchor="end">64.7</text>
+
+            <line x1="20" y1="252" x2="620" y2="252" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="270" class="bs-note">Median of 50 runs, 3 warm-up runs discarded, timed around fork and exec. macOS 26.5.2, Apple M1 Max.</text>
+        </svg>
+
+        <p>64 milliseconds of Node to accomplish nothing, 19 times what <code>awk</code> needs for the same absence of work. On its own that is no scandal. A web server starts once and then runs for weeks, and Node was designed for exactly that shape, where the bootstrap is a rounding error and the event loop is the product.</p>
+
+        <p>The trouble is that a build pipeline is the opposite shape. Every step is a fresh process in a fresh container, and each one pays the full price of arriving before it does anything.</p>
+
+        <p>Watch it land in the ordinary case. A commit in a small repository with the usual hook setup takes 824 milliseconds; the same commit with hooks disabled takes 100. Of that difference, <code>npx lint-staged</code> alone accounts for 464, of which 262 is the wrapper starting a Node process to find a binary that a relative path locates for nothing. Then <code>prettier</code> runs on one file for 135 milliseconds, 64 of which is Node arriving for the second time. Subtract every bootstrap and roughly 70 milliseconds of actual formatting remains, 8.5 per cent of the wait.</p>
+
+        <p>Memory follows suit. An empty Node process holds 46.1 MB before it has been told what to do, <code>prettier</code> peaks at 64.0 and <code>eslint</code> at 76.2, against 1.4 MB for <code>awk</code> making a comparable pass over the same file. Multiply that by the number of containers on a build host and the pattern stops being about time at all.</p>
+
+        <h2>What Is Actually Being Checked</h2>
+
+        <p>Here is the part that ought to give a technical director pause, and it has nothing to do with milliseconds.</p>
+
+        <p>Look at what those 12 seconds consist of. 7 of them fetch and unpack 438 packages, a number that exists because 11 wishes were expressed and the ecosystem answered with a supply chain. 1 second checks types, a step required because the language has none of its own. Another applies rules that a compiler would enforce as a matter of course. 3 seconds translate the result into something a browser will accept, because what was written is not what runs.</p>
+
+        <p>The commerce pipelines decompose the same way, in a different dialect. There is a code style pass, because the language has no canonical form. There is static analysis at level 4, because types are optional and therefore missing wherever nobody insisted. There is an architecture sniffer, because the architecture is a convention that no framework can enforce by itself. Schema and transfer validation follow, because those objects are generated from declarations that nothing verifies at compile time. And 6 style passes for 6 notations, because a single project is written in 6 languages at once.</p>
+
+        <svg viewBox="0 0 640 300" aria-label="Each pipeline stage set against the guarantee it stands in for. Dependency installation exists because a package manager resolves transitive requirements, and no manifest states what actually arrives. Type checking exists because the language has no types of its own. Linting exists because rules of construction are conventions rather than language rules. The build step exists because what is written is not what runs. Code style exists because the language has no canonical form. The architecture sniffer exists because architecture is a convention no framework enforces. In every row the check is a repair for a property that arrived with the choice of tooling." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .rp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .rp-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .rp-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .rp-why   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .rp-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+            </style>
+            <text x="320" y="22" class="rp-title" text-anchor="middle">The stage, and the guarantee it replaces</text>
+
+            <text x="20" y="48" class="rp-head">STAGE</text>
+            <text x="220" y="48" class="rp-head">STANDS IN FOR</text>
+            <line x1="20" y1="56" x2="620" y2="56" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="80" class="rp-item">install</text>
+            <text x="220" y="80" class="rp-why">a manifest that states what actually arrives</text>
+
+            <text x="20" y="110" class="rp-item">type check</text>
+            <text x="220" y="110" class="rp-why">types the language does not have</text>
+
+            <text x="20" y="140" class="rp-item">lint</text>
+            <text x="220" y="140" class="rp-why">rules a compiler would enforce anyway</text>
+
+            <text x="20" y="170" class="rp-item">build</text>
+            <text x="220" y="170" class="rp-why">a runtime that reads what was written</text>
+
+            <text x="20" y="200" class="rp-item">code style</text>
+            <text x="220" y="200" class="rp-why">a canonical form the language never fixed</text>
+
+            <text x="20" y="230" class="rp-item">architecture sniffer</text>
+            <text x="220" y="230" class="rp-why">structure no framework enforces by itself</text>
+
+            <line x1="20" y1="250" x2="620" y2="250" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="272" class="rp-note">Each row is a repair. Nobody made a mistake to warrant it; the property being repaired arrived with</text>
+            <text x="20" y="288" class="rp-note">the choice of tooling, and each repair needs its own tool, config, pipeline slot and runtime to start.</text>
+        </svg>
+
+        <p>Every one of those steps is a repair, and every check stands in for a guarantee the tooling declined to give. Nobody made a mistake to warrant any of it; the property being repaired arrived with the choice of tooling, and each repair now needs its own tool, its own configuration, its own place in the pipeline, and its own runtime to start up before it can begin.</p>
+
+        <p>This is where the arrangement turns circular. A pipeline of this kind spends most of its life measuring and correcting consequences of the framework it was built to serve. Add a container per service and the whole apparatus is instantiated again, with its own base image, its own dependency tree, its own audit and its own set of the same checks, all of it running on every push, all of it scaffolding for scaffolding.</p>
+
+        <blockquote><p>The industry has a word for what remains when you remove all of that. It calls it the business logic, which is a curious way to describe the only part anybody wanted.</p></blockquote>
+
+        <h2>The Limit</h2>
+
+        <p>The counter-arguments are real and deserve better than a subordinate clause.</p>
+
+        <p>Caching removes a good deal of this. A warm dependency cache took <code>npm ci</code> from 6,962 milliseconds down to 738, and a pipeline configured by somebody who cares looks considerably better than the figures above. Node ships <a href="https://nodejs.org/api/cli.html#--build-snapshot" target="_blank" rel="noopener"><code>--build-snapshot</code></a>, which restores a prepared heap instead of repeating the bootstrap, saving 50 to 150 milliseconds per start. Editors keep a language server resident rather than launching a formatter per keystroke. To its credit lint-staged <a href="https://github.com/lint-staged/lint-staged" target="_blank" rel="noopener">bundles</a> every staged path into one invocation rather than spawning per file, which is the difference between 325 milliseconds and 13,417 for the same 100 files.</p>
+
+        <p>The checks also buy something. A type error caught before review is worth more than the second it cost, and the framework buys real things too: routing, rendering, a hiring pool, an answer to questions nobody on the team wants to solve twice.</p>
+
+        <p>Nor is the compiled side a free lunch, and it would be dishonest to imply otherwise. Rust and Go run their own check, format, lint and test steps, so the number of stages barely moves. What moves is where the guarantee lives. A large Rust workspace is measured in minutes rather than seconds, and anybody reading this as an advertisement for compilation has not sat through a release build.</p>
+
+        <p>And the measurement has boundaries: a single machine, warm caches throughout, a project with nothing in it, and a network most pipelines would envy. A large application changes the ratios, mostly by making them worse.</p>
+
+        <h2>What the Second Actually Buys</h2>
+
+        <p>None of this argues that the seconds are unaffordable. They plainly are affordable, which is precisely why nobody has counted them.</p>
+
+        <p>The question worth putting to a team is a different one, and it is not about performance. Of the time your pipeline spends on every push, what fraction goes to the thing you are selling, and what fraction goes to repairing the consequences of what you chose to build it with? The figure is measurable in an afternoon, and most teams have never seen it.</p>
+
+        <p>There is a second cost, and it lands on the checks themselves. The reports on slow hooks converge on one behaviour, which is that developers reach for <code>--no-verify</code>, a flag Git makes trivial and Husky does nothing to discourage. Somebody who waits a second on every commit finds that flag within a fortnight, and from then on the guarantee runs on the machines of the people who never disabled it. Which is to say it is no longer a guarantee.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The measurement:</strong></p>
+            <ul>
+                <li><strong>Empty Next.js project:</strong> 11 declared dependencies, 438 packages, 21,229 files, 468 MB</li>
+                <li><strong>One pipeline run:</strong> 12,404 ms &#x2192; npm ci 6,962 &#x2022; tsc 961 &#x2022; eslint 1,205 &#x2022; next build 3,276</li>
+                <li><strong>Empty runtime start:</strong> awk 3.4 ms against node 64.7 ms, a factor of 19 for identical work</li>
+                <li><strong>Commit with the usual hooks:</strong> 824 ms against 100 ms, of which 262 ms is the <code>npx</code> wrapper alone</li>
+                <li><strong>Hardware:</strong> Apple M1 Max, 10 cores, 32 GB, macOS 26.5.2; Node v26.0.0, Deno 2.7.14, Python 3.14.5, Swift 6.3.3</li>
+                <li><a href="https://docs.github.com/en/actions/reference/specifications-for-github-hosted-runners" target="_blank" rel="noopener">GitHub-hosted runner specifications, 2 vCPUs and 7 GB</a></li>
+                <li><a href="https://github.com/spryker-shop/b2c-demo-shop/blob/master/composer.json" target="_blank" rel="noopener">Spryker B2C Demo Shop, manifest and lockfile</a></li>
+                <li><a href="https://docs.spryker.com/docs/ca/dev/configure-deployment-pipelines/configure-azure-pipelines.html" target="_blank" rel="noopener">Spryker&#x2019;s documented CI stages</a></li>
+                <li><a href="https://github.com/magento/magento2/blob/2.4-develop/.github/workflows/pr-quality-gates.yml" target="_blank" rel="noopener">Magento PR quality gates, one style pass per notation</a></li>
+                <li><a href="https://github.com/shopware/shopware/tree/trunk/.github/workflows" target="_blank" rel="noopener">Shopware workflow directory, 55 files</a></li>
+                <li><a href="https://gitnation.com/contents/nodejs-startup-snapshots" target="_blank" rel="noopener">Joyee Cheung on Node.js startup snapshots</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
