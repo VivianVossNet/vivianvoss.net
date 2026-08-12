@@ -1,0 +1,257 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Whale With the Coin Slot &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="On 31 August 2021 Docker fitted a meter to a tool that had been free on every corporate laptop for a decade. An audit of what the subscription actually buys, what is being metered, and what the same job costs on a system where the problem never arises.">
+{( endslot )}
+
+{( slot canonical )}/blog/coin-slot{( endslot )}
+
+{( slot og-title )}The Whale With the Coin Slot &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Lean Software. There is a small whale in the menu bar of nearly every corporate developer laptop. It arrived free, and on 31 August 2021 it grew a coin slot: any company above 250 employees or $10 million in revenue now needs a paid seat per person. Business costs $24 a head per month, which is $144,000 a year for 500 developers. The subscription does not charge for containers, because a Linux developer with the open engine owes nothing. What is metered is the distance between a laptop and the kernel its software runs on. FreeBSD jails have been in the base system since March 2000, with no daemon, no registry and no subscription.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Whale With the Coin Slot",
+    "datePublished": "2026-08-12",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/coin-slot",
+    "description": "Lean Software, an audit of the Docker Desktop subscription. On 31 August 2021 Docker published a subscription agreement effective the same day: any company with more than 250 employees or more than $10 million in revenue needs a paid seat for every person running Docker Desktop, with a grace period to 31 January 2022. The tool did not change that morning and neither did the installed fleet; what changed is that a default occupied over a decade began charging rent. The 2021 list opened at $5 per user per month for Pro and $21 for Business; October 2022 took Business to $24, and September 2024 brought a broader turn effective with the November plans, Pro from $5 to $9 and Team from $9 to $15, increases the trade press summed up as up to 80 per cent. Docker publishes one global list in US dollars with no euro pricing and no regional rate. At $24 a head, a 500-seat engineering organisation pays $144,000 a year. The mechanism deserves a name, the retroactive licence: occupy the default first, free, on every machine and in every onboarding script; fit the meter to the installed base afterwards, with thresholds calibrated so individuals and small shops feel nothing while the entangled do the paying; then turn it. The subscription does not charge for containers, since a Linux developer with the open Apache-licensed engine owes Docker nothing; the seat price attaches exclusively to machines whose operating system cannot run the artefact natively, so what is metered is the distance between a developer's laptop and the kernel their software actually runs on. On Windows this turns comical, because Microsoft ships a Linux kernel with WSL2 for free and the engine runs inside it for free. FreeBSD jails, by contrast, have been a feature of the kernel since March 2000: same tree, same release, same handbook, no root daemon, no registry gated by an e-mail address, no subscription, because no separate company exists to sell one. What Docker Desktop hides is a virtual machine, a shared directory and a way to move a filesystem; unhidden that is QEMU, NFS and zfs send, assembled in the book Integrated by Design as the Jail Ferry, five shell scripts instead of a subscription.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-12">12 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Whale With the Coin Slot</h1>
+        <p class="vv-article-meta"><em>The container tool on every laptop was free until it was not, and the invoice explains more about the industry than the tool does. Lean Software.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">docker</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">containers</span>
+            <span class="vv-pill">engineering costs</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>There is a small whale in the menu bar of nearly every developer laptop in the corporate world. It arrived years ago, free, and it settled in so thoroughly that onboarding documents stopped explaining what it was for.</p>
+
+        <p>On 31 August 2021 the whale grew a coin slot. Docker announced a new subscription agreement, effective the same day: any company with more than 250 employees or more than $10 million in revenue now needed a paid seat for every person running Docker Desktop. The tool did not change that morning, and neither did the fleet of installed copies. What changed was that the default, quietly occupied over a decade, started charging rent, and companies were given 5 months of grace to work out that they had been converted from users into customers.</p>
+
+        <p>This is a bill worth auditing, because almost nobody audited it at the time. They just paid.</p>
+
+        <h2>What the Subscription Honestly Buys</h2>
+
+        <p>The audit has to start with the credit side, and there is one.</p>
+
+        <p>Docker Desktop is real engineering. Containers are a Linux idea: namespaces and cgroups, constructs of one particular kernel. A Mac does not have that kernel and neither does Windows, so Desktop quietly runs a Linux virtual machine, wires its network into yours, shares your files across the boundary, keeps the arrangement alive through sleep and Wi-Fi changes, and survives the OS update that would have broken your hand-rolled setup. Anyone who maintained that plumbing by hand in 2015 remembers what it cost in mornings.</p>
+
+        <p>The engine underneath, meanwhile, stayed free. <a href="https://github.com/moby/moby/blob/master/LICENSE" target="_blank" rel="noopener">Docker Engine is Apache-licensed</a>, open, and runs natively on any Linux box, and Docker Inc. spent a decade giving the whole stack away while the industry rebuilt itself on top. The subscription was not an act of greed out of nowhere. It was a company that had created a category, watched others monetise it, and finally sent an invoice for the part it still controlled.</p>
+
+        <p>That is the fair reading. Now the numbers.</p>
+
+        <h2>The Meter, and the Two Times It Was Turned</h2>
+
+        <svg viewBox="0 0 640 300" aria-label="Docker subscription price history and the annual cost for a 500-seat organisation. In 2021 the list opened at 5 dollars per user per month for Pro and 21 dollars for Business. In October 2022 Business rose to 24 dollars. In September 2024, effective with the November plans, Pro rose from 5 to 9 dollars and Team from 9 to 15 dollars, increases the trade press summed up as up to 80 per cent. The current list is Personal free, Pro 9 dollars, Team 15 dollars and Business 24 dollars per user per month on annual billing. At 24 dollars a head, 500 developers on the Business tier cost 144,000 dollars a year." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .mt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .mt-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .mt-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; }
+                .mt-num   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .mt-up    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .mt-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .mt-total { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 14px; font-weight: 700; }
+            </style>
+            <text x="320" y="22" class="mt-title" text-anchor="middle">One tool, three price lists</text>
+
+            <text x="20" y="50" class="mt-head">TIER</text>
+            <text x="250" y="50" class="mt-head" text-anchor="end">2021</text>
+            <text x="400" y="50" class="mt-head" text-anchor="end">OCT 2022</text>
+            <text x="560" y="50" class="mt-head" text-anchor="end">NOV 2024</text>
+            <line x1="20" y1="58" x2="620" y2="58" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="82" class="mt-item">Personal</text>
+            <text x="250" y="82" class="mt-num" text-anchor="end">$0</text>
+            <text x="400" y="82" class="mt-num" text-anchor="end">$0</text>
+            <text x="560" y="82" class="mt-num" text-anchor="end">$0</text>
+
+            <text x="20" y="110" class="mt-item">Pro</text>
+            <text x="250" y="110" class="mt-num" text-anchor="end">$5</text>
+            <text x="400" y="110" class="mt-num" text-anchor="end">$5</text>
+            <text x="560" y="110" class="mt-up" text-anchor="end">$9</text>
+
+            <text x="20" y="138" class="mt-item">Team</text>
+            <text x="250" y="138" class="mt-num" text-anchor="end">$9</text>
+            <text x="400" y="138" class="mt-num" text-anchor="end">$9</text>
+            <text x="560" y="138" class="mt-up" text-anchor="end">$15</text>
+
+            <text x="20" y="166" class="mt-item">Business</text>
+            <text x="250" y="166" class="mt-num" text-anchor="end">$21</text>
+            <text x="400" y="166" class="mt-up" text-anchor="end">$24</text>
+            <text x="560" y="166" class="mt-num" text-anchor="end">$24</text>
+
+            <line x1="20" y1="186" x2="620" y2="186" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="212" class="mt-item">500 developers on Business, per year</text>
+            <text x="620" y="214" class="mt-total" text-anchor="end">$144,000</text>
+
+            <line x1="20" y1="234" x2="620" y2="234" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="256" class="mt-note">Threshold for paying at all: more than 250 employees or more than $10 million in revenue.</text>
+            <text x="20" y="272" class="mt-note">Per user per month, annual billing. One global list in US dollars; there is no euro price and no regional rate.</text>
+            <text x="20" y="288" class="mt-note">Retrieved from the pricing page on 11 August 2026.</text>
+        </svg>
+
+        <p>The 2021 price list opened at $5 per user per month for Pro, with Business at $21. In October 2022 <a href="https://www.devclass.com/containers/2022/10/20/docker-quietly-raises-prices-limits-team-accounts-in-favor-of-pricey-business-subscriptions/1619124" target="_blank" rel="noopener">Business rose to $24</a> and Team followed upward. In September 2024 came <a href="https://www.docker.com/blog/november-2024-updated-plans-announcement/" target="_blank" rel="noopener">the broad turn</a>, effective with the November plans: Pro from $5 to $9, Team from $9 to $15, increases the trade press summed up as up to 80 per cent. Docker publishes one global list in US dollars, with no euro pricing and no regional rate, so a European buyer pays the dollar figure plus whatever the card issuer and the tax office add.</p>
+
+        <p>Business is the realistic tier for exactly the companies the threshold catches, because that is the tier where single sign-on and device management live. So a 500-seat engineering organisation pays $144,000 a year, every year, for software none of its 500 people chose this year. They chose it, or inherited it, back when it was free.</p>
+
+        <p>Notice the sequence, because it is the actual mechanism and it deserves a name: <strong>the retroactive licence</strong>. First a tool becomes the default, free, on every machine, in every onboarding script and every README. Then the meter is fitted to the installed base, with thresholds calibrated so that individuals and small shops stay free and feel nothing, while the companies too entangled to leave quickly do the paying. Then, once the conversion is digested, the meter is turned. Twice, so far.</p>
+
+        <p>No deception was involved anywhere; every step sat in a public blog post. Patience did the work, together with a fleet that had stopped asking what the whale was for.</p>
+
+        <h2>Who Pays, and For What, Precisely</h2>
+
+        <p>Here is the part of the invoice that repays a slow read, and it is the leanest fact in the whole affair.</p>
+
+        <p>The subscription does not charge for containers. Containers run free of charge on the operating system they belong to; a Linux developer with the open engine owes Docker nothing this morning and never will. The seat price attaches exclusively to the machines whose operating system cannot run the artefact natively. What is being metered, at $24 a head, is the distance between the developer's laptop and the kernel their software actually runs on.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="What the seat price attaches to. On a Linux machine the developer runs the open Apache-licensed engine natively on the same kernel the software deploys to, and owes nothing. On macOS and Windows the artefact cannot run natively, so a Linux virtual machine is inserted between the laptop and the kernel, and that gap is what costs 24 dollars per head per month. On Windows the kernel itself is free, because Microsoft ships one with WSL2, and the engine running inside it is free as well; only the convenience layer around both is charged for." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .gp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .gp-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .gp-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .gp-free  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; }
+                .gp-paid  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .gp-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .gp-gap   { fill: var(--accent); opacity: 0.15; rx: 4; }
+            </style>
+            <text x="320" y="22" class="gp-title" text-anchor="middle">What the seat price attaches to</text>
+
+            <text x="20" y="52" class="gp-head">LINUX WORKSTATION</text>
+            <rect x="20" y="62" width="600" height="34" class="gp-box"/>
+            <text x="34" y="84" class="gp-item">laptop kernel = deployment kernel, engine runs natively</text>
+            <text x="606" y="84" class="gp-free" text-anchor="end">$0</text>
+
+            <text x="20" y="128" class="gp-head">MACOS AND WINDOWS</text>
+            <rect x="20" y="138" width="600" height="34" class="gp-box"/>
+            <text x="34" y="160" class="gp-item">laptop kernel</text>
+            <text x="606" y="160" class="gp-free" text-anchor="end">$0</text>
+
+            <rect x="20" y="178" width="600" height="34" class="gp-gap"/>
+            <rect x="20" y="178" width="600" height="34" class="gp-box"/>
+            <text x="34" y="200" class="gp-item">the gap: a Linux virtual machine, a mount, a lifecycle CLI</text>
+            <text x="606" y="200" class="gp-paid" text-anchor="end">$24</text>
+
+            <rect x="20" y="218" width="600" height="34" class="gp-box"/>
+            <text x="34" y="240" class="gp-item">deployment kernel (on Windows: shipped free with WSL2)</text>
+            <text x="606" y="240" class="gp-free" text-anchor="end">$0</text>
+        </svg>
+
+        <p>On Windows the arithmetic turns almost comical: <a href="https://learn.microsoft.com/en-us/windows/wsl/about" target="_blank" rel="noopener">Microsoft ships a genuine Linux kernel with WSL2</a>, free, and the engine runs in it, free. The paid product is the convenience layer wrapped around two free things. The VM is hidden and the mount is hidden, and hidden complexity is still complexity; none of the parts is secret, and a visible virtual machine with a shared directory has done the same job since long before the whale.</p>
+
+        <p>Which is why the money can be made at all, and the audit should say so plainly: the fee is rent on a mismatch the industry chose, and on nothing else. Development happens on operating systems the deployment target does not resemble, and rather than close that gap, the standard practice is to lease a daily bridge across it, per person, per month, price adjustable by the lessor.</p>
+
+        <p>The tool-for-tool alternatives are real and worth naming. Colima is MIT-licensed and free; Podman Desktop, Red Hat's answer and daemonless by design, is Apache-licensed and free, and Red Hat thought the daemon serious enough to <a href="https://www.redhat.com/en/blog/say-hello-buildah-podman-and-skopeo" target="_blank" rel="noopener">remove Docker from RHEL 8 outright</a> in 2019. Each of them removes the invoice. None of them removes the gap, because a free bridge across the same mismatch is still a bridge, and the next one along may well grow a slot of its own.</p>
+
+        <p>That most organisations pay anyway has a sober explanation: the switching cost of a default. Re-tooling 500 laptops and re-writing every onboarding document, followed by months of tickets that open with the words it worked before. The subscription price is set comfortably below that pain, which is precisely how rent on a default is priced.</p>
+
+        <h2>What the Other Side of the Fence Costs</h2>
+
+        <p>There is a system where none of this arises, and it has been shipping since March 2000.</p>
+
+        <p><a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener">FreeBSD jails</a> are not a product bolted onto the kernel; they are a feature of it, in the same tree, with the same release cycle and the same documentation. No daemon runs as root to manage them, so no daemon can crash and take every jail with it. Nothing is pulled from a registry whose publishing barrier is an e-mail address. There is no subscription, because there is no separate company that could sell one. A developer running FreeBSD builds and runs the artefact on the operating system it deploys to, and the entire apparatus described above simply has no reason to exist.</p>
+
+        <p>The obvious retort is that this only helps whoever already runs FreeBSD everywhere. Fair, and the answer is smaller than expected. The parts Desktop hides are a virtual machine, a shared directory, and a way to move a filesystem from one machine to another. Unhidden, that is QEMU, NFS and <code>zfs send</code>, all of them older than the whale, and roughly two hundred lines of shell to tie them together. I built exactly that for <a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">the book</a> and called it the Jail Ferry, because a docker loads ships and a ferry carries things across a channel. It moves jails between a server and a laptop, and it happens to be five shell scripts instead of a subscription.</p>
+
+        <svg viewBox="0 0 640 280" aria-label="Docker Desktop against the Jail Ferry, part by part. The base image comes from docker pull against a registry, or from a thirty-line shell worker fetching a FreeBSD image. Starting and stopping is docker start against a daemon, or a forty-line worker driving QEMU. Volume mounting is a docker run flag, or NFS configured in one file. Push and pull run over a registry protocol with TLS and authentication, or over an SSH pipe with zfs send. The command line is a Go binary with a resident daemon, or fifty-five lines of POSIX shell. The totals: roughly four gigabytes plus a daemon plus a subscription, against roughly eight hundred megabytes plus one hundred and ninety lines of shell." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .jf-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .jf-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .jf-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .jf-l     { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; }
+                .jf-r     { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; }
+                .jf-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+            </style>
+            <text x="320" y="22" class="jf-title" text-anchor="middle">The same four jobs, twice</text>
+
+            <text x="20" y="50" class="jf-head">JOB</text>
+            <text x="190" y="50" class="jf-head">DOCKER DESKTOP</text>
+            <text x="420" y="50" class="jf-head">JAIL FERRY</text>
+            <line x1="20" y1="58" x2="620" y2="58" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="80" class="jf-item">base image</text>
+            <text x="190" y="80" class="jf-l">docker pull, from a registry</text>
+            <text x="420" y="80" class="jf-r">image.sh, 30 lines</text>
+
+            <text x="20" y="106" class="jf-item">start and stop</text>
+            <text x="190" y="106" class="jf-l">docker start, via the daemon</text>
+            <text x="420" y="106" class="jf-r">machine.sh, 40 lines, QEMU</text>
+
+            <text x="20" y="132" class="jf-item">share a directory</text>
+            <text x="190" y="132" class="jf-l">docker run -v</text>
+            <text x="420" y="132" class="jf-r">share.sh, NFS in one file</text>
+
+            <text x="20" y="158" class="jf-item">push and pull</text>
+            <text x="190" y="158" class="jf-l">registry protocol, TLS, auth</text>
+            <text x="420" y="158" class="jf-r">transport.sh, ssh + zfs send</text>
+
+            <text x="20" y="184" class="jf-item">command line</text>
+            <text x="190" y="184" class="jf-l">Go binary, resident daemon</text>
+            <text x="420" y="184" class="jf-r">jferry, 55 lines of sh</text>
+
+            <line x1="20" y1="202" x2="620" y2="202" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="224" class="jf-item">total</text>
+            <text x="190" y="224" class="jf-l">~4 GB, daemon, subscription</text>
+            <text x="420" y="224" class="jf-r">~800 MB, 190 lines of shell</text>
+
+            <text x="20" y="252" class="jf-note">Not a fair comparison, and not meant to be: Desktop also does images, layers, Compose, Kubernetes and a GUI.</text>
+            <text x="20" y="268" class="jf-note">The question is how much of that more anybody uses, and what the difference costs per head per month.</text>
+        </svg>
+
+        <p>That comparison is not fair and is not meant to be, because Desktop does considerably more: images, layers, Compose files, a Kubernetes cluster, extensions, a GUI. The question worth asking is not which does more. It is how much of that more anybody uses, and what the difference costs per head per month.</p>
+
+        <h2>The Limit</h2>
+
+        <p>The opposing case deserves its full weight. $24 a month is roughly 15 minutes of a developer's loaded cost; if Desktop saves that per month against maintaining Colima and its edge cases, it has paid for itself, and in many shops it genuinely does. Central update control and device management are things a 500-seat organisation is right to want, and it already pays for them elsewhere without blinking. The migration is not free either, and an afternoon of every developer's time costs more than a year of seats. And Docker Inc. is entitled to be a business; a decade of free tooling was not a promise of a second decade.</p>
+
+        <p>And the fence has a cost on its own side, which this piece would be dishonest to omit. Jails run on FreeBSD, so the comparison holds only where FreeBSD is a real option; a shop whose product depends on Linux-only kernel features has a different conversation, and one whose deployment target is somebody else's Kubernetes has almost none. The Jail Ferry is my own tool, which makes me the last person qualified to call it effortless.</p>
+
+        <p>All true. The audit does not conclude that anyone was cheated. It concludes that a recurring $144,000 line item exists in thousands of budgets for a bridge between mismatched systems, that the line item was created retroactively on an installed base, that its price has been turned twice in 5 years, and that the standard review treats it as weather rather than as a decision that could be revisited.</p>
+
+        <blockquote><p>A company that runs its development on the operating system it deploys to owes this invoice nothing at all. That option is rarely on the table in the meeting where the renewal is approved, because the renewal meeting is about the price of the bridge, never about the width of the gap.</p></blockquote>
+
+        <p>No villain is required for any of this. The whale read the situation earlier than the people paying for it: once a mismatch becomes infrastructure, nobody fixes it, somebody meters it.</p>
+
+        <p>Which leaves the question the renewal meeting never reaches. The bridge has a price, and it is on the invoice in front of you. The gap has one too, and it has never appeared on any invoice at all.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The audit:</strong></p>
+            <ul>
+                <li><strong>The change:</strong> 31 August 2021, effective same day, grace period to 31 January 2022</li>
+                <li><strong>The threshold:</strong> more than 250 employees or more than $10 million in revenue</li>
+                <li><strong>The meter, turned twice:</strong> Business $21 to $24 in October 2022; Pro $5 to $9 and Team $9 to $15 with the November 2024 plans</li>
+                <li><strong>The bill:</strong> $24 a head per month, or $144,000 a year for 500 developers</li>
+                <li><strong>What is metered:</strong> not containers, but the distance between a laptop and the kernel its software runs on</li>
+                <li><strong>The other side:</strong> FreeBSD jails in the base system since March 2000, no daemon, no registry, no subscription</li>
+                <li><a href="https://www.docker.com/pricing/" target="_blank" rel="noopener">Docker pricing, retrieved 11 August 2026</a></li>
+                <li><a href="https://docs.docker.com/subscription/desktop-license/" target="_blank" rel="noopener">Docker Desktop licence terms and thresholds</a></li>
+                <li><a href="https://www.docker.com/press-release/docker-updates-product-subscriptions/" target="_blank" rel="noopener">Docker press release, 31 August 2021</a> &#x00B7; <a href="https://www.infoq.com/news/2021/09/docker-desktop-subscriptions/" target="_blank" rel="noopener">InfoQ on the change and the grace period</a></li>
+                <li><a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener">FreeBSD Handbook, jails</a> &#x00B7; <a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">Integrated by Design, chapter 20: the Jail Ferry</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

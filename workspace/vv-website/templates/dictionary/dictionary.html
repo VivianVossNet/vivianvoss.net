@@ -306,6 +306,10 @@
             <dt>certification mark</dt>
             <dd>A trademark that certifies a product meets a defined standard rather than identifying its commercial source. UNIX is one: it may sit only on systems tested and approved against the Single UNIX Specification. Such a mark survives in law only by staying narrow, which is why The Open Group disowns loose use of the word.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="cgroups">
+            <dt>cgroups</dt>
+            <dd>Control groups. A Linux kernel feature for limiting, accounting for and isolating the resource usage (CPU, memory, disk I/O, network) of a collection of processes. Originally contributed by Google engineers as 'process containers' in 2006, merged in 2007 and renamed cgroups, with cgroups v2 stabilised in 2016. The other half of the Linux containerisation stack alongside namespaces.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="chromium">
             <dt>Chromium</dt>
             <dd>The open source browser project underlying Chrome, Edge and Electron. It ships a major version roughly every four weeks; applications that bundle it inherit the obligation to follow that cadence themselves.</dd>
@@ -321,6 +325,10 @@
         <dl class="vv-dict-entry" id="codeception">
             <dt>Codeception</dt>
             <dd>A PHP testing framework covering unit, functional and acceptance tests through one interface. The final stage of Spryker's documented pipeline.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="colima">
+            <dt>Colima</dt>
+            <dd>A free, MIT-licensed container runtime for macOS and Linux that provisions a Lima virtual machine and exposes a Docker-compatible socket. One of the tool-for-tool replacements for Docker Desktop.</dd>
         </dl>
         <dl class="vv-dict-entry" id="commodore-64">
             <dt>Commodore 64</dt>
@@ -439,6 +447,10 @@
             <dt>Cyber Resilience Act</dt>
             <dd>An EU regulation imposing security-by-design, update and documentation duties on products with digital elements. Non-compliance can support a finding of defectiveness under the Product Liability Directive.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="daemon">
+            <dt>daemon</dt>
+            <dd>A process that runs continuously in the background rather than being started for a task. Docker's engine relies on a central daemon running as root, which is why its failure takes every container with it and its compromise hands over the host; jails and Podman need no such process.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="datastar">
             <dt>Datastar</dt>
             <dd>A small hypermedia and reactivity framework taking a server-sent-events approach, combining ideas from HTMX and Alpine in one package in the same order of magnitude as HTMX. A modern entry in the lightweight front-end tier.</dd>
@@ -510,6 +522,10 @@
         <dl class="vv-dict-entry" id="docker">
             <dt>Docker</dt>
             <dd>A container runtime that packages applications with their dependencies into isolated filesystem images, sharing the host kernel.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="docker-desktop">
+            <dt>Docker Desktop</dt>
+            <dd>The graphical Docker distribution for macOS and Windows. Because containers are Linux kernel constructs, it runs a Linux virtual machine underneath and manages the mount and lifecycle around it. Free for individuals; since 31 August 2021 a paid seat is required in companies above 250 employees or $10 million in revenue.</dd>
         </dl>
         <dl class="vv-dict-entry" id="dpkg-buildflags">
             <dt>dpkg-buildflags</dt>
@@ -865,6 +881,10 @@
             <dd>The movement of a security measure between the three technology levels, described in the TeleTrusT and ENISA guideline. A measure arrives as state of science and research, becomes state of the art at market launch, and descends to the generally accepted rules of technology with increasing distribution and market recognition.</dd>
         </dl>
         <h3 id="letter-J">J</h3>
+        <dl class="vv-dict-entry" id="jail-ferry">
+            <dt>Jail Ferry</dt>
+            <dd>A local development workflow built from base-system parts instead of Docker Desktop, described in chapter 20 of Integrated by Design: QEMU for the virtual machine, NFS for the shared directory, zfs send for moving filesystems, and about 190 lines of POSIX shell to orchestrate them. The name is deliberate, since a docker loads ships and a ferry carries cargo across a channel.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="jails">
             <dt>jails</dt>
             <dd>FreeBSD's kernel-native operating-system virtualisation: an isolated environment that is a first-class kernel primitive rather than a daemon-mediated arrangement of namespaces. With VNET each jail holds an independent network stack.</dd>
@@ -1149,6 +1169,10 @@
             <dt>Nextcloud</dt>
             <dd>An open-source, self-hostable file-sync and collaboration platform, often deployed as a sovereign alternative to proprietary cloud suites. A common component of European public-sector migrations.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="nfs">
+            <dt>NFS</dt>
+            <dd>Network File System, a protocol from Sun Microsystems for mounting a remote directory as if it were local. Older than containers by decades and sufficient, on its own, for sharing a project directory between a host and a development virtual machine.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="nftables">
             <dt>nftables</dt>
             <dd>The Linux packet classification framework replacing iptables. Uses a unified syntax for filtering, NAT, and mangling.</dd>
@@ -1343,6 +1367,14 @@
             <dt>PNAS</dt>
             <dd>Proceedings of the National Academy of Sciences, one of the most-cited multidisciplinary scientific journals, established in 1914. Venue of the 2025 Duke study that measured the social evaluation penalty for AI use.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="podman">
+            <dt>Podman</dt>
+            <dd>An open-source container engine maintained by Red Hat, first released in 2018. Container-compatible with Docker at the CLI level (podman run, podman build) but daemonless and rootless by default; each container is a direct child of the invoking shell rather than of a long-running daemon. Demonstrated that the Docker model does not structurally require a daemon.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="podman-desktop">
+            <dt>Podman Desktop</dt>
+            <dd>Red Hat's graphical container tool, Apache-licensed and free. Daemonless by design: each container runs as a child of the process that started it, supervised by conmon, so there is no central root daemon to crash or to compromise.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="portage">
             <dt>Portage</dt>
             <dd>Gentoo's package management system, which builds software from source according to ebuild scripts and lets the user select optional features through USE flags before anything is compiled.</dd>
@@ -1447,6 +1479,10 @@
         <dl class="vv-dict-entry" id="pull-request">
             <dt>pull request</dt>
             <dd>A proposed change offered for review and merging. The unit that carries the approval field, and therefore the unit whose recorded history everyone downstream interprets.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="qemu">
+            <dt>QEMU</dt>
+            <dd>Quick Emulator. An open-source machine emulator and virtualiser, created by Fabrice Bellard in 2003. Provides device emulation and, with KVM, near-native virtual-machine performance. The userland half of the KVM/QEMU pairing used by Proxmox VE and many other platforms.</dd>
         </dl>
         <dl class="vv-dict-entry" id="quantum-software-systems">
             <dt>Quantum Software Systems</dt>
@@ -1641,6 +1677,10 @@
         <dl class="vv-dict-entry" id="signify">
             <dt>signify</dt>
             <dd>OpenBSD's signature tool, written by Ted Unangst in 2014, using Ed25519. It signs releases and packages; pkg_add verifies each file against its recorded checksum immediately after extraction, before doing anything with it.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="single-sign-on">
+            <dt>single sign-on</dt>
+            <dd>One authentication against a central identity provider that then grants access to many services, typically via SAML or OIDC. In business software it is frequently confined to the most expensive tier, which is why organisations end up there for reasons unrelated to the tool itself.</dd>
         </dl>
         <dl class="vv-dict-entry" id="single-unix-specification">
             <dt>Single UNIX Specification</dt>
