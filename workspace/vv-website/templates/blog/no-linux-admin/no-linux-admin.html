@@ -1,0 +1,282 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}There Is No Linux Admin &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A job advert names a kernel family and calls it a skill set. Alpine and Fedora share none of the four layers an administrator actually touches; FreeBSD and macOS share two. On the category that hires people, and the layer it is drawn around.">
+{( endslot )}
+
+{( slot canonical )}/blog/no-linux-admin{( endslot )}
+
+{( slot og-title )}There Is No Linux Admin &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}IT Philosophy. The advert says Linux Administrator, three years of experience. From the chair of the person administering it, an operating system is four things on a kernel: a C library, core utilities, an init system, a way of installing software. Alpine and Fedora share none of the four. FreeBSD and macOS share two, and those two are the ones an administrator touches every minute of the working day. Start at Debian and walk away: Ubuntu is a dialect, Gentoo relearns half the working day, Slackware more, and a minimal container image leaves twenty years of experience with nowhere to go. The category that hires people is drawn around the layer nobody administers.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "There Is No Linux Admin",
+    "datePublished": "2026-08-13",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/no-linux-admin",
+    "description": "IT Philosophy, on the category behind the job title Linux Administrator. From the perspective of the person administering it, an operating system is four things sitting on a kernel: a C library, a set of core utilities, an init system and a way of installing software. Alpine runs musl, BusyBox, OpenRC and apk; Fedora runs glibc, GNU coreutils, systemd and dnf; not one of the four layers is shared, only the kernel is. FreeBSD and macOS, filed as different worlds, share two of the four through their common Berkeley ancestry. The divergence bites in practice: gawk and mawk answer the same expression differently, and /bin/sh is Dash on Debian, Bash on Fedora and BusyBox ash on Alpine, so shell conveniences fail silently. The canon was replaced while in use, systemd default since Debian 8, nftables default since Debian 10, ifconfig giving way to ip, netstat to ss, syslog to journald, while the FreeBSD Handbook of the same era still describes rc.conf and pf accurately this morning. Measured from Debian, Ubuntu is a dialect because Ubuntu is built from Debian; Gentoo compiles packages from source against USE flags and relearns half the working day; Slackware resolves no dependencies, ships packages as tarballs and calls its own /etc/rc.d init layout BSD-style, sitting closer to FreeBSD than to systemd on the next rack; a minimal container image has no package manager, frequently no shell, and a libc nobody has linked against. The piece grants systemd its real merits, grants that vendor support for Linux is an honest risk argument, and concludes that there are Debian administrators, Gentoo administrators and Alpine administrators, but no Linux admin.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-13">13 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>There Is No Linux Admin</h1>
+        <p class="vv-article-meta"><em>A job advert names a kernel family and calls it a skill set. Two distributions can sit further apart than FreeBSD and macOS, and the sentence that keeps FreeBSD out of the room was never about skill. IT Philosophy.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">linux</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">sysadmin</span>
+            <span class="vv-pill">hiring</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>The advert says: Linux Administrator. Three or more years of experience. Sometimes a distribution appears in brackets, sometimes not, and when it does not, nobody in the room notices that anything is missing.</p>
+
+        <p>Somewhere else in the same building, a decision is taken that will outlive most of the people taking it. Somebody proposes FreeBSD for a particular job, and the answer arrives before the argument does: we have nobody in-house for that.</p>
+
+        <p>Both sentences rest on a category. It is worth asking whether the category exists.</p>
+
+        <h2>Four Layers, and What They Say</h2>
+
+        <p>An operating system, from the perspective of the person administering it, is four things sitting on top of a kernel. A C library. A set of core utilities. An init system. A way of installing software.</p>
+
+        <p><a href="https://www.alpinelinux.org/about/" target="_blank" rel="noopener">Alpine describes itself in one line</a>: built around musl libc and busybox, with its own package manager called apk and the OpenRC init system. Fedora runs glibc, GNU coreutils, systemd and dnf. Not one of those four is the same. The kernel is.</p>
+
+        <p>Now put FreeBSD and macOS beside them. FreeBSD carries its own C library and its own utilities, both descended from Berkeley. macOS carries Libsystem and a userland with the same Berkeley ancestry, which is why <code>ls -l</code> on a Mac behaves like <code>ls -l</code> on FreeBSD and unlike <code>ls -l</code> on Fedora. Init and packaging differ, launchd against rc.d, App Store against pkg.</p>
+
+        <svg viewBox="0 0 640 300" aria-label="The four layers an administrator touches, across four operating systems. Alpine runs musl, BusyBox, OpenRC and apk. Fedora runs glibc, GNU coreutils, systemd and dnf. FreeBSD runs BSD libc, BSD utilities, rc.d and pkg. macOS runs Libsystem, BSD utilities, launchd and the App Store. Alpine and Fedora, filed under the same word, share none of the four layers. FreeBSD and macOS, filed as different worlds, share two: the C library ancestry and the utilities." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .fl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .fl-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .fl-os    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .fl-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .fl-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .fl-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; }
+            </style>
+            <text x="320" y="22" class="fl-title" text-anchor="middle">Four layers, four systems</text>
+
+            <text x="20" y="52" class="fl-head">SYSTEM</text>
+            <text x="150" y="52" class="fl-head">C LIBRARY</text>
+            <text x="280" y="52" class="fl-head">UTILITIES</text>
+            <text x="410" y="52" class="fl-head">INIT</text>
+            <text x="520" y="52" class="fl-head">PACKAGES</text>
+            <line x1="20" y1="60" x2="620" y2="60" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="84" class="fl-os">Alpine</text>
+            <text x="150" y="84" class="fl-item">musl</text>
+            <text x="280" y="84" class="fl-item">BusyBox</text>
+            <text x="410" y="84" class="fl-item">OpenRC</text>
+            <text x="520" y="84" class="fl-item">apk</text>
+
+            <text x="20" y="110" class="fl-os">Fedora</text>
+            <text x="150" y="110" class="fl-item">glibc</text>
+            <text x="280" y="110" class="fl-item">GNU coreutils</text>
+            <text x="410" y="110" class="fl-item">systemd</text>
+            <text x="520" y="110" class="fl-item">dnf</text>
+
+            <line x1="20" y1="126" x2="620" y2="126" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3"/>
+
+            <text x="20" y="150" class="fl-os">FreeBSD</text>
+            <text x="150" y="150" class="fl-item">BSD libc</text>
+            <text x="280" y="150" class="fl-item">BSD utilities</text>
+            <text x="410" y="150" class="fl-item">rc.d</text>
+            <text x="520" y="150" class="fl-item">pkg</text>
+
+            <text x="20" y="176" class="fl-os">macOS</text>
+            <text x="150" y="176" class="fl-item">Libsystem</text>
+            <text x="280" y="176" class="fl-item">BSD utilities</text>
+            <text x="410" y="176" class="fl-item">launchd</text>
+            <text x="520" y="176" class="fl-item">App Store</text>
+
+            <line x1="20" y1="196" x2="620" y2="196" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="222" class="fl-item">Alpine and Fedora, one job title:</text>
+            <text x="620" y="222" class="fl-bad" text-anchor="end">0 of 4 layers shared</text>
+            <text x="20" y="248" class="fl-item">FreeBSD and macOS, different worlds:</text>
+            <text x="620" y="248" class="fl-good" text-anchor="end">2 of 4 layers shared</text>
+            <text x="20" y="280" class="fl-item" style="fill: var(--muted); font-size: 9px;">And the two shared layers are the ones an administrator touches every minute of the working day.</text>
+        </svg>
+
+        <p>Count the shared layers. Alpine and Fedora share none of the four. FreeBSD and macOS share two, and those two are the ones an administrator touches every minute of the working day.</p>
+
+        <p>The category that hires people is drawn around the layer nobody administers.</p>
+
+        <h2>Where the Divergence Actually Bites</h2>
+
+        <p>That would be an amusing table and nothing more, if the differences stayed in the specification sheet. They do not.</p>
+
+        <p><code>awk</code> is a POSIX tool with a POSIX specification. Fedora and Arch ship GNU awk. Debian and Ubuntu ship mawk. Alpine ships the BusyBox implementation. For years, a bracket expression that matched digits worked on one and returned nothing on the other, and asking gawk for the length of an array returns the number of elements while mawk treats the same expression as an uninitialised scalar and answers zero. Not an error. Zero.</p>
+
+        <p><code>/bin/sh</code> is worse, because everybody assumes they know what it is. On Debian and Ubuntu it is Dash. On Fedora and Arch it is Bash. On Alpine it is BusyBox ash. Every Bash convenience a working administrator has in their fingers, process substitution, double brackets, brace expansion, arrays, fails on Dash, and fails quietly.</p>
+
+<pre><code>#!/bin/sh
+targets=(alpha beta gamma)     # Fedora: /bin/sh is Bash, works
+echo "${targets[0]}"           # Debian: /bin/sh is Dash
+                               #   "Syntax error: ( unexpected"</code></pre>
+
+        <p><a href="https://wiki.ubuntu.com/DashAsBinSh" target="_blank" rel="noopener">Ubuntu maintains an entire wiki page</a> listing the incompatibilities, which is a curious document to need for a shell that is supposed to be the common denominator.</p>
+
+        <p>No error. No warning. The script that works on one distribution silently stops working on another, and the only clue is an empty terminal.</p>
+
+        <p>Somebody who has administered Debian for six years and is handed Alpine has a different libc, a different shell, different utilities, a different init and a different package manager. Somebody who has administered FreeBSD and is handed macOS recognises most of what is under their hands. The advert would hire the first as a match and reject the second as a stranger.</p>
+
+        <h2>The Canon That Was Replaced</h2>
+
+        <p>Here the argument turns, and it turns against the assumption rather than against the people who hold it.</p>
+
+        <p>An administrator operates a canon: services, network, firewall, packages, logs, storage, users, boot. Eight things. Learn them on one system and you have learned the shape of the work everywhere.</p>
+
+        <p>In the Linux world, that canon was replaced while people were using it. <a href="https://wiki.debian.org/systemd" target="_blank" rel="noopener">systemd became the default init in Debian 8</a>, and the same move happened across the ecosystem. <a href="https://wiki.debian.org/nftables" target="_blank" rel="noopener">nftables became the default firewall framework in Debian 10</a>, displacing the iptables syntax that a generation had committed to memory. <code>ifconfig</code> and <code>route</code> gave way to <code>ip</code>, <code>netstat</code> to <code>ss</code>, syslog to journald, yum to dnf. Each change had reasons, and I will come to them.</p>
+
+        <svg viewBox="0 0 640 320" aria-label="The administrator's canon on Linux in 2010 against today, and on FreeBSD across the same years. Init was SysV scripts, today systemd, default since Debian 8; on FreeBSD rc.conf, unchanged. Firewall was iptables, today nftables, default since Debian 10; on FreeBSD pf, unchanged. Interfaces were ifconfig and route, today ip; on FreeBSD still ifconfig. Sockets were netstat, today ss; on FreeBSD still netstat. Logs were syslog, today journald; on FreeBSD still syslog. A Debian manual from 2010 walks into commands that are absent, deprecated or shimmed; the FreeBSD Handbook of the same era is still accurate." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cn-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .cn-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .cn-job   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .cn-old   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 10px; }
+                .cn-new   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .cn-same  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; }
+                .cn-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+            </style>
+            <text x="320" y="22" class="cn-title" text-anchor="middle">The canon, replaced while in use</text>
+
+            <text x="20" y="52" class="cn-head">JOB</text>
+            <text x="140" y="52" class="cn-head">LINUX 2010</text>
+            <text x="310" y="52" class="cn-head">LINUX TODAY</text>
+            <text x="490" y="52" class="cn-head">FREEBSD, BOTH YEARS</text>
+            <line x1="20" y1="60" x2="620" y2="60" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="84" class="cn-job">services</text>
+            <text x="140" y="84" class="cn-old">SysV init scripts</text>
+            <text x="310" y="84" class="cn-new">systemd (Debian 8)</text>
+            <text x="490" y="84" class="cn-same">rc.conf</text>
+
+            <text x="20" y="110" class="cn-job">firewall</text>
+            <text x="140" y="110" class="cn-old">iptables</text>
+            <text x="310" y="110" class="cn-new">nftables (Debian 10)</text>
+            <text x="490" y="110" class="cn-same">pf</text>
+
+            <text x="20" y="136" class="cn-job">interfaces</text>
+            <text x="140" y="136" class="cn-old">ifconfig, route</text>
+            <text x="310" y="136" class="cn-new">ip</text>
+            <text x="490" y="136" class="cn-same">ifconfig</text>
+
+            <text x="20" y="162" class="cn-job">sockets</text>
+            <text x="140" y="162" class="cn-old">netstat</text>
+            <text x="310" y="162" class="cn-new">ss</text>
+            <text x="490" y="162" class="cn-same">netstat</text>
+
+            <text x="20" y="188" class="cn-job">logs</text>
+            <text x="140" y="188" class="cn-old">syslog</text>
+            <text x="310" y="188" class="cn-new">journald</text>
+            <text x="490" y="188" class="cn-same">syslog</text>
+
+            <text x="20" y="214" class="cn-job">packages</text>
+            <text x="140" y="214" class="cn-old">yum</text>
+            <text x="310" y="214" class="cn-new">dnf</text>
+            <text x="490" y="214" class="cn-same">pkg, ports</text>
+
+            <line x1="20" y1="234" x2="620" y2="234" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="258" class="cn-note">A Debian manual from 2010 now walks into commands that are absent, deprecated or silently shimmed.</text>
+            <text x="20" y="274" class="cn-note">The FreeBSD Handbook from the same era still describes the system in front of you: same file, same syntax,</text>
+            <text x="20" y="290" class="cn-note">same manual page, every word of it still true this morning.</text>
+        </svg>
+
+        <p>The consequence for the person doing the work is unsentimental. A Debian manual from 2010 will now walk an administrator into commands that are absent, deprecated or silently shimmed. <a href="https://docs.freebsd.org/en/books/handbook/config/" target="_blank" rel="noopener">The FreeBSD Handbook from the same era</a> still describes a system where services are configured in <a href="https://man.freebsd.org/cgi/man.cgi?rc.conf(5)" target="_blank" rel="noopener"><code>rc.conf</code></a> and the firewall is <a href="https://docs.freebsd.org/en/books/handbook/firewalls/" target="_blank" rel="noopener"><code>pf</code></a>, with software arriving through ports and packages. Same file, same syntax, same place, same manual page, and every word of it still true this morning.</p>
+
+        <p>Which inverts the sentence that started this piece. The risk to a staffing plan is not the system that has kept its canon for two decades. It is the ecosystem that has replaced its canon three times, and where the manual on the shelf ages faster than the person who read it.</p>
+
+        <h2>The Limit</h2>
+
+        <p>The strongest version of the opposing case deserves stating properly, because the replacements were not vandalism.</p>
+
+        <p><a href="https://systemd.io/" target="_blank" rel="noopener">systemd solved real problems</a>. Parallel startup, dependency ordering that a machine can verify, cgroup integration, and one declarative service description instead of several hundred lines of hand-rolled shell per daemon, each with its own idea of what a PID file is. nftables folded four separate frameworks into one, which to my eye is the better design and to somebody else's may not be. <code>ip</code> genuinely does more than <code>ifconfig</code> ever could. Anybody who claims these were changes for their own sake has not maintained a boot sequence.</p>
+
+        <p>Whether the thing that starts services should also handle logging, name resolution, network configuration and device management is a separate argument, and a sharp one, with a good deal to be said against it. It belongs somewhere other than here. What matters for this piece is narrower: the replacement happened, and it happened to people who had already learned the old way.</p>
+
+        <p>Some of them also share a great deal more than the kernel, and the advert is not entirely wrong about that. Debian and Fedora agree on the filesystem layout, the permission model, the process model, the network stack, and the shape of nearly every configuration file. Somebody who knows Ubuntu can run Debian by Thursday, which proves less than it sounds, because Ubuntu is built from Debian and inherits the lot.</p>
+
+        <p>Walk away from the parent and the ground starts moving. Put that same Debian administrator in front of Gentoo and <a href="https://wiki.gentoo.org/wiki/Portage" target="_blank" rel="noopener">packages arrive as source</a>, compiled on the machine against a set of feature flags that change what the finished binary contains at all; the init system is not the one they know either. Call it half the working day unfamiliar. Slackware costs more than that, because there is nothing resolving dependencies for you, a package is a tarball, and a service is an executable shell script in <code>/etc/rc.d</code> that you switch on and off with <code>chmod</code>. <a href="http://www.slackware.com/config/init.php" target="_blank" rel="noopener">Slackware calls that arrangement the BSD-style layout</a>, and it is not being poetic.</p>
+
+        <svg viewBox="0 0 640 300" aria-label="The distance from Debian, measured in what a Debian administrator must relearn. Ubuntu: almost nothing, a dialect, because Ubuntu is built from Debian. Gentoo: about half the working day, source builds, USE flags and a different init. Slackware: more than half, no dependency resolution, packages as tarballs, services as shell scripts in /etc/rc.d, a layout Slackware itself calls BSD-style. A minimal container image: nearly everything, no package manager, often no shell, an unfamiliar libc." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .dm-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .dm-os    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .dm-bar   { fill: var(--accent); rx: 2; }
+                .dm-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .dm-pct   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+            </style>
+            <text x="320" y="22" class="dm-title" text-anchor="middle">The distance from Debian, measured in relearning</text>
+
+            <text x="20" y="62" class="dm-os">Ubuntu</text>
+            <rect x="150" y="50" width="18" height="14" class="dm-bar"/>
+            <text x="178" y="62" class="dm-note">a dialect: built from Debian, inherits the lot</text>
+
+            <text x="20" y="112" class="dm-os">Gentoo</text>
+            <rect x="150" y="100" width="215" height="14" class="dm-bar"/>
+            <text x="375" y="112" class="dm-note">source builds, USE flags, different init</text>
+
+            <text x="20" y="162" class="dm-os">Slackware</text>
+            <rect x="150" y="150" width="280" height="14" class="dm-bar"/>
+            <text x="440" y="162" class="dm-note">no dependency resolution, rc.d scripts, chmod</text>
+
+            <text x="20" y="212" class="dm-os">minimal container image</text>
+            <rect x="150" y="220" width="420" height="14" class="dm-bar"/>
+            <text x="150" y="212" class="dm-note">no package manager, frequently no shell, an unfamiliar libc</text>
+
+            <line x1="20" y1="256" x2="620" y2="256" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="278" class="dm-note">What the distance turns on is lineage, not the label: a derivative sits close to its parent,</text>
+            <text x="20" y="292" class="dm-note">a project with a different mission may share little beyond the kernel and the licence.</text>
+        </svg>
+
+        <p>Sit with that for a moment. The administrator who has learned Slackware is closer to FreeBSD's <code>rc.d</code> than to the systemd units running on the Fedora machine in the next rack, and the advert files two of those three under the same job title. A minimal container image finishes the demonstration: no package manager, frequently no shell, a libc nobody in the building has linked against. Twenty years of Debian buys you almost nothing in there.</p>
+
+        <p>So the market has noticed something real and has drawn the boundary in the wrong place. The same word covers a dialect and a foreign language, and the advert never says which one is waiting.</p>
+
+        <p>And the transfer has limits in the other direction too. The fundamentals move across in days: services, packages, firewall, logs. The depth does not. Jails, ZFS beyond creating a dataset, Poudriere, the particular logic of a base system that is built and released as one thing, those take weeks to months, and anybody who tells you otherwise is selling something.</p>
+
+        <p>Then there is the part that has nothing to do with skill. Vendors ship Linux packages, Linux drivers and Linux support contracts, and for a great deal of commercial software that is the whole of the list. If the sentence we have nobody in-house for that actually means we would carry that alone at three in the morning with no vendor to ring, then it is not prejudice. It is an accurate description of a risk, and it deserves a better hearing than the version that hides behind a job title.</p>
+
+        <p>So the advert names a kernel family and the meeting treats it as a description of a person. What follows is a decision about architecture, taken on the strength of a category that does not survive contact with four rows of a table, and taken by somebody who never intended to decide anything about architecture at all.</p>
+
+        <p>Call it the staffing veto. It arrives early, it needs no evidence, and it is almost never revisited, because by the time anybody could check it the system has been built the other way and the checking would be expensive.</p>
+
+        <blockquote><p>There is a Debian admin. They read Ubuntu as a dialect, relearn half the job on Gentoo, more than half again on Slackware, and stand in front of a minimal container image with twenty years of experience and nowhere to put it. That is a real person, and you can hire them. What there is not, and never was, is a Linux admin.</p></blockquote>
+
+        <aside class="vv-aside">
+            <p><strong>The point:</strong></p>
+            <ul>
+                <li><strong>The four layers:</strong> C library, core utilities, init, packaging. Alpine and Fedora share none of them; FreeBSD and macOS share two.</li>
+                <li><strong>Where it bites:</strong> gawk and mawk answer the same expression differently; /bin/sh is Dash, Bash or ash depending on the distribution, and Bash conveniences fail on Dash silently.</li>
+                <li><strong>The canon:</strong> systemd default since Debian 8, nftables since Debian 10, ifconfig to ip, netstat to ss, syslog to journald. The FreeBSD Handbook of the same era is still accurate.</li>
+                <li><strong>The distance:</strong> Ubuntu is a dialect of Debian; Gentoo relearns half the day; Slackware calls its own init layout BSD-style; a minimal container image starts from zero.</li>
+                <li><a href="https://www.alpinelinux.org/about/" target="_blank" rel="noopener">Alpine Linux, in its own words</a></li>
+                <li><a href="https://wiki.debian.org/systemd" target="_blank" rel="noopener">Debian Wiki: systemd default since Debian 8</a> &#x2192; <a href="https://wiki.debian.org/nftables" target="_blank" rel="noopener">nftables default since Debian 10</a></li>
+                <li><a href="https://systemd.io/" target="_blank" rel="noopener">systemd, its own statement of purpose</a></li>
+                <li><a href="http://www.slackware.com/config/init.php" target="_blank" rel="noopener">Slackware: the BSD-style init layout</a> &#x00B7; <a href="https://wiki.gentoo.org/wiki/Portage" target="_blank" rel="noopener">Gentoo: Portage and USE flags</a></li>
+                <li><a href="https://wiki.ubuntu.com/DashAsBinSh" target="_blank" rel="noopener">Ubuntu Wiki: DashAsBinSh</a></li>
+                <li><a href="https://docs.freebsd.org/en/books/handbook/config/" target="_blank" rel="noopener">FreeBSD Handbook: configuration through rc.conf</a> &#x00B7; <a href="https://man.freebsd.org/cgi/man.cgi?rc.conf(5)" target="_blank" rel="noopener">rc.conf(5)</a></li>
+                <li><a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">Integrated by Design, chapters 2 and 3, on the fragmentation tax</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

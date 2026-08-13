@@ -14,6 +14,7 @@ local pages = {
     { loc = "/print",      priority = "0.6",  changefreq = "monthly" },
     { loc = "/print/integrated-by-design", priority = "0.7", changefreq = "monthly" },
     -- blog articles
+    { loc = "/blog/no-linux-admin",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/coin-slot",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/wait-before-work",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/tool-already-there",   priority = "0.7", changefreq = "yearly" },
