@@ -1,0 +1,314 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Data Copy That Lies &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Across 1.53 million drives, NetApp logged over 400,000 silent checksum mismatches, eight per cent of them found during a RAID rebuild. A mirror cannot tell you which copy is right. On the one decision that lets ZFS answer the question a stack of three layers cannot even ask.">
+{( endslot )}
+
+{( slot canonical )}/blog/copy-that-lies{( endslot )}
+
+{( slot og-title )}The Data Copy That Lies &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Unix Universe. Put a mirror in front of two disks and flip one bit. mdadm hands you one of the copies, because as far as it is concerned there is nothing to decide, and neither drive reported an error. Scrub the array and it will tell you the copies disagree; it cannot tell you which is right. ZFS answers that question because it refused to be two things: volume manager and filesystem are one program, and self-healing, near-free snapshots and delta replication all fall out of that single decision.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Data Copy That Lies",
+    "datePublished": "2026-08-17",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/copy-that-lies",
+    "description": "Unix Universe, on silent data corruption and the architectural decision behind ZFS. A study by Bairavasundaram and colleagues at USENIX FAST 2008 examined 1.53 million disk drives over 41 months and recorded more than 400,000 checksum mismatches, eight per cent of which were discovered during RAID reconstruction, when the redundancy meant to protect the data had already been spent; the paper states that basic protection schemes such as RAID may be unable to detect these problems at all. CERN measured comparable corruption rates around ten to the minus seven in its own computer centre in early 2007 and recommended that checksums be deployed everywhere. A conventional Linux storage stack of mdadm, LVM and ext4 cannot act on that recommendation: mdadm holds the redundancy but no content checksum, ext4 checksums its own metadata but cannot address the second copy one layer below, so when a mirror disagrees with itself no component can say which side is correct. ZFS answers the question because volume manager and filesystem are the same program. The checksum of every block lives in the block that points to it, making the pool a Merkle tree, so self-healing requires no further invention: the bad copy fails verification, the good copy is returned and the bad one rewritten. Copy-on-write makes snapshots almost free, and because the filesystem records which blocks changed in which transaction group, zfs send transmits a delta where rsync would read the entire dataset to discover the same thing. Snapshots are read-only by design, giving a linear history of states that actually occurred, and every snapshot appears as a path under the .zfs directory. ZFS shipped in FreeBSD 7.0 as experimental and was no longer experimental by 8.0, living in the base system rather than as an out-of-tree module. Btrfs arrived at copy-on-write independently through Ohad Rodeh's B-tree work, is in-tree and reshapes pools more gracefully, and its own status tables list subvolumes, snapshots, send and receive as stable while marking RAID56 unstable, because it adopted the fixed-width stripe layout and with it the RAID 5 write hole that RAIDZ eliminates through variable-width stripes.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-17">17 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Data Copy That Lies</h1>
+        <p class="vv-article-meta"><em>Every clever thing ZFS does comes from one decision taken before a line of it was written, and the decision was to stop pretending that a volume manager and a filesystem are two different problems. Unix Universe.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">zfs</span>
+            <span class="vv-pill">storage</span>
+            <span class="vv-pill">data integrity</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>A disk sends you back a block that is not the block you wrote. Not often. Perhaps never on the machine under your desk, in the whole time you own it. But NetApp went and counted properly, <a href="https://www.usenix.org/legacy/events/fast08/tech/full_papers/bairavasundaram/bairavasundaram.pdf" target="_blank" rel="noopener">across 1.53 million drives over 41 months</a>, and found more than 400,000 checksum mismatches. Their paper puts the awkward part plainly: eight per cent of those were discovered during RAID reconstruction, which is to say at the exact moment when the redundancy that was meant to save you has already been spent.</p>
+
+        <p><a href="https://indico.cern.ch/event/13797/contributions/1362288/attachments/115080/163419/Data_integrity_v3.pdf" target="_blank" rel="noopener">CERN ran their own numbers</a> in early 2007, writing a couple of gigabytes of known bit patterns across the computer centre and reading them back to see what came home changed. Corruption rates around the 10&#x207B;&#x2077; mark, with awkward clustering, and a recommendation that checksums be implemented and deployed everywhere.</p>
+
+        <p>What both studies describe is silent data corruption: a block that comes back changed while every component involved reports success. Everywhere is a big word. Most of the storage stack in common use cannot act on that recommendation, and the reason is architectural rather than lazy.</p>
+
+        <h2>The Stack That Cannot Ask Itself a Question</h2>
+
+        <p>Take the arrangement that most Linux machines run: mdadm underneath for the redundancy, LVM above it for the flexible carving-up of space, ext4 or XFS on top for the actual files. Three mature pieces of software, each excellent at its own job, each maintained by people who know precisely what they are doing.</p>
+
+        <p>Now put a mirror in front of that and flip one bit on one of the two drives. Nothing dramatic: a cosmic ray, a firmware bug, a controller having a bad afternoon.</p>
+
+        <p>You read the file. mdadm serves you one of the two copies, because as far as mdadm is concerned there is nothing to decide. It has two blocks. Both are readable. Neither drive reported an error, because from the drive's point of view nothing went wrong: it stored what it was given, or it thinks it did, and its own error correction saw nothing worth mentioning.</p>
+
+        <svg viewBox="0 0 640 300" aria-label="What each layer of a storage stack knows. In the conventional Linux arrangement, mdadm holds the redundancy and the second copy but has no checksum of file contents; LVM holds neither; ext4 checksums its own metadata but not file contents and cannot reach the second copy. No single layer holds both the checksum and the redundancy, so when two copies disagree, none of them can determine which is correct. In ZFS one program holds the checksum, the redundancy and the repair, so the question is answerable." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .kn-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .kn-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .kn-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; font-weight: 700; }
+                .kn-no    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .kn-yes   { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; }
+                .kn-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+            </style>
+            <text x="320" y="22" class="kn-title" text-anchor="middle">Who knows what, when a mirror disagrees with itself</text>
+
+            <text x="20" y="54" class="kn-head">LAYER</text>
+            <text x="250" y="54" class="kn-head" text-anchor="middle">CONTENT CHECKSUM</text>
+            <text x="430" y="54" class="kn-head" text-anchor="middle">SECOND COPY</text>
+            <text x="580" y="54" class="kn-head" text-anchor="middle">CAN DECIDE</text>
+            <line x1="20" y1="62" x2="620" y2="62" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="86" class="kn-item">ext4 / XFS</text>
+            <text x="250" y="86" class="kn-no" text-anchor="middle">metadata only</text>
+            <text x="430" y="86" class="kn-no" text-anchor="middle">no</text>
+            <text x="580" y="86" class="kn-no" text-anchor="middle">no</text>
+
+            <text x="20" y="112" class="kn-item">LVM</text>
+            <text x="250" y="112" class="kn-no" text-anchor="middle">no</text>
+            <text x="430" y="112" class="kn-no" text-anchor="middle">no</text>
+            <text x="580" y="112" class="kn-no" text-anchor="middle">no</text>
+
+            <text x="20" y="138" class="kn-item">mdadm</text>
+            <text x="250" y="138" class="kn-no" text-anchor="middle">no</text>
+            <text x="430" y="138" class="kn-yes" text-anchor="middle">yes</text>
+            <text x="580" y="138" class="kn-no" text-anchor="middle">no</text>
+
+            <line x1="20" y1="158" x2="620" y2="158" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3"/>
+
+            <text x="20" y="184" class="kn-item">ZFS</text>
+            <text x="250" y="184" class="kn-yes" text-anchor="middle">every block</text>
+            <text x="430" y="184" class="kn-yes" text-anchor="middle">yes</text>
+            <text x="580" y="184" class="kn-yes" text-anchor="middle">yes</text>
+
+            <line x1="20" y1="204" x2="620" y2="204" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="228" class="kn-note">Three good components, and the two facts needed to answer the question live in different ones.</text>
+            <text x="20" y="246" class="kn-note">The checksum without the redundancy can only report. The redundancy without the checksum cannot even report.</text>
+            <text x="20" y="272" class="kn-note">The USENIX paper puts it plainly: basic protection schemes such as RAID may be unable to detect these problems.</text>
+        </svg>
+
+        <p>If you scrub that array, mdadm will notice the two copies disagree. It cannot tell you which one is right. It has no way to know. RAID was designed against the failure it could see coming in 1988, which was a drive dying, and against that failure it works beautifully. Against a drive that lies quietly it has no instrument at all.</p>
+
+        <p>The filesystem above has the same difficulty from the other direction. ext4 checksums its own metadata, which is genuinely worth having, and it does not checksum your file contents. Even if it did, it would have nowhere to go with the answer, because the copy that might be correct lives one floor down in a component ext4 cannot address. It would be able to tell you that your data is wrong, and then have to sit there.</p>
+
+        <p>Three good components, and between them a question nobody in the building is in a position to answer: of these two blocks, which is the one I wrote?</p>
+
+        <h2>What Happens When You Stop Drawing the Line</h2>
+
+        <p>ZFS was built at Sun by Jeff Bonwick and Matthew Ahrens, and its founding move was to refuse the division of labour. Not a filesystem that talks to a volume manager particularly well. One thing, which does both, and can therefore know both.</p>
+
+        <p>Once that decision is taken, the interesting part is how little else needs deciding. Four capabilities fall out of it, and none of them required a separate act of invention.</p>
+
+        <p><strong>The checksum lives with the parent, not with the data.</strong> ZFS stores every block's checksum in the block that points to it, so the pointer and the verification travel together all the way up to a root that is itself checksummed. The whole pool is a Merkle tree. When a block comes back from the disk, ZFS already knows what it should have been, and it knew before it asked.</p>
+
+        <p><strong>Self-healing needs nothing further.</strong> Because the same program holds both the checksum and the redundancy, the failure described above simply does not survive. The bad copy fails verification, the good copy passes, the good copy is returned to your application, and the bad copy is rewritten from the good one while you wait. You are not told, unless you go and look at the pool's error counters. Nothing in the stack had to be coordinated, because there was no stack to coordinate.</p>
+
+        <p><strong>Snapshots cost approximately nothing.</strong> ZFS never overwrites a live block; a change is written elsewhere and the pointers are updated. Copy-on-write is there for consistency reasons, so that a power cut can only ever leave you with the old state or the new one. But once you have it, a snapshot is a matter of not freeing the old blocks, and that is close enough to free that people take them every fifteen minutes without thinking about it. Compare an LVM snapshot, which needs a size decided up front, degrades write performance while it exists, and breaks when it fills.</p>
+
+        <p><strong>Replication knows what changed without looking.</strong> This is the one that catches people out. <code>zfs send -i</code> between two snapshots produces the differences, because the filesystem recorded which blocks were touched in which transaction group and can simply read that back. <code>rsync</code> solves the same problem by walking the entire tree, stat-ing everything, hashing what looks suspicious, and asking the far end a great many questions. On ten terabytes of mostly-unchanged data, one of these approaches reads ten terabytes and the other reads a list.</p>
+
+        <p>Four features. One decision. That is the whole argument, and everything else in this piece is either evidence for it or fairness towards the alternative.</p>
+
+        <h2>Where FreeBSD Comes Into It</h2>
+
+        <p>ZFS arrived in <a href="https://www.freebsd.org/releases/7.0R/announce/" target="_blank" rel="noopener">FreeBSD 7.0 in 2008</a>, and the release notes are charmingly cautious about it: experimental support for Sun's ZFS filesystem. By <a href="https://www.freebsd.org/releases/8.0R/announce/" target="_blank" rel="noopener">8.0 the notes simply record</a> that ZFS is no longer in experimental status, and that is the last fuss anyone made about it. Since then it has been part of the base system, built from the same tree as the kernel, released on the same day, documented in <a href="https://docs.freebsd.org/en/books/handbook/zfs/" target="_blank" rel="noopener">the same handbook</a>.</p>
+
+        <p>That sounds like a detail and it changes the daily experience considerably.</p>
+
+        <p>Because ZFS is licensed under the CDDL, it cannot be merged into the Linux kernel, whose licence does not permit it. So on Linux, OpenZFS lives outside the tree and is rebuilt against each new kernel through DKMS. It works, and a great many people run it happily in production, and it is nonetheless a moving part that can be broken by an upgrade you did not think was about storage. Nobody enjoys that particular palaver at two in the morning.</p>
+
+        <p>On FreeBSD the root filesystem is ZFS by default from the installer onwards, the boot loader understands the pool, and <code>bectl</code> gives you a boot environment as a first-class feature: take a snapshot of the running system, upgrade, and if the upgrade is a disaster, select the previous environment at the boot menu and be back where you started. The equivalent on Linux exists in various third-party forms, none of them in the base system, and one prominent attempt at automating it was abandoned by its own vendor in 2021.</p>
+
+        <p>None of this is because FreeBSD engineers are cleverer. It is because a project that ships one tree can integrate a filesystem into the boot process, and a project assembled from independently governed parts has to negotiate the same outcome across several of them.</p>
+
+        <h2>Version Control That Never Heard of Files</h2>
+
+        <p>Here is where the theory turns into a way of working, and it is the part I use daily rather than admire from a distance.</p>
+
+        <p>Once snapshots are effectively free and the filesystem can tell you what changed between any two of them, you have most of the verbs a version control system offers, sitting one level below the files instead of inside them.</p>
+
+<pre><code>git commit -m "before the risky bit"   -&gt;  zfs snapshot tank/work@before
+git diff --name-status                 -&gt;  zfs diff tank/work@before
+git reset --hard                       -&gt;  zfs rollback tank/work@before
+git branch experiment                  -&gt;  zfs clone tank/work@before tank/try
+git log --oneline                      -&gt;  zfs list -t snapshot -r tank/work
+git push                               -&gt;  zfs send -i @before tank/work@now</code></pre>
+
+        <p><a href="https://man.freebsd.org/cgi/man.cgi?query=zfs-diff&amp;sektion=8" target="_blank" rel="noopener"><code>zfs diff</code></a> is the one that surprises people. It prints a change type per path in the same shape git uses: <code>+</code> for created, <code>-</code> for removed, <code>M</code> for modified, <code>R</code> for renamed. No repository, no staging area, no prior arrangement. The filesystem simply knows, because it recorded which blocks moved in which transaction group.</p>
+
+        <svg viewBox="0 0 640 260" aria-label="Three snapshots taken in sequence over the same pool. Each new snapshot shares nearly all the blocks of the previous one and adds only a handful of its own, which is why a snapshot completes instantly whether the dataset holds a hundred megabytes or nine terabytes. A git commit by contrast writes a second copy of everything that changed into an object store beside the working tree." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sn-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .sn-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .sn-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .sn-new   { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+            </style>
+            <text x="320" y="22" class="sn-title" text-anchor="middle">Three snapshots, one set of blocks</text>
+
+            <text x="20" y="62" class="sn-item">@monday</text>
+            <rect x="120" y="50" width="300" height="14" fill="var(--border)" rx="2"/>
+            <text x="432" y="62" class="sn-note">300 blocks, all shared</text>
+
+            <text x="20" y="102" class="sn-item">@tuesday</text>
+            <rect x="120" y="90" width="300" height="14" fill="var(--border)" rx="2"/>
+            <rect x="422" y="90" width="26" height="14" fill="#4ab542" rx="2"/>
+            <text x="460" y="102" class="sn-new">+ 26 new</text>
+
+            <text x="20" y="142" class="sn-item">@wednesday</text>
+            <rect x="120" y="130" width="300" height="14" fill="var(--border)" rx="2"/>
+            <rect x="422" y="130" width="26" height="14" fill="var(--border)" rx="2"/>
+            <rect x="450" y="130" width="18" height="14" fill="#4ab542" rx="2"/>
+            <text x="480" y="142" class="sn-new">+ 18 new</text>
+
+            <line x1="20" y1="164" x2="620" y2="164" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="188" class="sn-note">Each snapshot declines to free the blocks it shares. Nothing is copied, so the operation is instant</text>
+            <text x="20" y="204" class="sn-note">whether the dataset holds a hundred megabytes or nine terabytes, and no extension is needed for large binaries.</text>
+            <text x="20" y="230" class="sn-note">A git commit, by contrast, writes a second copy of everything that changed into an object store beside your tree.</text>
+            <text x="20" y="248" class="sn-note">The overhead here is not small. It is absent.</text>
+        </svg>
+
+        <p>Three things follow, and they are the reason I run my machines this way.</p>
+
+        <p><strong>Before anything risky, take a snapshot.</strong> A system upgrade, a database migration, a configuration change you are not sure about. It costs a moment and no meaningful space, and it converts an irreversible action into a reversible one. <code>zfs rollback</code> puts the dataset back exactly as it was, including the files you forgot were involved. On a machine where the root filesystem is ZFS, <code>bectl</code> does the same for the entire operating system.</p>
+
+        <p><strong>Local development gets a safety net underneath the one it already has.</strong> Git protects what you committed. It does nothing for the build artefacts, the local database, the container volumes, the half-configured service, the scratch directory you were about to need. A dataset snapshot covers all of it at once, including the state git was never asked to track, and a clone gives you a writable copy of that whole world to experiment in while the original sits untouched.</p>
+
+        <p><strong>Between machines, the same snapshots become the transport.</strong> Because <code>zfs send -i</code> ships a delta computed from transaction groups rather than discovered by scanning, keeping a second machine in step with the first is a matter of sending the increment since the last common snapshot. The receiving side does not end up approximately in sync. It ends up byte-identical, verified by the same checksums that guard the pool, and it holds the same history you do.</p>
+
+        <p>A word on the read-only part, because it is regularly filed as a limitation and belongs in the other column. A ZFS snapshot cannot be modified. Ever. If you want the state to change, you take another snapshot, and what you end up with is a clean linear history of states that actually occurred. This is exactly git's bargain: amend a commit and you do not edit it, you produce a different one with a different hash, because the content is the identity. A snapshot you can quietly rewrite is not a record of anything, and as a safety anchor it is worth precisely nothing, since whatever went wrong on the live filesystem can generally reach it too.</p>
+
+        <p>Btrfs concedes the point in its own design. Its snapshots may be writable, and <code>btrfs send</code> requires a read-only one, which is to say the project enforces immutability at exactly the moment a snapshot has to behave like a commit.</p>
+
+        <p>I would go further and call the writable snapshot a design weakness, without meaning that as an attack on anybody. Ask what it buys. Whatever you wanted a writable copy for, a clone or a fresh subvolume gives you, and gives you it without overloading the word that everyone uses for their recovery point. So the upside is a shorter command, and the downside is that a restore point can be written to by whatever is running on the machine, which in the interesting cases is the thing you are restoring away from. Ransomware families have spent years learning to hunt down shadow copies and snapshots before they encrypt anything, for the obvious reason. A recovery point that the attacker can edit is not a recovery point, it is a suggestion.</p>
+
+        <p>None of which makes Btrfs unsafe, and the fix is one flag: <code>btrfs subvolume snapshot -r</code> behaves exactly as you would want. The objection is narrower and it is about defaults. A guarantee you have to remember to ask for is not a guarantee, it is a habit, and habits are what fail at three in the morning during an incident. ZFS took the option away and left only the correct behaviour.</p>
+
+        <p>The counterpart honesty: read-only does not mean indestructible. A ZFS snapshot can still be destroyed by anyone holding the right privileges on the pool, which is why <a href="https://man.freebsd.org/cgi/man.cgi?query=zfs-hold&amp;sektion=8" target="_blank" rel="noopener"><code>zfs hold</code></a> exists to pin one against deletion, and why a snapshot only becomes a backup once it has been sent to a machine the first one cannot reach. That is the normal state of affairs in version control rather than a shortcoming: git protects the contents of a commit, since the hash is the identity, and it protects nothing at all against somebody with push rights running <code>gc</code>, <code>rebase</code> or <code>push --force</code>. Immutable means unforgeable in both systems. It has never meant undeletable in either.</p>
+
+        <p>Reaching into the past costs about as little. Every ZFS filesystem carries a <code>.zfs</code> directory at its root, hidden by default and controlled by <a href="https://man.freebsd.org/cgi/man.cgi?query=zfsprops&amp;sektion=7" target="_blank" rel="noopener">the <code>snapdir</code> property</a>, and under it sits one directory per snapshot containing that entire filesystem as it stood. No checkout, no detached head, no working copy to restore. You change directory into a moment in time and read it with <code>ls</code>, <code>grep</code>, <code>diff</code> and anything else you already know, while the live filesystem carries on underneath you, untouched.</p>
+
+        <p>Now the honest boundaries, because an analogy that is not policed becomes a lie.</p>
+
+        <p>There is no merge. ZFS can fork a line of history through a clone, and it cannot bring two lines back together; if you need that, you need git, and the two coexist perfectly well. The diffs are per file, not per line, so this replaces nothing about reviewing a change. And a snapshot lives in the pool it was taken in, so it is a working practice rather than a backup until you have sent it somewhere else.</p>
+
+        <p>Btrfs does most of this too, and it does it on stable ground: <a href="https://btrfs.readthedocs.io/en/latest/Status.html" target="_blank" rel="noopener">its own status tables</a> mark subvolumes, snapshots, send and receive as OK, and the unstable entry applies to RAID56 alone. What differs is ergonomics rather than reliability. There is no <code>btrfs diff</code> in the command list, so working out what changed between two subvolumes means driving <code>btrfs send --no-data</code> and reading the stream, or reaching for Snapper. There is no <code>btrfs rollback</code> either; the way back runs through subvolume management, setting a default and remounting. Both are entirely doable, and both are the reason a tooling ecosystem grew around Btrfs that ZFS never needed. When one program owns the snapshot, the checksum and the redundancy, the verbs are already there.</p>
+
+        <p>What it gives you is a machine whose state is addressable. Not the code, which git already handles. The machine.</p>
+
+        <h2>The Other Project That Had the Same Idea</h2>
+
+        <p>Btrfs deserves better than the caricature it usually gets, and getting its history right actually sharpens the point rather than blunting it.</p>
+
+        <p>A common belief holds that Btrfs was Linux's answer to ZFS. Chris Mason, who started it in 2007 after moving from SUSE to Oracle, <a href="https://www.linux.com/news/churning-butterfs-interview-chris-mason/" target="_blank" rel="noopener">has said otherwise</a>: starting Btrfs was less about ZFS than about making sure Linux could keep up with the enormous storage devices arriving over the following decade. Its technical foundation came from somewhere else again: a paper by Ohad Rodeh of IBM on copy-on-write B-trees, presented that same year. Two projects arrived at the same central idea independently, which is usually a sign that the idea is correct.</p>
+
+        <p>And Btrfs has real advantages that ZFS does not. It is in the kernel tree, so there is no module to rebuild and no licence question hanging over it. It is far more relaxed about changing the shape of your storage after the fact: adding a disk, removing a disk, converting between profiles on a live filesystem are all things Btrfs does comfortably and ZFS has only recently and partially learned. For a home server that grows one disk at a time, that flexibility is worth a great deal, and anybody who dismisses it has not run one.</p>
+
+        <p>The divergence is at a single point, and it is instructive.</p>
+
+        <p>RAID 5 has a failure mode called the write hole. A stripe is written across several disks along with its parity; if the power goes at the wrong instant, some of that stripe is on disk and some is not, and the parity no longer matches the data. Nothing announces this. It is discovered later, usually while rebuilding after a drive failure, when the parity is asked to reconstruct something and reconstructs rubbish with complete confidence.</p>
+
+        <svg viewBox="0 0 640 290" aria-label="Fixed-width against variable-width stripes. In a classic RAID 5 layout every stripe has the same width, so a write smaller than a full stripe must modify part of an existing one; if power fails mid-write, data and parity disagree and nothing reports it. RAIDZ writes each block as a complete stripe whose width is chosen to fit the write, inside the transaction that copy-on-write already guarantees, so no partial stripe ever exists and the write hole cannot occur." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .st-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .st-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .st-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .st-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .st-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; }
+                .st-d     { fill: var(--border); rx: 1; }
+                .st-p     { fill: var(--muted); rx: 1; }
+            </style>
+            <text x="320" y="22" class="st-title" text-anchor="middle">Two ways to lay down a stripe</text>
+
+            <text x="20" y="50" class="st-head">FIXED WIDTH, AS IN CLASSIC RAID 5</text>
+            <g>
+                <rect x="20" y="60" width="34" height="16" class="st-d"/><rect x="58" y="60" width="34" height="16" class="st-d"/><rect x="96" y="60" width="34" height="16" class="st-d"/><rect x="134" y="60" width="34" height="16" class="st-p"/>
+                <rect x="20" y="82" width="34" height="16" class="st-d"/><rect x="58" y="82" width="34" height="16" class="st-d"/><rect x="96" y="82" width="34" height="16" class="st-d"/><rect x="134" y="82" width="34" height="16" class="st-p"/>
+                <rect x="20" y="104" width="34" height="16" class="st-d"/><rect x="58" y="104" width="34" height="16" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="3 2"/><rect x="96" y="104" width="34" height="16" class="st-d"/><rect x="134" y="104" width="34" height="16" class="st-p" opacity="0.35"/>
+            </g>
+            <text x="185" y="72" class="st-note">every stripe the same width</text>
+            <text x="185" y="94" class="st-note">a small write must modify part of an existing stripe</text>
+            <text x="185" y="116" class="st-bad">power fails here: data and parity now disagree, silently</text>
+
+            <line x1="20" y1="140" x2="620" y2="140" stroke="var(--border)" stroke-width="1"/>
+
+            <text x="20" y="166" class="st-head">VARIABLE WIDTH, AS IN RAIDZ</text>
+            <g>
+                <rect x="20" y="176" width="34" height="16" class="st-d"/><rect x="58" y="176" width="34" height="16" class="st-d"/><rect x="96" y="176" width="34" height="16" class="st-p"/>
+                <rect x="20" y="198" width="34" height="16" class="st-d"/><rect x="58" y="198" width="34" height="16" class="st-d"/><rect x="96" y="198" width="34" height="16" class="st-d"/><rect x="134" y="198" width="34" height="16" class="st-d"/><rect x="172" y="198" width="34" height="16" class="st-p"/>
+                <rect x="20" y="220" width="34" height="16" class="st-d"/><rect x="58" y="220" width="34" height="16" class="st-p"/>
+            </g>
+            <text x="222" y="188" class="st-note">each stripe sized to fit its own write</text>
+            <text x="222" y="210" class="st-note">written whole, inside the copy-on-write transaction</text>
+            <text x="222" y="232" class="st-good">no partial stripe can exist, so there is no hole</text>
+
+            <line x1="20" y1="252" x2="620" y2="252" stroke="var(--border)" stroke-width="1"/>
+            <text x="20" y="274" class="st-note">OpenZFS states it plainly: RAIDZ eliminates the RAID-5 write hole, in which data and parity become inconsistent after a power loss.</text>
+        </svg>
+
+        <p>ZFS does not have this failure mode, and not because it works around it. RAIDZ writes every block as a complete stripe of variable width, sized to the write rather than to a fixed geometry, inside the same transaction that copy-on-write already guarantees. There is no window in which a partial stripe exists, so there is no hole. <a href="https://openzfs.github.io/openzfs-docs/Basic%20Concepts/Pool%20Structure/RAIDZ.html" target="_blank" rel="noopener">The OpenZFS documentation states it flatly</a>: RAIDZ eliminates the RAID-5 write hole, in which data and parity become inconsistent after a power loss. That property is not a feature bolted on; it is what you get when the thing writing the parity is the same thing managing the transaction.</p>
+
+        <p>Btrfs took the conventional fixed-width stripe layout for its RAID 5 and 6 profiles, and inherited the write hole with it. The consequence is documented by the project itself, and Btrfs is admirably honest about it: in the official status tables, RAID56 is marked <strong>unstable</strong>, a category the same page defines as do not use for anything other than testing, known severe problems, missing implementation of some core parts. That entry has stood for years. The project began in 2007.</p>
+
+        <p>So this is not a story about one team being better than another. It is a story about a decision taken at the foundation, which either makes a class of problem impossible or leaves it for somebody to solve later, and where later has a way of not arriving.</p>
+
+        <h2>The Resource Argument, Which Is Usually Made Backwards</h2>
+
+        <p>Every discussion of ZFS eventually produces somebody saying it needs a gigabyte of RAM per terabyte of storage. This is the most durable piece of misinformation in the field, and it comes from a real recommendation that has been detached from its context.</p>
+
+        <p>That guidance is about deduplication. <a href="https://openzfs.github.io/openzfs-docs/Performance%20and%20Tuning/Workload%20Tuning.html" target="_blank" rel="noopener">The dedup table</a> holds an entry for every unique block in the pool, each costing a little over 320 bytes, and it has to be in memory to be any use. Deduplication is off by default and always has been. Switch it on across a large pool and yes, budget accordingly. Leave it alone, as nearly everyone does, and the rule simply does not apply to you.</p>
+
+        <p>The ARC is the other half of the confusion. It is a cache: the Adaptive Replacement Cache, which replaces the least-recently-used algorithm that virtually every other filesystem uses with one that tracks both recency and frequency and adapts between them. It gives memory back when applications want it. What monitoring tools report as consumed is the same memory a Linux box devotes to its page cache, counted under a different name and then held against it.</p>
+
+        <p>Meanwhile the actual efficiencies go unmentioned, and they are not small. Compression with lz4 has been on by default since OpenZFS 2.2.0, and compression <em>reduces</em> I/O, because fewer bytes cross the bus than would otherwise. One layer means one set of metadata and one cache rather than three that cannot inform each other. Snapshots need no reserved space. And the replication difference described earlier is not a percentage, it is a category: reading a list of changed blocks against reading the entire dataset to work out what changed.</p>
+
+        <h2>The Limit</h2>
+
+        <p>Some honesty, because a piece like this is worthless without it.</p>
+
+        <p>RAIDZ is not a backup, and treating it as one is a mistake that ZFS makes especially easy because everything feels so safe. A pool protects you from a disk lying to you. It does not protect you from <code>rm -rf</code>, ransomware, or a fire.</p>
+
+        <p>Checksums cost CPU, and on a small box doing heavy sequential work you can measure it. ZFS genuinely likes memory and performs better with more of it, even without deduplication; the gigabyte-per-terabyte rule is wrong, but "give it plenty" is fair advice. Expanding a RAIDZ vdev remains awkward compared with what Btrfs does casually. And if you only ever use Btrfs in its single-device or RAID1 profiles, where the status tables say it is fine, you will have a perfectly good time and none of the above will ever trouble you.</p>
+
+        <blockquote><p>The specific claim here is narrower than "ZFS is better". It is that a system which refused to split itself into two components can answer a question that split systems cannot ask, and that the answer to that question is the difference between silent corruption and a line in an error counter.</p></blockquote>
+
+        <p>Somebody at CERN wrote 2 GB of known patterns to disk and read them back to see what had changed on the way, and the industry has been quietly living with the answer ever since. Most storage stacks handle it by not being in a position to notice.</p>
+
+        <p>Twenty years on, the design that stopped drawing a line between two layers is still the one that can tell you which copy was right. That was not luck. It was the consequence of taking one decision seriously enough to build everything else out of it.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The point:</strong></p>
+            <ul>
+                <li><strong>The measurement:</strong> 1.53 million drives, 41 months, over 400,000 checksum mismatches, 8 per cent found during reconstruction.</li>
+                <li><strong>The gap:</strong> mdadm holds the redundancy without a content checksum; ext4 holds a metadata checksum without the redundancy. Neither can decide.</li>
+                <li><strong>The decision:</strong> volume manager and filesystem as one program. Self-healing, near-free snapshots and delta replication all follow from it.</li>
+                <li><strong>The divergence:</strong> RAIDZ writes complete stripes of variable width, so the RAID 5 write hole cannot occur; Btrfs took the fixed-width layout and lists RAID56 as unstable to this day.</li>
+                <li><a href="https://www.usenix.org/legacy/events/fast08/tech/full_papers/bairavasundaram/bairavasundaram.pdf" target="_blank" rel="noopener">Bairavasundaram et al., An Analysis of Data Corruption in the Storage Stack, USENIX FAST '08</a></li>
+                <li><a href="https://indico.cern.ch/event/13797/contributions/1362288/attachments/115080/163419/Data_integrity_v3.pdf" target="_blank" rel="noopener">Panzer-Steindel, Data Integrity, CERN/IT, April 2007</a></li>
+                <li><a href="https://openzfs.github.io/openzfs-docs/Basic%20Concepts/Pool%20Structure/RAIDZ.html" target="_blank" rel="noopener">OpenZFS on RAIDZ and the write hole</a> &#x00B7; <a href="https://openzfs.github.io/openzfs-docs/Performance%20and%20Tuning/Workload%20Tuning.html" target="_blank" rel="noopener">on the ARC, lz4 and the dedup table</a></li>
+                <li><a href="https://btrfs.readthedocs.io/en/latest/Status.html" target="_blank" rel="noopener">Btrfs project status tables</a> &#x00B7; <a href="https://www.linux.com/news/churning-butterfs-interview-chris-mason/" target="_blank" rel="noopener">Chris Mason on why he started Btrfs</a></li>
+                <li><a href="https://docs.freebsd.org/en/books/handbook/zfs/" target="_blank" rel="noopener">FreeBSD Handbook, the ZFS chapter</a> &#x00B7; <a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">Integrated by Design, chapter 6</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
