@@ -14,6 +14,7 @@ local pages = {
     { loc = "/print",      priority = "0.6",  changefreq = "monthly" },
     { loc = "/print/integrated-by-design", priority = "0.7", changefreq = "monthly" },
     -- blog articles
+    { loc = "/blog/waved-through",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/copy-that-lies",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/bytes-of-art-conspiracy-f07",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/no-linux-admin",   priority = "0.7", changefreq = "yearly" },

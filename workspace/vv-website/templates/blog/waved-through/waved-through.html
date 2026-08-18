@@ -1,0 +1,266 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Waved Through &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Ten questions put to 655,146 lines of a public SSH log, answered four ways. The model got every figure right and found two errors in the awk that was supposed to check it. Then the same question asked three times returned three different numbers, each one reasoned, none of them marked as a change of definition.">
+{( endslot )}
+
+{( slot canonical )}/blog/waved-through{( endslot )}
+
+{( slot og-title )}Waved Through &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The Bench Marker. A table of four hundred five-digit figures, six times a day, and the question of whether anything is off. Mackworth measured the decay in 1948; Wolfe showed in 2005 that rare targets are missed at thirty per cent where common ones slip past at seven. Every instrument built against that gave the error a shape instead of asking for more attention. A Xerox copier removed that shape in 2013, and a language model removes it by construction. Measured here on a public log: 7.4 seconds and no money for awk, 5.18 dollars and three different answers for the machine.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Waved Through",
+    "datePublished": "2026-08-18",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/waved-through",
+    "description": "The Bench Marker, on errors that arrive without a shape and on the people expected to catch them. Norman Mackworth put observers in front of a clock in 1948 and watched detection fall by ten to fifteen per cent inside the first half hour; Jeremy Wolfe showed in Nature in 2005 that rare targets are missed at thirty per cent and above where common ones slip past at seven, with briefing making no difference. Between 85 and 99 per cent of clinical monitor alarms are false or not actionable, so staff stop responding. Every instrument built against this failure over the centuries worked the same way, by adding redundancy so that an error announces itself: double-entry bookkeeping as Pacioli described it in 1494 writes every figure twice, and a transposed digit becomes visible only because the books stop balancing. In 2013 a Xerox copier altered room areas on scanned building plans because JBIG2 compression stores one image region and reuses it wherever its pattern matcher reports a match; four product families and dozens of model lines were affected, no customer list could be assembled because the machines were sold through resellers, and in March 2015 Germany's federal security office ruled symbol-coding compression unsuitable for legally binding replacement scanning, the workflow that destroys the paper once the scan exists. A language model works on the same principle one floor up: it produces the most probable continuation, which is by construction the output that looks least like an error. Measured on the public Loghub SSH corpus of 655,146 lines with ten questions and four runs, awk answered in 7.4 seconds at no cost, the model answered every question correctly on a 1,500-line slice in 38 to 74 seconds, and found two genuine errors in the awk written to check it. Three agent runs over the full log returned 1,719, then 1,720, then 1,721 distinct usernames depending on how each run treated an empty name appearing thirteen times, and named 3 January or 4 January as the busiest day depending on whether it counted lines or attempts. Each answer was defensible under the definition its own run chose, no two were the same, and nothing in the output marked the moment the definition moved. Eight model runs cost 5.18 dollars; the awk line cost nothing and returns the same figure every time.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-18">18 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Waved Through</h1>
+        <p class="vv-article-meta"><em>What happens when a machine gets something wrong and the wrongness has no shape. The Bench Marker.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">code review</span>
+            <span class="vv-pill">human factors</span>
+            <span class="vv-pill">benchmarking</span>
+            <span class="vv-pill">unix tools</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>There is a table on the desk. Twenty columns, twenty rows, a five-digit figure in every cell. It flutters in six times a day, that is what one is ultimately paid for, and the only job is to say whether any of the four hundred figures is off. Not which one. Only whether anything looks out of place.</p>
+
+        <p>On the first day that goes rather well. On the third it still does. What matters is the fourteenth, the day with something going on at home, or simply the day when the eye slides off a pattern it has seen eighty-four times already.</p>
+
+        <p>None of this is about diligence, and it has been measured properly: for seventy-eight years now, always with the same result.</p>
+
+        <h2>The Deficit Is Older Than the Computer</h2>
+
+        <p>Norman Mackworth sat observers in front of a clock in 1948. The hand advanced in even steps and now and then made a jump twice the usual size. Two hours of watching, report every big jump, nothing else on the sheet. Detection fell by ten to fifteen per cent within the first half hour, and the observers knew the jumps were coming, which rather makes it worse. He called it the vigilance decrement, and in the seventy-eight years since, nobody has found the training that undoes it.</p>
+
+        <p>Jeremy Wolfe put the more awkward question in Nature in 2005. Same images, same trained observers, only the frequency of the thing being hunted changed. Common targets were missed about seven per cent of the time. Rare ones went past at thirty per cent and beyond, and the effect held when observers were briefed about it in advance. Radiology and airport screening report their own figures in the same direction, and those people are not amateurs.</p>
+
+        <p>The opposite failure is documented just as thoroughly. Somewhere between 85 and 99 per cent of clinical monitor alarms are false or not actionable, so nurses stop responding to them, and the Joint Commission has been writing sentinel alerts about it since 2013. There are two reliable ways to lose an observer: give them something to find far too seldom, or something to react to far too often.</p>
+
+        <p>Which gives us the thing the current debate tends to skip: anyone who wants a tool at this point, something to take the job off them, is entirely right. That is no laziness. It is the sensible response to a well-measured limit of one&#x2019;s own construction.</p>
+
+        <p>And the tools we built for it over the centuries all worked the same way. They did not make the human more attentive; they gave the error a shape, so that it gave itself away. Double-entry bookkeeping, as Pacioli described it in 1494, writes every figure down twice, and a transposed digit becomes visible at all only because the books stop balancing. The check digit in an IBAN does the same for an account number, the checksum for a freight note, the second signature for a payment order. Each of these adds redundancy so that the mistake announces itself before anyone has to go looking.</p>
+
+        <svg viewBox="0 0 640 300" aria-label="Two chains for the same mistake. In the upper chain a figure is written once, a digit is transposed, the record reads as a perfectly good figure, and the error travels on undetected because nothing contradicts it. In the lower chain, double entry as described by Pacioli in 1494, the figure is written twice on both sides of the book, the transposed digit makes the two sides disagree, the imbalance is visible immediately, and the error stops there without anyone having to look for it." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <defs>
+                <marker id="rd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--border)"></path>
+                </marker>
+                <marker id="rd-arrow-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"></path>
+                </marker>
+            </defs>
+            <style>
+                .rd-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .rd-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .rd-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .rd-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .rd-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; }
+                .rd-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .rd-edge  { stroke: var(--border); stroke-width: 1.2; marker-end: url(#rd-arrow); }
+                .rd-edge-bad { stroke: var(--accent); stroke-width: 1.6; marker-end: url(#rd-arrow-bad); }
+            </style>
+            <text x="320" y="22" class="rd-title" text-anchor="middle">The same mistake, through two chains</text>
+            <text x="20" y="52" class="rd-head">SINGLE ENTRY</text>
+            <rect x="20" y="62" width="120" height="46" class="rd-box"></rect>
+            <text x="34" y="82" class="rd-item">figure written</text>
+            <text x="34" y="98" class="rd-item">once</text>
+            <line x1="142" y1="85" x2="182" y2="85" class="rd-edge"></line>
+            <rect x="186" y="62" width="120" height="46" class="rd-box"></rect>
+            <text x="200" y="82" class="rd-item">14,382 becomes</text>
+            <text x="200" y="98" class="rd-bad">14,832</text>
+            <line x1="308" y1="85" x2="348" y2="85" class="rd-edge"></line>
+            <rect x="352" y="62" width="128" height="46" class="rd-box"></rect>
+            <text x="366" y="82" class="rd-item">reads as a good</text>
+            <text x="366" y="98" class="rd-item">figure</text>
+            <line x1="482" y1="85" x2="522" y2="85" class="rd-edge-bad"></line>
+            <rect x="526" y="62" width="96" height="46" class="rd-box"></rect>
+            <text x="540" y="82" class="rd-bad">travels on</text>
+            <text x="540" y="98" class="rd-bad">undetected</text>
+            <text x="20" y="176" class="rd-head">DOUBLE ENTRY, PACIOLI 1494</text>
+            <rect x="20" y="186" width="120" height="46" class="rd-box"></rect>
+            <text x="34" y="206" class="rd-item">figure written</text>
+            <text x="34" y="222" class="rd-item">twice</text>
+            <line x1="142" y1="209" x2="182" y2="209" class="rd-edge"></line>
+            <rect x="186" y="186" width="120" height="46" class="rd-box"></rect>
+            <text x="200" y="206" class="rd-item">14,382 becomes</text>
+            <text x="200" y="222" class="rd-bad">14,832</text>
+            <line x1="308" y1="209" x2="348" y2="209" class="rd-edge"></line>
+            <rect x="352" y="186" width="128" height="46" class="rd-box"></rect>
+            <text x="366" y="206" class="rd-item">the two sides</text>
+            <text x="366" y="222" class="rd-item">disagree</text>
+            <line x1="482" y1="209" x2="522" y2="209" class="rd-edge"></line>
+            <rect x="526" y="186" width="96" height="46" class="rd-box"></rect>
+            <text x="540" y="206" class="rd-good">stops here</text>
+            <text x="540" y="222" class="rd-good">by itself</text>
+            <text x="320" y="272" class="rd-item" text-anchor="middle">The instrument is the second entry, not the attention of the person reading it.</text>
+        </svg>
+
+        <p>That is the standard against which whatever moves into the same seat has to be measured.</p>
+
+        <h2>The Copier That Lied Politely</h2>
+
+        <p>In the summer of 2013 David Kriesel copied some building plans, and the printout came back with different room areas than the original. Cleanly set, correct typeface, no ragged edge, no artefact, not the faintest hint that anything at all had happened.</p>
+
+        <p>The compression was to blame, in a way that had nothing to do with text recognition. JBIG2 hunts through a scan for image regions that resemble one another, stores one of them and drops it back in wherever the pattern matcher reports a match. Let that matcher work a shade too coarsely and a region lands somewhere it merely looks similar. A six became an eight this way, and the eight was then not a damaged six either. It was a perfectly good eight.</p>
+
+        <p>Xerox eventually published the list itself, and it is not a footnote: four product families and dozens of model lines, from the ColorQube 87XX through most of the WorkCentre range and on to the BookMark. These are ordinary office machines, and they stand where documents are turned into records, which is to say in planning departments, architects&#x2019; practices, tax offices, hospitals and engineering firms worldwide. The company sold through resellers, so no customer list could be assembled, and nobody could say then, or can say now, how many of those machines took the patch and how many carried on as before. The reported cases run from the structural calculation for a bridge through fuel figures to medication doses.</p>
+
+        <p>Germany&#x2019;s federal security office drew its conclusion in March 2015 and wrote it into the guideline that governs scanning for legal record-keeping: any compression working by symbol coding, JBIG2 first among them, is unsuitable. The term of art in that guideline is <em>ersetzendes Scannen</em>, replacement scanning, and it describes the practice of scanning a document and then destroying the paper. That is the part worth holding still for. A process that alters a figure without leaving a mark had been cleared for the one workflow that removes the only copy anybody could have checked it against.</p>
+
+        <p>Here is the point that matters, and it is of a fairly general nature. The error arose from the removal of redundancy and inherited the shape of the correct thing as it did so. A checker could not have done anything wrong, because there was nothing wrong to see on the page. There was a number, like all the others.</p>
+
+        <p>A language model works one floor up on the same principle. It produces the most probable continuation, and the most probable continuation is by construction the output that looks least like an error. The mistake is therefore not scattered at random across the page: it is optimised for going unnoticed, and it arrives with reasoning that sounds coherent, because coherence is what the process was trained on.</p>
+
+        <h2>Ten Questions Put to a Logfile</h2>
+
+        <p>Which is a claim, and this column measures claims.</p>
+
+        <p>The material is the SSH log from the public Loghub corpus, 655,146 lines of a real authentication log, so that any reader can recompute every figure. Ten questions of the sort asked on an ordinary morning: how many failed logins, from which networks, which username was tried most often, which day was worst. Four runs over the same data.</p>
+
+        <svg viewBox="0 0 640 240" aria-label="Time taken by four routes to the same ten answers over a public SSH log, drawn as bars. Ten awk and grep one-liners over the full 655,146 lines take 7.4 seconds and cost nothing. The model without tools, on a 1,500-line slice, takes 38 to 74 seconds and costs 0.44 to 1.42 dollars per run. An agent with shell access over the full log takes 66 to 87 seconds and costs 0.25 to 0.31 dollars per run. Eight model runs together came to 5.18 dollars, against nothing for any number of awk runs." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .rt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .rt-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .rt-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .rt-num   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .rt-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; }
+                .rt-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .rt-bar   { fill: var(--border); rx: 2; }
+                .rt-bar-a { fill: var(--accent); rx: 2; }
+                .rt-bar-g { fill: #4ab542; rx: 2; }
+                .rt-axis  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="320" y="22" class="rt-title" text-anchor="middle">Seconds to the same ten answers</text>
+            <text x="20" y="52" class="rt-head">ROUTE</text>
+            <text x="500" y="52" class="rt-head">COST PER RUN</text>
+            <line x1="196" y1="60" x2="196" y2="196" class="rt-axis"></line>
+            <text x="20" y="84" class="rt-item">awk and grep, full log</text>
+            <rect x="196" y="72" width="22" height="16" class="rt-bar-g"></rect>
+            <text x="226" y="85" class="rt-num">7.4 s</text>
+            <text x="500" y="85" class="rt-good">0.00 USD</text>
+            <text x="20" y="124" class="rt-item">model, no tools, slice</text>
+            <rect x="196" y="112" width="114" height="16" class="rt-bar"></rect>
+            <rect x="310" y="112" width="108" height="16" class="rt-bar-a"></rect>
+            <text x="426" y="125" class="rt-num">38 to 74 s</text>
+            <text x="500" y="125" class="rt-bad">0.44 to 1.42</text>
+            <text x="20" y="164" class="rt-item">agent with a shell, full log</text>
+            <rect x="196" y="152" width="198" height="16" class="rt-bar"></rect>
+            <rect x="394" y="152" width="63" height="16" class="rt-bar-a"></rect>
+            <text x="465" y="165" class="rt-num">66 to 87 s</text>
+            <text x="500" y="165" class="rt-bad">0.25 to 0.31</text>
+            <line x1="196" y1="196" x2="600" y2="196" class="rt-axis"></line>
+            <text x="196" y="212" class="rt-item">0</text>
+            <text x="396" y="212" class="rt-item">60 s</text>
+            <text x="592" y="212" class="rt-item">90 s</text>
+            <text x="20" y="232" class="rt-item">eight model runs together</text>
+            <text x="500" y="232" class="rt-bad">5.18 USD</text>
+        </svg>
+
+        <p>The first surprise arrived early. The model got the figures right. Every one of them, on a slice small enough to fit in its context, without a single tool. Anyone expecting a hallucinated number here can stop hoping.</p>
+
+        <p>The second surprise was worse for the author than for the model. Asked which address produced the most failed logins, it answered with a tie: two addresses on thirty-five each. My <code>awk</code> one-liner had reported one of them, because it ended in <code>head -1</code> and a tie does not survive that. Asked how many distinct usernames had been tried, it said twenty-nine where my script said twenty-eight, and it was right again: one of the names carries a leading space, which my pattern quietly stepped over. Two errors in the measurement, both mine, both found by the thing under test.</p>
+
+        <p>So much for the model getting things wrong. The interesting part is what happens when the same question is asked more than once.</p>
+
+        <svg viewBox="0 0 640 220" aria-label="Three agent runs over the same file with the same ten questions. The number of distinct usernames comes back as 1,719 in the first run, 1,720 in the second and 1,721 in the third, depending on how each run treats an empty username that appears thirteen times. The busiest day comes back as 3 January when a run counts lines and 4 January when it counts attempts, because a message repeated six times is one line and six attempts. The awk line returns 1,720 and 3 January every time, because the definition was fixed before it ran." role="img" style="max-width:640px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .sp-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+                .sp-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 11px; }
+                .sp-num   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 11px; font-weight: 700; }
+                .sp-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 11px; font-weight: 700; }
+                .sp-line  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="320" y="22" class="sp-title" text-anchor="middle">Same file, same question, three runs</text>
+            <text x="24" y="56" class="sp-head">RUN</text>
+            <text x="240" y="56" class="sp-head">DISTINCT USERNAMES</text>
+            <text x="450" y="56" class="sp-head">BUSIEST DAY</text>
+            <line x1="24" y1="66" x2="616" y2="66" class="sp-line"></line>
+            <text x="24" y="92" class="sp-item">agent, run 1</text>
+            <text x="240" y="92" class="sp-num">1,719</text>
+            <text x="450" y="92" class="sp-num">3 January, by lines</text>
+            <text x="24" y="120" class="sp-item">agent, run 2</text>
+            <text x="240" y="120" class="sp-num">1,720</text>
+            <text x="450" y="120" class="sp-num">3 January, by lines</text>
+            <text x="24" y="148" class="sp-item">agent, run 3</text>
+            <text x="240" y="148" class="sp-num">1,721</text>
+            <text x="450" y="148" class="sp-num">4 January, by attempts</text>
+            <line x1="24" y1="166" x2="616" y2="166" class="sp-line"></line>
+            <text x="24" y="192" class="sp-item">awk, every run</text>
+            <text x="240" y="192" class="sp-good">1,720</text>
+            <text x="450" y="192" class="sp-good">3 January, by lines</text>
+        </svg>
+
+        <p>Three agent runs over the full log, same file, same ten questions, one after another. The number of distinct usernames came back as 1,719, then 1,720, then 1,721, depending on how each run decided to treat an empty name that appears thirteen times. The busiest day came back as 3 January when the run counted lines, and as 4 January when it counted attempts, because a <code>message repeated 6 times</code> line is one line and six attempts. Each of those answers is reasoned, defensible and correct under the definition its own run chose. No two of them are the same.</p>
+
+        <p>That is the finding, and it is sharper than the one I went looking for. The model does not answer the question wrongly. It answers a slightly different question each time, supplies the definition along with the answer, and nothing in the output marks the moment the definition changed. The <code>awk</code> line has no such courtesy. It forces the person asking to decide up front whether a repeated message counts once or six times, and it then makes that decision visible, wrong or right, to anyone who reads it. My twenty-eight was wrong in public and is now gone for good. The model&#x2019;s twenty-eight turned up in one run out of five and will turn up again.</p>
+
+        <p>Eight runs came to 5.18 dollars all told, and that figure carries the harness the runs went through, not the bare model call. The <code>awk</code> line cost nothing, and it is the only figure in this protocol that will still be the same figure tomorrow.</p>
+
+        <h2>Two Curves That Cross</h2>
+
+        <p>What a person can check has been quantified for some time. SmartBear measured two and a half thousand code reviews across 3.2 million lines at Cisco and put the useful limit at two to four hundred lines in one sitting; beyond roughly five hundred lines an hour, defect detection falls away, and after sixty to ninety minutes at the screen it does the same. Average attention on a screen ran to about two and a half minutes in 2004 and is put at roughly forty-seven seconds for the 2020s, which serves here as a boundary condition and not as proof.</p>
+
+        <p>That curve is flat. It was flat in 1948 and it is flat today.</p>
+
+        <p>The other one is not flat in the least. LinearB&#x2019;s 2026 benchmark covers some 8.1 million pull requests from 4,800 organisations: teams leaning hard on AI merge around 98 per cent more changes, review time per change climbs steeply, and a growing share goes in with no review recorded at all, which nobody decided as such, there is simply nobody left keeping up. GitClear measures duplicated blocks over the same period at a record 73 per million changed lines, whilst moved code, the sort that indicates an actual refactor, has slid from 24.1 per cent in 2020 to 3.8 per cent in the 2026 edition. In accounting the same movement is called the touchless rate, and the better houses now report eighty to ninety-five per cent of documents passing through without human contact.</p>
+
+        <p>The end state is described by that, and it works as a balance sheet rather than a horror story. Machine speed at the top of the chute. At the bottom sits the checker from the first section, with four hundred lines in a sitting and forty-seven seconds of attention, and he is now expected to catch a class of error built specifically not to look like one.</p>
+
+        <blockquote><p>A tool that is right often enough is a tool nobody is checking.</p></blockquote>
+
+        <p>Then there is the stage that appears in no procedure document. Late in the afternoon a person knows perfectly well that they stopped reading a while ago, and waves it through anyway, because the meeting is at four and this really is the last one. I would not call that a character flaw. It looks more like a process that has quietly moved its guarantee onto the one component never rated for continuous duty.</p>
+
+        <h2>What Follows</h2>
+
+        <p>The comfortable answer is to take the tool away again, and it holds up right until you follow it through. It puts the checker back in front of the table on his own, and we have known since 1948 how he does there. It also confuses the reliability of a human with the jurisdiction of one. Anyone who rails against the models today and compares four hundred figures by hand tomorrow has chosen the worse of two error sources, and will quite often think of himself as the thorough one in the room.</p>
+
+        <p>The workable answer is the old one anyway. You restore the redundancy, by machine, because at this volume it cannot be restored by hand. Where the answer has to be exact, it belongs to a tool that says the same thing twice and whose working anyone can retrace. Where the question is genuinely open, where nobody knows the format and nobody knows what happened at 03:14, the model beats the alternatives, and its answer then goes through the tool before it goes anywhere near money or data.</p>
+
+        <p>Xerox shipped a patch eventually. Nobody could say which machines received it, the documents scanned in the years before were long since filed, and wherever the paper had been destroyed on purpose there was nothing left to check them against.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The point:</strong></p>
+            <ul>
+                <li><strong>The checker was never the guarantee.</strong> Redundancy was, from double-entry bookkeeping to the check digit. It gives the error a shape so that nobody has to spot it.</li>
+                <li><strong>An error without a shape defeats attention by construction.</strong> JBIG2 produced a perfectly good eight; a language model produces the continuation that looks least like a mistake.</li>
+                <li><strong>The spread is in the definition, not in the arithmetic.</strong> Three runs, three counts, each defensible, none of them flagged as a change of premise.</li>
+                <li><strong>Two curves cross.</strong> Four hundred lines in a sitting has not moved since 1948; merged changes rose by 98 per cent in a year.</li>
+                <li><a href="https://github.com/logpai/loghub" target="_blank" rel="noopener">Loghub SSH corpus, LogPAI</a></li>
+                <li><a href="https://www.nature.com/articles/435439a" target="_blank" rel="noopener">Wolfe, Horowitz and Kenner, Rare items often missed in visual searches, Nature 435, 2005</a></li>
+                <li><a href="https://www.dkriesel.com/en/blog/2013/0802_xerox-workcentres_are_switching_written_numbers_when_scanning" target="_blank" rel="noopener">Kriesel on the Xerox JBIG2 substitution</a></li>
+                <li><a href="https://www.dkriesel.com/blog/2015/0317_bsi_verbietet_jbig2" target="_blank" rel="noopener">BSI rules out symbol coding for replacement scanning, March 2015</a></li>
+                <li><a href="https://smartbear.com/learn/code-review/best-practices-for-peer-code-review/" target="_blank" rel="noopener">SmartBear on the Cisco code review study</a></li>
+                <li><a href="https://linearb.io/resources/software-engineering-benchmarks-report" target="_blank" rel="noopener">LinearB, 2026 Software Engineering Benchmarks Report</a></li>
+                <li><a href="https://www.gitclear.com/the_ai_code_quality_maintainability_gap" target="_blank" rel="noopener">GitClear, The Maintainability Gap, 2026</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
