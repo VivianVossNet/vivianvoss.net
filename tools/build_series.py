@@ -23,7 +23,7 @@ DAYNAME = {'Mon': 'Mondays', 'Tue': 'Tuesdays', 'Wed': 'Wednesdays',
 ORDER = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 MONTH = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
          'August', 'September', 'October', 'November', 'December']
-NOTE_MIN, NOTE_MAX = 45, 110
+NOTE_TAGS = 4
 WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
          'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen',
          'eighteen', 'nineteen', 'twenty']
@@ -55,23 +55,24 @@ def size(slug):
 
 
 def note(slug):
-    """Erster Satz der meta description, mindestens NOTE_MIN, hoechstens NOTE_MAX."""
+    """Die Keyword-Pills des Artikels, hoechstens NOTE_TAGS, als eine kurze Zeile.
+
+    Sie sind redaktionell gesetzt, stehen ohnehin in jedem Artikel und bleiben
+    kurz genug, dass eine Eintragszeile eine Zeile bleibt. Ein Satz aus der
+    meta description tat das nicht und nahm dem Listing seinen Charme.
+    """
     try:
         h = io.open(article(slug), encoding='utf-8').read()
     except OSError:
         return None
-    m = re.search(r'<meta name="description" content="(.*?)">', h, re.S)
-    if not m:
-        problems.append('keine meta description: %s' % slug)
+    m = re.search(r'<div class="vv-pills">(.*?)</div>', h, re.S)
+    pills = re.findall(r'<span class="vv-pill">(.*?)</span>', m.group(1), re.S) if m else []
+    pills = [re.sub(r'\s+', ' ', html.unescape(p)).strip() for p in pills]
+    pills = [p for p in pills if p]
+    if not pills:
+        problems.append('keine Keyword-Pills: %s' % slug)
         return None
-    t = re.sub(r'\s+', ' ', html.unescape(m.group(1))).strip()
-    parts = re.split(r'(?<=[.!?])\s+', t)
-    s, i = parts[0], 1
-    while len(s) < NOTE_MIN and i < len(parts):
-        s, i = s + ' ' + parts[i], i + 1
-    if len(s) > NOTE_MAX:
-        s = s[:NOTE_MAX].rsplit(' ', 1)[0].rstrip(' ,;:') + '…'
-    return s
+    return ' · '.join(pills[:NOTE_TAGS])
 
 
 def row(ico, name, date, sz, desc=None, cls=''):
