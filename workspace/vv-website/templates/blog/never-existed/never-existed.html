@@ -3,14 +3,14 @@
 {( slot title )}Six Bugs That Never Existed &#x2014; Vivian Voss{( endslot )}
 
 {( slot meta )}
-<meta name="description" content="Six CVE numbers were filed against SQLite this spring for faults it has never had, and the project marked them as AI hallucinations. The library carries ninety-two million lines of test code and has held aviation-grade coverage since 2009. Filing a report costs four seconds. Examining one costs an afternoon.">
+<meta name="description" content="The December piece called SQLite beautiful. This one measures whether the claim holds, across efficiency, security, longevity and stability: 1,270,336 bytes as packaged against 590 KB built minimal, aviation-grade MC/DC coverage held since 2009, a file format unchanged since June 2004 with support promised to 2050, and one correction in seventeen years that broke nothing.">
 {( endslot )}
 
 {( slot canonical )}/blog/never-existed{( endslot )}
 
 {( slot og-title )}Six Bugs That Never Existed &#x2014; Vivian Voss{( endslot )}
 
-{( slot og-desc )}Technical Beauty Scope. SQLite measured rather than admired: 155,800 lines of C against 92,053,100 lines of test, MC/DC coverage at the DO-178B Level A standard held since August 2009, a packaged library of 1,270,336 bytes against minimal builds of 590 to 750 KB, and six CVE numbers issued in 2026 for faults that were never there.{( endslot )}
+{( slot og-desc )}Technical Beauty Scope, the series that goes back to a tool this site once admired and measures whether the admiration was earned. SQLite across four dimensions: 155,800 lines of C against 92,053,100 lines of test, MC/DC coverage at the DO-178B Level A standard held since August 2009, a packaged library of 1,270,336 bytes against minimal builds of 590 to 750 KB, and six CVE numbers issued in 2026 for faults that were never there.{( endslot )}
 
 {( slot jsonld )}<script type="application/ld+json">{
     "@context": "https://schema.org",
@@ -34,7 +34,7 @@
             <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
         </p>
         <h1>Six Bugs That Never Existed</h1>
-        <p class="vv-article-meta"><em>Somebody at SQLite spent an afternoon this spring proving that six reported vulnerabilities had been imagined. Technical Beauty Scope.</em></p>
+        <p class="vv-article-meta"><em>The December piece called SQLite beautiful. This one goes and measures whether the claim holds. Technical Beauty Scope.</em></p>
         <div class="vv-pills">
             <span class="vv-pill">sqlite</span>
             <span class="vv-pill">testing</span>
@@ -46,13 +46,44 @@
     <div class="vv-article-body">
         <p><em>Technical Beauty Scope</em> &#x25A0; The measurement sheet</p>
 
+        <p>In the year 2000 a contractor named D. Richard Hipp was writing software for a guided-missile destroyer, and the database underneath it kept requiring an administrator who was not always aboard. His answer was to remove the server rather than replace it: an engine with no daemon, no configuration, no network socket and no administrator, keeping everything in one file. It is now in something like a trillion active databases, in every phone in the room and in the aircraft above it.</p>
+
+        <p>I wrote that up last December as a love letter, and love letters are allowed to assert things. This piece is what the series exists for: go back to the same tool and find out whether the assertion survives measurement. Four dimensions, taken one at a time, with every figure either published by the project or produced on this machine with the command written out beside it.</p>
+
         <p>There is a page on the SQLite site that nobody links to, and it is the most quietly devastating thing the project publishes. It lists every CVE ever filed against the library, with a column headed simply for the project's own assessment. Most rows are courteous. Then you reach CVE-2026-51296, and five more running up to 51304, where somebody has typed: these are unreproducible, they appear to be AI hallucinations.</p>
 
         <p>Consider what sits behind that sentence. Six identifiers, minted by the ordinary machinery of the security industry, each describing a fault in a library that has never had it. Somebody read all six. Somebody then built the case for each of them, ran it, watched it decline to reproduce, wrote down why, and lost an afternoon that would otherwise have gone into the next release.</p>
 
         <p>I wrote about SQLite last December, and <a href="/blog/technical-beauty-sqlite">that piece</a> was a love letter: 600 KB, one file, no server, no licence at all, supported until 2050. Every claim in it still stands. What a love letter cannot do is tell you what happens when the most thoroughly tested code on the planet meets an adversary that files faster than anyone can read.</p>
 
-        <h2>What ninety-two million lines actually buy</h2>
+        <h2>Efficiency: the figure everybody quotes</h2>
+
+        <p>The love letter said 600 KB. Honest, and incomplete, which is the sort of thing a second look exists to catch.</p>
+
+        <p>The project publishes its own measurements for a build with <code>-Os</code> and nothing else enabled: 590 KB from gcc on a Raspberry Pi 4, 650 KB from gcc on Ubuntu, 750 KB from clang on an M1 Mac. So the figure is fair for a library compiled to be small.</p>
+
+        <p>Hardly anybody ships that library. Here is the one on this machine, from the Homebrew package, measured this morning:</p>
+
+        <pre><code>$ stat -f "%z" $(brew --prefix sqlite)/lib/libsqlite3.dylib
+1270336
+
+$ otool -L $(brew --prefix sqlite)/lib/libsqlite3.dylib
+    /usr/lib/libz.1.dylib
+    /usr/lib/libSystem.B.dylib
+
+$ sqlite3 :memory: ".stats on" "create table t(a,b);" "select 1;"
+Memory Used:  88736 (max 91840) bytes</code></pre>
+
+        <ul>
+            <li>1,270,336 bytes, a shade over twice the minimal build</li>
+            <li>Two runtime dependencies, both already sitting in the base system</li>
+            <li>88,736 bytes of memory in use with a database open, peaking at 91,840</li>
+            <li>Configuration files required: zero, and the absence is doing real work here</li>
+        </ul>
+
+        <p>Those extra 600 KB are FTS3, FTS4, FTS5, RTREE, Geopoly, the JSON support and the maths functions, compiled in because a distribution has to serve everyone who might want any of it. That is the ordinary cost of packaging, paid once by everybody. Worth knowing all the same that the number people quote describes a build most of them have never run.</p>
+
+        <h2>Security: what ninety-two million lines actually buy</h2>
 
         <p>The ratio gets quoted everywhere and understood almost nowhere. The library is about 155,800 lines of C. The tests and their scaffolding come to 92,053,100, which is 590 times as much, and the interesting part is the architecture rather than the arithmetic.</p>
 
@@ -130,34 +161,7 @@
 
         <p>Rather a lot of engineering for a database that fits in a briefcase, one might think. The reason it was worth doing is that when a defect ships to a trillion active databases, it ships to all of them on the same afternoon.</p>
 
-        <h2>The figure everybody quotes</h2>
-
-        <p>The love letter said 600 KB. Honest, and incomplete, which is the sort of thing a second look exists to catch.</p>
-
-        <p>The project publishes its own measurements for a build with <code>-Os</code> and nothing else enabled: 590 KB from gcc on a Raspberry Pi 4, 650 KB from gcc on Ubuntu, 750 KB from clang on an M1 Mac. So the figure is fair for a library compiled to be small.</p>
-
-        <p>Hardly anybody ships that library. Here is the one on this machine, from the Homebrew package, measured this morning:</p>
-
-        <pre><code>$ stat -f "%z" $(brew --prefix sqlite)/lib/libsqlite3.dylib
-1270336
-
-$ otool -L $(brew --prefix sqlite)/lib/libsqlite3.dylib
-    /usr/lib/libz.1.dylib
-    /usr/lib/libSystem.B.dylib
-
-$ sqlite3 :memory: ".stats on" "create table t(a,b);" "select 1;"
-Memory Used:  88736 (max 91840) bytes</code></pre>
-
-        <ul>
-            <li>1,270,336 bytes, a shade over twice the minimal build</li>
-            <li>Two runtime dependencies, both already sitting in the base system</li>
-            <li>88,736 bytes of memory in use with a database open, peaking at 91,840</li>
-            <li>Configuration files required: zero, and the absence is doing real work here</li>
-        </ul>
-
-        <p>Those extra 600 KB are FTS3, FTS4, FTS5, RTREE, Geopoly, the JSON support and the maths functions, compiled in because a distribution has to serve everyone who might want any of it. That is the ordinary cost of packaging, paid once by everybody. Worth knowing all the same that the number people quote describes a build most of them have never run.</p>
-
-        <h2>What arrived in April</h2>
+        <h3>What arrived in April</h3>
 
         <p>Before the hallucinations there was a real one, and leaving it out would make this piece a sermon.</p>
 
@@ -226,7 +230,75 @@ Memory Used:  88736 (max 91840) bytes</code></pre>
 
         <p>What lets SQLite pay that tax and stay standing has little to do with the test suite. Its vulnerability page makes an argument almost nobody else dares put in writing: every historical vulnerability against the library requires either an attacker who can run arbitrary SQL, or one who can hand you a maliciously crafted database file, and few real applications permit either. That is a published threat model, and a maintainer can point at it when the twentieth report of the week lands. A project shipping four hundred transitive dependencies has nothing to point at, because its attack surface is the union of four hundred other people's decisions, and every advisory must be taken at face value until somebody proves otherwise. On FreeBSD the library comes through the ports tree with a <code>distinfo</code> checksum and one origin; the amalgamation underneath is a single C file, and a single file has a single provenance.</p>
 
-        <h2>The limit</h2>
+        <p>Ninety-two million lines of test can prove the code is right. They cannot prove the report is, and this spring the project had to demonstrate the difference six times in an afternoon. It managed, because everything above was already in place.</p>
+
+        <h2>Longevity: twenty-six years, one format</h2>
+
+        <p>Version 1.0 appeared in August 2000. The file format as we have it now arrived with version 3.0.0 on 18 June 2004, and it has not changed since: a database written on that day opens in this morning's library, and one written this morning will open in whatever the library looks like in twenty years. The project writes that down as a commitment, and the commitment runs to the year 2050, which is unusual enough to be worth reading twice. Software that promises anything at all beyond the next major version is rare; software that names a year a quarter of a century out is doing something else entirely.</p>
+
+        <p>Somebody official agrees. The United States Library of Congress lists the SQLite file format among its recommended formats for the long-term preservation of digital content, which is an institution that plans in centuries taking a view on a piece of engineering.</p>
+
+        <svg viewBox="0 0 560 210"
+             aria-label="A timeline of SQLite from 2000 to 2050. Version 1.0 in August 2000. The file format freezes with version 3.0.0 on 18 June 2004. One hundred per cent branch and MC/DC coverage begins with version 3.6.17 on 10 August 2009. STRICT tables arrive in version 3.37 in 2021, seventeen years after the format froze. The published support commitment runs to 2050, which is twenty-four years beyond the present."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tl-yr    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .tl-ev    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .tl-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8.5px; }
+                .tl-axis  { stroke: var(--border); stroke-width: 2; }
+                .tl-tick  { stroke: var(--accent); stroke-width: 2; }
+                .tl-fut   { stroke: var(--border); stroke-width: 2; stroke-dasharray: 5 5; }
+            </style>
+            <text x="30" y="24" class="tl-title">One format, from a destroyer to 2050</text>
+
+            <line x1="40" y1="120" x2="360" y2="120" class="tl-axis"/>
+            <line x1="360" y1="120" x2="530" y2="120" class="tl-fut"/>
+
+            <line x1="55" y1="106" x2="55" y2="134" class="tl-tick"/>
+            <text x="42" y="98" class="tl-yr">2000</text>
+            <text x="30" y="150" class="tl-ev">version 1.0</text>
+
+            <line x1="130" y1="106" x2="130" y2="134" class="tl-tick"/>
+            <text x="117" y="98" class="tl-yr">2004</text>
+            <text x="96" y="150" class="tl-ev">format frozen</text>
+            <text x="96" y="163" class="tl-note">18 June, v3.0.0</text>
+
+            <line x1="215" y1="106" x2="215" y2="134" class="tl-tick"/>
+            <text x="202" y="98" class="tl-yr">2009</text>
+            <text x="186" y="150" class="tl-ev">MC/DC held</text>
+            <text x="186" y="163" class="tl-note">from v3.6.17</text>
+
+            <line x1="300" y1="106" x2="300" y2="134" class="tl-tick"/>
+            <text x="287" y="98" class="tl-yr">2021</text>
+            <text x="272" y="150" class="tl-ev">STRICT tables</text>
+            <text x="272" y="163" class="tl-note">v3.37</text>
+
+            <line x1="360" y1="110" x2="360" y2="130" class="tl-tick"/>
+            <text x="347" y="98" class="tl-yr">2026</text>
+            <text x="346" y="150" class="tl-ev">today</text>
+
+            <line x1="515" y1="106" x2="515" y2="134" class="tl-tick"/>
+            <text x="502" y="98" class="tl-yr">2050</text>
+            <text x="460" y="150" class="tl-ev">support commitment</text>
+
+            <text x="30" y="190" class="tl-note">Twenty-two years without a format break, and twenty-four more already promised.</text>
+        </svg>
+
+        <p>The custody arrangement is the part most governance advice would flag. SQLite is maintained by three people at Hipp, Wyrick &amp; Company; it does not take patches from the public and does not use pull requests, keeping its history in Fossil, which Hipp also wrote because the version control systems available to him were not what he wanted. That concentration would normally be a risk worth naming, and it is defused by a single decision made for an unrelated reason: the code is in the public domain, not under a permissive licence but under no licence at all, because early users in defence and telecoms had legal departments that could approve no terms whatsoever. There is consequently nobody to ask, no foundation that could relicense, and no version of the future in which somebody buys the right to change the terms. Anyone who dislikes how the three of them run it may take the code and go, today, without a conversation.</p>
+
+        <p>Where it runs is the other half of longevity. The library sits in the FreeBSD ports tree, in the macOS base system, in OpenBSD, in every Linux distribution worth the name, in both mobile platforms, in the major browsers and in a good deal of avionics and automotive equipment. A format that survives is one that too many people would have to agree to abandon.</p>
+
+<h2>Stability: what has not moved since 2004</h2>
+
+        <p>Twenty-two years without a breaking change to the file format is the headline, and the interesting question is what that cost. It cost the ability to fix early decisions cleanly, and the bill arrived exactly once, in public.</p>
+
+        <p>SQLite stores what you give it: a column declared as an integer will hold text if text is what arrives, because type affinity expresses a preference rather than a constraint. That was deliberate, it made the engine forgiving of the loosely typed world it was built for, and it left an edge that some applications needed closed. The closure came with <code>STRICT</code> tables in version 3.37, seventeen years after the format froze, added as an option rather than a change, so that every database written before it still opens. A correction that takes seventeen years and still refuses to break anything is the most honest single fact about how this project is run.</p>
+
+        <p>The rest of the stability record is quieter and easier to verify. There is no configuration file, so there is nothing to migrate, nothing to deprecate and no format to version. The C API has kept backwards compatibility across the whole of the 3.x line. The library arrives as an amalgamation, one C file and one header, which means a build has one translation unit and one provenance rather than a tree of sources assembled by whoever happens to be packaging it that week.</p>
+
+<h2>The limit</h2>
 
         <p>Coverage is not correctness, and the December piece rather let that pass. One hundred per cent MC/DC certifies that every condition has been shown to matter along the paths somebody wrote a test for, and Big Sleep found a genuine underflow inside a codebase sitting at exactly that mark, which settles the argument about as firmly as it can be settled. The saving grace is that it sat in a development build; the discipline caught it before a release did.</p>
 
@@ -250,7 +322,7 @@ Memory Used:  88736 (max 91840) bytes</code></pre>
             </ul>
         </aside>
 
-        <p>Ninety-two million lines of test can prove the code is right. They cannot prove the report is.</p>
+        <p>Four dimensions, then, and the December claim survives all four. The library is smaller than the average web page and asks for nothing to run. It holds a coverage standard written for aircraft, and it absorbed both a real fault found by a machine and six invented ones without a wobble. Its format has outlasted every framework that was fashionable when it froze, and the one correction it needed took seventeen years and broke nothing. Beautiful was the word the love letter used. Measured, it turns out to have been the plain description.</p>
     </div>
 
     <footer class="vv-article-footer">
