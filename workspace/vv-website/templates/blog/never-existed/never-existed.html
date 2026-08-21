@@ -1,0 +1,260 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Six Bugs That Never Existed &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Six CVE numbers were filed against SQLite this spring for faults it has never had, and the project marked them as AI hallucinations. The library carries ninety-two million lines of test code and has held aviation-grade coverage since 2009. Filing a report costs four seconds. Examining one costs an afternoon.">
+{( endslot )}
+
+{( slot canonical )}/blog/never-existed{( endslot )}
+
+{( slot og-title )}Six Bugs That Never Existed &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Technical Beauty Scope. SQLite measured rather than admired: 155,800 lines of C against 92,053,100 lines of test, MC/DC coverage at the DO-178B Level A standard held since August 2009, a packaged library of 1,270,336 bytes against minimal builds of 590 to 750 KB, and six CVE numbers issued in 2026 for faults that were never there.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Six Bugs That Never Existed",
+    "datePublished": "2026-08-21",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/never-existed",
+    "description": "Technical Beauty Scope, the measured second look at tools this site has admired before. SQLite publishes a table of every CVE ever filed against it with its own assessment beside each one, and in 2026 that table gained six entries, CVE-2026-51296 and five more running up to 51304, marked unreproducible and attributed to AI hallucinations. The library measures roughly 155,800 lines of C against 92,053,100 lines of test code and scaffolding, a ratio of 590 to one, built from two deliberately unconnected suites: 51,445 distinct cases in the open TCL suite and 50,362 proprietary cases in TH3 expanded into some 2.4 million instances, beside 7.2 million SQL Logic queries over 1.12 GB of data and a fuzzer producing close to a billion mutations a day from 336 seed files. The coverage standard is MC/DC, the bar written into DO-178B Level A for software that flies aircraft, held continuously since version 3.6.17 on 10 August 2009. The often-quoted 600 KB figure describes a minimal build: the project's own measurements run 590 KB with gcc on a Raspberry Pi 4, 650 KB on Ubuntu and 750 KB from clang on an M1 Mac, while the packaged Homebrew library measured on 21 August 2026 comes to 1,270,336 bytes with FTS3, FTS4, FTS5, RTREE, Geopoly, JSON and the maths functions compiled in, two runtime dependencies and 88,736 bytes of memory in use with a database open. In October 2024 Google's Big Sleep agent found a stack buffer underflow in seriesBestIndex in a development build, where a sentinel value of minus one reaches a field the surrounding code assumes positive, after 150 CPU-hours of the team's own fuzzing had found nothing; it was fixed the same day and no release carried it. Version 3.53.0 shipped on 9 April 2026 and was followed by a rush of AI-aided bug reporting and three patch releases, of which 3.53.4 was mostly fixes for AI-discovered bugs, after which the project opened a second forum for machine-generated reports. The mechanism is named here as the triage tax: filing costs four seconds, examining costs an afternoon, and it is paid from the attention of a three-person team. What lets SQLite absorb it is a published threat model rather than the test suite, since every historical vulnerability requires an attacker able to run arbitrary SQL or supply a crafted database file.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-21">21 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Six Bugs That Never Existed</h1>
+        <p class="vv-article-meta"><em>Somebody at SQLite spent an afternoon this spring proving that six reported vulnerabilities had been imagined. Technical Beauty Scope.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">sqlite</span>
+            <span class="vv-pill">testing</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">open source</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty Scope</em> &#x25A0; The measurement sheet</p>
+
+        <p>There is a page on the SQLite site that nobody links to, and it is the most quietly devastating thing the project publishes. It lists every CVE ever filed against the library, with a column headed simply for the project's own assessment. Most rows are courteous. Then you reach CVE-2026-51296, and five more running up to 51304, where somebody has typed: these are unreproducible, they appear to be AI hallucinations.</p>
+
+        <p>Consider what sits behind that sentence. Six identifiers, minted by the ordinary machinery of the security industry, each describing a fault in a library that has never had it. Somebody read all six. Somebody then built the case for each of them, ran it, watched it decline to reproduce, wrote down why, and lost an afternoon that would otherwise have gone into the next release.</p>
+
+        <p>I wrote about SQLite last December, and <a href="/blog/technical-beauty-sqlite">that piece</a> was a love letter: 600 KB, one file, no server, no licence at all, supported until 2050. Every claim in it still stands. What a love letter cannot do is tell you what happens when the most thoroughly tested code on the planet meets an adversary that files faster than anyone can read.</p>
+
+        <h2>What ninety-two million lines actually buy</h2>
+
+        <p>The ratio gets quoted everywhere and understood almost nowhere. The library is about 155,800 lines of C. The tests and their scaffolding come to 92,053,100, which is 590 times as much, and the interesting part is the architecture rather than the arithmetic.</p>
+
+        <svg viewBox="0 0 560 300"
+             aria-label="A square representing the whole SQLite codebase including its tests, 92,208,900 lines in total. Within it, the library itself is a single small square of 155,800 lines, which occupies roughly seventeen hundredths of one per cent of the area. The remaining area is test code and scaffolding."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ar-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ar-lab   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9.5px; }
+                .ar-key   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .ar-acc   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .ar-field { fill: var(--border); opacity: 0.55; }
+                .ar-dot   { fill: var(--accent); }
+                .ar-line  { stroke: var(--accent); stroke-width: 1; fill: none; }
+            </style>
+            <text x="30" y="24" class="ar-title">The library is the dot</text>
+
+            <rect x="30" y="40" width="240" height="240" class="ar-field"/>
+            <rect x="36" y="46" width="10" height="10" class="ar-dot"/>
+
+            <path d="M 46 51 L 300 51" class="ar-line"/>
+            <text x="308" y="48" class="ar-key">155,800 lines</text>
+            <text x="308" y="62" class="ar-lab">the SQLite library, in C</text>
+
+            <path d="M 200 200 L 300 200" class="ar-line"/>
+            <text x="308" y="197" class="ar-acc">92,053,100 lines</text>
+            <text x="308" y="211" class="ar-lab">test code and scaffolding</text>
+
+            <text x="308" y="252" class="ar-lab">The square is drawn to scale.</text>
+            <text x="308" y="266" class="ar-lab">The dot is 0.17 per cent of it.</text>
+        </svg>
+
+        <p>There are two suites, deliberately unconnected. The open TCL suite carries 51,445 distinct cases. TH3 is proprietary and exists so that the pair cannot share a blind spot: 50,362 cases, expanded across parameter combinations into roughly 2.4 million instances. Alongside them run the SQL Logic Tests, 7.2 million queries over 1.12 GB of data, each answer compared against what other database engines produce. Then dbsqlfuzz turns out something near a billion mutations a day from a seed corpus of (the number is oddly precise, so here it is) 336 files.</p>
+
+        <svg viewBox="0 0 560 250"
+             aria-label="Four testing layers on a logarithmic scale of test volume. The TCL suite holds 51,445 distinct cases, TH3 holds 50,362 distinct cases which expand to about 2.4 million instances, the SQL Logic Tests run 7.2 million queries, and dbsqlfuzz produces roughly one billion mutations per day. Each bar is one order of magnitude or more beyond the one above it."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .lv-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .lv-name  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .lv-num   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .lv-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8.5px; }
+                .lv-bar   { fill: var(--accent); opacity: 0.75; }
+                .lv-axis  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="30" y="22" class="lv-title">Four layers, each an order of magnitude past the last</text>
+
+            <line x1="150" y1="40" x2="150" y2="216" class="lv-axis"/>
+
+            <rect x="150" y="44" width="86" height="18" class="lv-bar"/>
+            <text x="30" y="57" class="lv-name">TCL suite</text>
+            <text x="244" y="57" class="lv-num">51,445 cases</text>
+
+            <rect x="150" y="86" width="86" height="18" class="lv-bar"/>
+            <text x="30" y="99" class="lv-name">TH3</text>
+            <text x="244" y="99" class="lv-num">50,362 cases</text>
+            <text x="352" y="99" class="lv-note">expanded to ~2.4 M instances</text>
+
+            <rect x="150" y="128" width="180" height="18" class="lv-bar"/>
+            <text x="30" y="141" class="lv-name">SQL Logic</text>
+            <text x="338" y="141" class="lv-num">7.2 M queries</text>
+            <text x="434" y="141" class="lv-note">over 1.12 GB</text>
+
+            <rect x="150" y="170" width="380" height="18" class="lv-bar"/>
+            <text x="30" y="183" class="lv-name">dbsqlfuzz</text>
+            <text x="150" y="206" class="lv-num">~1,000,000,000 mutations a day</text>
+            <text x="352" y="206" class="lv-note">from 336 seed files</text>
+
+            <text x="30" y="236" class="lv-note">Bar length is logarithmic. Two suites are kept unconnected on purpose, so they cannot share a blind spot.</text>
+        </svg>
+
+        <p>The coverage standard is where the discipline stops being merely diligent. Branch coverage asks whether each conditional has gone both ways at least once, which most projects treat as ambitious. MC/DC asks whether every individual condition inside a compound test has been shown to swing the outcome on its own, everything else held still, so a single <code>if</code> with four clauses wants at least five cases before it counts. That standard is written into DO-178B Level A, the bar a certification authority sets before software may fly an aeroplane with people in it. SQLite has held it since version 3.6.17 in August 2009 and has committed to holding it for every release since.</p>
+
+        <p>Rather a lot of engineering for a database that fits in a briefcase, one might think. The reason it was worth doing is that when a defect ships to a trillion active databases, it ships to all of them on the same afternoon.</p>
+
+        <h2>The figure everybody quotes</h2>
+
+        <p>The love letter said 600 KB. Honest, and incomplete, which is the sort of thing a second look exists to catch.</p>
+
+        <p>The project publishes its own measurements for a build with <code>-Os</code> and nothing else enabled: 590 KB from gcc on a Raspberry Pi 4, 650 KB from gcc on Ubuntu, 750 KB from clang on an M1 Mac. So the figure is fair for a library compiled to be small.</p>
+
+        <p>Hardly anybody ships that library. Here is the one on this machine, from the Homebrew package, measured this morning:</p>
+
+        <pre><code>$ stat -f "%z" $(brew --prefix sqlite)/lib/libsqlite3.dylib
+1270336
+
+$ otool -L $(brew --prefix sqlite)/lib/libsqlite3.dylib
+    /usr/lib/libz.1.dylib
+    /usr/lib/libSystem.B.dylib
+
+$ sqlite3 :memory: ".stats on" "create table t(a,b);" "select 1;"
+Memory Used:  88736 (max 91840) bytes</code></pre>
+
+        <ul>
+            <li>1,270,336 bytes, a shade over twice the minimal build</li>
+            <li>Two runtime dependencies, both already sitting in the base system</li>
+            <li>88,736 bytes of memory in use with a database open, peaking at 91,840</li>
+            <li>Configuration files required: zero, and the absence is doing real work here</li>
+        </ul>
+
+        <p>Those extra 600 KB are FTS3, FTS4, FTS5, RTREE, Geopoly, the JSON support and the maths functions, compiled in because a distribution has to serve everyone who might want any of it. That is the ordinary cost of packaging, paid once by everybody. Worth knowing all the same that the number people quote describes a build most of them have never run.</p>
+
+        <h2>What arrived in April</h2>
+
+        <p>Before the hallucinations there was a real one, and leaving it out would make this piece a sermon.</p>
+
+        <p>In October 2024 Google's Big Sleep agent found a stack buffer underflow in a development build and reported it. Two details earn the detour. Google's own people had already aimed 150 CPU-hours of fuzzing at that code and come back empty, and the fault sat in <code>seriesBestIndex</code>, where a sentinel value of minus one turns up in a field the surrounding code assumes will be positive. The agent read the thing the way a person reads it, spotted a case a mutation engine had no reason to try, and wrote it up. SQLite fixed it the same day, and no release ever carried it. The suite had exercised every branch in that function many thousands of times over. Nobody had ever asked it what a sentinel value might do there.</p>
+
+        <p>Version 3.53.0 shipped on 9 April 2026, and what followed is described in the release notes with admirable flatness: a huge rush of AI-aided bug reporting, then three patch releases, of which 3.53.4 was mostly fixes for AI-discovered bugs. By August the rate had fallen away and the remaining reports were, in the maintainer's phrase, increasingly insignificant, which is about as close to relief as a release note ever gets.</p>
+
+        <p>Somewhere in that stretch the six invented CVEs arrived. And somewhere in that stretch the project did something that will read as a small historical marker in a decade. It opened a second forum. The notice on the original now explains that it is there to support human users of SQLite, not AIs, and points the machines at an address of their own. One hesitates to call that progress.</p>
+
+        <svg viewBox="0 0 560 260"
+             aria-label="The path of a single vulnerability report through a maintainer's day, drawn as five steps. A report is filed in about four seconds. It is then read, a reproduction case is built, the case fails to reproduce, and the reason is written down. The first step costs seconds and can be repeated without limit; the remaining four cost an afternoon each time and can only be done by a person."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tt-step  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9.5px; font-weight: 700; }
+                .tt-cost  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8.5px; }
+                .tt-acc   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9.5px; font-weight: 700; }
+                .tt-box   { fill: none; stroke: var(--border); stroke-width: 1.5; }
+                .tt-box-a { fill: var(--accent); opacity: 0.18; }
+                .tt-arrow { stroke: var(--border); stroke-width: 1.5; fill: none; }
+                .tt-brace { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+            </style>
+            <text x="30" y="24" class="tt-title">One report, two very different budgets</text>
+
+            <rect x="30" y="46" width="92" height="40" class="tt-box-a"/>
+            <rect x="30" y="46" width="92" height="40" class="tt-box"/>
+            <text x="40" y="64" class="tt-step">filed</text>
+            <text x="40" y="78" class="tt-cost">about 4 seconds</text>
+
+            <path d="M 122 66 L 148 66" class="tt-arrow"/>
+
+            <rect x="148" y="46" width="88" height="40" class="tt-box"/>
+            <text x="158" y="64" class="tt-step">read</text>
+            <text x="158" y="78" class="tt-cost">by a person</text>
+
+            <path d="M 236 66 L 262 66" class="tt-arrow"/>
+
+            <rect x="262" y="46" width="88" height="40" class="tt-box"/>
+            <text x="272" y="64" class="tt-step">case built</text>
+            <text x="272" y="78" class="tt-cost">by hand</text>
+
+            <path d="M 350 66 L 376 66" class="tt-arrow"/>
+
+            <rect x="376" y="46" width="88" height="40" class="tt-box"/>
+            <text x="386" y="64" class="tt-step">it fails</text>
+            <text x="386" y="78" class="tt-cost">nothing there</text>
+
+            <path d="M 464 66 L 490 66" class="tt-arrow"/>
+
+            <rect x="440" y="110" width="90" height="40" class="tt-box"/>
+            <text x="450" y="128" class="tt-step">written up</text>
+            <text x="450" y="142" class="tt-cost">for the record</text>
+            <path d="M 490 66 L 508 66 L 508 110" class="tt-arrow"/>
+
+            <path d="M 148 176 L 148 186 L 464 186 L 464 176" class="tt-brace"/>
+            <text x="242" y="204" class="tt-acc">one afternoon, every single time</text>
+
+            <text x="30" y="230" class="tt-cost">The left box scales without limit. The braced section does not, because it is paid in the attention</text>
+            <text x="30" y="244" class="tt-cost">of the person who would otherwise be writing the next release.</text>
+        </svg>
+
+        <p>The economics are not obscure, and SQLite spells them out on the same page as the table. Researchers are rewarded by how many identifiers they file and how severe they sound, which reliably produces reports of minor impact wearing the language of catastrophe. Give that pipeline a model that drafts a plausible advisory in four seconds and the supply goes vertical while the cost of examining each one stays exactly where it was: somebody reads it, somebody builds the case, somebody fails to reproduce it, somebody writes down why. Call it <strong>the triage tax</strong>. It comes out of the only budget a three-person shop actually holds, which is the attention of the person who would otherwise be writing the next release.</p>
+
+        <blockquote><p>Filing costs four seconds. Examining costs an afternoon, out of the only budget a three-person shop holds.</p></blockquote>
+
+        <p>What lets SQLite pay that tax and stay standing has little to do with the test suite. Its vulnerability page makes an argument almost nobody else dares put in writing: every historical vulnerability against the library requires either an attacker who can run arbitrary SQL, or one who can hand you a maliciously crafted database file, and few real applications permit either. That is a published threat model, and a maintainer can point at it when the twentieth report of the week lands. A project shipping four hundred transitive dependencies has nothing to point at, because its attack surface is the union of four hundred other people's decisions, and every advisory must be taken at face value until somebody proves otherwise. On FreeBSD the library comes through the ports tree with a <code>distinfo</code> checksum and one origin; the amalgamation underneath is a single C file, and a single file has a single provenance.</p>
+
+        <h2>The limit</h2>
+
+        <p>Coverage is not correctness, and the December piece rather let that pass. One hundred per cent MC/DC certifies that every condition has been shown to matter along the paths somebody wrote a test for, and Big Sleep found a genuine underflow inside a codebase sitting at exactly that mark, which settles the argument about as firmly as it can be settled. The saving grace is that it sat in a development build; the discipline caught it before a release did.</p>
+
+        <p>The remaining limits are the ones Hipp publishes himself, on a page called Appropriate Uses For SQLite that spends most of its length explaining when to use something else: no network access, no replication, write concurrency that stops where a single writer stops. Type affinity stood in for type checking until <code>STRICT</code> tables arrived in 3.37, seventeen years after the format froze, and a correction that takes seventeen years is still an admission that something was soft.</p>
+
+        <p>This measurement is one machine, one packager's choice of compile options, one morning in August. Anybody can repeat it, and the commands are above.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The sheet:</strong></p>
+            <ul>
+                <li><strong>Efficiency:</strong> 1,270,336 bytes as packaged, 590 to 750 KB built minimal. Two runtime dependencies, both in the base system. 88,736 bytes resident with a database open. No configuration file</li>
+                <li><strong>Security:</strong> roughly fifty CVEs in twenty-six years; most attributed by the project to preconditions few applications meet, six of the 2026 batch to a model that invented them. One confirmed underflow in a development build, October 2024, found by an agent where 150 CPU-hours of fuzzing found nothing</li>
+                <li><strong>Longevity:</strong> first release August 2000. File format unchanged since 18 June 2004, with a published commitment through 2050. Named by the Library of Congress as a recommended format for long-term preservation. Present in FreeBSD ports, macOS base, OpenBSD and every Linux distribution worth the name</li>
+                <li><strong>Stability:</strong> twenty-two years without a format break. Aviation-grade coverage held continuously since August 2009. Governance concentrated in three people at one company, with the code in the public domain, so the concentration can be walked away from by anyone who dislikes it</li>
+                <li><a href="https://sqlite.org/testing.html" target="_blank" rel="noopener">How SQLite Is Tested</a> &#x25A0; the ratio, the suites, MC/DC and the fuzz volume</li>
+                <li><a href="https://sqlite.org/cves.html" target="_blank" rel="noopener">SQLite: Vulnerabilities</a> &#x25A0; the CVE table, the six hallucinated entries and the published threat model</li>
+                <li><a href="https://sqlite.org/news.html" target="_blank" rel="noopener">Recent SQLite News</a> &#x25A0; the AI-aided bug rush and the 3.53.4 release note</li>
+                <li><a href="https://sqlite.org/footprint.html" target="_blank" rel="noopener">SQLite Library Footprint</a> &#x25A0; minimal build sizes by compiler and machine</li>
+                <li><a href="https://sqlite.org/lts.html" target="_blank" rel="noopener">Long Term Support</a> &#x25A0; the 2050 commitment and the Library of Congress listing</li>
+                <li><a href="https://www.securityweek.com/google-says-its-ai-found-sqlite-vulnerability-that-fuzzing-missed/" target="_blank" rel="noopener">Google says its AI found an SQLite vulnerability that fuzzing missed</a> &#x25A0; Big Sleep against 150 CPU-hours</li>
+            </ul>
+        </aside>
+
+        <p>Ninety-two million lines of test can prove the code is right. They cannot prove the report is.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

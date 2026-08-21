@@ -14,6 +14,7 @@ local pages = {
     { loc = "/print",      priority = "0.6",  changefreq = "monthly" },
     { loc = "/print/integrated-by-design", priority = "0.7", changefreq = "monthly" },
     { loc = "/series",   priority = "0.8", changefreq = "weekly" },
+    { loc = "/series/technical-beauty-scope",   priority = "0.6", changefreq = "monthly" },
     { loc = "/series/technical-beauty",   priority = "0.6", changefreq = "monthly" },
     { loc = "/series/it-philosophy",   priority = "0.6", changefreq = "monthly" },
     { loc = "/series/lean-software",   priority = "0.6", changefreq = "monthly" },
@@ -39,6 +40,7 @@ local pages = {
     { loc = "/series/divide-et-impera",   priority = "0.6", changefreq = "monthly" },
     { loc = "/series/bsd-field-guide",   priority = "0.6", changefreq = "monthly" },
     -- blog articles
+    { loc = "/blog/never-existed",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/asks-least",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/reproduces-in-prod",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/waved-through",   priority = "0.7", changefreq = "yearly" },

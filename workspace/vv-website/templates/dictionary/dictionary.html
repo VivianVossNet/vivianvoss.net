@@ -96,6 +96,10 @@
             <dt>Alpine.js</dt>
             <dd>A lightweight JavaScript framework, around ten kilobytes, for adding client-side behaviour directly in HTML attributes. A smaller, declarative alternative to the large single-page-application frameworks.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="amalgamation">
+            <dt>amalgamation</dt>
+            <dd>The single C source file, together with one header, into which the whole of SQLite is concatenated for distribution. It compiles as one translation unit, which lets the compiler optimise across what would otherwise be file boundaries, and it means the library arrives as one artefact with one provenance rather than as a tree of sources to be assembled by whoever builds it.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="amiga">
             <dt>Amiga</dt>
             <dd>Commodore's 16-bit machine of 1985, with custom chips for graphics and sound that made smooth scrolling and multi-channel music routine. The platform on which the demoscene came of age.</dd>
@@ -221,6 +225,10 @@
             <dt>Berkeley Software Distribution</dt>
             <dd>The line of Unix begun in 1977 by Berkeley's Computer Systems Research Group as modifications to AT&amp;T Unix; over fifteen years it became a fully alternative line, 1BSD through 4.4BSD, and the root of today's FreeBSD, NetBSD, OpenBSD and DragonFly.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="big-sleep">
+            <dt>Big Sleep</dt>
+            <dd>A vulnerability-research agent built jointly by Google Project Zero and Google DeepMind, which reads source code and reasons about it rather than mutating inputs. In October 2024 it found a stack buffer underflow in a development build of SQLite, in a function where a sentinel value of minus one reaches a field the surrounding code assumes will be positive. Google's own team had already spent 150 CPU-hours fuzzing the same code without result; SQLite fixed the fault the same day and no release ever carried it.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="bionic">
             <dt>Bionic</dt>
             <dd>Android's C library and low-level runtime, used in place of glibc. One of several userlands that share the Linux kernel and little else, alongside GNU, musl and BusyBox.</dd>
@@ -240,6 +248,10 @@
         <dl class="vv-dict-entry" id="bpf">
             <dt>BPF</dt>
             <dd>Berkeley Packet Filter. Originally a packet capture mechanism, extended in Linux as eBPF for programmable kernel-level filtering. Used by seccomp-bpf to inspect and decide on every syscall at runtime.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="branch-coverage">
+            <dt>branch coverage</dt>
+            <dd>A test-coverage measure asking whether each conditional in the code has taken both its outcomes at least once during testing. It is stricter than line coverage, which only asks whether a line ran at all, and considerably weaker than MC/DC, which additionally asks whether each individual condition inside a compound decision could be shown to matter on its own.</dd>
         </dl>
         <dl class="vv-dict-entry" id="branch-protection">
             <dt>branch protection</dt>
@@ -490,6 +502,10 @@
             <dt>Create React App</dt>
             <dd>The React project's official scaffold from 2016, retired on 14 February 2025; the farewell notice pointed newcomers to frameworks and to build tools such as Vite, keeping the compiler in the default path.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="cve">
+            <dt>CVE</dt>
+            <dd>Common Vulnerabilities and Exposures, the identifier scheme run by MITRE under which publicly known security flaws receive a number of the form CVE-YEAR-NUMBER. A CVE identifier records that a claim was made and catalogued; it is not by itself evidence that the flaw exists, and SQLite's own vulnerability page marks six identifiers issued in 2026 as unreproducible and attributes them to AI hallucinations.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="cyberhaven">
             <dt>Cyberhaven</dt>
             <dd>A data-security company whose research arm, Cyberhaven Labs, measures corporate data flows into AI tools across millions of monitored workers; publisher of the annual AI Adoption and Risk Report.</dd>
@@ -534,6 +550,10 @@
         <dl class="vv-dict-entry" id="dayjs">
             <dt>dayjs</dt>
             <dd>A small, widely used JavaScript date library. Its name and metadata were impersonated by the typosquat easy-day-js in the June 2026 Mastra supply-chain attack.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="dbsqlfuzz">
+            <dt>dbsqlfuzz</dt>
+            <dd>SQLite's own fuzz-testing harness, which mutates both SQL text and database files and runs continuously against the library. It produces on the order of a billion mutations a day from a corpus of 336 seed files, and cases that once proved interesting are kept afterwards as regression tests.</dd>
         </dl>
         <dl class="vv-dict-entry" id="debian">
             <dt>Debian</dt>
@@ -802,6 +822,10 @@
             <dd>A block of memory holding a rendered image before it is displayed. Graphics code allocates them constantly, and failing to release one produces visible garbage without any error being raised.</dd>
         </dl>
         <h3 id="letter-G">G</h3>
+        <dl class="vv-dict-entry" id="fuzzing">
+            <dt>fuzzing</dt>
+            <dd>A testing technique that feeds a program large volumes of malformed, random or mutated input in the hope of provoking a crash or a wrong answer. It is very effective against parsers and file formats and very poor at reaching faults that require a specific semantic setup, which is why 150 CPU-hours of fuzzing against SQLite missed the underflow that a reasoning agent later found by reading the code.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="gargaj">
             <dt>Gargaj</dt>
             <dd>Hungarian coder and musician, a member of Conspiracy, credited on f07 for code and on Chaos Theory for the soundtrack.</dd>
@@ -1119,6 +1143,10 @@
             <dt>LESS</dt>
             <dd>A stylesheet language that compiles to CSS, adding variables, mixins and nesting. One of several notations that can share a single commerce project, each requiring its own style pass.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="library-of-congress">
+            <dt>Library of Congress</dt>
+            <dd>The research library of the United States Congress, which among other duties publishes recommended formats for the long-term preservation of digital content. The SQLite file format appears on that list, which is an unusual endorsement for a piece of engineering: it says that an institution planning in centuries expects the format to remain readable.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="libressl">
             <dt>LibreSSL</dt>
             <dd>A fork of OpenSSL begun by the OpenBSD project in 2014 after Heartbleed, stripping and auditing the codebase for correctness. One of several tools written for OpenBSD and now used far beyond it, alongside OpenSSH, doas and OpenNTPD.</dd>
@@ -1239,6 +1267,54 @@
         <dl class="vv-dict-entry" id="mawk">
             <dt>mawk</dt>
             <dd>A small, fast awk implementation that Debian and Ubuntu ship as their default awk. It stays close to POSIX and answers some gawk extensions differently, returning zero where gawk counts array elements.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="mc-dc">
+            <dt>MC/DC</dt>
+            <dd>Modified condition/decision coverage, a test-coverage criterion that goes well past branch coverage. It requires that every individual condition inside a compound decision has been shown to change the outcome on its own, with all other conditions held constant, so an if statement with four clauses needs at least five test cases before it counts as covered. The standard is written into DO-178B Level A, the assurance level a certification authority demands of airborne software whose failure would be catastrophic. SQLite has maintained one hundred per cent MC/DC coverage of its core library since version 3.6.17, released on 10 August 2009.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="ports-tree">
+            <dt>ports tree</dt>
+            <dd>FreeBSD's collection of build recipes for third-party software, held in one versioned tree alongside the base system. Each port records the upstream source and its checksums in a distinfo file, so a package has one origin that can be named and verified, rather than a dependency graph assembled at install time from whatever a registry serves.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="project-zero">
+            <dt>Project Zero</dt>
+            <dd>Google's security research team, formed in 2014 to find previously unknown vulnerabilities in widely used software and to publish them under a fixed disclosure deadline. It is one of the two teams behind the Big Sleep agent.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="public-domain">
+            <dt>public domain</dt>
+            <dd>The status of a work to which no copyright applies, so that no licence is needed and no condition can be attached. SQLite is placed in the public domain rather than published under a permissive licence, which was done because some early users had legal departments that could not approve any licence at all; the only terms their lawyers could accept were no terms.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="sentinel-value">
+            <dt>sentinel value</dt>
+            <dd>A value chosen to mean not a value, carried in the same field as ordinary data. Minus one in a field that is otherwise always positive is the classic case. The technique costs nothing in storage and everything in discipline, because every piece of code touching that field must recognise the special case, and the one that forgets is the bug.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="sql-logic-tests">
+            <dt>SQL Logic Tests</dt>
+            <dd>A test corpus of 7.2 million SQL queries over roughly 1.12 GB of data, run against SQLite and against other database engines so that the answers can be compared. Where the engines disagree, one of them is wrong; the point is to find that out without a human having to state the expected result for every query.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="stack-buffer-underflow">
+            <dt>stack buffer underflow</dt>
+            <dd>A memory-safety fault in which a program writes or reads before the beginning of a stack buffer, rather than past its end as in the more familiar overflow. Both corrupt memory the program does not own; an underflow tends to be rarer and harder to provoke, which is part of why fuzzing can miss one.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="strict-tables">
+            <dt>STRICT tables</dt>
+            <dd>A table option added to SQLite in version 3.37 which makes declared column types binding, so that a value of the wrong type is rejected instead of converted. It arrived seventeen years after the file format froze, and its existence is a quiet admission that type affinity, however deliberate, left a soft edge that some applications needed closed.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="th3">
+            <dt>TH3</dt>
+            <dd>The Test Harness 3, a proprietary test suite for SQLite written in C and maintained by the SQLite developers. It holds 50,362 distinct test cases which expand across parameter combinations into roughly 2.4 million test instances, and it exists deliberately as a second and unconnected body of tests alongside the open TCL suite, so that a blind spot in one cannot be a blind spot in both. TH3 is what carries SQLite's one hundred per cent branch and MC/DC coverage.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="threat-model">
+            <dt>threat model</dt>
+            <dd>A written statement of what an attacker must already be able to do before a system can be attacked at all. SQLite publishes one: every historical vulnerability against the library requires either an attacker who can run arbitrary SQL, or one who can supply a maliciously crafted database file. The value of writing it down is that it can be pointed at, which a project assembled from several hundred transitive dependencies cannot do.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="triage-tax">
+            <dt>triage tax</dt>
+            <dd>The asymmetry between reporting a defect and examining one. A plausible advisory can now be drafted in seconds and at negligible cost, while reading it, building a reproduction case, watching it fail and writing down why still takes a person an afternoon. The cost falls entirely on the maintainer, is paid in the attention that would otherwise go into the next release, and scales with the volume of reports rather than with the number of real faults among them.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="type-affinity">
+            <dt>type affinity</dt>
+            <dd>SQLite's approach to column types, under which a declared type expresses a preference rather than a constraint: a value of another type is converted where it can be and stored as it is where it cannot. It makes the engine forgiving of loosely typed input and makes it possible to store text in a column declared as an integer. STRICT tables, added in version 3.37, provide the alternative for anyone who wants the declaration enforced.</dd>
         </dl>
         <dl class="vv-dict-entry" id="unmapped-mbufs">
             <dt>unmapped mbufs</dt>

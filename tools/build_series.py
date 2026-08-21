@@ -112,19 +112,20 @@ def build_series_page(s):
                         '%s %s' % (it['date'], s['time']), size(it['slug'])))
     status = 'Running, %s' % DAYNAME[s['day']] if s['running'] else 'Closed'
     n = len(s['items'])
+    word_disp = 'dispatch' if n == 1 else 'dispatches'
     write(os.path.join(TPL, 'series', slug, slug + '.html'), """{! extends "../../_base.html" | slotlist !}
 
 {( slot title )}%(name)s &#x2014; Series &#x2014; Vivian Voss{( endslot )}
 
 {( slot meta )}
-<meta name="description" content="%(descq)s %(n)d dispatches, %(span)s.">
+<meta name="description" content="%(descq)s %(n)d %(word)s, %(span)s.">
 {( endslot )}
 
 {( slot canonical )}/series/%(slug)s{( endslot )}
 
 {( slot og-title )}%(name)s &#x2014; Vivian Voss{( endslot )}
 
-{( slot og-desc )}%(desc)s %(n)d dispatches, %(span)s.{( endslot )}
+{( slot og-desc )}%(desc)s %(n)d %(word)s, %(span)s.{( endslot )}
 
 {( slot content )}
 <section class="vv-section" aria-labelledby="series-head">
@@ -134,12 +135,12 @@ def build_series_page(s):
     <div class="vv-idx">
         <p class="vv-idx-path">Index of <span class="vv-idx-sep">/series/</span>%(slug)s</p>
 %(rows)s
-        <p class="vv-idx-foot">%(n)d dispatches &#x25A0; %(span)s &#x25A0; %(status)s</p>
+        <p class="vv-idx-foot">%(n)d %(word)s &#x25A0; %(span)s &#x25A0; %(status)s</p>
     </div>
 </section>
 {( endslot )}
 """ % dict(name=name, slug=slug, desc=desc, descq=esc(s['desc'], True), n=n,
-           span=sp, status=status, rows='\n'.join(rows)))
+           span=sp, status=status, word=word_disp, rows='\n'.join(rows)))
 
 
 def build_index(series):
