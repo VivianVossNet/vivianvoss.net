@@ -1,0 +1,9 @@
+#!/bin/sh
+# {K0023} — Commits tragen keine AI-Attribution. Das Werk traegt Vivians Namen;
+# die Beteiligung der Maschine wird an anderer Stelle benannt, nicht hier.
+if grep -qiE '^(co-authored-by|signed-off-by):|generated with \[?claude|🤖' "$1"; then
+  echo "commit-msg: AI-Attribution in der Commit-Message ({K0023}). Zeile entfernen." >&2
+  grep -inE '^(co-authored-by|signed-off-by):|generated with \[?claude|🤖' "$1" >&2
+  exit 1
+fi
+exit 0
