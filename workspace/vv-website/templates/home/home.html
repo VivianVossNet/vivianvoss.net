@@ -8,6 +8,24 @@
 
 {( slot content )}
 <style>
+
+    .vv-visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+    .vv-term{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.8rem;line-height:1.75;background:oklch(20% 0.01 260);color:oklch(78% 0.01 260);border-radius:8px;overflow:hidden}
+    .vv-term-bar{display:flex;align-items:baseline;padding:calc(var(--unit)*1.5) calc(var(--unit)*2.5);border-bottom:1px solid oklch(30% 0.01 260);white-space:nowrap;overflow:hidden}
+    .vv-ps1{color:oklch(72% 0.16 145);flex-shrink:0}
+    .vv-cmd{color:oklch(95% 0 0);flex-shrink:0}
+    .vv-term-hint{margin-left:auto;padding-left:2ch;color:oklch(60% 0 0);flex-shrink:0}
+    .vv-term-panel{padding:calc(var(--unit)*2.5);overflow-x:auto}
+    .vv-tline{margin:0;white-space:pre;width:max-content}
+    .vv-tw{color:oklch(60% 0 0)}
+    .vv-tdim{color:oklch(60% 0 0)}
+    .vv-trun{color:var(--accent)}
+    .vv-term-panel a{color:oklch(95% 0 0);text-decoration:none;border-bottom:1px solid transparent}
+    .vv-term-panel a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+    .vv-cur{display:inline-block;width:.55em;height:1em;background:oklch(72% 0.16 145);vertical-align:text-bottom;margin-left:.4ch;animation:vv-blink 1.2s steps(1) infinite}
+    @keyframes vv-blink{50%{opacity:0}}
+    @media (prefers-reduced-motion:reduce){.vv-cur{animation:none}}
+
     .vv-top-grid { display:grid;gap:calc(var(--unit)*4) }
     .vv-top-left,
     .vv-top-right { display:grid;gap:calc(var(--unit)*4);align-content:start }
@@ -171,9 +189,56 @@
     </div>
 </section>
 
+<section class="vv-section" aria-labelledby="tree-title">
+    <h2 id="tree-title" class="vv-visually-hidden">Series</h2>
+    <div class="vv-term">
+        <div class="vv-term-bar"><span class="vv-ps1">vivian@vivianvoss:~ $&nbsp;</span><span class="vv-cmd">tree -L 2 /series</span><span class="vv-term-hint">24 series &#183; 243 dispatches</span></div>
+        <div class="vv-term-panel">
+            <p class="vv-tline"><span class="vv-tdim">/series</span></p>
+            <p class="vv-tline"><span class="vv-tw">├── </span><span class="vv-trun">running</span></p>
+            <p class="vv-tline"><span class="vv-tw">│   ├── </span><a href="/series/unix-universe">unix-universe</a><span class="vv-tdim">      Mon</span></p>
+            <p class="vv-tline"><span class="vv-tw">│   ├── </span><a href="/series/the-bench-marker">the-bench-marker</a><span class="vv-tdim">   Tue</span></p>
+            <p class="vv-tline"><span class="vv-tw">│   ├── </span><a href="/series/lean-software">lean-software</a><span class="vv-tdim">      Wed</span></p>
+            <p class="vv-tline"><span class="vv-tw">│   ├── </span><a href="/series/it-philosophy">it-philosophy</a><span class="vv-tdim">      Thu</span></p>
+            <p class="vv-tline"><span class="vv-tw">│   ├── </span><a href="/series/technical-beauty">technical-beauty</a><span class="vv-tdim">   Fri</span></p>
+            <p class="vv-tline"><span class="vv-tw">│   └── </span><a href="/series/bytes-of-art">bytes-of-art</a><span class="vv-tdim">       Sat</span></p>
+            <p class="vv-tline"><span class="vv-tw">└── </span><a href="/series">archive</a><span class="vv-tdim">               18 series, 2024&#8211;2026</span><span class="vv-cur"></span></p>
+        </div>
+    </div>
+</section>
+
 <section class="vv-section" aria-labelledby="writing-title">
     <h2 id="writing-title">Latest Writing</h2>
     <div class="vv-series">
+        <article class="vv-series-item">
+            <span class="day">20 August 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">open source</span>
+                <span class="vv-pill">licensing</span>
+                <span class="vv-pill">freebsd</span>
+            </div>
+            <h3><a href="/blog/asks-least">Nobody Made Netflix Give It Back</a></h3>
+            <p>Every argument for copyleft rests on a claim about you: that
+                without an obligation you would take and give nothing back.
+                <em>Netflix spent five years upstreaming kernel TLS under a
+                licence that could not have compelled a line of it.</em> A
+                staircase of conditions, counted clause by clause.</p>
+        </article>
+        <article class="vv-series-item">
+            <span class="day">19 August 2026</span>
+            <div class="vv-pills">
+                <span class="vv-pill">web stack</span>
+                <span class="vv-pill">architecture</span>
+                <span class="vv-pill">hosting</span>
+            </div>
+            <h3><a href="/blog/reproduces-in-prod">Prod Only, Sorry</a></h3>
+            <p>A ticket marked ASAP took four weeks and closed with nobody at
+                fault, because four departments each measured correctly and each
+                concluded, correctly, that it sat elsewhere. <em>The environment
+                that can reproduce your bug is the one you rent by the month.</em>
+                Eight cloud components to serve the HTML one process served in
+                1995.</p>
+        </article>
         <article class="vv-series-item">
             <span class="day">18 August 2026</span>
             <div class="vv-pills">
@@ -215,35 +280,6 @@
                 ran out of sync at Assembly 2007 and still took fifth.
                 <em>Nineteen years on it is still in the all-time top two
                 hundred.</em></p>
-        </article>
-        <article class="vv-series-item">
-            <span class="day">13 August 2026</span>
-            <div class="vv-pills">
-                <span class="vv-pill">linux</span>
-                <span class="vv-pill">freebsd</span>
-                <span class="vv-pill">sysadmin</span>
-            </div>
-            <h3><a href="/blog/no-linux-admin">There Is No Linux Admin</a></h3>
-            <p>The advert says <em>Linux Administrator</em>. Alpine and Fedora
-                share none of the four layers an admin touches; FreeBSD and macOS
-                share two. Measured from Debian, Ubuntu is a dialect, Gentoo
-                relearns half the day, Slackware calls its own init layout
-                BSD-style, and a minimal container image starts from zero.
-                <em>The category that hires people is drawn around the layer
-                nobody administers.</em></p>
-        </article>
-        <article class="vv-series-item">
-            <span class="day">12 August 2026</span>
-            <div class="vv-pills">
-                <span class="vv-pill">docker</span>
-                <span class="vv-pill">freebsd</span>
-                <span class="vv-pill">containers</span>
-            </div>
-            <h3><a href="/blog/coin-slot">The Whale With the Coin Slot</a></h3>
-            <p>A tool that was free on every corporate laptop for a decade grew a
-                coin slot in 2021, and the meter has been turned twice since. The
-                subscription does not charge for containers. <em>It charges for the
-                distance between a laptop and the kernel its software runs on.</em></p>
         </article>
 
 

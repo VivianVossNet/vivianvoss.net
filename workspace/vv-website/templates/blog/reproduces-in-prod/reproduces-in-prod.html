@@ -1,0 +1,276 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Prod Only, Sorry &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A ticket marked ASAP takes four weeks and closes with nobody at fault. The fault could not be reproduced because the environment that produces it belongs to somebody else, and self-hosting the framework that caused it takes eight moving parts on a public cloud to deliver the HTML one process delivered in 1995.">
+{( endslot )}
+
+{( slot canonical )}/blog/reproduces-in-prod{( endslot )}
+
+{( slot og-title )}Prod Only, Sorry &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Lean Software. The server was taken out because it stood in the way, rendering moved into the browser, the browser turned out to be a poor place for it, and rendering came home with luggage. What arrived with it was a cache that keeps its own opinion on every instance, which is why the same URL answers differently depending on who takes the request. The technical half is the easier half: a fault nobody can reproduce cannot be assigned either, and four departments can each measure correctly and each conclude, correctly, that it sits elsewhere. Measured here: eight cloud components to self-host, four dollars per million cache writes, 14,996 bytes for htmx and 4,267 for htm/a, and four packages that put the bug back where you can see it.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Prod Only, Sorry",
+    "datePublished": "2026-08-19",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/reproduces-in-prod",
+    "description": "Lean Software, on the web framework that solved a problem the web framework had caused and on the repair that now runs on somebody else's estate. Client-side rendering did genuine harm, showing crawlers an empty document and people on older phones a spinner, and the meta-frameworks answered exactly that with serious engineering. What the credit side does not cover is where the harm came from: the server was removed because it stood in the way, rendering moved into the browser, and once the browser proved a poor host the rendering came home with a build step, a runtime that uses one core per process and therefore scales by multiplication, a hydration pass, and a cache with opinions about time. Incremental regeneration behaves exactly as advertised on a single instance, which is how it behaves on a laptop and in the tutorial; put four instances behind a load balancer and each keeps its own record of what is fresh, so the same URL answers differently depending on which instance takes the request. A fault nobody can reproduce cannot be assigned either. A ticket marked ASAP takes four weeks: the alert is vague because whoever wrote the threshold cannot know the layer underneath well enough to filter precisely, storage measures its side correctly and hands it on, the backend shows a sync between two nodes swallowing writes nightly between half twelve and one, and infrastructure finds at last that both environments mint their own identifiers, so one record arrives under two and the service aborts exactly as designed. Every department measured correctly and concluded, correctly, that the fault sat elsewhere. Self-hosting the same framework on a public cloud takes eight provisioned components: a server-rendering function, a second for image optimisation, a third for middleware, an object store, a CDN distribution with its own compute, a key-value store mapping cache tags to pages, a queue for background revalidation, and the access roles binding them together. The hosting layer on top of the free framework sells coordination rather than features: cache handlers shared across instances, encryption keys matching across a fleet, rollout protection so an older browser keeps talking to a server that still understands it. It is metered at twenty dollars per seat per month, fifteen cents per gigabyte above a terabyte of transfer, sixty cents per million function invocations, forty cents per million cache reads and four dollars per million cache writes, so writing to a cache now carries a price where in 1995 it was called putting a file in a directory. The alternative is unglamorous and measurable: htmx puts reactivity back on the wire at 51,238 bytes minified and 14,996 after Brotli, htm/a does it entirely server-side with no dependencies at 15,286 minified and 4,267 after Brotli, and four packages, nginx, PHP-FPM, MariaDB and the package manager the system already ships, give the same stack on FreeBSD, Debian and the laptop, which puts the bug back where somebody can look at it.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-19">19 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Prod Only, Sorry</h1>
+        <p class="vv-article-meta"><em>The web framework solved a problem the web framework had caused, and the repair now runs on somebody else's estate. Lean Software.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">web stack</span>
+            <span class="vv-pill">architecture</span>
+            <span class="vv-pill">hosting</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Lean Software</em> &#x25A0; The invoice review</p>
+
+        <p>The ticket said 14:12. Not on staging, not on the reporter's laptop, not on the machine of the person who wrote the code, and not on mine. It happened on one of four instances, the one that had been up longest, and it involved a page that ought to have been rebuilt an hour earlier and instead served something out of a cache that only that instance knew about. Restarting the fleet made it go away. Nobody could say what it had been.</p>
+
+        <p>Ten years ago that ticket would have carried a file name and a line number, and fifteen years ago it certainly would have. The process that produced the fault was the same process you could start on your own machine, with the same code, the same configuration and the same everything, and if it misbehaved twice out of ten times you had a bug you could hunt. The bug lived where you lived.</p>
+
+        <p>It has since moved out.</p>
+
+        <h2>The bug that knows where it lives</h2>
+
+        <p>The credit side first, because there is one and it matters.</p>
+
+        <p>Client-side rendering did genuine harm. A page assembled in the browser shows a crawler an empty document and shows a person on a four-year-old phone a spinner, and for a good decade the industry shipped that to shops and council websites alike. The meta-frameworks answered exactly that, and the people who built them did serious work: streaming responses, and caches that know when a page has gone stale. Anyone who hand-rolled server rendering into a single-page application in 2018 remembers the palaver.</p>
+
+        <p>What the credit side does not cover is where the harm came from. The server was removed because it was in the way, and the rendering it had done for free landed in the browser, and once the browser proved a poor place for it the rendering came home. Every layer answers the problem the layer beneath it made, and the problem at the bottom was solved in 1995. So the rendering arrived home with luggage. A build step, a runtime that uses one core per process and therefore scales by multiplication, a hydration pass, and a cache with opinions about time.</p>
+
+        <p>That last piece is where the tickets come from. Incremental Static Regeneration works exactly as advertised on one instance, which is how it works on your machine and how it works in the tutorial. Put four instances behind a load balancer and each one keeps its own copy of what is fresh and what is not, so the same URL answers differently depending on which one takes the request. The behaviour is not a defect in anyone's code. It follows from having taken one program and made it into several, whilst the state it depends on stayed in each of them separately.</p>
+
+        <p>The technical half of that is the easier half. A fault that cannot be reproduced also cannot be assigned, and the assigning is where the days go.</p>
+
+        <p>The ticket is marked ASAP, and it takes four weeks. The alert that starts it off is vague to begin with, which is its own symptom: whoever wrote the threshold cannot know the layer underneath well enough to filter precisely, and by now nobody holds the whole picture. Dynatrace points cleanly at the storage path, and it is not wrong. Storage measure their side correctly, find a question of database logic, and move it to the backend. The backend people are not being awkward when they decline it either: they can show that the sync between node 37 and node 42 has been swallowing writes between half twelve and one for the past fortnight, which is an infrastructure matter and belongs to the platform team. Infrastructure then do the work nobody fancied and find the actual thing. Both environments run their own instance and both mint their own identifiers, so during the shop-data sync one record arrives under two, and the service, handed two identities for one row, aborts exactly as it was designed to.</p>
+
+        <svg viewBox="0 0 560 300"
+             aria-label="A responsibility loop drawn as a network of four departments. An alert enters at Monitoring and points at Storage. Storage measures its own side correctly and passes the ticket to Backend. Backend shows a nightly sync between two nodes swallowing writes and passes it to Infrastructure. Infrastructure finds that both environments mint their own identifiers, so one record arrives under two, and the service aborts as designed. A dashed return edge runs from Infrastructure back to Monitoring, closing the loop after four weeks with no fault assigned to anyone."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .rl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .rl-node  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .rl-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8.5px; }
+                .rl-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .rl-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .rl-edge  { stroke: var(--border); stroke-width: 1.5; fill: none; }
+                .rl-back  { stroke: var(--accent); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+            </style>
+            <defs>
+                <marker id="rl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--border)"/>
+                </marker>
+                <marker id="rl-arrow-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+                </marker>
+            </defs>
+            <text x="280" y="22" class="rl-title" text-anchor="middle">Four weeks, four teams, nobody at fault</text>
+
+            <rect x="30" y="50" width="110" height="46" class="rl-box"/>
+            <text x="85" y="70" class="rl-node" text-anchor="middle">MONITORING</text>
+            <text x="85" y="86" class="rl-item" text-anchor="middle">alert too vague</text>
+
+            <rect x="225" y="50" width="110" height="46" class="rl-box"/>
+            <text x="280" y="70" class="rl-node" text-anchor="middle">STORAGE</text>
+            <text x="280" y="86" class="rl-item" text-anchor="middle">measures correctly</text>
+
+            <rect x="420" y="50" width="110" height="46" class="rl-box"/>
+            <text x="475" y="70" class="rl-node" text-anchor="middle">BACKEND</text>
+            <text x="475" y="86" class="rl-item" text-anchor="middle">sync 37 to 42</text>
+
+            <rect x="225" y="170" width="110" height="46" class="rl-box"/>
+            <text x="280" y="190" class="rl-node" text-anchor="middle">INFRASTRUCTURE</text>
+            <text x="280" y="206" class="rl-item" text-anchor="middle">two ids, one row</text>
+
+            <line x1="142" y1="73" x2="218" y2="73" class="rl-edge" marker-end="url(#rl-arrow)"/>
+            <line x1="337" y1="73" x2="413" y2="73" class="rl-edge" marker-end="url(#rl-arrow)"/>
+            <path d="M 475 98 L 475 193 L 342 193" class="rl-edge" marker-end="url(#rl-arrow)"/>
+            <path d="M 225 193 L 85 193 L 85 100" class="rl-back" marker-end="url(#rl-arrow-acc)"/>
+
+            <text x="30" y="232" class="rl-bad">four weeks later, back at the start</text>
+
+            <text x="280" y="252" class="rl-item" text-anchor="middle">Every department measured correctly on its own side.</text>
+            <text x="280" y="268" class="rl-item" text-anchor="middle">Every department concluded, correctly, that the fault sat elsewhere.</text>
+            <text x="280" y="284" class="rl-bad" text-anchor="middle">The service behaved as designed throughout.</text>
+        </svg>
+
+        <p>Nobody made a mistake that has a name. Every department measured correctly on its own side and concluded, correctly, that the fault sat somewhere else, which is this whole argument again with people standing in for services. Four weeks, four teams, a standing meeting to settle who owns the ticket, and a service that behaved correctly throughout. That is the other currency of the coordination rent, and no invoice arrives for it, because it is paid in calendar.</p>
+
+        <p>So the environment in which the fault appears is no longer the environment in which the work happens. Development mode differs from a production build, a production build on one box differs from four boxes, and four boxes differ again from the platform where the routing, the cache and the image pipeline are somebody else's implementation. Four environments, one of which you can actually inspect at three in the afternoon, and it is not the one where the customer is.</p>
+
+        <h2>What the platform layer actually contains</h2>
+
+        <p>Open source, runs anywhere, no lock-in. Every word of that holds up, and it repays a moment's attention on how little it promises. Self-hosting a modern meta-framework is entirely possible, and the honest way to describe what that takes is to list what OpenNext, <a href="https://opennext.js.org/aws/v2/advanced/architecture" target="_blank" rel="noopener">the open adapter for other clouds</a>, has to build for you on a public cloud.</p>
+
+        <ul>
+            <li>A server-rendering function</li>
+            <li>A second function purely for image optimisation</li>
+            <li>A third for middleware, because middleware wants to run before routing</li>
+            <li>An object store for everything that needs no runtime</li>
+            <li>A CDN distribution in front of all of it, with its own compute for request routing</li>
+            <li>A key-value store to map cache tags to pages, so that on-demand revalidation can find what to expire</li>
+            <li>A queue, so a request that notices staleness can hand the rebuild to something else</li>
+            <li>A set of access roles binding these together with least privilege</li>
+        </ul>
+
+        <p>Eight moving parts, provisioned, monitored and paid for, to deliver the HTML that one process delivered in 1995, still delivered in 2015, and would still deliver today at rather higher throughput. Every one of those parts is defensible on its own. Together they are the shape of a program that was taken apart, and taking it apart is what made the platform necessary.</p>
+
+        <svg viewBox="0 0 560 300"
+             aria-label="The same job solved twice, side by side. On the left, the self-hosted meta-framework needs eight provisioned cloud components: a rendering function, an image function, a middleware function, an object store, a CDN with its own compute, a key-value store for cache tags, a queue for revalidation, and access roles. On the right, the classic stack needs four packages: nginx, PHP-FPM, MariaDB and the package manager the system already ships with, and the same four run on FreeBSD, on Debian and on the laptop."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .sx-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .sx-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .sx-head2 { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 10px; font-weight: 700; }
+                .sx-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .sx-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8.5px; }
+                .sx-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .sx-sep   { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="280" y="22" class="sx-title" text-anchor="middle">Same page, two bills of material</text>
+
+            <rect x="20" y="38" width="250" height="228" class="sx-box"/>
+            <rect x="290" y="38" width="250" height="228" class="sx-box"/>
+            <text x="145" y="58" class="sx-head" text-anchor="middle">SELF-HOSTED META-FRAMEWORK</text>
+            <text x="415" y="58" class="sx-head2" text-anchor="middle">THE CLASSIC FOUR</text>
+
+            <text x="36" y="82" class="sx-item">1  rendering function</text>
+            <text x="36" y="100" class="sx-item">2  image function</text>
+            <text x="36" y="118" class="sx-item">3  middleware function</text>
+            <text x="36" y="136" class="sx-item">4  object store</text>
+            <text x="36" y="154" class="sx-item">5  CDN with its own compute</text>
+            <text x="36" y="172" class="sx-item">6  key-value store, cache tags</text>
+            <text x="36" y="190" class="sx-item">7  queue for revalidation</text>
+            <text x="36" y="208" class="sx-item">8  access roles</text>
+            <line x1="36" y1="222" x2="254" y2="222" class="sx-sep"/>
+            <text x="36" y="240" class="sx-muted">provisioned, monitored, metered</text>
+            <text x="36" y="256" class="sx-muted">reproduces on none of your machines</text>
+
+            <text x="306" y="82" class="sx-item">1  nginx</text>
+            <text x="306" y="100" class="sx-item">2  PHP-FPM</text>
+            <text x="306" y="118" class="sx-item">3  MariaDB</text>
+            <text x="306" y="136" class="sx-item">4  the package manager you have</text>
+            <line x1="306" y1="152" x2="524" y2="152" class="sx-sep"/>
+            <text x="306" y="170" class="sx-muted">FEMP on FreeBSD</text>
+            <text x="306" y="186" class="sx-muted">LEMP on Debian</text>
+            <text x="306" y="202" class="sx-muted">the same four on the MacBook</text>
+            <line x1="306" y1="218" x2="524" y2="218" class="sx-sep"/>
+            <text x="306" y="240" class="sx-muted">same configs, same database,</text>
+            <text x="306" y="256" class="sx-muted">same files, same versions</text>
+
+            <text x="280" y="288" class="sx-muted" text-anchor="middle">Both deliver HTML over HTTP. One of them can be started on the machine in front of you.</text>
+        </svg>
+
+        <p>Nothing in the licence holds you anywhere, and that is the sentence people hear when they hear portable. The estimate for leaving holds you, and the estimate is almost never on the table at the moment a team picks its framework. It arrives two years later, quoted in engineer-months, by which point the argument has stopped being technical. Anyone who watched the container tooling go from free to invoiced has seen the shape of this before.</p>
+
+        <p>Which brings us to what the platform sells. Look closely at the layer a hosting company adds on top of a framework that is free and open, and you find coordination. Cache handlers shared across instances so that the four copies agree on what is fresh. Encryption keys that match across a fleet so that a value written on one machine can be read on another. Rollout protection so that a browser holding an older version of your application keeps talking to a server that still understands it, a problem that did not exist when the server sent finished pages and the browser displayed them.</p>
+
+        <p>The features themselves run without any of that. The agreement between the pieces does not.</p>
+
+        <p>And it is metered accordingly, on the <a href="https://vercel.com/pricing" target="_blank" rel="noopener">public price list</a>. Twenty dollars per seat per month opens the account, a terabyte of transfer is included and then costs fifteen cents a gigabyte, function invocations start at sixty cents per million, image transformations at five cents per thousand, cache reads at forty cents per million, and cache writes at four dollars per million. Read that last one twice. There is now a price attached to the event of writing something into a cache, an event that in 1995 was called putting a file in a directory and cost nothing at all, because the directory was on a disk in a machine that was yours.</p>
+
+        <p>None of this is deception. Every figure sits on a public pricing page and every architectural requirement sits in public documentation. The complexity is not accidental. It is the business model. The mechanism deserves a name all the same, because naming it is what makes it visible: <strong>the coordination rent</strong>. Take one program apart into parts that cannot see each other, and the agreement between those parts becomes a product with a monthly invoice. Nobody sells you the parts. They sell you the fact that the parts must now agree.</p>
+
+        <blockquote><p>The environment that can reproduce your bug is the one you rent by the month.</p></blockquote>
+
+        <h2>The short way back</h2>
+
+        <p>There is an unglamorous answer to all of this, and it has been sitting in the corner the whole time.</p>
+
+        <p>htmx puts reactivity back on the wire: your server sends HTML, the library swaps fragments in response to events, and the state stays in one place because it never left. Version 2.0.10 measures 51,238 bytes minified and 14,996 bytes after Brotli, which is to say roughly fifteen kilobytes for the entire interaction model.</p>
+
+        <p>From my own workshop there is something smaller. <strong>htm/a</strong> takes the same conviction further: the reactivity is fully server-side, the client is a set of custom elements over WebSocket or SSE, and there are no dependencies to audit because there are none at all. Measured this morning the same way, its client comes to 15,286 bytes minified and 4,267 bytes after Brotli. Four and a quarter kilobytes, with a Rust server at the other end holding the state in one process, where it has always been easiest to reason about. It is my own work and it lives on my <a href="/ecosystem">ecosystem page</a>.</p>
+
+        <svg viewBox="0 0 560 210"
+             aria-label="Four measured figures. The htmx client is 14,996 bytes after Brotli compression. The htm/a client is 4,267 bytes after Brotli, measured the same morning with the same method. A cache write costs four dollars per million on the public price list. A seat costs twenty dollars per month before any usage."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .kp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .kp-num   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 26px; font-weight: 700; }
+                .kp-num-a { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 26px; font-weight: 700; }
+                .kp-num-g { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 26px; font-weight: 700; }
+                .kp-lab   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .kp-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="kp-title" text-anchor="middle">Four figures, measured 19 August 2026</text>
+
+            <rect x="20" y="40" width="125" height="90" class="kp-box"/>
+            <text x="82" y="86" class="kp-num" text-anchor="middle">14,996</text>
+            <text x="82" y="106" class="kp-lab" text-anchor="middle">bytes, htmx 2.0.10</text>
+            <text x="82" y="120" class="kp-lab" text-anchor="middle">after Brotli</text>
+
+            <rect x="158" y="40" width="125" height="90" class="kp-box"/>
+            <text x="220" y="86" class="kp-num-g" text-anchor="middle">4,267</text>
+            <text x="220" y="106" class="kp-lab" text-anchor="middle">bytes, htm/a client</text>
+            <text x="220" y="120" class="kp-lab" text-anchor="middle">same method, same day</text>
+
+            <rect x="296" y="40" width="125" height="90" class="kp-box"/>
+            <text x="358" y="86" class="kp-num-a" text-anchor="middle">$4</text>
+            <text x="358" y="106" class="kp-lab" text-anchor="middle">per million cache writes</text>
+            <text x="358" y="120" class="kp-lab" text-anchor="middle">public price list</text>
+
+            <rect x="434" y="40" width="106" height="90" class="kp-box"/>
+            <text x="487" y="86" class="kp-num-a" text-anchor="middle">$20</text>
+            <text x="487" y="106" class="kp-lab" text-anchor="middle">per seat, per month</text>
+            <text x="487" y="120" class="kp-lab" text-anchor="middle">before any usage</text>
+
+            <text x="280" y="160" class="kp-lab" text-anchor="middle">In 1995 a cache write was called putting a file in a directory, on a disk that was yours.</text>
+            <text x="280" y="182" class="kp-lab" text-anchor="middle">Both client figures were measured with esbuild, gzip -9 and brotli -q 11 on the same machine.</text>
+        </svg>
+
+        <p>None of this is exotic, and the comparison is not against nothing. Four packages do the job: nginx, PHP-FPM, MariaDB, and the package manager the operating system already ships with. FEMP on FreeBSD or LEMP on Debian, and on the MacBook the same four through brew, one configuration file each and the same versions all the way along. What that buys is the thing this whole piece has been circling. When something breaks in production it breaks on the laptop too, because the laptop is the same stack, and the ticket goes back to carrying a file name and a line number.</p>
+
+        <p>Neither of them needs a queue to notice that a page went stale, because a page that is rendered on request is never stale. Neither needs a key-value store to map cache tags, nor protection against a browser and a server disagreeing about which version they are. A single process on a single machine, with all the cores it has, answering requests: FPM has done that quietly for twenty years, and so does any Rust or Go binary you care to compile and drop onto a FreeBSD box with one line in rc.conf.</p>
+
+        <h2>The point</h2>
+
+        <p>Back to the question that started this, which is what any of it improved upon a website running on a server you owned.</p>
+
+        <p>For a genuine application, where a person stays for hours and interacts hundreds of times, the answer is real and the ceremony pays for itself. For the other ninety per cent, the catalogue, the booking form, the council page, the restaurant menu, the answer is that the browser receives HTML over HTTP, exactly as before, and the machinery to produce it has grown from one process to eight parts and a subscription. That is not progress that was measured. It is progress that was assumed, and then sold back.</p>
+
+        <p>The industry has a phrase for the fault you cannot chase, and it used to be an admission of sloppiness: works on my machine. It has quietly become the opposite. The code works on my machine, and it fails on theirs, and theirs is where it lives now.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The point:</strong></p>
+            <ul>
+                <li><strong>The fault moved house:</strong> a cache that is per-instance answers the same URL differently depending on which instance takes the request, so the environment that produces the bug is not the environment where the work happens.</li>
+                <li><strong>Unassignable is the expensive part:</strong> a ticket marked ASAP took four weeks across four teams, each of which measured correctly and concluded, correctly, that it sat elsewhere.</li>
+                <li><strong>The coordination rent:</strong> take a program apart into pieces that cannot see each other, and the agreement between them becomes a product with a monthly invoice, metered down to four dollars per million cache writes.</li>
+                <li><strong>Portability is priced in work, not licence:</strong> self-hosting the same framework takes eight provisioned cloud components to deliver what one process delivered in 1995.</li>
+                <li><strong>The short way back:</strong> four packages, the same four on FreeBSD, Debian and the laptop, and the ticket carries a file name and a line number again.</li>
+                <li><a href="https://opennext.js.org/aws/v2/advanced/architecture" target="_blank" rel="noopener">OpenNext architecture, the eight components</a></li>
+                <li><a href="https://vercel.com/pricing" target="_blank" rel="noopener">Vercel pricing, retrieved 19 August 2026</a></li>
+                <li><a href="https://htmx.org" target="_blank" rel="noopener">htmx</a> &#x25A0; <a href="https://htma.run" target="_blank" rel="noopener">htm/a</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

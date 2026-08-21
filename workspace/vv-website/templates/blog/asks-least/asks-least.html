@@ -1,0 +1,303 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Nobody Made Netflix Give It Back &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Every argument for copyleft rests on an assumption about the person receiving the code: that without an obligation they will take and give nothing back. Netflix spent five years upstreaming kernel TLS into FreeBSD under a licence that could not have compelled a single line of it.">
+{( endslot )}
+
+{( slot canonical )}/blog/asks-least{( endslot )}
+
+{( slot og-title )}Nobody Made Netflix Give It Back &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}IT Philosophy. BSD, MIT, Apache and the GPL grant the same four freedoms and all four are approved by the Open Source Initiative. They differ in what they demand afterwards, and the demand is the whole of the disagreement. A staircase of conditions, counted clause by clause, with the word counts taken from the SPDX texts: 169 for MIT against 5,644 for GPL-3.0. Then the assumption underneath, tested against Netflix, Sony and a sponsor board in Brussels.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Nobody Made Netflix Give It Back",
+    "datePublished": "2026-08-20",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/asks-least",
+    "description": "IT Philosophy, on what the word free means once a licence starts asking for things. BSD, MIT, Apache and the GPL grant the same four freedoms, all four are approved by the Open Source Initiative, and all four require the copyright notice to survive the journey; below that floor a licence stops being a licence and becomes an abandonment. From there the conditions form a staircase: derivative works must carry the same licence, which is where the GPL leaves on the clause it is proudest of; modified files must be marked, a licence copy carried and a NOTICE file reproduced, with a patent grant that terminates on litigation, which is where Apache 2.0 leaves; the project name may not endorse derived products, which is where BSD 3-Clause leaves; and at the top MIT and BSD 2-Clause share what remains, namely keep the notice and expect no warranty. The licence texts counted from the SPDX list run 169 words for MIT, 189 for BSD 2-Clause, 220 for BSD 3-Clause, 241 for the old four-clause BSD, 1,581 for Apache 2.0, 2,910 for GPL-2.0, 5,535 for AGPL-3.0 and 5,644 for GPL-3.0, a factor of thirty-three between top and bottom. Part of that length is legal care rather than obligation, so the count indicates and does not prove; what it points at is fence height, because a high fence invites ways round it, every way round has to be closed in writing, and each closure is another paragraph. BSD climbed the same staircase, four clauses becoming three when Berkeley struck the advertising requirement on 22 July 1999 in a letter from William Hoskins at the Office of Technology Licensing, and three becoming two in the variant most projects use today. Every argument for copyleft rests on a claim about the recipient: without an obligation they will take and give nothing back. The cases are real and named here, Sony shipping FreeBSD 9 inside every PlayStation 4, Juniper building Junos on FreeBSD since the late nineties with the licence explicitly part of the appeal, WhatsApp running its connection machinery on it and saying very little. Against that stands Netflix, which spent about five years upstreaming kernel TLS and also contributed asynchronous sendfile, unmapped mbufs, the CAM I/O scheduler, RACK, BBR and the TCP pacing work, under a licence that asks for the copyright notice and nothing else; Sony publishes its modified PlayStation kernel sources although nothing requires it; and the EuroBSDCon 2026 sponsor board in Brussels reads Apple and Arm at gold, Netflix and the FreeBSD Foundation at silver. What produces contribution is the arithmetic of maintenance rather than the clause, since a private fork taxes every future merge. Copyleft itself compels less than its reputation suggests: the GPL obliges on distribution and not on upstreaming, and not at all where software merely answers requests on a server, which is the gap AGPL section thirteen was written to close. The limit is stated honestly: asking nothing sometimes returns nothing, openness is no protection against an owner as MongoDB, Elasticsearch, Terraform and Redis showed between 2018 and 2024, and a condition also decides what code may ever stand beside it, which is why ZFS under the CDDL has lived in the FreeBSD base system since 7.0 in 2008 while remaining outside the Linux tree.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-20">20 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Nobody Made Netflix Give It Back</h1>
+        <p class="vv-article-meta"><em>Every argument for copyleft rests on an assumption about the person receiving the code. The assumption is testable, and it has been tested. IT Philosophy.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">open source</span>
+            <span class="vv-pill">licensing</span>
+            <span class="vv-pill">freebsd</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>IT Philosophy</em> &#x25A0; The thesis</p>
+
+        <p>Somewhere in the FreeBSD source tree sits a subsystem called kernel TLS. It moves encryption of a video stream out of the application and into the kernel, which is why a single machine can serve four hundred gigabits a second of Netflix traffic without setting fire to its memory bandwidth. Drew Gallatin designed it at Netflix, for Netflix, and it took about five years to land in the tree in full.</p>
+
+        <p>Nothing required this. FreeBSD's licence asks for the copyright notice and nothing else. Netflix could have kept kernel TLS, and the asynchronous sendfile work, and the unmapped mbufs, and the CAM I/O scheduler, and RACK and BBR, entirely to itself. There is no clause anywhere that would have made a difference, and no lawyer would have had a case.</p>
+
+        <p>In three weeks, at EuroBSDCon in Brussels, the sponsor board reads Apple and Arm at gold, Netflix and the FreeBSD Foundation at silver. Nobody made them do that either.</p>
+
+        <h2>What they all agree on</h2>
+
+        <p>Start where the argument is quiet, because that part is larger than either side admits.</p>
+
+        <p>BSD, MIT, Apache and the GPL all grant the same four things: run the software for any purpose, read how it works, change it, pass it on. All four are approved by the Open Source Initiative. All four insist the copyright notice survives the journey. On the substance of what a recipient may do with the code in front of them, the four documents are in agreement, and anyone who has argued otherwise at a conference bar was arguing about something else.</p>
+
+        <p>That is the floor. Below it there is nothing to discuss, because a licence that does not even require its author to be named has stopped being a licence and become an abandonment. Attribution is the condition on which the whole construction rests.</p>
+
+        <h2>The staircase</h2>
+
+        <p>Now climb, and watch who leaves.</p>
+
+        <p><strong>Step one.</strong> Derivative works must carry the same licence. The GPL requires it, and requires it as its defining feature. BSD, MIT and Apache do not. The GPL leaves the staircase here, on the clause it is proudest of.</p>
+
+        <p><strong>Step two.</strong> Modified files must carry prominent notices saying they were changed, a copy of the licence travels with every distribution, and a NOTICE file, if one exists, must be reproduced. Apache 2.0 asks for all of that in section four, and adds a patent grant in section three that terminates if the recipient starts patent litigation over the work. Sensible provisions, every one, and a certain amount of faff at the point of shipping. Apache leaves here.</p>
+
+        <p><strong>Step three.</strong> The name of the project may not be used to endorse or promote derived products. That is clause three of BSD 3-Clause, and it exits at this step.</p>
+
+        <p><strong>Step four.</strong> What remains: keep the notice, accept that there is no warranty. MIT and BSD 2-Clause both stand on this step, and neither asks for anything further. They share the top between them.</p>
+
+        <svg viewBox="0 0 560 330"
+             aria-label="The staircase of conditions drawn as four steps. At the floor, all four licence families grant the same four freedoms and require attribution. On step one, derivative works must carry the same licence, and the GPL leaves. On step two, modified files must be marked, a licence copy carried and a NOTICE file reproduced, with a patent grant that terminates on litigation, and Apache 2.0 leaves. On step three, the project name may not endorse derived products, and BSD 3-Clause leaves. On step four only the notice and the warranty disclaimer remain, where MIT and BSD 2-Clause share the top."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .st-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .st-step  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .st-cond  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8.5px; }
+                .st-out   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9.5px; font-weight: 700; }
+                .st-top   { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9.5px; font-weight: 700; }
+                .st-bar   { fill: var(--border); }
+                .st-bar-top { fill: #4ab542; opacity: 0.25; }
+            </style>
+            <text x="280" y="22" class="st-title" text-anchor="middle">Every step is one more thing the licence asks</text>
+
+            <rect x="40" y="268" width="480" height="16" class="st-bar"/>
+            <text x="52" y="280" class="st-step">FLOOR</text>
+            <text x="120" y="280" class="st-cond">four freedoms, OSI-approved, attribution kept</text>
+            <text x="400" y="280" class="st-cond">all four still standing</text>
+
+            <rect x="40" y="212" width="400" height="16" class="st-bar"/>
+            <text x="52" y="224" class="st-step">STEP 1</text>
+            <text x="120" y="224" class="st-cond">derivatives must carry the same licence</text>
+            <text x="360" y="224" class="st-out">GPL exits</text>
+
+            <rect x="40" y="156" width="320" height="16" class="st-bar"/>
+            <text x="52" y="168" class="st-step">STEP 2</text>
+            <text x="120" y="168" class="st-cond">mark changes, carry licence, keep NOTICE, patent grant</text>
+
+            <text x="376" y="168" class="st-out">Apache exits</text>
+
+            <rect x="40" y="100" width="240" height="16" class="st-bar"/>
+            <text x="52" y="112" class="st-step">STEP 3</text>
+            <text x="120" y="112" class="st-cond">no endorsement with the project name</text>
+            <text x="296" y="112" class="st-out">BSD 3-Clause exits</text>
+
+            <rect x="40" y="44" width="160" height="16" class="st-bar-top"/>
+            <text x="52" y="56" class="st-step">STEP 4</text>
+            <text x="120" y="56" class="st-cond">keep the notice, no warranty</text>
+            <text x="216" y="56" class="st-top">MIT and BSD 2-Clause share the top</text>
+
+            <text x="40" y="308" class="st-cond">The width of each bar is what is still permitted without a further condition.</text>
+        </svg>
+
+        <p>The measurement is easier than the argument. These are the licence texts as published in the SPDX list, counted this morning.</p>
+
+        <svg viewBox="0 0 560 300"
+             aria-label="Word counts of eight licence texts taken from the SPDX list. MIT 169 words, BSD 2-Clause 189, BSD 3-Clause 220, BSD 4-Clause 241, Apache 2.0 1581, GPL-2.0 2910, AGPL-3.0 5535, GPL-3.0 5644. The bar for GPL-3.0 is thirty-three times the length of the bar for MIT."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wc-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .wc-lab   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .wc-val   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .wc-bar   { fill: var(--border); rx: 2; }
+                .wc-bar-a { fill: var(--accent); rx: 2; }
+                .wc-bar-g { fill: #4ab542; rx: 2; }
+                .wc-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8.5px; }
+            </style>
+            <text x="280" y="22" class="wc-title" text-anchor="middle">What a licence needs in words</text>
+
+            <text x="12" y="54" class="wc-lab">MIT</text>
+            <rect x="120" y="45" width="12" height="11" class="wc-bar-g"/>
+            <text x="140" y="54" class="wc-val">169</text>
+
+            <text x="12" y="80" class="wc-lab">BSD 2-Clause</text>
+            <rect x="120" y="71" width="13" height="11" class="wc-bar-g"/>
+            <text x="141" y="80" class="wc-val">189</text>
+
+            <text x="12" y="106" class="wc-lab">BSD 3-Clause</text>
+            <rect x="120" y="97" width="16" height="11" class="wc-bar"/>
+            <text x="144" y="106" class="wc-val">220</text>
+
+            <text x="12" y="132" class="wc-lab">BSD 4-Clause</text>
+            <rect x="120" y="123" width="17" height="11" class="wc-bar"/>
+            <text x="145" y="132" class="wc-val">241</text>
+
+            <text x="12" y="158" class="wc-lab">Apache 2.0</text>
+            <rect x="120" y="149" width="112" height="11" class="wc-bar"/>
+            <text x="240" y="158" class="wc-val">1,581</text>
+
+            <text x="12" y="184" class="wc-lab">GPL-2.0</text>
+            <rect x="120" y="175" width="206" height="11" class="wc-bar"/>
+            <text x="334" y="184" class="wc-val">2,910</text>
+
+            <text x="12" y="210" class="wc-lab">AGPL-3.0</text>
+            <rect x="120" y="201" width="392" height="11" class="wc-bar-a"/>
+            <text x="520" y="210" class="wc-val">5,535</text>
+
+            <text x="12" y="236" class="wc-lab">GPL-3.0</text>
+            <rect x="120" y="227" width="400" height="11" class="wc-bar-a"/>
+            <text x="528" y="236" class="wc-val">5,644</text>
+
+            <text x="12" y="268" class="wc-note">A factor of thirty-three between the top of the staircase and the bottom.</text>
+            <text x="12" y="284" class="wc-note">The count indicates. It does not prove: the proof sits in the clauses.</text>
+        </svg>
+
+        <p>The licence that calls itself the free one needs thirty-three times as many words as the one that asks least. Part of that length is legal care rather than obligation, and it would be dishonest to pretend otherwise: definitions, patent language, the machinery of enforcement, and wording built to survive a courtroom. So take the count as an indicator. It indicates; it does not prove, and the missing piece is how high the fences stand in the text. That part is not mysterious either. A high fence invites people to walk round it, every way round has to be closed off in writing, and each closure is another paragraph, which is why length is what a fence costs once somebody has to defend it. The shortest licences are short because there is nothing to walk round. The proof therefore sits one level down, in the clauses themselves, and it is countable without any arithmetic at all: one condition at the top of the staircase, three at the step below, four plus a patent mechanism below that, and at the bottom a condition that follows the code into every work it ever touches.</p>
+
+        <p>The parallel with statute is hard to avoid and it holds. A body of rules grows long because somebody wanted to settle cases in advance, and every additional paragraph is a case somebody preferred not to leave to the person acting. Where little is written down, a great deal stays with whoever is doing the work. That says nothing against rules as such, because the floor stays the floor and the notice stays the notice. It says something about where a decision ends up once a text sets out to light every corner: with the drafter, and no longer with you.</p>
+
+        <p>There is a detail in that list worth pausing on. BSD climbed this staircase itself. Four clauses became three when Berkeley struck the advertising clause on 22 July 1999, in a letter from William Hoskins at the Office of Technology Licensing addressed to all licensees and distributors of any version of BSD, and three became two in the variant most projects use today. The licence that asks least arrived there by giving things up over twenty years, which is a rather better argument for reduction than any essay about it.</p>
+
+        <blockquote><p>The less a licence asks of you, the more of it is yours. And the world's.</p></blockquote>
+
+        <h2>The assumption underneath</h2>
+
+        <p>Every argument for copyleft, once you strip the vocabulary, rests on a claim about the person receiving the code: without an obligation, they will take and give nothing back. The obligation exists because the behaviour is expected. That is what an obligation is for.</p>
+
+        <p>And the claim is not fantasy. The cases are real, and they should be named rather than waved away. Sony ships FreeBSD 9 inside every PlayStation 4. Juniper has built Junos on FreeBSD since the late nineties and has said plainly that the licence was part of the appeal, because it allowed proprietary extensions without further negotiation. WhatsApp ran its connection machinery on FreeBSD through the years when it was setting records for connections per box, and the wider world learned very little about how. Whole industries sit on this code and return a fraction of what they took.</p>
+
+        <p>Taking happens, then. The open question is whether the obligation is what produces the giving.</p>
+
+        <h2>What actually came back</h2>
+
+        <p>Netflix is the awkward case for that theory, because the giving is enormous and the obligation is absent. Kernel TLS is in the FreeBSD tree. So is asynchronous sendfile, so are unmapped mbufs, so is the CAM I/O scheduler, so are RACK and BBR and the TCP pacing work. Gallatin has stood on conference stages explaining how the four-hundred-gigabit machine works, in detail, to an audience that includes every competitor Netflix has. The company runs FreeBSD current in production, which means its engineers meet the tree's problems before anyone else and fix a good number of them on the way past.</p>
+
+        <p>Sony, for that matter, publishes the modified FreeBSD kernel sources for the PlayStation 4 on its own website. The BSD licence does not require the source of a modified kernel. They put it up anyway.</p>
+
+        <p>None of this is charity. Running a private fork of an operating system is miserable and expensive, every local patch is a tax on every future merge, and upstreaming is the cheapest way out of that trap. Which is the point: what makes companies contribute is the arithmetic of maintenance, and that arithmetic works the same under every licence on the staircase.</p>
+
+        <h2>What copyleft actually compels</h2>
+
+        <p>Here the construction deserves a closer look, because it promises less than its reputation suggests.</p>
+
+        <p>The GPL obliges you when you distribute. It does not oblige you to upstream, so a company may keep an enormous private patch set for years, hand it to customers as a tarball nobody reads, and remain entirely within its rights. And if the software is never distributed at all, if it merely runs on a server and answers requests, the obligation does not arise. Every hosted service built on GPL code sits in that gap.</p>
+
+        <p>The AGPL exists because that gap was too large to ignore. Section thirteen requires that anyone interacting with a modified version over a network be offered the corresponding source. It is an honest patch to a real hole, and it is also an admission: the original construction did not compel what people believed it compelled, for the entire period in which the industry moved to running software instead of shipping it.</p>
+
+        <h2>The room with one exit</h2>
+
+        <p>There is a second thing an obligation does, and it shows up years later.</p>
+
+        <p>ZFS is licensed under the CDDL, which the Open Source Initiative recognises. Linux is licensed under the GPL, which the Open Source Initiative also recognises. Two free licences, and the combination cannot be distributed as one work, which is why ZFS has lived inside the FreeBSD base system since 7.0 in 2008 while on Linux it stays outside the tree, rebuilt against every new kernel, the stepchild nobody will take in because of the licence it was born with.</p>
+
+        <p>Nobody behaved badly here. Both licences were written by people trying to protect something. The result is a room with one exit, and the exit is a rewrite. That is what a condition does over a long enough period. It decides two things: what you may do with the code, and which other code it may ever stand beside.</p>
+
+        <h2>The limit</h2>
+
+        <p>Now the part that costs something to write.</p>
+
+        <p>A licence that asks for nothing sometimes receives nothing, and the permissive side has to live with cases where the taking was total and the giving was zero. That is the deal, accepted in advance.</p>
+
+        <p>Worse, the openness of a project is no protection against its owner. Redis was BSD-licensed for fifteen years and moved to SSPL and RSALv2 in March 2024, before reversing course and adopting the AGPL in 2025. Elasticsearch went to SSPL in 2021 and offered the AGPL again from August 2024. HashiCorp took Terraform to the Business Source Licence in 2023 and the community forked. In every one of those cases the copyleft camp has a point, though a narrower one than it usually makes: the AGPL would have answered the grievance each company named, namely a cloud provider selling the work as a service and returning nothing. It would not have stopped the relicensing itself, since each of them held the rights and could do as it liked. Two of the three arrived at the AGPL in the end anyway.</p>
+
+        <svg viewBox="0 0 560 250"
+             aria-label="A timeline of licence changes. In 1999 Berkeley struck the advertising clause and the four-clause BSD became the three-clause version, later reduced again to two clauses. In 2018 MongoDB moved to the SSPL. In 2021 Elasticsearch left the Apache licence for the SSPL. In 2023 HashiCorp took Terraform to the Business Source Licence. In 2024 Redis left the BSD licence, and in 2025 it adopted the AGPL. The one movement towards fewer conditions is the earliest."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tl-year  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .tl-ev    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8.5px; }
+                .tl-ev-a  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 8.5px; font-weight: 700; }
+                .tl-ev-g  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 8.5px; font-weight: 700; }
+                .tl-line  { stroke: var(--border); stroke-width: 2; }
+                .tl-dot   { fill: var(--border); }
+                .tl-dot-a { fill: var(--accent); }
+                .tl-dot-g { fill: #4ab542; }
+                .tl-note  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8.5px; }
+            </style>
+            <text x="280" y="22" class="tl-title" text-anchor="middle">Which way the conditions moved</text>
+
+            <line x1="40" y1="120" x2="520" y2="120" class="tl-line"/>
+
+            <circle cx="70" cy="120" r="5" class="tl-dot-g"/>
+            <text x="70" y="104" class="tl-year" text-anchor="middle">1999</text>
+            <text x="70" y="142" class="tl-ev-g" text-anchor="middle">BSD 4 to 3</text>
+            <text x="70" y="155" class="tl-ev" text-anchor="middle">later 3 to 2</text>
+
+            <circle cx="200" cy="120" r="5" class="tl-dot-a"/>
+            <text x="200" y="104" class="tl-year" text-anchor="middle">2018</text>
+            <text x="200" y="142" class="tl-ev-a" text-anchor="middle">MongoDB to SSPL</text>
+
+            <circle cx="300" cy="120" r="5" class="tl-dot-a"/>
+            <text x="300" y="104" class="tl-year" text-anchor="middle">2021</text>
+            <text x="300" y="142" class="tl-ev-a" text-anchor="middle">Elasticsearch to SSPL</text>
+
+            <circle cx="400" cy="120" r="5" class="tl-dot-a"/>
+            <text x="400" y="104" class="tl-year" text-anchor="middle">2023</text>
+            <text x="400" y="142" class="tl-ev-a" text-anchor="middle">Terraform to BSL</text>
+
+            <circle cx="480" cy="120" r="5" class="tl-dot-a"/>
+            <text x="480" y="104" class="tl-year" text-anchor="middle">2024</text>
+            <text x="480" y="142" class="tl-ev-a" text-anchor="middle">Redis leaves BSD</text>
+            <text x="480" y="155" class="tl-ev-g" text-anchor="middle">2025 to AGPL</text>
+
+            <text x="40" y="196" class="tl-note">One movement towards fewer conditions, and it is the oldest one on the line.</text>
+            <text x="40" y="212" class="tl-note">Every later move added conditions, and each was made by an owner who held the rights.</text>
+        </svg>
+
+        <p>So the honest position is that conditions buy something specific at a specific price, and that the price includes the room with one exit. Choose accordingly, and stop calling the choice freedom when it is a trade.</p>
+
+        <h2>Which one, then</h2>
+
+        <p>For a weekend project you want other people to use without ringing you: MIT or BSD 2-Clause. Nothing to administer, nothing to enforce, and the notice keeps your name on it.</p>
+
+        <p>For a library meant to end up inside commercial products: the same two, and Apache 2.0 if patents are anywhere near your problem, because the explicit grant is worth the extra paperwork.</p>
+
+        <p>For a product you intend to sell while others may host it: the AGPL, honestly declared, or a dual arrangement. It is a trade, it is legitimate, and it should be described as what it is rather than as a moral position.</p>
+
+        <p>For infrastructure meant to outlive you and to be embedded in systems you will never hear about: the top of the staircase, every time. Coexistence is the property that matters at that distance, and coexistence is exactly what a condition removes.</p>
+
+        <h2>The point</h2>
+
+        <p>The four documents agree on almost everything. They differ in what they demand afterwards, and the demand is the whole of the disagreement.</p>
+
+        <p>Netflix gave back for five years under a licence that could not have made it. The staircase does not measure virtue and never claimed to. It measures how much of the thing in your hands is yours outright, unattached and free to travel, and the world's along with it. That ranking is not a matter of taste. Count the conditions, and the order comes out the same every time.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The point:</strong></p>
+            <ul>
+                <li><strong>The floor is shared:</strong> BSD, MIT, Apache and the GPL grant the same four freedoms, all are OSI-approved, and all require attribution. The disagreement begins above that line.</li>
+                <li><strong>The staircase is countable:</strong> one condition at the top, three a step below, four plus a patent mechanism under that, and copyleft at the bottom, where the condition follows the code into every work it touches.</li>
+                <li><strong>Word count indicates, clauses prove:</strong> 169 words for MIT against 5,644 for GPL-3.0, and the length is what a fence costs once somebody has to defend it.</li>
+                <li><strong>The assumption failed its test:</strong> Netflix upstreamed kernel TLS for five years with no obligation, Sony publishes kernel sources it need not publish, and Apple sponsors a BSD conference.</li>
+                <li><strong>The limit is real:</strong> asking nothing sometimes returns nothing, openness is no defence against an owner, and a condition decides what your code may ever stand beside.</li>
+                <li><a href="https://github.com/spdx/license-list-data" target="_blank" rel="noopener">SPDX licence texts, the source of the word counts</a></li>
+                <li><a href="https://freebsdfoundation.org/end-user-stories/netflix-case-study/" target="_blank" rel="noopener">Netflix on FreeBSD, the case study</a></li>
+                <li><a href="https://www.playstation.com/en-us/oss/ps4/freebsd-kernel/" target="_blank" rel="noopener">Sony publishes the PlayStation 4 FreeBSD kernel sources</a></li>
+                <li><a href="https://2026.eurobsdcon.org/sponsors.html" target="_blank" rel="noopener">EuroBSDCon 2026 sponsors</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Entwurf — Serien-Teaser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light dark;
+  --accent: oklch(68% 0.18 35);
+  --bg: light-dark(oklch(98% 0.005 260), oklch(12% 0.005 260));
+  --surface: light-dark(oklch(100% 0 0), oklch(18% 0.005 260));
+  --text: light-dark(oklch(18% 0 0), oklch(93% 0 0));
+  --muted: light-dark(oklch(55% 0 0), oklch(60% 0 0));
+  --border: light-dark(oklch(88% 0 0), oklch(25% 0.005 260));
+  --panel: oklch(20% 0.01 260);
+  --panel-text: oklch(78% 0.01 260);
+  --panel-bright: oklch(95% 0 0);
+  --panel-line: oklch(30% 0.01 260);
+  --green: oklch(72% 0.16 145);
+  --unit: 0.5rem;
+  --font-body:'Oxanium',system-ui,sans-serif;
+  --font-data:'JetBrains Mono',ui-monospace,monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);margin:0;padding:calc(var(--unit)*6) calc(var(--unit)*3)}
+.wrap{max-width:62rem;margin:0 auto}
+h1{font-size:1.1rem;letter-spacing:.02em;margin:0 0 .3em}
+h2.v{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:calc(var(--unit)*8) 0 calc(var(--unit)*2);border-bottom:1px solid var(--border);padding-bottom:calc(var(--unit))}
+p.note{color:var(--muted);font-size:.85rem;line-height:1.6;margin:0 0 calc(var(--unit)*3)}
+
+/* ---- Terminal-Baustein ---- */
+.term{font-family:var(--font-data);font-size:.8rem;line-height:1.75;background:var(--panel);color:var(--panel-text);border-radius:8px;overflow:hidden}
+.term .bar{display:flex;align-items:baseline;padding:calc(var(--unit)*1.5) calc(var(--unit)*2.5);border-bottom:1px solid var(--panel-line);white-space:nowrap;overflow:hidden}
+.term .ps1{color:var(--green);flex-shrink:0}
+.term .cmd{color:var(--panel-bright);flex-shrink:0}
+.term .hint{margin-left:auto;color:var(--muted);padding-left:2ch;flex-shrink:0}
+.term .panel{padding:calc(var(--unit)*2.5);overflow-x:auto}
+.tline{margin:0;white-space:pre;width:max-content}
+.tline .tw{color:var(--muted)}
+.tline a{color:var(--panel-bright);text-decoration:none;border-bottom:1px solid transparent}
+.tline a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.tline .day{color:var(--green)}
+.tline .run{color:var(--accent)}
+.tline .dim{color:var(--muted)}
+.tline .cur{display:inline-block;width:.55em;height:1em;background:var(--green);vertical-align:text-bottom;margin-left:.4ch;animation:blink 1.2s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.term .foot{padding:0 calc(var(--unit)*2.5) calc(var(--unit)*2.5);color:var(--muted)}
+.term .foot a{color:var(--accent);text-decoration:none}
+</style></head><body><div class="wrap">
+
+<h1>Serien-Teaser — Entwürfe</h1>
+<p class="note">Drei Fassungen desselben Bausteins. Alle nutzen die Theme-Variablen der Website; das Panel ist in beiden Farbschemata dunkel, wie beim Advisor.</p>
+
+<h2 class="v">Fassung A &#x2014; nur die Reihen, jede klickbar</h2>
+<p class="note">Position: eigene Sektion in voller Breite, direkt über <em>Latest Writing</em>. Neun Zeilen. Die laufenden Reihen stehen einzeln, das Archiv als eine Zeile mit seinem Umfang; die Sendungen selbst tauchen hier nicht auf, die stehen auf der Seite der jeweiligen Reihe.</p>
+<div class="term">
+  <div class="bar"><span class="ps1">vivian@vivianvoss:~ $&nbsp;</span><span class="cmd">tree -L 2 /series</span><span class="hint">26 series &#183; 202 dispatches</span></div>
+  <div class="panel">
+<p class="tline"><span class="dim">/series</span></p>
+<p class="tline"><span class="tw">├── </span><span class="run">running</span></p>
+<p class="tline"><span class="tw">│   ├── </span><a href="#">unix-universe</a><span class="dim">       Mon</span></p>
+<p class="tline"><span class="tw">│   ├── </span><a href="#">bench-marker</a><span class="dim">        Tue</span></p>
+<p class="tline"><span class="tw">│   ├── </span><a href="#">lean-software</a><span class="dim">       Wed</span></p>
+<p class="tline"><span class="tw">│   ├── </span><a href="#">it-philosophy</a><span class="dim">       Thu</span></p>
+<p class="tline"><span class="tw">│   ├── </span><a href="#">technical-beauty</a><span class="dim">    Fri</span></p>
+<p class="tline"><span class="tw">│   └── </span><a href="#">bytes-of-art</a><span class="dim">        Sat</span></p>
+<p class="tline"><span class="tw">└── </span><a href="#">archive</a><span class="dim">                 20 series, 2025-2026</span><span class="cur"></span></p>
+  </div>
+</div>
+
+<h2 class="v">Fassung B — kompakt, nur laufend</h2>
+<p class="note">Position: linke Spalte oben, als Ersatz für den Prosa-Absatz <em>Three Series, One Argument</em>. Passt in halbe Breite.</p>
+<div class="term" style="max-width:30rem">
+  <div class="bar"><span class="ps1">$&nbsp;</span><span class="cmd">ls /series/running</span></div>
+  <div class="panel">
+<p class="tline"><span class="day">Mon</span>  <a href="#">unix-universe</a></p>
+<p class="tline"><span class="day">Tue</span>  <a href="#">bench-marker</a></p>
+<p class="tline"><span class="day">Wed</span>  <a href="#">lean-software</a></p>
+<p class="tline"><span class="day">Thu</span>  <a href="#">it-philosophy</a></p>
+<p class="tline"><span class="day">Fri</span>  <a href="#">technical-beauty</a></p>
+<p class="tline"><span class="day">Sat</span>  <a href="#">bytes-of-art</a></p>
+<p class="tline"><span class="dim">-----</span></p>
+<p class="tline"><span class="dim">20 more in </span><a href="#">/series/archive</a><span class="cur"></span></p>
+  </div>
+</div>
+
+<h2 class="v">Fassung C — eine Zeile, aufklappbar</h2>
+<p class="note">Position: unter dem Kopfbereich als schmales Band, wie die Messtafel beim Advisor. Zugeklappt eine Zeile, aufgeklappt der Baum aus Fassung A.</p>
+<div class="term">
+  <div class="bar"><span class="ps1">vivian@vivianvoss:~ $&nbsp;</span><span class="cmd">tree /series</span><span class="hint" style="color:var(--panel-text)">&nbsp;&#183; 26 series &#183; 6 running &#183; 214 dispatches</span><span class="hint">more &#8964;</span></div>
+</div>
+
+<h2 class="v">Zur Platzierung</h2>
+<p class="note">Der obere Bereich gehört dem Hero und der Buchwerbung; die rechte Spalte sollte das Buch nicht teilen, weil es die stärkste Konversion trägt. Der Prosa-Absatz <em>Three Series, One Argument</em> nennt drei Reihen, verlinkt keine und ist sachlich überholt, seit sechs laufen.</p>
+<p class="note"><strong>Gewählt: Fassung A</strong>, volle Breite, unmittelbar über <em>Latest Writing</em>. Erst die Ordnung, dann die Auswahl. Auf der Startseite steht ausschliesslich die Ebene der Reihen; wer eine anklickt, landet auf <code>/series/&lt;reihe&gt;</code> und sieht dort deren Sendungen. Das Archiv ist eine einzige Zeile und führt auf <code>/series</code>, wo die zwanzig eingefrorenen Reihen mit ihren Laufzeiten stehen.</p>
+</div></body></html>
