@@ -1827,3 +1827,75 @@
         transform: none;
     }
 }
+
+    /* --- Directory index (series listings) -------------------------------- */
+
+    .vv-idx {
+        --idx-dim: light-dark(oklch(56% 0.008 260), oklch(60% 0 0));
+        --idx-rule: var(--border);
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: calc(.8rem + 2px);
+        line-height: 1.7;
+        margin: calc(var(--unit) * 3) 0;
+    }
+
+    .vv-idx-path {
+        margin: 0 0 calc(var(--unit) * 1.5);
+        color: var(--text);
+        font-weight: 700;
+    }
+
+    .vv-idx-path .vv-idx-sep { color: var(--idx-dim); font-weight: 400 }
+
+    .vv-idx-row {
+        display: grid;
+        grid-template-columns: 4ch minmax(0, 1fr) 17ch 6ch;
+        gap: 0 1ch;
+        padding: calc(var(--unit) * .5) 0;
+        border-bottom: 1px solid var(--idx-rule);
+    }
+
+    .vv-idx-head {
+        color: var(--idx-dim);
+        border-bottom: 1px solid var(--text);
+        text-transform: none;
+    }
+
+    .vv-idx-row:last-child { border-bottom: 1px solid var(--text) }
+
+    .vv-idx-ico,
+    .vv-idx-date,
+    .vv-idx-size { color: var(--idx-dim); white-space: nowrap }
+
+    .vv-idx-size { text-align: right }
+
+    .vv-idx-name { min-width: 0; overflow-wrap: anywhere }
+
+    .vv-idx-name a {
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+    }
+
+    .vv-idx-name a:hover { border-bottom-color: var(--accent) }
+
+    .vv-idx-up .vv-idx-name a { color: var(--text) }
+
+    .vv-idx-foot {
+        margin: calc(var(--unit) * 1.5) 0 0;
+        color: var(--idx-dim);
+    }
+
+    .vv-idx--wide .vv-idx-row {
+        grid-template-columns: 4ch minmax(0, 1fr) 13ch 8ch 14ch;
+    }
+
+    .vv-idx-desc { color: var(--idx-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+
+    @media (max-width: 40rem) {
+        .vv-idx { font-size: .78rem }
+        .vv-idx-row,
+        .vv-idx--wide .vv-idx-row { grid-template-columns: 3ch minmax(0, 1fr) 12ch }
+        .vv-idx-size,
+        .vv-idx-desc { display: none }
+    }
