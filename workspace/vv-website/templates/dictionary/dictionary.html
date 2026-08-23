@@ -342,6 +342,10 @@
             <dt>blocklistd</dt>
             <dd>A FreeBSD daemon that blocks abusive network clients, the successor to blacklistd. Its integration into FreeBSD's OpenSSH introduced CVE-2024-7589, an unauthenticated root race: an integrated project planting a fault in the very act of integrating a component.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="cap-enter">
+            <dt>cap_enter</dt>
+            <dd>The FreeBSD system call that puts a process into capability mode. After it returns, the filesystem, the network namespace and the process table no longer exist for that process; only the file descriptors it already holds remain usable, restricted to the rights granted before the call. The transition is irreversible by design, which is what makes it trustworthy in a program whose input may be hostile.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="capsicum">
             <dt>Capsicum</dt>
             <dd>A capability-based security framework in FreeBSD. One syscall (cap_enter) permanently removes all access to global namespaces. The process keeps only its existing file descriptors, each restricted via cap_rights_limit(). Irreversible. Compiled into FreeBSD 10.0 by default since 2014.</dd>
@@ -349,6 +353,10 @@
         <dl class="vv-dict-entry" id="cargo-vet">
             <dt>cargo-vet</dt>
             <dd>A Rust supply-chain tool from Mozilla that requires human-reviewed audits of a crate before it is allowed into a build, so a dependency cannot enter a project unreviewed.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="casper">
+            <dt>Casper</dt>
+            <dd>A FreeBSD daemon that supplies services to processes already running in capability mode, which by definition can no longer reach global namespaces themselves. Name resolution is the usual case: a sandboxed program hands the request to Casper through a capability rather than opening a socket. Casper's own services run sandboxed in turn.</dd>
         </dl>
         <dl class="vv-dict-entry" id="cast">
             <dt>CAST</dt>
@@ -1311,6 +1319,10 @@
         <dl class="vv-dict-entry" id="th3">
             <dt>TH3</dt>
             <dd>The Test Harness 3, a proprietary test suite for SQLite written in C and maintained by the SQLite developers. It holds 50,362 distinct test cases which expand across parameter combinations into roughly 2.4 million test instances, and it exists deliberately as a second and unconnected body of tests alongside the open TCL suite, so that a blind spot in one cannot be a blind spot in both. TH3 is what carries SQLite's one hundred per cent branch and MC/DC coverage.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="thin-jail">
+            <dt>thin jail</dt>
+            <dd>A FreeBSD jail whose root filesystem is a ZFS clone of a base-system snapshot rather than a full copy. The clone is created in milliseconds regardless of the size of the base system and occupies roughly five megabytes until its contents diverge from the snapshot, against about ninety-one megabytes for a thick jail carrying its own userland.</dd>
         </dl>
         <dl class="vv-dict-entry" id="threat-model">
             <dt>threat model</dt>

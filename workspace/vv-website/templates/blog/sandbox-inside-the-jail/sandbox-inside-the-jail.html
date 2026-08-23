@@ -1,0 +1,266 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Sandbox Inside the Jail &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="FreeBSD answers the isolation question twice, at two different sizes, and both answers ship in the base system. A thin jail costs five megabytes. The sandbox inside it costs two lines of C, and tcpdump has been using it since 2014 without telling anyone.">
+{( endslot )}
+
+{( slot canonical )}/blog/sandbox-inside-the-jail{( endslot )}
+
+{( slot og-title )}The Sandbox Inside the Jail &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Unix Universe. Jails confine an environment, Capsicum confines a process, and both have been in the FreeBSD base system for years. Four operating systems reached the same conclusion independently; one assembled the counterexample out of eight parts, and the escapes live in the seams.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Sandbox Inside the Jail",
+    "datePublished": "2026-08-24",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/sandbox-inside-the-jail",
+    "description": "Unix Universe, on the two grains of isolation that FreeBSD ships in its base system and on the standing complaint that jails are too coarse to confine a single process. Run tcpdump on a FreeBSD machine and before the first packet arrives it opens its capture device and its output file, limits the rights on both descriptors with cap_rights_limit, and calls cap_enter; from that instant the filesystem, the network namespace and the process table cease to exist for it, so an attacker who takes the process through a malformed packet inherits a world containing one writable file and one readable device. Two lines of C, working this way since FreeBSD 10.0 in 2014. The pattern is larger than one operating system: FreeBSD shipped jails on 14 March 2000, Poul-Henning Kamp's answer to confining root, presented with Robert Watson at SANE 2000 in Maastricht; Sun reached the same conclusion independently with Zones, in beta from February 2004 and shipping with Solaris 10 in early 2005; OpenBSD arrived from a third direction in 2015 when Theo de Raadt proposed a call by which a process renounces its own privileges, briefly named tame before becoming pledge and threading through the entire source tree. Three teams, no code shared, one instinct: isolation is the operating system's job and it ships finished. Linux built namespaces one at a time between 2002 and 2013, mount first in 2.4.19 and user last in 3.8, each useful alone, composition left to whoever came along, which produced genuine flexibility and an ecosystem won on merit alongside a decade of escape stories that almost never involve a hole in any single namespace but rather a namespace forgotten, a capability too many, a descriptor inherited. On the coarse grain a thin jail is a ZFS clone of a base-system snapshot, created in milliseconds and occupying roughly five megabytes until it diverges, against about ninety-one megabytes for a thick jail with its own userland and bhyve above both for anything needing a foreign kernel, with nothing supervising jails except the kernel itself. On the fine grain Capsicum came out of Cambridge with Watson and Anderson taking Best Student Paper at USENIX Security 2010, inverting the usual sandbox by subtraction rather than policy, and the base tools using it read like ordinary work: tcpdump, dhclient, hastd, kdump, ctld, iscsid, rwhod, even uniq, with the Casper daemon supplying services such as name resolution to processes already in capability mode. The shell remains the primary interface, and since spring 2026 Sylve adds a management plane in Go and Svelte that requires nothing outside the base system. The limit is stated plainly: Capsicum works only where the author of a program put it there, that list is still short fourteen years on, Sylve is young, and where the target kernel is Linux none of this is on the table.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-24">24 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Sandbox Inside the Jail</h1>
+        <p class="vv-article-meta"><em>FreeBSD answers the isolation question twice, at two different sizes, and both answers ship in the base system. The second one has been running on your machine without telling you.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">unix</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">sysadmin</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Unix Universe</em> &#x25A0; The receipt</p>
+
+        <p>Run <code>tcpdump</code> on a FreeBSD box and watch it for a moment. Before the first packet arrives, the process does something quietly radical: it opens its capture device and its output file, trims the rights on both descriptors down to the operations it will actually need, and then calls <code>cap_enter()</code>. From that instant the filesystem no longer exists for it. The network namespace no longer exists. The process table no longer exists. If an attacker owns tcpdump through a malformed packet after that point, and malformed packets are rather tcpdump's line of work, they own a process that can write to one file and read from one device, in a world containing nothing else.</p>
+
+        <pre><code>int fd = open("/var/log/capture.pcap", O_WRONLY);
+
+cap_rights_t rights;
+cap_rights_init(&amp;rights, CAP_WRITE, CAP_SEEK);
+cap_rights_limit(fd, &amp;rights);
+
+cap_enter();          /* no return, ever */
+
+write_packets(fd);    /* the world is now one descriptor wide */</code></pre>
+
+        <p>Two lines of C bought that. Nobody announced it, nobody asked you to configure it, and it has worked this way since 2014.</p>
+
+        <p>The complaint this piece answers is an old one: that FreeBSD's isolation story begins and ends with jails, and jails are too coarse for the modern world, where one wants a single process confined rather than a whole environment stood up. The complaint has the story exactly backwards. The base system answers the isolation question twice, at two different grains, and the fine one has been in the kernel longer than most container platforms have existed.</p>
+
+        <h2>Four systems, one instinct</h2>
+
+        <p>Step back once, because the pattern is bigger than one operating system.</p>
+
+        <p>On 14 March 2000, FreeBSD 4.0 shipped jails: Poul-Henning Kamp's answer to a hosting provider's problem, presented with Robert Watson at SANE 2000 in Maastricht under a title that names the disease, Confining the Omnipotent Root. One kernel abstraction, one configuration, a thing that either exists or does not. Sun reached the same conclusion independently: Zones went into beta in February 2004 and shipped with Solaris 10 in early 2005, a complete environment boundary, delivered finished. OpenBSD arrived from a third direction in 2015, when Theo de Raadt proposed a system call for processes to renounce their own privileges; it spent one month under the name tame before becoming <code>pledge</code>, and today it threads through the entire OpenBSD source tree.</p>
+
+        <p>Three teams, three decades of separation in style and temperament, no code shared, and one instinct: isolation is the operating system's job, and it ships finished, in the base system, under the same release cycle as the kernel that enforces it.</p>
+
+        <svg viewBox="0 0 560 240"
+             aria-label="A timeline of isolation mechanisms from 2000 to 2015. FreeBSD jails arrive whole in March 2000. Linux adds namespaces one at a time: mount in 2002, UTS and IPC in 2006, PID in 2008, network in 2009, user in 2013. Solaris Zones arrive whole in 2005. OpenBSD pledge arrives whole in 2015. Three of the four are single deliveries; the Linux row is six separate arrivals across eleven years."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tl-t   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 12px; font-weight: 700; }
+                .tl-sys { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9.5px; font-weight: 700; }
+                .tl-yr  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .tl-n   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8.5px; }
+                .tl-ax  { stroke: var(--border); stroke-width: 1; }
+                .tl-whole { fill: var(--accent); }
+                .tl-part  { fill: var(--border); stroke: var(--muted); stroke-width: 1; }
+            </style>
+            <text x="30" y="22" class="tl-t">Delivered whole, or delivered in parts</text>
+
+            <line x1="120" y1="196" x2="530" y2="196" class="tl-ax"/>
+            <text x="118" y="212" class="tl-yr">2000</text>
+            <text x="228" y="212" class="tl-yr">2005</text>
+            <text x="338" y="212" class="tl-yr">2010</text>
+            <text x="448" y="212" class="tl-yr">2015</text>
+
+            <text x="30" y="56" class="tl-sys">FreeBSD</text>
+            <circle cx="122" cy="52" r="8" class="tl-whole"/>
+            <text x="140" y="56" class="tl-n">jails, one delivery</text>
+
+            <text x="30" y="90" class="tl-sys">Solaris</text>
+            <circle cx="232" cy="86" r="8" class="tl-whole"/>
+            <text x="250" y="90" class="tl-n">Zones, one delivery</text>
+
+            <text x="30" y="124" class="tl-sys">OpenBSD</text>
+            <circle cx="452" cy="120" r="8" class="tl-whole"/>
+            <text x="470" y="124" class="tl-n">pledge</text>
+
+            <text x="30" y="158" class="tl-sys">Linux</text>
+            <circle cx="166" cy="154" r="6" class="tl-part"/>
+            <circle cx="254" cy="154" r="6" class="tl-part"/>
+            <circle cx="298" cy="154" r="6" class="tl-part"/>
+            <circle cx="320" cy="154" r="6" class="tl-part"/>
+            <circle cx="408" cy="154" r="6" class="tl-part"/>
+            <text x="140" y="176" class="tl-n">mount, UTS, IPC, PID, network, user: six arrivals, eleven years</text>
+        </svg>
+
+        <p>The counterexample assembled itself elsewhere, and honesty requires the full sentence: Linux built namespaces one at a time between 2002 and 2013, mount first, user last, each useful alone, composition left to whoever came along. That produced flexibility no monolithic boundary offers, and an ecosystem won on merit. It also produced a decade of escape stories that almost never involve a hole in any single namespace. They involve the seams: a namespace forgotten, a capability too many, a descriptor inherited. When assembly is the user's job, assembly errors are the user's attack surface.</p>
+
+        <h2>The coarse grain, priced</h2>
+
+        <p>The jail is the environment-sized answer, and on ZFS it is cheaper than its reputation.</p>
+
+        <p>A thin jail is a clone of a base-system snapshot. The clone takes milliseconds regardless of the base system's size, occupies roughly five megabytes until it diverges, and is a first-class filesystem: snapshot it, roll it back, send it to another machine, destroy it with one command. A thick jail with its own userland runs to about ninety-one megabytes. Above both sits bhyve for the cases that genuinely need a foreign kernel. Three sizes, one operating system, no daemon between you and any of them.</p>
+
+        <svg viewBox="0 0 560 300"
+             aria-label="Three nested layers of isolation on FreeBSD, drawn as boxes inside boxes. The outermost is bhyve, a full virtual machine with its own kernel, for anything needing a foreign operating system. Inside it sits the jail layer: a thin jail of about five megabytes sharing the host kernel, or a thick jail of about ninety-one megabytes with its own userland. Innermost is Capsicum, which confines a single process to the file descriptors it already holds, at no storage cost at all."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ly-t    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 12px; font-weight: 700; }
+                .ly-name { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10.5px; font-weight: 700; }
+                .ly-sub  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8.5px; }
+                .ly-cost { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .ly-box1 { fill: none; stroke: var(--border); stroke-width: 2; }
+                .ly-box2 { fill: none; stroke: var(--muted); stroke-width: 2; }
+                .ly-box3 { fill: var(--accent); opacity: 0.14; stroke: var(--accent); stroke-width: 2; }
+            </style>
+            <text x="30" y="22" class="ly-t">One base system, three sizes of boundary</text>
+
+            <rect x="30" y="40" width="500" height="230" rx="4" class="ly-box1"/>
+            <text x="44" y="60" class="ly-name">bhyve</text>
+            <text x="44" y="74" class="ly-sub">own kernel, any operating system</text>
+            <text x="440" y="60" class="ly-cost">full image</text>
+
+            <rect x="60" y="92" width="440" height="150" rx="4" class="ly-box2"/>
+            <text x="74" y="112" class="ly-name">jail</text>
+            <text x="74" y="126" class="ly-sub">host kernel, own userland or shared base</text>
+            <text x="392" y="112" class="ly-cost">~91 MB thick</text>
+            <text x="392" y="126" class="ly-cost">~5 MB thin</text>
+
+            <rect x="94" y="150" width="372" height="74" rx="4" class="ly-box3"/>
+            <text x="110" y="176" class="ly-name">Capsicum</text>
+            <text x="110" y="190" class="ly-sub">one process, only the descriptors it already holds</text>
+            <text x="110" y="212" class="ly-sub">no policy file, no way back out</text>
+            <text x="392" y="176" class="ly-cost">2 lines of C</text>
+
+            <text x="30" y="292" class="ly-sub">Each boundary is enforced by the kernel at the system-call edge. Nothing supervises them from userland.</text>
+        </svg>
+
+        <p>That last clause carries more weight than it seems to. Nothing supervises jails except the kernel, so there is no management process whose crash takes every tenant with it, no root daemon whose socket is a privilege escalation waiting for its CVE, no registry between you and your own filesystem. The restriction is enforced where it cannot be argued with, at the system-call boundary.</p>
+
+        <p>What a jail cannot do, by design, is shrink to fit one process. It is an environment, and an environment was the wrong size for the tcpdump problem. Which is why the same base system grew a second grain.</p>
+
+        <h2>The fine grain, fourteen years on</h2>
+
+        <p>In 2010, Robert Watson and Jonathan Anderson at Cambridge presented Capsicum at USENIX Security and took Best Student Paper for it. The idea inverts the usual sandbox. Instead of writing a policy that lists what a process may not do, the process opens what it needs, limits each descriptor to the operations it will perform, and enters capability mode. There is no way back and no policy file, because there is no policy: the world simply contracts to the descriptors in hand.</p>
+
+        <p>FreeBSD 9.0 carried it experimentally. Since 10.0, in 2014, it has been compiled into the kernel of every FreeBSD system by default, and the list of base utilities that use it reads like a day's ordinary work: <code>tcpdump</code>, <code>dhclient</code>, <code>hastd</code>, <code>kdump</code>, <code>ctld</code>, <code>iscsid</code>, <code>rwhod</code>, even <code>uniq</code>. The pattern in each is the same and fits in a code review: open, limit, enter, work. Where a confined process still needs something global, name resolution being the usual case, a small daemon called Casper provides it through a capability, and Casper's own services run sandboxed in turn.</p>
+
+        <svg viewBox="0 0 560 260"
+             aria-label="Two ways of building a boundary, side by side. On the left, delivered whole: one team, one release cycle, one abstraction, and the failure mode is a bug inside that abstraction. On the right, assembled from parts: several kernel primitives from different subsystems, plus a runtime, a daemon and a policy file, each with its own maintainer and release schedule, and the failure mode is a mistake in the joints between them."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .cp-t    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 12px; font-weight: 700; }
+                .cp-h    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10.5px; font-weight: 700; }
+                .cp-i    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .cp-n    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8.5px; }
+                .cp-a    { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .cp-one  { fill: var(--accent); opacity: 0.16; stroke: var(--accent); stroke-width: 1.5; }
+                .cp-part { fill: none; stroke: var(--border); stroke-width: 1.5; }
+                .cp-seam { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 3 3; }
+                .cp-rule { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="30" y="22" class="cp-t">Where the mistake can live</text>
+
+            <line x1="280" y1="34" x2="280" y2="246" class="cp-rule"/>
+
+            <text x="30" y="52" class="cp-h">Delivered whole</text>
+            <rect x="30" y="64" width="216" height="96" rx="4" class="cp-one"/>
+            <text x="44" y="90" class="cp-i">one abstraction</text>
+            <text x="44" y="108" class="cp-i">one team, one release</text>
+            <text x="44" y="126" class="cp-i">one documentation set</text>
+            <text x="44" y="144" class="cp-i">enforced at the syscall edge</text>
+            <text x="30" y="188" class="cp-a">Failure mode</text>
+            <text x="30" y="204" class="cp-n">a bug inside the abstraction,</text>
+            <text x="30" y="218" class="cp-n">fixed once, by the team that owns it</text>
+
+            <text x="308" y="52" class="cp-h">Assembled from parts</text>
+            <rect x="308" y="64" width="66" height="26" rx="3" class="cp-part"/>
+            <text x="316" y="81" class="cp-i">namespace</text>
+            <rect x="384" y="64" width="66" height="26" rx="3" class="cp-part"/>
+            <text x="392" y="81" class="cp-i">cgroups</text>
+            <rect x="460" y="64" width="66" height="26" rx="3" class="cp-part"/>
+            <text x="468" y="81" class="cp-i">seccomp</text>
+            <rect x="308" y="102" width="66" height="26" rx="3" class="cp-part"/>
+            <text x="316" y="119" class="cp-i">runtime</text>
+            <rect x="384" y="102" width="66" height="26" rx="3" class="cp-part"/>
+            <text x="392" y="119" class="cp-i">daemon</text>
+            <rect x="460" y="102" width="66" height="26" rx="3" class="cp-part"/>
+            <text x="468" y="119" class="cp-i">policy</text>
+
+            <path d="M 374 77 L 384 77 M 450 77 L 460 77 M 341 90 L 341 102 M 417 90 L 417 102 M 493 90 L 493 102 M 374 115 L 384 115 M 450 115 L 460 115" class="cp-seam"/>
+
+            <text x="308" y="150" class="cp-n">seven maintainers, seven schedules</text>
+            <text x="308" y="188" class="cp-a">Failure mode</text>
+            <text x="308" y="204" class="cp-n">a mistake in the joints: one forgotten,</text>
+            <text x="308" y="218" class="cp-n">one too permissive, one inherited</text>
+        </svg>
+
+        <p>Put the two grains side by side and the shape of the design appears. The jail confines an environment you give to somebody else: a tenant, a service, a customer. Capsicum confines a process you run yourself, against the day its input turns hostile. The jail is a landlord's tool. Capsicum belongs to the programmer who has read their own parser and drawn the obvious conclusion. A system that ships both, in the base, under one release cycle, has not answered the isolation question narrowly. It has answered it twice, at the two sizes the question actually comes in.</p>
+
+        <blockquote><p>When assembly is the user's job, assembly errors are the user's attack surface.</p></blockquote>
+
+        <h2>The door for everyone else</h2>
+
+        <p>The standing objection was never about the kernel. It was about the front door: all of this lived in configuration files and the shell, and the shell is a fine interface for people who already know what a jail is.</p>
+
+        <p>It still is, and nothing here retires it. <code>jail.conf</code>, <code>jexec</code>, <code>zfs clone</code>: the complete surface, scriptable, unchanged for a decade, correct in handbook editions old enough to vote. What the ecosystem produced over the years for everyone else was a procession of managers with uneven lifespans, each solving part of the problem, none of them something you could put in front of a person meeting FreeBSD for the first time.</p>
+
+        <p>Since this spring there is Sylve: a management plane in Go and Svelte, first released at the end of Q1 2026 and moving quickly, that puts jails, bhyve and ZFS behind one web interface. Templates, clones, snapshots, clustering, scheduled replication, a terminal in the browser. Two lines in its description do the arguing. It installs with <code>pkg install sylve</code>, and it requires nothing outside the base system. A management tool that adds no dependency tree is rare enough in this decade to be worth writing down, and the FreeBSD Foundation is among those backing it.</p>
+
+        <p>The shell remains concept one. Sylve is the second door, for the hands that want one, and the building did not move to accommodate it.</p>
+
+        <h2>The limit</h2>
+
+        <p>Now the other side of the ledger, because there is one.</p>
+
+        <p>Capsicum works only where the author of the program put it there, and fourteen years after it entered the kernel by default, the list of programs that call <code>cap_enter()</code> remains short. Sandboxing a process this way means restructuring it around its descriptors, which is real work, and most upstream software is written for the operating system it already runs on. The elegant mechanism nobody adopts is a recurring Unix genre, and Capsicum has spent years flirting with membership.</p>
+
+        <p>Sylve is young: first release this spring, version zero point two something as this is written. Promising is a description, and it is not the same description as proven.</p>
+
+        <p>And where the target kernel is Linux, none of this is on the table, which settles the question for a large share of the industry before it is asked. The point was never that the industry chose wrong. The point is that the complaint about coarseness was answered in the base system eleven years ago, and the answer has been running on every FreeBSD machine since, two lines above the packet loop, without once asking for attention.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The receipt:</strong></p>
+            <ul>
+                <li><strong>Two grains, one base system:</strong> the jail confines an environment, Capsicum confines a process, both enforced by the kernel at the system-call edge</li>
+                <li><strong>Prices:</strong> thin jail about five megabytes, thick jail about ninety-one, Capsicum two lines of C and no storage at all</li>
+                <li><strong>Dates:</strong> jails 14 March 2000, Zones 2005, Capsicum default in the kernel from 2014, pledge 2015</li>
+                <li><strong>The limit:</strong> Capsicum needs the program's author, and that list is still short</li>
+                <li><a href="https://www.cl.cam.ac.uk/research/security/capsicum/freebsd.html" target="_blank" rel="noopener">Capsicum for FreeBSD</a> &#x25A0; the version history and the list of base utilities that use it</li>
+                <li><a href="https://www.usenix.org/legacy/event/sec10/tech/full_papers/Watson.pdf" target="_blank" rel="noopener">Capsicum: practical capabilities for UNIX</a> &#x25A0; Watson and Anderson, USENIX Security 2010</li>
+                <li><a href="https://man.freebsd.org/cgi/man.cgi?query=jail&amp;sektion=8" target="_blank" rel="noopener">jail(8)</a> &#x25A0; FreeBSD 4.0, hierarchical jails in 8.0, jail.conf in 9.1</li>
+                <li><a href="https://sylve.io/" target="_blank" rel="noopener">Sylve</a> &#x25A0; the management plane, and the FreeBSD status reports behind it</li>
+                <li><a href="/blog/capsicum-vs-seccomp">Capsicum against Linux seccomp</a> &#x25A0; the same mechanism, held against its Linux counterpart</li>
+                <li><a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">Integrated by Design</a> &#x25A0; chapter 4 carries the thin jail figures and the namespace chronology</li>
+            </ul>
+        </aside>
+
+        <p>The next time somebody tells you process isolation was invented in 2013 and requires a daemon, run <code>tcpdump</code> and consider what it gave up before the first packet arrived.</p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
