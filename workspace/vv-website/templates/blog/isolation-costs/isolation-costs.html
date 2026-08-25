@@ -1,0 +1,260 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}What Isolation Actually Costs &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="A five-minute lightning talk announced the future of Linux containers in 2013; the isolation on stage had been shipping in FreeBSD's base system for thirteen years. The bench measured the distance: the fence costs 0 ms, the image carries 151 packages for one web server, and the invoice was always for everything around it.">
+{( endslot )}
+
+{( slot canonical )}/blog/isolation-costs{( endslot )}
+
+{( slot og-title )}What Isolation Actually Costs &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The Bench Marker. The industry benchmarks containers against containers; this bench measured against the isolation that ships in a base system. Capsicum and jails cost nothing a scale can find, nginx:latest carries 151 Debian packages for one web server, and the running tab of daemon, registry meter and licence describes costs that did not exist before the workaround arrived.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "What Isolation Actually Costs",
+    "datePublished": "2026-08-25",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/isolation-costs",
+    "description": "The Bench Marker, measuring the best-told legend of the past decade: isolation used to be heavy, Docker made it light, and light means free. On 15 March 2013 Solomon Hykes gave a five-minute lightning talk at PyCon in Santa Clara titled The Future of Linux Containers; at the moment the applause started, the isolation being announced had been shipping in FreeBSD's base system for thirteen years. The bench, FreeBSD 15.0 on a Ryzen 5 3600 with a jail rolled back to a golden ZFS snapshot before every series, ran fifty lines of C two hundred thousand times: a plain process on the host took a median 460.9 ms, the same code inside a jail 462.1 ms, and locked into Capsicum capability mode 457.8 ms, the confined variant fastest of the three, which is measurement noise saying the fence is free, while a jail cold-starts in 0.17 seconds. The parcel told the other half: through the registry API and without Docker installed, nginx:latest for amd64 weighs 63,327,223 bytes in seven layers; unpacked, its own dpkg ledger lists 151 Debian packages and 324 executables in the service of exactly one web server, the Linux fragmentation of 2013 vacuum-packed and posted to every recipient, while pkg install nginx fetches the server and its single dependency pcre2 at ten megabytes in 1.02 seconds, starting in 0.02 seconds at eleven megabytes resident. The running tab quotes the industry's own paper trail: a dockerd and containerd pair around 144 megabytes resident while idle, running as root, taking every container down on restart because live-restore ships off; a registry metering anonymous pulls at one hundred per six hours with a tightening to ten per hour announced and merely postponed; Docker Desktop at 9 to 24 dollars per seat per month past 250 employees or ten million in revenue; and every CVE among those 151 packages meaning a rebuilt image and 63 megabytes reshipped fleet-wide on the maintainer's schedule, where the base system answers with a 1.7-megabyte package. Docker monetised a political problem and left the technical one where it stood; the future announced in Santa Clara had been shipping for thirteen years, and the invoice was for everything around it.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-25">25 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>What Isolation Actually Costs</h1>
+        <p class="vv-article-meta"><em>A five-minute lightning talk from 2013, and a kernel feature that had been shipping since 2000. The Bench Marker.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">containers</span>
+            <span class="vv-pill">docker</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">benchmarks</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>The Bench Marker</em> &#x25A0; Measured 25 August 2026
+
+        <p>On 15 March 2013, at PyCon in Santa Clara, Solomon Hykes stepped on stage for a five-minute lightning talk titled "The Future of Linux Containers". The demo became Docker, the company followed the demo, and the industry followed the company. By any commercial measure it was the most successful five minutes in the history of packaging software.</p>
+
+        <p>At the moment the applause started, the isolation being announced as the future had been shipping in FreeBSD's base system for thirteen years. This column measures the difference between those two sentences.</p>
+
+        <h2>The problem that needed a product</h2>
+
+        <p>Docker exists because Linux is fragmented. The platform never agreed on a package format: deb, rpm, apk, pacman's tarballs. Beneath that sit two C libraries with different opinions, and beneath those a long argument about init systems. A binary built on one distribution carries no promise of running on the next, and by 2013 that gap was costing real money on real mornings.</p>
+
+        <p>Docker's answer was capitulation dressed as engineering: if the distributions cannot agree on a system, ship the whole system with every application. The fragmentation stayed exactly where it was, shrink-wrapped into every parcel, and the industry traded distribution fragmentation for base image fragmentation, which is the same argument one floor up: ubuntu or alpine, slim or distroless, whose libc, whose patch schedule.</p>
+
+        <p>To say the fair thing once and plainly: as a mechanism for moving an artefact from a build server onto a Linux host, this is honest engineering, and in 2013 it beat everything else on offer. The question for a bench is different. What does the arrangement cost, measured against a system that never had the political problem in the first place?</p>
+
+        <svg viewBox="0 0 560 330"
+             aria-label="Two roads from a developer to one running web server, drawn as a network. The upper road passes through the docker CLI, then dockerd running as root with about 144 megabytes resident, then containerd, then a metered registry allowing one hundred anonymous pulls per six hours, then an image of seven layers and 63.3 megabytes carrying 151 packages, before nginx finally serves. The lower road passes through pkg and an unmetered mirror, fetching two packages of ten megabytes in about one second, and arrives at the same server."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bm-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .bm-node  { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .bm-nodeb { fill: none; stroke: var(--accent); stroke-width: 1.2; rx: 4; }
+                .bm-nodeg { fill: none; stroke: #4ab542; stroke-width: 1.2; rx: 4; }
+                .bm-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .bm-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 8px; font-weight: 700; }
+                .bm-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 8px; font-weight: 700; }
+                .bm-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .bm-edge  { stroke: var(--border); stroke-width: 1; fill: none; }
+                .bm-edgeb { stroke: var(--accent); stroke-width: 1; fill: none; }
+                .bm-edgeg { stroke: #4ab542; stroke-width: 1.2; fill: none; }
+            </style>
+            <text x="280" y="20" class="bm-title" text-anchor="middle">Two roads to one web server</text>
+
+            <rect x="10" y="150" width="52" height="26" class="bm-node"/>
+            <text x="36" y="166" class="bm-item" text-anchor="middle">you</text>
+
+            <rect x="92" y="60" width="66" height="26" class="bm-nodeb"/>
+            <text x="125" y="76" class="bm-item" text-anchor="middle">docker CLI</text>
+            <rect x="188" y="60" width="72" height="26" class="bm-nodeb"/>
+            <text x="224" y="71" class="bm-item" text-anchor="middle">dockerd</text>
+            <text x="224" y="81" class="bm-bad" text-anchor="middle">root &#xB7; 144 MB idle</text>
+            <rect x="290" y="60" width="70" height="26" class="bm-nodeb"/>
+            <text x="325" y="76" class="bm-item" text-anchor="middle">containerd</text>
+            <rect x="390" y="52" width="76" height="34" class="bm-nodeb"/>
+            <text x="428" y="65" class="bm-item" text-anchor="middle">registry</text>
+            <text x="428" y="79" class="bm-bad" text-anchor="middle">100 pulls / 6 h</text>
+            <rect x="330" y="118" width="136" height="34" class="bm-nodeb"/>
+            <text x="398" y="131" class="bm-item" text-anchor="middle">image: 7 layers &#xB7; 63.3 MB</text>
+            <text x="398" y="145" class="bm-bad" text-anchor="middle">151 packages inside</text>
+
+            <line x1="62" y1="155" x2="92" y2="76" class="bm-edgeb"/>
+            <line x1="158" y1="73" x2="188" y2="73" class="bm-edgeb"/>
+            <line x1="260" y1="73" x2="290" y2="73" class="bm-edgeb"/>
+            <line x1="360" y1="73" x2="390" y2="69" class="bm-edgeb"/>
+            <line x1="428" y1="86" x2="410" y2="118" class="bm-edgeb"/>
+            <line x1="398" y1="152" x2="470" y2="180" class="bm-edgeb"/>
+
+            <rect x="120" y="230" width="52" height="26" class="bm-nodeg"/>
+            <text x="146" y="246" class="bm-item" text-anchor="middle">pkg</text>
+            <rect x="220" y="222" width="88" height="34" class="bm-nodeg"/>
+            <text x="264" y="235" class="bm-item" text-anchor="middle">mirror</text>
+            <text x="264" y="249" class="bm-good" text-anchor="middle">no account &#xB7; no meter</text>
+            <rect x="345" y="222" width="120" height="34" class="bm-nodeg"/>
+            <text x="405" y="235" class="bm-item" text-anchor="middle">nginx + pcre2</text>
+            <text x="405" y="249" class="bm-good" text-anchor="middle">10 MB &#xB7; 1.02 s</text>
+
+            <line x1="62" y1="170" x2="120" y2="240" class="bm-edgeg"/>
+            <line x1="172" y1="243" x2="220" y2="241" class="bm-edgeg"/>
+            <line x1="308" y1="239" x2="345" y2="239" class="bm-edgeg"/>
+            <line x1="465" y1="235" x2="490" y2="200" class="bm-edgeg"/>
+
+            <rect x="470" y="172" width="80" height="34" class="bm-node"/>
+            <text x="510" y="185" class="bm-item" text-anchor="middle">one web</text>
+            <text x="510" y="197" class="bm-item" text-anchor="middle">server, serving</text>
+
+            <text x="36" y="300" class="bm-muted">Every station on the upper road is a cost that did not exist before the tool arrived.</text>
+        </svg>
+
+        <h2>The scale, tared</h2>
+
+        <p>The legend requires isolation to have been heavy before 2013, so the first measurement tares the scale. The bench is a rented machine in Falkenstein: AMD Ryzen 5 3600, 64 GB, NVMe, FreeBSD 15.0-RELEASE. The vessel is a jail, rolled back to a golden ZFS snapshot before every series. The probe is fifty lines of C that write four kilobytes to a file and read them back, two hundred thousand times over; a second variant adds <code>cap_rights_limit()</code> and <code>cap_enter()</code>, locking the process into Capsicum capability mode, where it may keep its work but may never open anything new.</p>
+
+<pre><code>capbench, 200,000 x 4 KiB write+read, medians of five runs
+plain process, host          460.9 ms
+plain process, jail          462.1 ms
+capability mode, jail        457.8 ms
+jail start, cold             0.17-0.18 s</code></pre>
+
+        <p>The capability-mode median came in nine tenths of a per cent below the unrestricted one, which is the polite way of saying the two are indistinguishable. Host and jail sit within a millisecond and a half of each other across half a second of work, and a jail cold-starts in under a fifth of a second. Twenty-six years in the base system, and the price of the fence is too small for this bench to find.</p>
+
+        <p>On this kernel there was never anything heavy to make light. The lightning talk was solving a different operating system's problem.</p>
+
+        <h2>The parcel, opened</h2>
+
+        <p>nginx, ordered twice, both sides counted as compressed bytes over the wire so that neither side is flattered. The Docker side was weighed without Docker, through a registry token and the manifest API: <code>nginx:latest</code> for amd64 arrives as 63,327,223 bytes in seven layers; <code>nginx:alpine</code> brings it down to 26,253,895 bytes, and there the published comparisons usually stop. This one kept going. Unpacked in the same jail and read from the image's own dpkg ledger, <code>nginx:latest</code> carries 151 Debian packages and 324 executables in its system paths, in the service of exactly one web server. Every package chosen by the image maintainer rather than by you, every one ageing on a schedule you do not control, every one attack surface that arrived uninvited. That is the fragmentation of 2013, vacuum-packed and posted to every recipient, worldwide, daily.</p>
+
+        <svg viewBox="0 0 560 210"
+             aria-label="Bar chart of compressed bytes over the wire for the same web server. nginx latest through the registry: 63.3 megabytes. nginx alpine: 26.3 megabytes. FreeBSD pkg with nginx and pcre2: 10.1 megabytes."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .by-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .by-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .by-val   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .by-valg  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .by-bar   { fill: var(--accent); rx: 2; }
+                .by-barg  { fill: #4ab542; rx: 2; }
+                .by-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+            </style>
+            <text x="280" y="20" class="by-title" text-anchor="middle">Bytes over the wire, same web server</text>
+            <text x="20" y="58" class="by-item">nginx:latest</text>
+            <rect x="130" y="46" width="380" height="16" class="by-bar"/>
+            <text x="516" y="58" class="by-val" text-anchor="end">63.3 MB</text>
+            <text x="20" y="98" class="by-item">nginx:alpine</text>
+            <rect x="130" y="86" width="158" height="16" class="by-bar"/>
+            <text x="296" y="98" class="by-val">26.3 MB</text>
+            <text x="20" y="138" class="by-item">pkg install nginx</text>
+            <rect x="130" y="126" width="61" height="16" class="by-barg"/>
+            <text x="199" y="138" class="by-valg">10.1 MB</text>
+            <text x="130" y="180" class="by-muted">Compressed transfer bytes, measured 25 August 2026; registry weighed via manifest API, no Docker involved.</text>
+        </svg>
+
+        <p>The FreeBSD side of the same errand: <code>pkg install nginx</code> fetches the web server at 1,715,152 bytes and exactly one dependency, pcre2, at 8,411,385 bytes. Ten megabytes over the wire in two parcels, 1.02 seconds from command to installed, a service start in two hundredths of a second, eleven megabytes resident.</p>
+
+        <p>The structural point sits underneath the numbers. FreeBSD has distributions of its own: GhostBSD, TrueNAS, pfSense, OPNsense. Yet no FreeBSD Docker exists, and none is missed, because base system and packages are separate by design, one kernel, one userland, one source tree, and a package built for the release runs on all of them. Nothing in that design ever needed rescuing.</p>
+
+        <h2>The workaround's own economy</h2>
+
+        <p>Every line in this section describes a cost that did not exist before the workaround arrived, and each is quoted from the industry's own paper trail.</p>
+
+        <p>The daemon: dockerd and containerd reside in memory before the first container earns its keep, around 144 megabytes idle by a published Debian measurement (our own rig for that figure is not finished, so it is borrowed and marked as such in the protocol below). The pair runs as root, and with live-restore off by default, restarting it takes every running container down. The registry: a metered counter in front of every install, one hundred anonymous pulls per six hours, the announced cut to ten per hour merely postponed; <code>toomanyrequests</code> is standard operating procedure on a busy CI day. The licence: Docker Desktop at 9 to 24 dollars per seat per month once a company crosses 250 employees or ten million in revenue. The cadence: every CVE among those 151 packages means rebuilding the image and reshipping 63 megabytes to the whole fleet, on the maintainer's schedule, while the base system answers the same CVE with a 1.7-megabyte package. The debugging: "works in Docker" has quietly replaced "works on my machine" as the sentence that opens a lost afternoon.</p>
+
+        <p>And between the nodes runs the low-grade kerfuffle the industry has learnt to file under normal operations. We have not measured it and say so plainly; the operators have documented it for us, in an entire curated archive of public Kubernetes post-mortems whose recurring characters are conntrack tables, DNS timeouts and overlay networks, and in the CNCF's own survey, where a third of respondents still name complexity as a top challenge ten years into the ecosystem. Tools that solve problems which did not exist before the tools arrived: that pattern has a paper trail long enough to count as a tendency, and it is quoted here as exactly that.</p>
+
+        <svg viewBox="0 0 560 190"
+             aria-label="Four key figures from the bench. Zero milliseconds: the measurable cost of Capsicum capability mode. 0.17 seconds: a jail starting cold. 151: Debian packages inside the nginx latest image. 144 megabytes: the idle dockerd and containerd pair, quoted from a published measurement."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .kp-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .kp-big   { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 26px; font-weight: 700; }
+                .kp-bigb  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 26px; font-weight: 700; }
+                .kp-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .kp-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+            </style>
+            <text x="280" y="22" class="kp-title" text-anchor="middle">The bench, in four figures</text>
+            <rect x="15" y="45" width="125" height="100" class="kp-box"/>
+            <text x="77" y="95" class="kp-big" text-anchor="middle">0 ms</text>
+            <text x="77" y="118" class="kp-item" text-anchor="middle">capability mode,</text>
+            <text x="77" y="130" class="kp-item" text-anchor="middle">measurable cost</text>
+            <rect x="150" y="45" width="125" height="100" class="kp-box"/>
+            <text x="212" y="95" class="kp-big" text-anchor="middle">0.17 s</text>
+            <text x="212" y="118" class="kp-item" text-anchor="middle">jail, cold start</text>
+            <rect x="285" y="45" width="125" height="100" class="kp-box"/>
+            <text x="347" y="95" class="kp-bigb" text-anchor="middle">151</text>
+            <text x="347" y="118" class="kp-item" text-anchor="middle">packages inside</text>
+            <text x="347" y="130" class="kp-item" text-anchor="middle">nginx:latest</text>
+            <rect x="420" y="45" width="125" height="100" class="kp-box"/>
+            <text x="482" y="95" class="kp-bigb" text-anchor="middle">144 MB</text>
+            <text x="482" y="118" class="kp-item" text-anchor="middle">daemon pair, idle</text>
+            <text x="482" y="130" class="kp-item" text-anchor="middle">(quoted)</text>
+        </svg>
+
+        <p>On its own terms the adjective holds: a container is lighter than a virtual machine, and alpine is lighter than debian. The fence itself, on either kernel, costs nothing a bench can find; that part of the legend was true, and it was never the part being sold. The bill begins where the product begins: 151 packages in the parcel, a metered counter in front of every install, a root daemon keeping 144 megabytes warm, a licence check at the office door, and an update cadence set by somebody else's base image.</p>
+
+        <blockquote><p>Docker monetised a political problem and left the technical one where it stood. On the kernel that never had the political problem, this morning's entire apparatus came to two packages, ten megabytes and a fifth of a second.</p></blockquote>
+
+        <p>The future of Linux containers, as announced in Santa Clara, had at that moment been shipping for thirteen years. The invoice was for everything around it.</p>
+
+        <h2>Measurement data and commands</h2>
+
+<pre><code>capbench.c   200,000 x 4 KiB write+read against a /tmp file;
+             unrestricted vs cap_rights_limit(CAP_READ|CAP_WRITE|CAP_SEEK)
+             + cap_enter(); cc -O2; five runs per variant, medians reported
+jail runs    jail test_and_benchmarks, FreeBSD 15.0-RELEASE, rolled back
+             to a golden ZFS snapshot before each series; base system only
+jail start   service jail start, three runs: 0.18 / 0.18 / 0.17 s
+registry     auth.docker.io token + registry-1.docker.io manifest API for
+             nginx:latest and nginx:alpine (amd64), compressed layer sizes
+             summed; no Docker involved
+census       all seven nginx:latest layers fetched via the blob API and
+             unpacked in the jail; packages counted from /var/lib/dpkg/status,
+             executables counted under bin and sbin paths; unpacked disk size
+             discarded as not proven, the dpkg ledger counts stand
+freebsd      pkg install nginx in the fresh jail, timed; service nginx
+             onestart; resident size via ps -o rss
+bench        Hetzner AX41-NVMe, AMD Ryzen 5 3600, 64 GB, NVMe,
+             FreeBSD 15.0-RELEASE, measured 25 August 2026
+not here     Docker's own runtime on this hardware; the idle-daemon figure
+             and the whole running tab are quoted, sources below</code></pre>
+
+        <aside class="vv-aside">
+            <p><strong>The receipts:</strong></p>
+            <ul>
+                <li><a href="https://www.youtube.com/watch?v=wW9CAH9nSLs" target="_blank" rel="noopener">Hykes, "The Future of Linux Containers", PyCon lightning talk, 15 March 2013</a></li>
+                <li><a href="https://www.docker.com/resources/what-container/" target="_blank" rel="noopener">Docker, "What is a container?"</a></li>
+                <li><a href="https://www.docker.com/blog/revisiting-docker-hub-policies-prioritizing-developer-experience/" target="_blank" rel="noopener">Docker on Hub rate limits, the postponed tightening and the notice promise</a></li>
+                <li><a href="https://www.docker.com/pricing/" target="_blank" rel="noopener">Docker pricing and the Desktop licence thresholds</a></li>
+                <li><a href="https://docs.docker.com/engine/daemon/live-restore/" target="_blank" rel="noopener">Docker documentation, live restore</a></li>
+                <li><a href="https://botmonster.com/self-hosting/podman-vs-docker-linux-container-runtime/" target="_blank" rel="noopener">Idle footprint of dockerd + containerd, measured on Debian</a></li>
+                <li><a href="https://k8s.af/" target="_blank" rel="noopener">Kubernetes Failure Stories, the curated post-mortem archive</a></li>
+                <li><a href="https://www.cncf.io/reports/cncf-annual-survey-2024/" target="_blank" rel="noopener">CNCF Annual Survey 2024</a></li>
+                <li><a href="https://papers.freebsd.org/2000/phk-jails.files/sane2000-jail.pdf" target="_blank" rel="noopener">Kamp &amp; Watson, "Jails: Confining the omnipotent root", 2000</a></li>
+                <li><a href="https://www.usenix.org/legacy/event/sec10/tech/full_papers/Watson.pdf" target="_blank" rel="noopener">Watson et al., "Capsicum: practical capabilities for UNIX", USENIX Security 2010</a></li>
+                <li><a href="https://docs.freebsd.org/en/books/handbook/jails/" target="_blank" rel="noopener">FreeBSD Handbook, Jails and Containers</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
