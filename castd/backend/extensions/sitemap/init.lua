@@ -40,6 +40,7 @@ local pages = {
     { loc = "/series/divide-et-impera",   priority = "0.6", changefreq = "monthly" },
     { loc = "/series/bsd-field-guide",   priority = "0.6", changefreq = "monthly" },
     -- blog articles
+    { loc = "/blog/trust-does-not-travel",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/confirmation-service",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/isolation-costs",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/sandbox-inside-the-jail",   priority = "0.7", changefreq = "yearly" },

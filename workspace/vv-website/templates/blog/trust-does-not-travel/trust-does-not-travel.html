@@ -1,0 +1,250 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Trust Does Not Travel &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="The most patient attack in software history took three years of good manners and never touched a firewall. A thesis on where trust is actually founded: at every handover, by someone who answers for what they saw. With the xz timeline, the Debian key incident, Conway's reading, and Thompson's counterargument given its full weight.">
+{( endslot )}
+
+{( slot canonical )}/blog/trust-does-not-travel{( endslot )}
+
+{( slot og-title )}Trust Does Not Travel &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}IT Philosophy. The industry stands on the assumption that trust is transitive: I trust my vendor, the vendor trusts the image, the image trusts the distribution. The xz backdoor and the Debian key incident say otherwise. At every handover trust is either founded again by someone who answers for what they saw, or it quietly evaporates while the artefact keeps moving.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Trust Does Not Travel",
+    "datePublished": "2026-08-27",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/trust-does-not-travel",
+    "description": "IT Philosophy examines the assumption the whole industry stands on and nobody defends out loud: that trust is transitive. In late 2021 a polite stranger began sending good patches to xz, a small compression library half the internet depends on; by 2023 he was a maintainer, and in March 2024 he shipped a backdoor aimed at the SSH daemons of the world, stopped only because a database engineer grew irritated at half a second of login latency. Nobody broke the cryptography and nobody found a hole in the review: the attack was aimed at a handover, and the handover worked as designed. The pattern has a history. In 2006 a Debian packager asked upstream about two OpenSSL lines, received an ambiguous answer, and for twenty months every key generated on Debian descendants came from a pool of 32,768 possibilities; the failure lived in the gap between two projects, in a seam with no owner and no signature. The grown-up industries settled this long ago: trust travels across bridges and through aircraft because nobody expects it to travel alone, with a stamped calculation, a mill certificate, a signed weld and a name at every station. Software built the chains of aviation and kept the paperwork of the scrap trade, its founding document a licence clause in capital letters declaring the software AS IS. Conway's 1968 reading explains the difference structurally: systems copy the communication structures of the organisations that build them, so a base system built as one tree by one project carries its short trust path in its very organisation. Thompson's 1984 proof stands as the limit: no chain fully closes, every stack ends in compilers and silicon nobody audits, and the short path reduces exposure without eliminating it. The judgement: trust may travel the way freight travels, declared and signed, with a name on every waybill. The most successful exploit of the decade was a promotion.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-27">27 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Trust Does Not Travel</h1>
+        <p class="vv-article-meta"><em>The most patient attack in software history never touched a firewall, and the industry it embarrassed still runs on the assumption it disproved. IT Philosophy.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">it philosophy</span>
+            <span class="vv-pill">supply chain</span>
+            <span class="vv-pill">security</span>
+            <span class="vv-pill">open source</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>In late 2021 a polite stranger began sending patches to a small compression library that half the internet quietly depends on. The patches were good. The manners were better. When a small kerfuffle of strangers arose on the mailing list, complaining that maintenance was too slow, the exhausted volunteer who had carried the project for years did what any decent person would do with a competent, patient helper standing by: he shared the keys. By 2023 the stranger was a maintainer. In March 2024 he shipped a backdoor into xz 5.6.0, aimed at the SSH daemons of the world, and it reached the release channels of major distributions before a database engineer noticed his logins were half a second slow and went looking.</p>
+
+        <p>Note what was attacked. Nobody broke the cryptography, and nobody found a hole in the code review. The attack was aimed at a handover, and the handover worked exactly as designed.</p>
+
+        <svg viewBox="0 0 560 240"
+             aria-label="A timeline from late 2021 to March 2024. Late 2021: a stranger's first patches arrive at xz. During 2022: pressure builds on the mailing list, the exhausted maintainer shares the load. 2023: the stranger is a maintainer and releases carry his signature. February 2024: a backdoor ships in xz 5.6.0, aimed at SSH daemons. 29 March 2024: a database engineer, irritated by half a second of login latency, finds it. The caption reads: three years of good manners, one handover."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tx-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tx-year  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .tx-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .tx-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tx-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .tx-axis  { stroke: var(--border); stroke-width: 1.5; }
+                .tx-tick  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="280" y="22" class="tx-title" text-anchor="middle">Three years of good manners, one handover</text>
+            <line x1="30" y1="120" x2="530" y2="120" class="tx-axis"/>
+
+            <circle cx="60" cy="120" r="4" fill="var(--muted)"/>
+            <line x1="60" y1="120" x2="60" y2="90" class="tx-tick"/>
+            <text x="60" y="76" class="tx-year" text-anchor="middle">late 2021</text>
+            <text x="60" y="88" class="tx-item" text-anchor="middle">first patches</text>
+
+            <circle cx="170" cy="120" r="4" fill="var(--muted)"/>
+            <line x1="170" y1="120" x2="170" y2="150" class="tx-tick"/>
+            <text x="170" y="164" class="tx-year" text-anchor="middle">2022</text>
+            <text x="170" y="176" class="tx-item" text-anchor="middle">pressure on the list,</text>
+            <text x="170" y="188" class="tx-item" text-anchor="middle">the tired volunteer shares the load</text>
+
+            <circle cx="300" cy="120" r="4" fill="var(--muted)"/>
+            <line x1="300" y1="120" x2="300" y2="90" class="tx-tick"/>
+            <text x="300" y="76" class="tx-year" text-anchor="middle">2023</text>
+            <text x="300" y="88" class="tx-item" text-anchor="middle">the stranger is a maintainer</text>
+
+            <circle cx="420" cy="120" r="4" fill="var(--accent)"/>
+            <line x1="420" y1="120" x2="420" y2="150" class="tx-tick"/>
+            <text x="420" y="164" class="tx-year" text-anchor="middle">Feb 2024</text>
+            <text x="420" y="176" class="tx-item" text-anchor="middle">backdoor ships in 5.6.0,</text>
+            <text x="420" y="188" class="tx-item" text-anchor="middle">aimed at SSH daemons</text>
+
+            <circle cx="505" cy="120" r="4" fill="#4ab542"/>
+            <line x1="505" y1="120" x2="505" y2="90" class="tx-tick"/>
+            <text x="500" y="76" class="tx-good" text-anchor="end">29 Mar 2024</text>
+            <text x="500" y="88" class="tx-item" text-anchor="end">found: half a second of latency</text>
+
+            <text x="280" y="222" class="tx-muted" text-anchor="middle">No cryptography broken, no review defeated. One handover.</text>
+        </svg>
+
+        <p>The assumption under examination today is one the whole industry stands on and nobody defends out loud: that trust is transitive. I trust my vendor, my vendor trusts the image, the image trusts the distribution, the distribution trusts a tarball signed by whoever answered the mailing list most patiently. Chain enough of these together and you arrive at the modern stack: everyone trusts the next link, and nobody can name whom they are ultimately trusting. The thesis of this piece is that trust does not travel. At every handover it is either founded again, by someone who looks and answers for what they saw, or it quietly evaporates while the artefact keeps moving.</p>
+
+        <h2>The evidence of the handover</h2>
+
+        <p>The pattern is old enough to have a history. In 2006 a Debian packager, doing conscientious work, asked upstream whether two lines in OpenSSL could be removed to silence a debugging tool. The answer on the list was ambiguous, the two lines died, and for the following twenty months every key generated on Debian and its descendants came from a pool of 32,768 possibilities. The failure sat in neither project. It lived in the gap between them, in a handover that had no owner, no protocol and no signature, and it stayed invisible for so long precisely because each side assumed the other was watching.</p>
+
+        <p>The small version of the same story runs constantly. When a libc started using a new kernel call, faccessat2, that the seccomp filters in container runtimes did not recognise, the resulting breakage was filed in six different bug trackers across four independent projects, each of which had behaved correctly by its own lights. Nobody owned the seam. The bug lived in the assembly, and assemblies file no reports.</p>
+
+        <p>And beneath the incidents sits the everyday chain nobody files at all: a distribution assembled to one team's judgement, picked from a list by an image author, bundled by a vendor, pulled by an operations team. Four handovers before the software earns a single request, and if you ask who along that line examined the whole, the honest answer is that the question has no addressee.</p>
+
+        <svg viewBox="0 0 560 250"
+             aria-label="A matrix of three incidents against three questions. The Debian OpenSSL incident of 2006: the flaw lived in the gap between two projects, the seam belonged to nobody, the cost was twenty months of keys from 32,768 possibilities. The xz backdoor of 2024: the flaw lived in the handover of maintainership, the seam belonged to nobody, the cost was a backdoor in the world's SSH daemons. The faccessat2 breakage of 2020: the flaw lived in the assembly of libc and container filters, the seam belonged to nobody, the cost was six bug trackers across four projects. The column stating who owned the seam reads nobody in every row."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tm-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tm-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .tm-row   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; font-weight: 700; }
+                .tm-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .tm-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .tm-line  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="280" y="22" class="tm-title" text-anchor="middle">Three incidents, one empty column</text>
+
+            <text x="150" y="52" class="tm-head" text-anchor="middle">where the flaw lived</text>
+            <text x="330" y="52" class="tm-head" text-anchor="middle">who owned the seam</text>
+            <text x="470" y="52" class="tm-head" text-anchor="middle">the bill</text>
+            <line x1="16" y1="60" x2="544" y2="60" class="tm-line"/>
+
+            <text x="16" y="84" class="tm-row">Debian/OpenSSL 2006</text>
+            <text x="150" y="100" class="tm-item" text-anchor="middle">the gap between two projects</text>
+            <text x="330" y="100" class="tm-bad" text-anchor="middle">nobody</text>
+            <text x="470" y="94" class="tm-item" text-anchor="middle">20 months, every key</text>
+            <text x="470" y="106" class="tm-item" text-anchor="middle">from 32,768</text>
+            <line x1="16" y1="116" x2="544" y2="116" class="tm-line"/>
+
+            <text x="16" y="140" class="tm-row">xz backdoor 2024</text>
+            <text x="150" y="156" class="tm-item" text-anchor="middle">the handover of maintainership</text>
+            <text x="330" y="156" class="tm-bad" text-anchor="middle">nobody</text>
+            <text x="470" y="150" class="tm-item" text-anchor="middle">a backdoor at the</text>
+            <text x="470" y="162" class="tm-item" text-anchor="middle">world's SSH daemons</text>
+            <line x1="16" y1="172" x2="544" y2="172" class="tm-line"/>
+
+            <text x="16" y="196" class="tm-row">faccessat2 2020</text>
+            <text x="150" y="212" class="tm-item" text-anchor="middle">the assembly of libc + filters</text>
+            <text x="330" y="212" class="tm-bad" text-anchor="middle">nobody</text>
+            <text x="470" y="206" class="tm-item" text-anchor="middle">6 bug trackers,</text>
+            <text x="470" y="218" class="tm-item" text-anchor="middle">4 projects</text>
+
+            <text x="280" y="242" class="tm-head" text-anchor="middle">The middle column is the thesis.</text>
+        </svg>
+
+        <h2>What the grown-up industries know</h2>
+
+        <p>The comparison industries settled this long ago. Trust travels across a bridge, and across an aircraft, over chains far longer than anything in software. It travels because nobody expects it to travel on its own. The structural engineer stamps the calculation and answers for it with a licence. The steel arrives with a mill certificate. The inspector signs the weld. At every station, a person with a name re-founds the trust before passing it on, and the paper trail is the institution that makes long chains survivable. Arms-length delivery without signatures is what scrap dealers do, and everyone prices scrap accordingly.</p>
+
+        <p>Software built the chains of aviation and kept the paperwork of the scrap trade. The industry's founding document on the subject is a licence clause in capital letters declaring the software provided AS IS, without warranty of any kind, and every EULA since has inherited its spirit. The one regulation now trying to bolt signatures onto the chain, the EU's Cyber Resilience Act, is discovering in real time how hard that is when half the supply line is a gift economy.</p>
+
+        <svg viewBox="0 0 560 300"
+             aria-label="Two chains side by side with the same four stations. On the left, a bridge: the engineer stamps the calculation, the steel carries a mill certificate, the inspector signs the weld, and a name stands at every station; each link is marked signed in green. On the right, a software stack: a maintainer assembles, an image author picks, a vendor bundles, operations pulls; each link is marked no signature in orange, and the final station reads AS IS, in capital letters. The caption reads: the same division of labour, one difference."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tw-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tw-side  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .tw-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .tw-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 8px; font-weight: 700; }
+                .tw-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 8px; font-weight: 700; }
+                .tw-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .tw-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .tw-boxg  { fill: none; stroke: #4ab542; stroke-width: 1; rx: 4; }
+                .tw-boxb  { fill: none; stroke: var(--accent); stroke-width: 1.2; rx: 4; }
+                .tw-line  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="280" y="22" class="tw-title" text-anchor="middle">The same division of labour, one difference</text>
+
+            <text x="145" y="48" class="tw-side" text-anchor="middle">a bridge</text>
+            <rect x="60" y="60" width="170" height="30" class="tw-boxg"/>
+            <text x="145" y="74" class="tw-item" text-anchor="middle">engineer stamps the calculation</text>
+            <text x="145" y="85" class="tw-good" text-anchor="middle">signed, with a licence</text>
+            <line x1="145" y1="90" x2="145" y2="104" class="tw-line"/>
+            <rect x="60" y="104" width="170" height="30" class="tw-boxg"/>
+            <text x="145" y="118" class="tw-item" text-anchor="middle">steel arrives with certificate</text>
+            <text x="145" y="129" class="tw-good" text-anchor="middle">signed, by the mill</text>
+            <line x1="145" y1="134" x2="145" y2="148" class="tw-line"/>
+            <rect x="60" y="148" width="170" height="30" class="tw-boxg"/>
+            <text x="145" y="162" class="tw-item" text-anchor="middle">inspector signs the weld</text>
+            <text x="145" y="173" class="tw-good" text-anchor="middle">signed, by name</text>
+            <line x1="145" y1="178" x2="145" y2="192" class="tw-line"/>
+            <rect x="60" y="192" width="170" height="30" class="tw-boxg"/>
+            <text x="145" y="206" class="tw-item" text-anchor="middle">the chain holds for decades</text>
+            <text x="145" y="217" class="tw-good" text-anchor="middle">a name at every station</text>
+
+            <text x="415" y="48" class="tw-side" text-anchor="middle">a software stack</text>
+            <rect x="330" y="60" width="170" height="30" class="tw-box"/>
+            <text x="415" y="74" class="tw-item" text-anchor="middle">maintainer assembles</text>
+            <text x="415" y="85" class="tw-bad" text-anchor="middle">no signature</text>
+            <line x1="415" y1="90" x2="415" y2="104" class="tw-line"/>
+            <rect x="330" y="104" width="170" height="30" class="tw-box"/>
+            <text x="415" y="118" class="tw-item" text-anchor="middle">image author picks from a list</text>
+            <text x="415" y="129" class="tw-bad" text-anchor="middle">no signature</text>
+            <line x1="415" y1="134" x2="415" y2="148" class="tw-line"/>
+            <rect x="330" y="148" width="170" height="30" class="tw-box"/>
+            <text x="415" y="162" class="tw-item" text-anchor="middle">vendor bundles the image</text>
+            <text x="415" y="173" class="tw-bad" text-anchor="middle">no signature</text>
+            <line x1="415" y1="178" x2="415" y2="192" class="tw-line"/>
+            <rect x="330" y="192" width="170" height="30" class="tw-boxb"/>
+            <text x="415" y="206" class="tw-item" text-anchor="middle">operations pulls the bundle</text>
+            <text x="415" y="217" class="tw-bad" text-anchor="middle">AS IS, in capital letters</text>
+
+            <text x="280" y="252" class="tw-muted" text-anchor="middle">Freight travels declared and inspected, with a name on every waybill.</text>
+            <text x="280" y="266" class="tw-muted" text-anchor="middle">Arms-length delivery without papers is priced like scrap.</text>
+        </svg>
+
+        <p>There is also a structural reading, and it is Melvin Conway's, from 1968: systems copy the communication structures of the organisations that build them. Trust architecture is no exception. A stack assembled from a dozen organisations that communicate through tarballs will have trust seams wherever the organisations have boundaries. A base system built as one tree, by one project, reviewed in the context of the whole and released as one artefact, carries its short trust path in its very organisation, and its ports tree extends the habit: every distributed file with a recorded checksum in distinfo, one curated collection, one place where the question of who examined this has an answer that is a team rather than a shrug. I wrote <a href="https://vossscher-verlag.com" target="_blank" rel="noopener">a book about that distinction</a>, and the shortest summary fits here: integrated systems solve problems once, assembled systems solve them repeatedly, and unexamined handovers are where the repetition lives.</p>
+
+        <h2>The strongest objection</h2>
+
+        <p>The counterargument deserves its full weight, because it is mostly right. Without transitive trust there is no modern software. Nobody builds from sand; nobody audits their compiler, their firmware, their silicon. Ken Thompson made the point definitively in 1984: a compromised compiler can reproduce its own compromise invisibly, so no amount of source reading saves you, and the only code you can fully trust is code you totally created yourself, which is to say none worth running. Even the structural engineer trusts standards bodies and steel mills she has never visited. Division of labour is what civilisation is, and a philosophy that ends in "trust nobody" ends in a shed in the Hebrides.</p>
+
+        <p>All of that stands. And none of it defends the current arrangement, because the grown-up industries run on division of labour too. They did not abolish long chains. They refused to run them unsigned.</p>
+
+        <blockquote><p>Everyone trusts the next link; nobody can name whom they are ultimately trusting, and the bill arrives unsigned.</p></blockquote>
+
+        <p>The judgement, then. Trust may travel, and in any working economy it must. It travels the way freight travels: declared, inspected at borders, a name on every waybill, and a party who answers when the crate arrives empty. What software normalised is freight without papers, and the past twenty years of supply-chain incidents are the predictable customs record of that choice. The practical consequences are unglamorous. Prefer short chains where they exist. Where they cannot exist, treat every handover as a place where trust must be re-founded: a checksum that is recorded, a review that sees the whole, a maintainer who is known, an owner for every seam. And when a stack offers you four handovers signed by nobody, price it the way the scrap trade is priced, whatever the brochure says.</p>
+
+        <h2>The limit</h2>
+
+        <p>The limit of this position is real and stands in plain view. Thompson has never been refuted, only lived with: every chain, however short, ends in compilers, firmware and silicon that neither you nor your favourite base system's team has examined, so the short path is a reduction of exposure and never its elimination. The AS IS clause, meanwhile, is simply the honest price tag of a gift economy, and FreeBSD's licence carries it in the same capital letters as everyone else's. Nobody may demand a warranty from a volunteer, which is exactly the knot the Cyber Resilience Act is tying itself into, since liability forced onto unpaid maintainers produces resignations rather than signatures. The difference this piece argues for is organisational, and organisational differences bind nobody in court. They only change how often you end up there.</p>
+
+        <p>The stranger who took over xz was stopped by luck and one engineer's irritation at half a second of latency. The lesson filed under his name is usually about code. It should be about handovers.</p>
+
+        <p>The most successful exploit of the decade was a promotion.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The record:</strong></p>
+            <ul>
+                <li><a href="https://www.openwall.com/lists/oss-security/2024/03/29/4" target="_blank" rel="noopener">Backdoor in xz 5.6.0/5.6.1 (CVE-2024-3094), disclosure mail by Andres Freund, 29 March 2024</a></li>
+                <li><a href="https://www.debian.org/security/2008/dsa-1571" target="_blank" rel="noopener">Debian OpenSSL weak-key incident, 2008 (CVE-2008-0166), advisory DSA-1571</a></li>
+                <li><a href="https://dl.acm.org/doi/10.1145/358198.358210" target="_blank" rel="noopener">Ken Thompson, "Reflections on Trusting Trust", Turing Award lecture, 1984</a></li>
+                <li><a href="https://www.melconway.com/Home/Committees_Paper.html" target="_blank" rel="noopener">Melvin Conway, "How Do Committees Invent?", 1968</a></li>
+                <li><a href="https://eur-lex.europa.eu/eli/reg/2024/2847/oj" target="_blank" rel="noopener">EU Cyber Resilience Act, Regulation (EU) 2024/2847</a></li>
+                <li><a href="https://bugzilla.redhat.com/show_bug.cgi?id=1869030" target="_blank" rel="noopener">The faccessat2/seccomp breakage across projects, Red Hat Bugzilla 1869030</a></li>
+                <li><a href="https://docs.freebsd.org/en/books/porters-handbook/" target="_blank" rel="noopener">FreeBSD ports and distinfo checksums, Porter's Handbook</a></li>
+                <li><a href="https://vossscher-verlag.com" target="_blank" rel="noopener">Vivian Voss, "Integrated by Design", Vossscher Verlag</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
