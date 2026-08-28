@@ -1,0 +1,329 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Seven Lines of WireGuard &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="On FreeBSD the tunnel belongs to no package at all: pkg which finds neither the tool nor the kernel module, because both came with the system. Two independent teams implemented the same specification, and the base system does it in nine files against Linux's twenty-seven. A measurement sheet.">
+{( endslot )}
+
+{( slot canonical )}/blog/wireguard-lines{( endslot )}
+
+{( slot og-title )}Seven Lines of WireGuard &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Technical Beauty Scope. A working tunnel is seven lines of configuration and two keys of thirty-two bytes each. Six years of kernel maintenance added ninety-two lines to the protocol underneath, and the file count never moved. Measured on FreeBSD 15.0, where WireGuard is part of the system rather than a package.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Seven Lines of WireGuard",
+    "datePublished": "2026-08-28",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/wireguard-lines",
+    "description": "Technical Beauty Scope measures WireGuard from the FreeBSD side, where pkg which finds neither the wg tool nor the if_wg kernel module because both arrive with the base system rather than as a package. A working point-to-point tunnel is seven lines of configuration and two keys of thirty-two bytes each; AllowedIPs serves as routing table and access rule in one statement, there is no connection to establish or tear down, and roaming works because a peer endpoint is learned from its most recent authenticated packet. The famous four thousand lines has one primary source, the whitepaper, with the qualifier that it excludes cryptographic primitives and means the Linux module only. Counted today, FreeBSD's independent reimplementation holds the protocol in 4,364 lines across nine files while Linux uses 4,703 across twenty-seven, a difference of seven per cent between two teams sharing no code. The Linux module grew from 4,569 lines at its 5.6 debut to 4,661 today, ninety-two lines in six years and five months with the file count unchanged. OpenVPN also has a kernel module since Linux 6.16 at 4,692 lines, but it carries only the data path, with control channel and certificates in a userspace daemon of 86,225 lines resting on 456,972 lines of OpenSSL; strongSwan is 395,558. Thirteen constants in messages.h govern the protocol in time and none is exposed; wg-quick recognises fifteen configuration keys against OpenVPN's 297. Ten CVEs across six years and seven platforms, none touching the cryptography, against OpenVPN's 28. The one serious failure is FreeBSD advisory SA-26:52 of 29 July 2026, where if_wg accepted packets whose authentication tag it never checked. In 2021 the FreeBSD core team removed a hastily rewritten port from 13.0 rather than ship a driver nobody would stand behind; it returned in 13.2. The performance claim of ten gigabits and fifty-seven per cent is withdrawn: it appears neither on wireguard.com nor in the whitepaper.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-28">28 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Seven Lines of WireGuard</h1>
+        <p class="vv-article-meta"><em>On FreeBSD it belongs to no package at all. Seven lines of configuration, a key pair, and two independent teams who implemented the same specification to within seven per cent of each other. Technical Beauty Scope.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">technical beauty</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">wireguard</span>
+            <span class="vv-pill">networking</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Somewhere around 2015 a security researcher was writing a kernel rootkit, and he had a problem that had nothing to do with the rootkit itself. He needed to get data out. Whatever carried it had to be quiet enough that a machine running it would not announce itself to anyone scanning the network, and small enough that he could hold the whole thing in his head. He was also, separately, rather tired of OpenVPN and IPsec, having spent time finding bugs in both. The plan involved an exit point on his parents' computer, and installing a rootkit on his parents' computer struck even him as a poor idea. So, as he put it later, he started taking out the nasty code.</p>
+
+        <p>What remained is now in the FreeBSD base system, in OpenBSD, in NetBSD, in the Linux kernel and on a few hundred million telephones. The stealth requirement never left. It is why a WireGuard endpoint says nothing at all when an unauthenticated packet arrives, which is a pleasant thing to have on a machine facing the open internet.</p>
+
+        <p>On the machine where I write this, it belongs to nobody:</p>
+
+        <pre><code># pkg which /usr/bin/wg
+/usr/bin/wg was not found in the database
+# pkg which /boot/kernel/if_wg.ko
+/boot/kernel/if_wg.ko was not found in the database</code></pre>
+
+        <p>Neither file is in any package, because both arrived with the system, along with their manual page in section eight. There is no port to install, no repository to trust and no version to reconcile with the kernel's. On a Linux machine WireGuard is a module the distribution happens to ship; here it is part of the same tree that produced the kernel and the userland, released as one tested thing. That difference is the whole argument of this publication, and it is unusual to find it demonstrated quite so plainly.</p>
+
+        <p>I wrote about WireGuard last December, and that piece did what love letters do: it asserted things. Four thousand lines. Modern cryptography. Ten gigabits against OpenVPN's hundred megabits. Every one of those was borrowed from somewhere else, and not one was checked. This series exists to go back and check, so let us start with the part a reader can actually do something with.</p>
+
+        <h2>What it is like to use</h2>
+
+        <p>Setting up a tunnel begins with a key pair, and the command that makes one has no options worth mentioning:</p>
+
+        <pre><code>wg genkey | tee private.key | wg pubkey &gt; public.key</code></pre>
+
+        <p>Thirty-two bytes each. No certificate authority, no signing request, no expiry date, no chain to validate at three in the morning. You send the public half to whoever is on the other end, by any means at all, and they send you theirs.</p>
+
+        <p>Then the configuration, and this is the whole of it for a working point-to-point tunnel:</p>
+
+        <pre><code>[Interface]
+PrivateKey = &lt;your 32 bytes, base64&gt;
+ListenPort = 51820
+
+[Peer]
+PublicKey = &lt;their 32 bytes, base64&gt;
+AllowedIPs = 10.7.0.2/32
+Endpoint = far.example:51820</code></pre>
+
+        <p>Seven lines. <code>wg-quick up wg0</code> and the interface exists, behaving like any other interface on the machine: it shows up in <code>ifconfig</code>, you route over it, your firewall sees it, and nothing about it needs special handling.</p>
+
+        <p>The line worth pausing on is <code>AllowedIPs</code>, because it does two jobs that every other VPN keeps in separate systems. Outbound, it is the routing table: traffic for 10.7.0.2 goes to this peer. Inbound, it is the access rule: a packet claiming to come from 10.7.0.2 is only accepted if it arrived, correctly authenticated, from this peer's key. Donenfeld calls the arrangement cryptokey routing, and the practical upshot is that identity and route are the same statement. There is no situation in which a peer is authorised but misrouted, because there is only one place where either is written down.</p>
+
+        <svg viewBox="0 0 560 260"
+             aria-label="A topology diagram of two peers connected by one tunnel. On the left a machine holding its own private key and the public key of the other side; on the right the mirror image. Between them a single line labelled as the encrypted tunnel. Under each machine a box shows its AllowedIPs entry, and an annotation explains that the same entry serves as the routing table outbound and as the access rule inbound. A third machine below, without a key, sends a packet at the tunnel and receives nothing back."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wg-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .wg-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .wg-mut   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .wg-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .wg-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .wg-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .wg-tun   { stroke: #4ab542; stroke-width: 2.5; fill: none; }
+                .wg-dead  { stroke: var(--accent); stroke-width: 1.2; fill: none; stroke-dasharray: 4 3; }
+            </style>
+            <text x="280" y="20" class="wg-title" text-anchor="middle">One tunnel, one statement per peer</text>
+
+            <rect x="20" y="46" width="150" height="58" class="wg-box"/>
+            <text x="95" y="64" class="wg-item" text-anchor="middle">peer A</text>
+            <text x="95" y="80" class="wg-mut" text-anchor="middle">own private key</text>
+            <text x="95" y="94" class="wg-mut" text-anchor="middle">public key of B</text>
+
+            <rect x="390" y="46" width="150" height="58" class="wg-box"/>
+            <text x="465" y="64" class="wg-item" text-anchor="middle">peer B</text>
+            <text x="465" y="80" class="wg-mut" text-anchor="middle">own private key</text>
+            <text x="465" y="94" class="wg-mut" text-anchor="middle">public key of A</text>
+
+            <line x1="170" y1="75" x2="390" y2="75" class="wg-tun"/>
+            <text x="280" y="68" class="wg-good" text-anchor="middle">encrypted tunnel</text>
+            <text x="280" y="92" class="wg-mut" text-anchor="middle">ChaCha20-Poly1305, keys rotated every 120 s</text>
+
+            <rect x="20" y="126" width="150" height="42" class="wg-box"/>
+            <text x="95" y="142" class="wg-mut" text-anchor="middle">AllowedIPs = 10.7.0.2/32</text>
+            <text x="95" y="158" class="wg-item" text-anchor="middle">route out, accept in</text>
+
+            <rect x="390" y="126" width="150" height="42" class="wg-box"/>
+            <text x="465" y="142" class="wg-mut" text-anchor="middle">AllowedIPs = 10.7.0.1/32</text>
+            <text x="465" y="158" class="wg-item" text-anchor="middle">route out, accept in</text>
+
+            <rect x="205" y="196" width="150" height="44" class="wg-box"/>
+            <text x="280" y="214" class="wg-item" text-anchor="middle">anyone without a key</text>
+            <text x="280" y="230" class="wg-bad" text-anchor="middle">receives no answer at all</text>
+            <line x1="280" y1="196" x2="280" y2="110" class="wg-dead"/>
+        </svg>
+
+        <p>Two more things a person notices in the first week.</p>
+
+        <p>There is no connection. Nothing to establish, nothing to tear down, no session that can be up while the tunnel is down. The interface either exists or it does not, and packets either authenticate or they are dropped. A handshake happens when there is traffic and the current keys are older than two minutes, and it happens invisibly.</p>
+
+        <p>And roaming works without anyone arranging it. The endpoint address for a peer is learned from the most recent correctly authenticated packet, so when a telephone leaves the office wireless and picks up a mobile connection, the tunnel simply continues from the new address. An SSH session survives it. Nobody has ever thanked a VPN for that, which is roughly the intended effect.</p>
+
+        <h2>Two teams, one specification</h2>
+
+        <p>Now the claim. The famous figure has exactly one primary source, and it carries a qualifier that tends to fall off in transmission: the whitepaper says fewer than four thousand lines, <strong>excluding cryptographic primitives</strong>, and it means the Linux kernel module. Not the tools, not the Go implementation, not any other operating system.</p>
+
+        <p>Start with the implementation on this machine, since that is the one I can hold up. FreeBSD's <code>wg</code> driver is a separate piece of work from Donenfeld's Linux code, written against the specification rather than ported from it. With comments and blank lines removed, and the bundled cryptography counted separately, its protocol part is 4,364 lines in nine files.</p>
+
+        <p>Linux, measured the same way, is 4,703 lines in twenty-seven.</p>
+
+        <p>Two teams, two operating systems, no shared code, and a difference of seven per cent in the line count. A specification that lands two independent implementations that close together has said what it means, and that is a harder thing to achieve than any line count.</p>
+
+        <p>The file counts are where the two traditions part company. FreeBSD's driver holds the protocol in nine files: the interface, the Noise handshake, the cookie machinery, the allowed-IP table, and the cryptography beside them. Linux spreads the same work across twenty-seven. Neither arrangement is wrong, and the smaller one is easier to read end to end in an afternoon, which is the claim the whitepaper actually made and the one the base system happens to deliver.</p>
+
+        <p>The Linux side also carries the longer paper trail, which is worth having: at its kernel debut in version 5.6 the module was 4,569 lines across 27 files, and today it is 4,661 across the same 27. Six years and five months of maintenance in the busiest kernel subsystem there is, and the thing grew by ninety-two lines. The file count did not move at all. Kernel subsystems do not usually behave that way.</p>
+
+        <p>The comparison everyone reaches for has quietly stopped working, though, and it is worth knowing why before using it. OpenVPN has a kernel module now too, <code>ovpn</code>, merged in Linux 6.16 last July, and it measures 4,692 lines. Within thirty-one lines of WireGuard.</p>
+
+        <svg viewBox="0 0 560 300"
+             aria-label="A logarithmic bar chart of source lines. FreeBSD's WireGuard driver 4,364 lines. Linux WireGuard module 4,703. OpenVPN's kernel module 4,692. OpenVPN's userspace daemon 86,225. strongSwan 395,558. The parts of OpenSSL that OpenVPN uses 456,972. The first three bars are almost identical in length, the last three are far longer."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .bl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .bl-lab   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .bl-val   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .bl-mut   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .bl-bar   { fill: var(--border); rx: 2; }
+                .bl-good  { fill: #4ab542; rx: 2; }
+                .bl-acc   { fill: var(--accent); rx: 2; }
+            </style>
+            <text x="280" y="20" class="bl-title" text-anchor="middle">Source lines, logarithmic scale</text>
+
+            <text x="16" y="52" class="bl-lab">FreeBSD wg driver</text>
+            <rect x="200" y="43" width="150" height="12" class="bl-good"/>
+            <text x="356" y="53" class="bl-val">4,364</text>
+
+            <text x="16" y="76" class="bl-lab">Linux wireguard module</text>
+            <rect x="200" y="67" width="152" height="12" class="bl-good"/>
+            <text x="358" y="77" class="bl-val">4,703</text>
+
+            <text x="16" y="100" class="bl-lab">OpenVPN ovpn module</text>
+            <rect x="200" y="91" width="152" height="12" class="bl-bar"/>
+            <text x="358" y="101" class="bl-val">4,692</text>
+
+            <text x="16" y="124" class="bl-lab">OpenVPN daemon</text>
+            <rect x="200" y="115" width="248" height="12" class="bl-acc"/>
+            <text x="454" y="125" class="bl-val">86,225</text>
+
+            <text x="16" y="148" class="bl-lab">strongSwan</text>
+            <rect x="200" y="139" width="302" height="12" class="bl-acc"/>
+            <text x="508" y="149" class="bl-val">395,558</text>
+
+            <text x="16" y="172" class="bl-lab">OpenSSL, parts in use</text>
+            <rect x="200" y="163" width="310" height="12" class="bl-acc"/>
+            <text x="516" y="173" class="bl-val">456,972</text>
+
+            <line x1="200" y1="186" x2="540" y2="186" stroke="var(--border)" stroke-width="1"/>
+            <text x="280" y="206" class="bl-mut" text-anchor="middle">The top three bars carry the same job in three separate code bases.</text>
+            <text x="280" y="220" class="bl-mut" text-anchor="middle">Only the first two contain a complete protocol.</text>
+        </svg>
+
+        <p>The difference lies in what fits inside the size. WireGuard's lines are the entire protocol: handshake, key derivation, transport, rekeying, the lot. OpenVPN's 4,692 are the data path alone; its control channel, TLS session, certificate handling and configuration parser live in a userspace daemon of 86,225 lines, which leans in turn on OpenSSL, where the parts OpenVPN actually uses come to 456,972 lines. strongSwan, doing the same job by way of IPsec, is 395,558 lines in its own tree. So the fair statement is that WireGuard's module is the whole protocol, while OpenVPN's is one component of a considerably larger machine, and the seven lines of configuration above are what that architectural difference feels like from the outside.</p>
+
+        <svg viewBox="0 0 560 280"
+             aria-label="Two stacks side by side showing where the work lives. On the left, WireGuard: one kernel module containing handshake, key derivation, transport and rekeying, with nothing above it but the seven-line configuration file. On the right, OpenVPN: a kernel module holding only the data path, a userspace daemon holding control channel, TLS and certificates, an OpenSSL library beneath that, and a public key infrastructure above with certificate authority, server and client certificates and keys."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ly-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ly-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .ly-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .ly-mut   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .ly-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .ly-boxg  { fill: none; stroke: #4ab542; stroke-width: 1.4; rx: 3; }
+            </style>
+            <text x="280" y="20" class="ly-title" text-anchor="middle">Where the work lives</text>
+
+            <text x="140" y="44" class="ly-head" text-anchor="middle">WireGuard</text>
+            <rect x="30" y="54" width="220" height="26" class="ly-box"/>
+            <text x="140" y="71" class="ly-item" text-anchor="middle">wg0.conf, seven lines</text>
+            <rect x="30" y="88" width="220" height="86" class="ly-boxg"/>
+            <text x="140" y="108" class="ly-item" text-anchor="middle">kernel module</text>
+            <text x="140" y="124" class="ly-mut" text-anchor="middle">handshake · key derivation</text>
+            <text x="140" y="138" class="ly-mut" text-anchor="middle">transport · rekeying</text>
+            <text x="140" y="158" class="ly-mut" text-anchor="middle">9 files, 4,364 lines</text>
+
+            <text x="420" y="44" class="ly-head" text-anchor="middle">OpenVPN</text>
+            <rect x="310" y="54" width="220" height="26" class="ly-box"/>
+            <text x="420" y="71" class="ly-item" text-anchor="middle">PKI: CA, certificates, keys</text>
+            <rect x="310" y="88" width="220" height="26" class="ly-box"/>
+            <text x="420" y="105" class="ly-item" text-anchor="middle">config file, 297 options available</text>
+            <rect x="310" y="122" width="220" height="34" class="ly-box"/>
+            <text x="420" y="136" class="ly-item" text-anchor="middle">userspace daemon</text>
+            <text x="420" y="150" class="ly-mut" text-anchor="middle">control channel · TLS · certificates · 86,225 lines</text>
+            <rect x="310" y="164" width="220" height="26" class="ly-box"/>
+            <text x="420" y="181" class="ly-mut" text-anchor="middle">OpenSSL, 456,972 lines in use</text>
+            <rect x="310" y="198" width="220" height="26" class="ly-box"/>
+            <text x="420" y="215" class="ly-mut" text-anchor="middle">kernel module, data path only, 4,692 lines</text>
+
+            <text x="280" y="252" class="ly-mut" text-anchor="middle">Both columns deliver an encrypted tunnel. One of them fits in a single box.</text>
+        </svg>
+
+        <p>The binaries tell the same story inside one system, which is the only place a size comparison is ever fair. <code>if_wg.ko</code> is 147,008 bytes; <code>ipsec.ko</code>, built from the same source tree with the same flags in the same release, is 207,360. The tool <code>wg</code> is 91,112 bytes stripped and links against three libraries, none of them OpenSSL. No PAM either, and no plugin loader. The tunnel that ships with the system is smaller than the tunnel that has shipped with every Unix since the nineties.</p>
+
+        <h2>The decisions you are not allowed to make</h2>
+
+        <p>There is a second kind of smallness that a line count misses, and it is the one an operator feels.</p>
+
+        <p>A working WireGuard tunnel between two machines is seven lines of configuration and two key pairs, thirty-two bytes each. The equivalent OpenVPN setup, using the sample configuration files the project itself ships, requires a certificate authority, a server certificate, a server key, a client certificate and a client key, before anybody has typed a line about routing. <code>wg-quick</code> recognises fifteen configuration keys in total, and four of those are hooks for running shell commands. OpenVPN's manual documents 297 options.</p>
+
+        <p>Then there are the numbers nobody gets to touch. The file <code>messages.h</code> holds an enum of thirteen constants that govern the protocol's behaviour in time: rekey after 120 seconds, reject after 180, retry the handshake every 5, send a keepalive after 10 seconds of silence, accept at most 50 handshake initiations per second. None of them is exposed. There is no tunable, no sysctl, no configuration directive. The only timing value an operator may set is <code>PersistentKeepalive</code>, and that one exists for punching through NAT rather than for changing how the cryptography behaves.</p>
+
+        <p>An OpenVPN deployment that goes wrong at three in the morning usually goes wrong because somebody once set an option that made sense at the time. WireGuard removes that failure mode by removing the options, and thirteen constants in a header file are what the removal looks like in practice.</p>
+
+        <h2>Security: a very short list, and one uncomfortable entry</h2>
+
+        <p>Across six years and seven platforms, WireGuard's own components account for ten CVEs. Seven of them are in the Linux module, and their character is uniform: a memory leak when IPv6 is disabled, a data race fixed by a <code>READ_ONCE</code> annotation, a null-pointer dereference in the netlink code, an unaligned 64-bit access on PA-RISC hardware. Local fault classes, every one. None touches the cryptography, none permits remote code execution, and none has ever appeared in the exploited-vulnerabilities catalogue.</p>
+
+        <p>For scale, and using the same query against the same database over the same period: OpenVPN has 28, of which 22 score 7.0 or higher and five sit between 9.1 and 9.8. strongSwan has 8, of which 7 are 7.0 or higher. The usual caveat applies with force here, because attention manufactures CVEs and a tool nobody examines looks spotless. WireGuard is examined rather thoroughly, which brings us to the part that is genuinely uncomfortable.</p>
+
+        <p>The single serious failure in the whole record is one month old, and it is ours. FreeBSD advisory SA-26:52, published on 29 July 2026: the <code>if_wg</code> driver dispatched packets to the OpenCrypto framework and then failed to check whether the authentication tag had actually verified. Forged transport data was accepted. CVSS 7.5, reported by Reo Shiseki, fixed. It is the only case in six years where a WireGuard implementation lost a cryptographic guarantee, and it happened in FreeBSD's own reimplementation of the protocol rather than in Donenfeld's code. That belongs in this piece precisely because the rest of the sheet reads so well. What followed is also worth recording: a reporter with a name, an advisory with a number, a patch, and a public description of exactly what went wrong. A base system earns its keep in that sequence, since faults turn up everywhere and only the quality of the answer varies.</p>
+
+        <p>The four questions this series asks about attack surface get honest answers. It runs in kernel address space, which is more than root. It accepts network data from strangers by design. It gives up no privileges, having none to give up. The fourth answer is the one that carries the weight: it does not parse a complex format. There are four message types, a four-byte header consisting of one type byte and three reserved zeroes, a handshake initiation of exactly 148 bytes and a response of exactly 92. No variable-length fields, no extension list, no version negotiation, no cipher suite identifier. There is very little in that wire format for an attacker to work with.</p>
+
+        <p>The absence is deliberate and the whitepaper is blunt about the reasoning: cipher agility, it argues, increased complexity monumentally, and the continuing torrent of TLS vulnerabilities is the evidence. The handshake follows the IKpsk2 pattern of the Noise Protocol Framework, and the primitives are fixed at ChaCha20-Poly1305 for transport, Curve25519 for key exchange, BLAKE2s for hashing and HKDF for derivation, with XChaCha20-Poly1305 for cookies. Should one of them break, the plan is replacement rather than negotiation: the protocol identifier is hashed into every handshake, so a version two would simply be a different protocol that cannot accidentally speak to version one.</p>
+
+        <p>The handshake itself has been through four independent proof tools, at ACNS 2018, EuroS&amp;P 2019, USENIX Security 2020 and NDSS 2024. Secrecy, authentication, forward secrecy and key-compromise-impersonation resistance all hold. Identity hiding does not, and both the researchers and the project say so. Every handshake message carries a MAC computed over the recipient's public key, which means anybody holding a candidate key can test it by recomputation. Since VPN providers publish their server keys to subscribers, the practical consequence is that WireGuard does not hide who is talking to whom. The 2024 paper went further and found something no proof had modelled: implementations precompute the static-static Diffie-Hellman product when an interface is configured and keep it in memory, which makes an attacker with access to that memory as powerful as one holding the private key.</p>
+
+        <h2>Longevity: where it lives, and who keeps it</h2>
+
+        <p>FreeBSD in the base system since 13.2. OpenBSD since 6.8, NetBSD since 10.0, Linux mainline since 5.6 in March 2020. The gap in that first sentence covers an almighty palaver.</p>
+
+        <p>Netgate commissioned a FreeBSD port that landed in the tree in November 2020. Two weeks before 13.0 shipped, Donenfeld and two others rewrote it in a week, and his account of what they found was unsparing: sleeps added to paper over race conditions, a validation function that returned true, printf statements deep in cryptographic code, and buffer overflows he called spectacular. Kyle Evans, who had done much of the rewriting alongside him, went through the accusations line by line on the same mailing list and disputed the plural in several of them. His verdict on the tone was that it was a highly unnecessary jab, and his verdict on the emergency rewrite was that three developers beating on code for a week is not a higher bar.</p>
+
+        <p>Then the core team did the thing that deserves the attention here: two weeks before a release, with the code written, reviewed in haste and technically working, they took it out. FreeBSD 13.0 shipped without WireGuard rather than with a driver nobody was prepared to stand behind, and development moved outside the base system until it was ready. It returned in 13.2, quietly and properly reviewed, which is the version most people now use without knowing any of this happened.</p>
+
+        <p>That is what the base system guarantee costs to keep, and it is the reason the guarantee is worth anything. A release train that cannot leave a feature on the platform will eventually ship one it should not have.</p>
+
+        <p>Maintenance today is one person. The <code>MAINTAINERS</code> entry for WireGuard lists Donenfeld and nobody else. The tools went nearly four years between releases at one point, the Go implementation has not carried a tag since 2020 while receiving commits into this year, and the Apple client has not been touched since August 2024. Read charitably, that is a finished protocol in careful maintenance, which is exactly what the release history of a completed thing looks like. Read carefully, it is a bus factor of one on software that terminates a good deal of the world's remote access.</p>
+
+        <p>The same author, for what it is worth on the question of whether the judgement behind those thirteen constants is sound, is co-maintainer of the Linux random number generator alongside Theodore Ts'o, and rewrote its entropy extractor from SHA-1 to BLAKE2s in version 5.17.</p>
+
+        <h2>Stability: the interface that did not move</h2>
+
+        <p>A <code>wg0.conf</code> written in 2016 works today, and the same seven lines run unchanged on all four operating systems. The protocol has carried the same identifier string since the beginning, and that string is hashed into the handshake, so compatibility follows from the design rather than from anybody's discipline about it.</p>
+
+        <p>The performance claim is where my own previous piece has to be withdrawn rather than confirmed. Ten gigabits, a hundred megabits, fifty-seven per cent faster: none of those numbers exists on wireguard.com, and none is in the whitepaper. I searched both. What the project actually publishes is a benchmark table from Linux 4.6.1 on gigabit hardware, showing WireGuard at 1,011 Mbit/s against OpenVPN's 258, which is a factor of 3.9 rather than a hundred, and which the project itself now heads with a warning that these benchmarks are old, crusty and not super well conducted. The WireGuard figure is simply line rate; the tooltip notes that the CPU was not maxed out.</p>
+
+        <p>Independent work is more interesting than the marketing would be. A Tübingen group measured on ten-gigabit links in 2020 and found that IPsec with AES-NI beats WireGuard when threads float freely, while WireGuard wins by about thirty per cent once CPUs are pinned. An Amsterdam study the same year gave the throughput crown to strongSwan with AES-GCM, and gave WireGuard connection setup by a distance that is hard to argue with: 6.9 milliseconds against strongSwan's 33.6 and OpenVPN's 1,152.7. Tailscale, working on the userspace Go implementation, reached 13 Gbit/s on a 25-gigabit card in 2023 by fixing segmentation offload.</p>
+
+        <p>The defensible version, then: WireGuard beats OpenVPN comfortably in every independent measurement, ties with well-tuned IPsec on throughput, and establishes a tunnel roughly a hundred and sixty times faster than OpenVPN does. Less quotable than what I published in December, and rather harder to argue with.</p>
+
+        <blockquote><p>A working tunnel is seven lines of configuration and two keys of thirty-two bytes each. Six years of kernel maintenance added ninety-two lines to the thing underneath, and not one file.</p></blockquote>
+
+        <h2>The limit</h2>
+
+        <p>The list of things WireGuard declines to do is longer than the list of things it does, and the refusals are the design.</p>
+
+        <p>It does not distribute keys, and the whitepaper says plainly that this is the wrong layer for that problem. It has no concept of a user, a group, a role or a directory: there is a public key and a list of permitted addresses, and that is the entire authorisation model. It does not assign addresses, and the project's own note on the subject observes that in some cases insane people want dynamic configuration. Everything an organisation actually needs therefore sits in the layer above, which is why Tailscale, NetBird, Headscale and Firezone exist, and why each ships a coordination server, an identity integration, a relay network and a policy engine that together dwarf the protocol underneath. Anyone deploying WireGuard for two hundred laptops is really deploying one of those, with WireGuard as the part that moves the packets.</p>
+
+        <p>It is also easy to spot on the wire. Fixed message types, a reserved field of zeroes, handshake lengths of exactly 148 and 92 bytes, and no padding anywhere: a middlebox needs nothing more, and does not need to decrypt a thing. Russian providers began blocking it in 2021, the Great Firewall followed in 2022, and by 2023 the rule in use was to drop a flow once more than two data packets follow a handshake. The AmneziaWG fork exists to add junk packets and randomised headers, leaving the cryptography untouched. Being quiet towards a scanner does nothing against a censor who is looking at the shape of the packets.</p>
+
+        <p>Add the identity-hiding gap, add the precomputation finding, add a maintainer count of one, and add the kernel address space, where FreeBSD's own reimplementation demonstrated last month what an unchecked return value costs there.</p>
+
+        <p>The whitepaper only ever claimed the tunnel and refused the rest on purpose, and the refusal is what kept the thing at 27 files.</p>
+
+        <p>Ninety-two lines in six years is what finished looks like, and almost nothing in this industry is allowed to get there.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The measurement sheet:</strong></p>
+            <ul>
+                <li><strong>Environment:</strong> FreeBSD 15.0-RELEASE on a Ryzen 5 3600, 64 GB. Sources cloned fresh on 28 August 2026; line counts exclude comments and blank lines, with test directories omitted and self-tests reported separately.</li>
+                <li><strong>Base system, not a package:</strong> <code>pkg which /usr/bin/wg</code> and <code>pkg which /boot/kernel/if_wg.ko</code> both report that the file is not in the database.</li>
+                <li><strong>Source lines:</strong> FreeBSD driver 4,364 in 9 files · Linux module 4,703 in 27 · OpenVPN <code>ovpn</code> module 4,692 · OpenVPN daemon 86,225 · strongSwan 395,558 · OpenSSL parts in use 456,972.</li>
+                <li><strong>Binaries:</strong> <code>if_wg.ko</code> 147,008 bytes · <code>ipsec.ko</code> 207,360 · <code>wg</code> 91,112 stripped, three runtime libraries.</li>
+                <li><strong>Configuration:</strong> 7 effective lines and 2 key pairs, against a certificate authority plus four PKI artefacts; 15 configuration keys against 297 documented options; 13 protocol constants, none of them exposed.</li>
+                <li><a href="https://www.wireguard.com/papers/wireguard.pdf" target="_blank" rel="noopener">WireGuard whitepaper, NDSS 2017, draft revision e2da747</a></li>
+                <li><a href="https://www.wireguard.com/protocol/" target="_blank" rel="noopener">Protocol and cryptography specification</a></li>
+                <li><a href="https://www.wireguard.com/known-limitations/" target="_blank" rel="noopener">Known limitations, the project's own list</a></li>
+                <li><a href="https://security.freebsd.org/advisories/FreeBSD-SA-26:52.if_wg.asc" target="_blank" rel="noopener">FreeBSD advisory SA-26:52.if_wg, 29 July 2026</a></li>
+                <li><a href="https://bblanche.gitlabpages.inria.fr/publications/LippBlanchetBhargavanEuroSP19.pdf" target="_blank" rel="noopener">Lipp, Blanchet and Bhargavan, CryptoVerif proof, EuroS&amp;P 2019</a></li>
+                <li><a href="https://www.ndss-symposium.org/ndss-paper/a-unified-symbolic-analysis-of-wireguard/" target="_blank" rel="noopener">A Unified Symbolic Analysis of WireGuard, NDSS 2024</a></li>
+                <li><a href="https://d-nb.info/1210484501/34" target="_blank" rel="noopener">Osswald, Haeberle and Menth, VPN performance, University of Tübingen, 2020</a></li>
+                <li><a href="https://rp.os3.nl/2019-2020/p71/report.pdf" target="_blank" rel="noopener">Dekker and Spaans, VPN implementation comparison, University of Amsterdam, 2020</a></li>
+                <li><a href="https://lists.zx2c4.com/pipermail/wireguard/2021-March/006494.html" target="_blank" rel="noopener">Donenfeld on the FreeBSD port, 15 March 2021</a> and <a href="https://lists.zx2c4.com/pipermail/wireguard/2021-March/006525.html" target="_blank" rel="noopener">Kyle Evans in reply</a></li>
+                <li><a href="https://archive.fosdem.org/2017/interviews/jason-a-donenfeld/" target="_blank" rel="noopener">FOSDEM interview on the rootkit origin, 5 February 2017</a></li>
+                <li><a href="https://vossscher-verlag.com" target="_blank" rel="noopener">Vivian Voss, "Integrated by Design", Vossscher Verlag</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
