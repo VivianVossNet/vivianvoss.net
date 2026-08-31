@@ -1,0 +1,347 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The NFS Under Your Cloud Bill &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="Amazon charges 0.30 dollars per gigabyte-month for EFS and 0.08 for block storage on the same platform. The protocol doing the work arrived in 1984, weighs 1.73 megabytes on FreeBSD and belongs to no package. A receipt.">
+{( endslot )}
+
+{( slot canonical )}/blog/nfs-under-your-cloud-bill{( endslot )}
+
+{( slot og-title )}The NFS Under Your Cloud Bill &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Unix Universe. Sun had a furniture problem in 1984: engineers do not stay at one desk, and their files did. The answer was to slide the network one layer below the file system, and it worked so well that the protocol became invisible. Invisible things can be rented back to you.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The NFS Under Your Cloud Bill",
+    "datePublished": "2026-08-31",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/nfs-under-your-cloud-bill",
+    "description": "Sun Microsystems built NFS in 1984 to solve what was mostly a furniture problem: engineers moved between workstations and their files did not move with them. Every obvious remedy was poor, and the worst would have meant teaching cat, vi, the compiler and the linker to fetch files over a network, each of them handling retries, partial reads and authentication separately and slightly differently. Sun slid the network one layer below the file system instead, where no application had to look at it. The early versions were deliberately stateless because servers crashed in 1984, and a server holding no memory of who had what open has nothing to reconstruct on the way back up; locking is state by definition, so it arrived bolted on the side through a separate daemon, and NFSv4 in 2000 took the state back into the protocol with sessions and delegations. Measured on FreeBSD 15.0-RELEASE the whole thing weighs 1,729,304 bytes across four kernel modules and six userland programs, and pkg which reports that neither mount_nfs nor nfsd is in the package database because both arrived with the system, along with seven manual pages. Exporting a dataset is a ZFS property. What that buys is POSIX semantics across machines: two hosts holding the same file open, writes into the middle of a file, atomic rename, working locks, none of which an object store provides without code somebody has to write and keep. The costs are real too. AUTH_SYS does not authenticate, since the client states which user it is acting for and the server takes it on trust; hard mounts hang in a state that resists interruption when the server stops answering; and every operation costs a round trip, which is why Amazon advertised a forty per cent cut in write latency for files under 64 kilobytes in 2022. Nobody abandoned the protocol. Amazon EFS is NFS, Google Cloud Filestore speaks NFS and nothing else, Azure NetApp Files offers v3 and v4.1, and a Kubernetes volume with ReadWriteMany almost always resolves to an NFS driver. EFS Standard costs 0.30 dollars per gigabyte-month in Northern Virginia against 0.08 for EBS gp3 in the same region: four times the price for a protocol whose client and server together take less room than a phone photograph.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-08-31">31 August 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The NFS Under Your Cloud Bill</h1>
+        <p class="vv-article-meta"><em>It was designed in 1984 so that a person could sit down at any workstation and find their own files waiting. Four decades on it costs 0.30 dollars per gigabyte per month, and most of the people paying that have never seen an exports file. Unix Universe.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">unix universe</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">nfs</span>
+            <span class="vv-pill">storage</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>Sun Microsystems in 1984 had a problem that was mostly furniture. The company sold workstations, the workstations sat in rooms full of engineers, and engineers do not stay at one desk. Somebody would finish a shift on the machine by the window, come in the next morning, and sit down at whichever one was free. Their files were on the machine by the window.</p>
+
+        <p>The obvious answers were all bad. Copy everything overnight and hope nobody edits the same file twice. Give each person one machine and let it idle when they are elsewhere. Or teach every single program on the system how to fetch a file over a network, which means changing <code>cat</code>, <code>vi</code>, the compiler, the linker, and everything anybody might ever write afterwards.</p>
+
+        <p>What Sun did instead was slide the network one layer below the file system, where no application would ever have to look at it. A directory on another machine gets attached to the local tree, and from that moment the kernel answers requests for it by talking to the other machine. Nothing above the kernel knows. <code>cat</code> opens a file and reads bytes from it, exactly as it would on a local disk, and the fact that the bytes travelled over an Ethernet is somebody else's business.</p>
+
+        <p>That is the whole idea, and it is the reason the thing is still here.</p>
+
+        <p>There was a second decision, and it mattered as much as the first. In 1989 Sun published the protocol as RFC 1094, which meant anybody could implement it without asking permission or paying for a licence. A commercial workstation vendor giving away the wire format of its own product was not the obvious move, and the reasoning was straightforwardly self-interested: a protocol that only Sun machines speak is worth less than one that every machine speaks, because customers buy the machine that talks to everything else in the building. The effect outlived the reasoning. Sun was bought in 2010 and the brand has since been retired, and the thing they gave away is now in every operating system worth the name, along with the invoices in the last section of this piece.</p>
+
+        <h2>What it actually solved</h2>
+
+        <p>The trick lay in the decision about where to put the network code.</p>
+
+        <p>Every alternative on offer required applications to know about the network. Once they know, they have to handle it: connection failures, retries, partial reads, authentication, all of it in every program separately, done slightly differently each time. NFS pushed the whole business one layer down and gave applications the interface they already spoke. Open, read, write, close, and a path that starts with a slash.</p>
+
+        <svg viewBox="0 0 560 300"
+             aria-label="Two ways to put a network under a file system. On the left, network code inside every application: cat, vi, the compiler and the linker each carry their own retry logic, partial read handling and authentication, four separate implementations that differ. On the right, the network placed below the file system: the same four programs use the unchanged POSIX interface of open, read, write and close, and one implementation inside the kernel handles retries, partial reads and authentication once for all of them."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .nw-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .nw-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .nw-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .nw-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .nw-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .nw-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 3; }
+                .nw-boxa  { fill: none; stroke: var(--accent); stroke-width: 1; rx: 3; }
+                .nw-boxg  { fill: none; stroke: #4ab542; stroke-width: 1; rx: 3; }
+                .nw-line  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="280" y="20" class="nw-title" text-anchor="middle">Where the network code lives</text>
+
+            <text x="140" y="42" class="nw-head" text-anchor="middle">IN EVERY APPLICATION</text>
+            <rect x="30" y="52" width="48" height="30" class="nw-boxa"/>
+            <text x="54" y="71" class="nw-item" text-anchor="middle">cat</text>
+            <rect x="86" y="52" width="48" height="30" class="nw-boxa"/>
+            <text x="110" y="71" class="nw-item" text-anchor="middle">vi</text>
+            <rect x="142" y="52" width="48" height="30" class="nw-boxa"/>
+            <text x="166" y="71" class="nw-item" text-anchor="middle">cc</text>
+            <rect x="198" y="52" width="48" height="30" class="nw-boxa"/>
+            <text x="222" y="71" class="nw-item" text-anchor="middle">ld</text>
+            <text x="54" y="96" class="nw-muted" text-anchor="middle">retries</text>
+            <text x="110" y="96" class="nw-muted" text-anchor="middle">retries</text>
+            <text x="166" y="96" class="nw-muted" text-anchor="middle">retries</text>
+            <text x="222" y="96" class="nw-muted" text-anchor="middle">retries</text>
+            <text x="54" y="108" class="nw-muted" text-anchor="middle">partial</text>
+            <text x="110" y="108" class="nw-muted" text-anchor="middle">partial</text>
+            <text x="166" y="108" class="nw-muted" text-anchor="middle">partial</text>
+            <text x="222" y="108" class="nw-muted" text-anchor="middle">partial</text>
+            <text x="54" y="120" class="nw-muted" text-anchor="middle">auth</text>
+            <text x="110" y="120" class="nw-muted" text-anchor="middle">auth</text>
+            <text x="166" y="120" class="nw-muted" text-anchor="middle">auth</text>
+            <text x="222" y="120" class="nw-muted" text-anchor="middle">auth</text>
+            <line x1="30" y1="134" x2="246" y2="134" class="nw-line"/>
+            <text x="138" y="152" class="nw-head" text-anchor="middle">four implementations, four behaviours</text>
+            <text x="138" y="168" class="nw-muted" text-anchor="middle">and one more for every program written later</text>
+
+            <line x1="280" y1="34" x2="280" y2="270" class="nw-line"/>
+
+            <text x="420" y="42" class="nw-head" text-anchor="middle">BELOW THE FILE SYSTEM</text>
+            <rect x="314" y="52" width="48" height="30" class="nw-boxg"/>
+            <text x="338" y="71" class="nw-item" text-anchor="middle">cat</text>
+            <rect x="370" y="52" width="48" height="30" class="nw-boxg"/>
+            <text x="394" y="71" class="nw-item" text-anchor="middle">vi</text>
+            <rect x="426" y="52" width="48" height="30" class="nw-boxg"/>
+            <text x="450" y="71" class="nw-item" text-anchor="middle">cc</text>
+            <rect x="482" y="52" width="48" height="30" class="nw-boxg"/>
+            <text x="506" y="71" class="nw-item" text-anchor="middle">ld</text>
+            <text x="422" y="100" class="nw-muted" text-anchor="middle">open  read  write  close</text>
+            <line x1="314" y1="110" x2="530" y2="110" class="nw-line"/>
+            <rect x="314" y="120" width="216" height="40" class="nw-box"/>
+            <text x="422" y="136" class="nw-item" text-anchor="middle">kernel: one implementation</text>
+            <text x="422" y="150" class="nw-muted" text-anchor="middle">retries, partial reads, authentication</text>
+            <text x="422" y="180" class="nw-good" text-anchor="middle">every program later gets it for free</text>
+
+            <text x="280" y="220" class="nw-item" text-anchor="middle">The applications never changed. That was the entire point,</text>
+            <text x="280" y="236" class="nw-item" text-anchor="middle">and it is why the protocol outlived the company that wrote it.</text>
+            <text x="280" y="262" class="nw-muted" text-anchor="middle">Sun Microsystems, 1984</text>
+        </svg>
+
+        <p>The protocol was deliberately stateless in its early versions, and that choice came from watching real machines. Sun assumed servers would crash, because in 1984 they did. A stateless server holds no memory of who has what open, so when it comes back up there is nothing to reconstruct; the client repeats its last request and carries on. A file server rebooting stopped being an incident.</p>
+
+        <p>There is an irony in that which is worth having. Statelessness cannot lock a file, because a lock is state by definition, and the early versions had to bolt locking on the side through a separate daemon that everybody found awkward. NFSv4 took the state back into the protocol, with sessions and delegations, and thereby gave up the property that made version two elegant. The industry has been having the same argument about stateless services ever since, mostly without noticing that a file protocol worked through it forty years earlier.</p>
+
+        <h2>Forty years, and the meter starts</h2>
+
+        <p>The chronology is worth laying out, because the interesting part sits at the end of it, where the line between a protocol and a product stops being obvious.</p>
+
+        <svg viewBox="0 0 560 250"
+             aria-label="Timeline of NFS from 1984 to 2026. 1984: Sun ships NFS version 2, deliberately stateless, and locking runs beside the protocol in a separate daemon. 1989: RFC 1094 publishes version 2 openly, and other vendors implement it. 1995: version 3 in RFC 1813 adds large file support and safe asynchronous writes. 2000: version 4 in RFC 3010 takes state back into the protocol and folds in the mount and lock protocols. 2010: version 4.1 in RFC 5661 adds sessions and parallel NFS. 2016: Amazon launches Elastic File System, which speaks NFSv4.1 and is billed per gigabyte-month. 2026: EFS Standard is 0.30 dollars per gigabyte-month while block storage on the same platform is 0.08."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .tl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .tl-year  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .tl-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .tl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .tl-bad   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .tl-axis  { stroke: var(--border); stroke-width: 1; }
+                .tl-tick  { stroke: var(--border); stroke-width: 1; }
+                .tl-dot   { fill: var(--border); }
+                .tl-dota  { fill: var(--accent); }
+            </style>
+            <text x="280" y="20" class="tl-title" text-anchor="middle">Six specifications and one invoice</text>
+
+            <line x1="40" y1="120" x2="520" y2="120" class="tl-axis"/>
+
+            <circle cx="55" cy="120" r="4" class="tl-dot"/>
+            <line x1="55" y1="120" x2="55" y2="96" class="tl-tick"/>
+            <text x="55" y="88" class="tl-year" text-anchor="middle">1984</text>
+            <text x="55" y="74" class="tl-item" text-anchor="middle">v2</text>
+            <text x="55" y="62" class="tl-muted" text-anchor="middle">stateless</text>
+
+            <circle cx="128" cy="120" r="4" class="tl-dot"/>
+            <line x1="128" y1="120" x2="128" y2="144" class="tl-tick"/>
+            <text x="128" y="158" class="tl-year" text-anchor="middle">1989</text>
+            <text x="128" y="172" class="tl-item" text-anchor="middle">RFC 1094</text>
+            <text x="128" y="184" class="tl-muted" text-anchor="middle">published openly</text>
+
+            <circle cx="205" cy="120" r="4" class="tl-dot"/>
+            <line x1="205" y1="120" x2="205" y2="96" class="tl-tick"/>
+            <text x="205" y="88" class="tl-year" text-anchor="middle">1995</text>
+            <text x="205" y="74" class="tl-item" text-anchor="middle">v3</text>
+            <text x="205" y="62" class="tl-muted" text-anchor="middle">large files</text>
+
+            <circle cx="290" cy="120" r="4" class="tl-dot"/>
+            <line x1="290" y1="120" x2="290" y2="144" class="tl-tick"/>
+            <text x="290" y="158" class="tl-year" text-anchor="middle">2000</text>
+            <text x="290" y="172" class="tl-item" text-anchor="middle">v4</text>
+            <text x="290" y="184" class="tl-muted" text-anchor="middle">state comes back</text>
+
+            <circle cx="368" cy="120" r="4" class="tl-dot"/>
+            <line x1="368" y1="120" x2="368" y2="96" class="tl-tick"/>
+            <text x="368" y="88" class="tl-year" text-anchor="middle">2010</text>
+            <text x="368" y="74" class="tl-item" text-anchor="middle">v4.1</text>
+            <text x="368" y="62" class="tl-muted" text-anchor="middle">sessions, pNFS</text>
+
+            <circle cx="440" cy="120" r="4" class="tl-dota"/>
+            <line x1="440" y1="120" x2="440" y2="144" class="tl-tick"/>
+            <text x="440" y="158" class="tl-year" text-anchor="middle">2016</text>
+            <text x="440" y="172" class="tl-bad" text-anchor="middle">EFS</text>
+            <text x="440" y="184" class="tl-muted" text-anchor="middle">the same v4.1, rented</text>
+
+            <circle cx="508" cy="120" r="4" class="tl-dota"/>
+            <line x1="508" y1="120" x2="508" y2="96" class="tl-tick"/>
+            <text x="508" y="88" class="tl-year" text-anchor="middle">2026</text>
+            <text x="508" y="74" class="tl-bad" text-anchor="middle">0.30</text>
+            <text x="508" y="62" class="tl-muted" text-anchor="middle">per GB-month</text>
+
+            <text x="280" y="220" class="tl-item" text-anchor="middle">Thirty-two years of specification, then ten years of billing.</text>
+            <text x="280" y="238" class="tl-muted" text-anchor="middle">The wire format under the invoice is the one from 2010.</text>
+        </svg>
+
+        <h2>What it still does well</h2>
+
+        <p>On the machine in front of me, the whole thing weighs 1.73 megabytes.</p>
+
+        <pre><code># ls -l /boot/kernel/nfs*.ko
+-r-xr-xr-x  1 root  wheel  229944  nfscommon.ko
+-r-xr-xr-x  1 root  wheel  596616  nfscl.ko
+-r-xr-xr-x  1 root  wheel  544360  nfsd.ko
+-r-xr-xr-x  1 root  wheel  138776  nfslockd.ko
+
+# pkg which /sbin/mount_nfs
+/sbin/mount_nfs was not found in the database
+# pkg which /usr/sbin/nfsd
+/usr/sbin/nfsd was not found in the database</code></pre>
+
+        <p>That covers the client, the server, the lock manager and the automounter, with six userland programs adding another 219,608 bytes. For comparison, in the same kernel build, <code>smbfs.ko</code> is 235,400 and <code>fusefs.ko</code> 207,488.</p>
+
+        <p>None of it belongs to a package. Both files arrived with the system, along with seven manual pages covering <code>exports(5)</code>, <code>mount_nfs(8)</code>, <code>nfsd(8)</code>, <code>mountd(8)</code>, <code>autofs(4)</code>, <code>auto_master(5)</code> and <code>nfsv4(4)</code>. Exporting a dataset is a property rather than a configuration file:</p>
+
+        <pre><code># zfs set sharenfs=on tank/work</code></pre>
+
+        <p>The pool tells the daemon what to publish, and the two facts live in one place instead of two. It is a small thing that shows the difference between a system built as one tree and a system assembled from parts: the filesystem knows it is shared, the share knows which filesystem it belongs to, and there is no third file that can drift out of step with either. On a machine where storage and sharing come from different projects with different release cycles, that arrangement has to be maintained by hand, and it is maintained by hand roughly as well as anything else that has to be maintained by hand.</p>
+
+        <p>The manual pages deserve a word too, because they are the part people skip. Seven pages, written by the same team that wrote the code, versioned in the same tree, describing the behaviour of the thing actually installed rather than the behaviour of whatever version the documentation site happens to be showing today. When <code>exports(5)</code> says a flag does something, the flag does that thing on this machine. It is a mundane property and it is worth more than most features.</p>
+
+        <p>What all of that adds up to is POSIX semantics across machines. What you get for that is POSIX semantics across machines. Two hosts can hold the same file open. A process can write to the middle of a file without reading the rest of it. <code>rename</code> is atomic. Directory listings are directory listings. Locks exist and other machines respect them.</p>
+
+        <p>That list sounds unremarkable until you build the same thing on top of an object store.</p>
+
+        <svg viewBox="0 0 560 300"
+             aria-label="Matrix comparing four file operations across two systems. Writing into the middle of a file: NFS does it directly at an offset, an object store requires downloading the whole object, modifying it and uploading it again. Renaming: NFS provides an atomic rename system call, an object store performs a copy followed by a delete, which is not atomic. Listing a directory: NFS reads the directory, an object store makes a paged API call over a key prefix. Locking: NFS has a lock manager in the protocol, an object store requires the user to build a lease table in a database. In every row the object store answer is code somebody in the building has to write, test, document and keep."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .mx-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .mx-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .mx-headg { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .mx-row   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; font-weight: 700; }
+                .mx-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .mx-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .mx-line  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="280" y="20" class="mx-title" text-anchor="middle">The same four operations, two ways</text>
+
+            <text x="30" y="48" class="mx-head">OPERATION</text>
+            <text x="190" y="48" class="mx-headg">NFS</text>
+            <text x="352" y="48" class="mx-head">OBJECT STORE</text>
+            <line x1="30" y1="56" x2="530" y2="56" class="mx-line"/>
+
+            <text x="30" y="78" class="mx-row">write at offset</text>
+            <text x="190" y="78" class="mx-item">direct, at the offset</text>
+            <text x="352" y="78" class="mx-item">download, modify, upload</text>
+            <text x="352" y="90" class="mx-muted">the whole object, every time</text>
+            <line x1="30" y1="100" x2="530" y2="100" class="mx-line"/>
+
+            <text x="30" y="122" class="mx-row">rename</text>
+            <text x="190" y="122" class="mx-item">atomic system call</text>
+            <text x="352" y="122" class="mx-item">copy, then delete</text>
+            <text x="352" y="134" class="mx-muted">not atomic, and twice the traffic</text>
+            <line x1="30" y1="144" x2="530" y2="144" class="mx-line"/>
+
+            <text x="30" y="166" class="mx-row">list a directory</text>
+            <text x="190" y="166" class="mx-item">read the directory</text>
+            <text x="352" y="166" class="mx-item">paged API call on a prefix</text>
+            <text x="352" y="178" class="mx-muted">pagination logic in your code</text>
+            <line x1="30" y1="188" x2="530" y2="188" class="mx-line"/>
+
+            <text x="30" y="210" class="mx-row">lock a file</text>
+            <text x="190" y="210" class="mx-item">lock manager in the protocol</text>
+            <text x="352" y="210" class="mx-item">invent one yourself</text>
+            <text x="352" y="222" class="mx-muted">database table plus a lease</text>
+            <line x1="30" y1="232" x2="530" y2="232" class="mx-line"/>
+
+            <text x="280" y="258" class="mx-item" text-anchor="middle">Every answer in the right column is a solved problem,</text>
+            <text x="280" y="274" class="mx-item" text-anchor="middle">and every solution is code somebody in your building keeps.</text>
+        </svg>
+
+        <p>None of this makes an object store a bad thing. It makes it a different thing, aimed at a workload where objects are written once and read by many, and where nobody needs to open the same file from two machines at once. The trouble starts when a team reaches for it because it is the default in their platform, and then spends a fortnight rebuilding a shared directory out of it.</p>
+
+        <h2>Where it asks for trouble</h2>
+
+        <p>Being fair to a protocol means saying where it hurts, and this one has a few sore spots that anybody who has run it will recognise.</p>
+
+        <p>Start with authentication, where the honest description is that <code>AUTH_SYS</code> does not authenticate. The client tells the server which user identifier and group identifiers it is acting for, and the server takes it on trust. If the numeric identifiers on the two machines do not line up, somebody ends up with somebody else's permissions, and the fix is the sort of faff nobody enjoys: keeping identifiers synchronised across every host that mounts the share. The proper answer has existed for years, which is Kerberos through <code>RPCSEC_GSS</code>, and it is deployed far less often than it should be because setting up a realm is a project rather than an afternoon.</p>
+
+        <p>Then there is failure behaviour. A hard mount does what it says: when the server stops answering, processes touching that mount wait, and they wait in a state where they cannot be interrupted easily. One unreachable file server can freeze a room full of machines that were only listing a directory. Soft mounts return errors instead, which sounds better until an application that was never written to expect a failed read writes half a file and calls it done.</p>
+
+        <p>The failure mode has a signature that anybody who has met it recognises immediately. The machines are not slow; they are stopped. Load average climbs while the processors sit idle, because the processes are not computing anything, they are waiting in the kernel for a reply that is not coming. <code>ls</code> in the wrong directory never returns. The usual escalation is somebody rebooting a workstation that was working perfectly, because the thing that broke is three racks away and belongs to another team.</p>
+
+        <p>Latency comes last, and it is arithmetic. Every operation costs a round trip, so workloads made of thousands of small files pay thousands of round trips. Amazon advertised a forty per cent reduction in write latency for files under 64 kilobytes in 2022, which tells you where the pain was, and their own performance guidance still recommends parallelism as the remedy. Compiling a large tree on a network mount is a lesson most people only need once.</p>
+
+        <h2>The bill</h2>
+
+        <p>These days you rent it by the hour, mostly without being told what you are renting.</p>
+
+        <p>Amazon EFS is NFS. Google Cloud Filestore is NFS and nothing else, since it does not speak SMB at all. Azure NetApp Files offers NFSv3 and NFSv4.1. And when a Kubernetes user asks for a volume with <code>ReadWriteMany</code>, which is the access mode you need whenever more than one pod writes to the same files, the driver underneath is almost always an NFS driver. The protocol from 1984 is holding up a large share of modern container storage, and a good number of the people relying on it have never opened an exports file in their lives.</p>
+
+        <p>The Kubernetes case is worth dwelling on, because it is where most engineers now meet the protocol without knowing it. The three access modes for a persistent volume are read-write on one node, read-only on many, and read-write on many. The first two can be served by a block device attached to a single machine, which is what the cloud platforms are good at and what they price cheaply. The third cannot, because two machines writing to the same block device at the same time produces a corrupted filesystem and a bad afternoon. So the moment a manifest asks for <code>ReadWriteMany</code>, something has to provide a real shared filesystem underneath, and the thing that provides it is nearly always NFS: either a managed service that speaks it, or a driver that mounts it, or an in-cluster server that runs it. A protocol designed for a room of workstations turns out to fit a cluster of nodes rather well, which is less of a coincidence than it looks, since the problem is identical and only the furniture changed.</p>
+
+        <p>The rate, in Amazon's Northern Virginia region: <strong>EFS Standard is 0.30 dollars per gigabyte-month. EBS gp3, block storage on the same platform, is 0.08.</strong> Roughly four times the price, for a filesystem protocol whose client and server together take up less space than a phone photograph.</p>
+
+        <blockquote><p>Somewhere in your estate is a directory that three machines need to write to, and somebody is either paying rent on that directory or has spent a fortnight building it out of an object store and a lease table.</p></blockquote>
+
+        <p>The comparison is not quite fair and it should be said plainly: the managed service buys replication across availability zones, capacity that grows without anybody resizing anything, and an operations team that is awake at three in the morning. Those are real things and some organisations should absolutely pay for them. What the invoice cannot buy is a different protocol. Small files are still small files, hard mounts still hang, and the identity model is the same one that ships in the base system.</p>
+
+        <h2>The limit</h2>
+
+        <p>The case for running it yourself has edges, and pretending otherwise would be silly.</p>
+
+        <p><code>AUTH_SYS</code> is genuinely weak, and if the answer is Kerberos then somebody has to run a realm, which is a commitment rather than a command. NFS over a wide-area link is a bad idea regardless of who operates it. Object storage genuinely solves problems NFS never addressed, including access control per object, versioning, and serving the same bytes to a hundred thousand strangers. And a file server on your own hardware is a file server you have to back up, patch, monitor and replace, which is precisely the work people buy their way out of.</p>
+
+        <p>What the base system gives you is the choice, and the knowledge to make it. The protocol is there, documented, and costs nothing to try before deciding whether to rent it instead. An afternoon with <code>zfs set sharenfs=on</code> and a second machine will tell you more about whether you need the managed service than any comparison table, this one included.</p>
+
+        <h2>The point</h2>
+
+        <p>The reason NFS survived four decades of fashion is that it answered a question in the right place. Not in every application, once each and slightly differently, but underneath all of them, once.</p>
+
+        <p>An engineer at Sun in 1984 wanted to sit at any desk and find his own files. He got that, and forty-two years later so does a container scheduled onto whichever node had room, which is the same problem wearing a different hat. The bill is new. The protocol is not.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The receipt:</strong></p>
+            <ul>
+                <li><strong>Environment:</strong> FreeBSD 15.0-RELEASE. Module and binary sizes read from the running system on 31 August 2026; pricing read the same day from Amazon's public list for US East, Northern Virginia.</li>
+                <li><strong>Base system, not a package:</strong> <code>pkg which /sbin/mount_nfs</code> and <code>pkg which /usr/sbin/nfsd</code> both report that the file is not in the database. Seven manual pages, from <code>exports(5)</code> to <code>nfsv4(4)</code>.</li>
+                <li><strong>Sizes:</strong> <code>nfscl.ko</code> 596,616 bytes · <code>nfsd.ko</code> 544,360 · <code>nfscommon.ko</code> 229,944 · <code>nfslockd.ko</code> 138,776 · six userland programs 219,608 · total 1,729,304. In the same build, <code>smbfs.ko</code> 235,400 and <code>fusefs.ko</code> 207,488.</li>
+                <li><strong>Pricing:</strong> EFS Standard 0.30 dollars per gigabyte-month against EBS gp3 at 0.08 in the same region, a factor of roughly four.</li>
+                <li><a href="https://www.rfc-editor.org/rfc/rfc8881" target="_blank" rel="noopener">RFC 8881, NFS version 4.1, sessions and delegations</a></li>
+                <li><a href="https://www.rfc-editor.org/rfc/rfc1094" target="_blank" rel="noopener">RFC 1094, the original NFS version 2 specification, 1989</a></li>
+                <li><a href="https://www.rfc-editor.org/rfc/rfc1813" target="_blank" rel="noopener">RFC 1813, NFS version 3, 1995</a></li>
+                <li><a href="https://man.freebsd.org/cgi/man.cgi?query=exports&amp;sektion=5" target="_blank" rel="noopener">FreeBSD manual page for exports(5)</a></li>
+                <li><a href="https://aws.amazon.com/efs/pricing/" target="_blank" rel="noopener">Amazon EFS pricing</a></li>
+                <li><a href="https://aws.amazon.com/ebs/pricing/" target="_blank" rel="noopener">Amazon EBS pricing</a></li>
+                <li><a href="https://aws.amazon.com/about-aws/whats-new/2022/11/aws-announces-lower-latencies-amazon-elastic-file-system/" target="_blank" rel="noopener">AWS on lower write latencies for files under 64 KB, November 2022</a></li>
+                <li><a href="https://cloud.google.com/filestore/docs/about-supported-protocols" target="_blank" rel="noopener">Google Cloud Filestore, supported protocols</a></li>
+                <li><a href="https://learn.microsoft.com/en-us/azure/aks/azure-netapp-files-nfs" target="_blank" rel="noopener">Azure NetApp Files, NFS volumes for Kubernetes</a></li>
+                <li><a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/" target="_blank" rel="noopener">Kubernetes access modes, including ReadWriteMany</a></li>
+                <li><a href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/storage_administration_guide/s1-nfs-security" target="_blank" rel="noopener">Red Hat on securing NFS and the limits of AUTH_SYS</a></li>
+                <li><a href="https://vossscher-verlag.com" target="_blank" rel="noopener">Vivian Voss, "Integrated by Design", Vossscher Verlag</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}

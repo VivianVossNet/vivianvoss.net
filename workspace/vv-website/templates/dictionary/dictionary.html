@@ -100,6 +100,10 @@
             <dt>amalgamation</dt>
             <dd>The single C source file, together with one header, into which the whole of SQLite is concatenated for distribution. It compiles as one translation unit, which lets the compiler optimise across what would otherwise be file boundaries, and it means the library arrives as one artefact with one provenance rather than as a tree of sources to be assembled by whoever builds it.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="amazon-efs">
+            <dt>Amazon EFS</dt>
+            <dd>Amazon's managed shared file system, launched in 2016. It speaks NFSv4.1 on the wire, replicates across availability zones and is billed per gigabyte-month; the Standard tier costs 0.30 dollars per gigabyte-month against 0.08 for gp3 block storage in the same region.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="amiga">
             <dt>Amiga</dt>
             <dd>Commodore's 16-bit machine of 1985, with custom chips for graphics and sound that made smooth scrolling and multi-channel music routine. The platform on which the demoscene came of age.</dd>
@@ -123,6 +127,78 @@
         <dl class="vv-dict-entry" id="apache-2-0">
             <dt>Apache 2.0</dt>
             <dd>A permissive open-source licence with a patent grant and no copyleft, granting broad rights to use, modify and distribute. Applied to a model's weights, as with Mistral's 2026 flagships, it removes licence restrictions but still grants only the numbers, not the training data or pipeline.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="auth-sys">
+            <dt>AUTH_SYS</dt>
+            <dd>The default authentication flavour of NFS, in which the client simply states which numeric user and group identifiers it is acting for and the server takes it on trust. It authenticates nothing, which is why identifiers must be kept synchronised across every host that mounts a share.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="automounter">
+            <dt>automounter</dt>
+            <dd>A daemon that mounts remote filesystems on demand when a path is first touched and unmounts them after idling, so a machine need not hold every share open permanently. On FreeBSD this is autofs, configured through auto_master.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="azure-netapp-files">
+            <dt>Azure NetApp Files</dt>
+            <dd>Microsoft's managed file service built on NetApp technology, offering NFSv3 and NFSv4.1 volumes alongside SMB, commonly used to back ReadWriteMany volumes in Azure Kubernetes Service.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="exports">
+            <dt>exports</dt>
+            <dd>The FreeBSD configuration file, documented in section five of the manual, that lists which filesystems an NFS server publishes and to which clients, with the options governing each export.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="google-cloud-filestore">
+            <dt>Google Cloud Filestore</dt>
+            <dd>Google's managed file storage service. It speaks NFS and nothing else, offering no SMB option at all, which makes the underlying protocol unusually visible for a managed product.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="gp3">
+            <dt>gp3</dt>
+            <dd>Amazon's general-purpose SSD volume type for EBS, attached to a single instance and priced at 0.08 dollars per gigabyte-month in Northern Virginia. The block-storage baseline against which shared file storage is measured.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="hard-mount">
+            <dt>hard mount</dt>
+            <dd>An NFS mount option under which processes touching an unreachable server wait indefinitely, in a state that resists interruption. Safe for data integrity, and capable of freezing a room full of machines that were only listing a directory.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="kerberos">
+            <dt>Kerberos</dt>
+            <dd>A network authentication protocol from MIT in which a trusted third party issues time-limited tickets, so machines can prove who they are without sending passwords across the wire. The proper answer to NFS identity, at the cost of running a realm.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="mount-nfs">
+            <dt>mount_nfs</dt>
+            <dd>The FreeBSD command that attaches a remote NFS filesystem to the local directory tree. Part of the base system rather than any package, which pkg which will confirm.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="object-store">
+            <dt>object store</dt>
+            <dd>Storage addressed by key rather than by path, where a write replaces a whole object and there is no notion of opening a file, seeking within it or locking it. Excellent for write-once read-many workloads, awkward as a substitute for a shared filesystem.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="pnfs">
+            <dt>pNFS</dt>
+            <dd>Parallel NFS, introduced with version 4.1, which separates metadata from data so that a client can read and write across many storage servers at once rather than funnelling everything through one.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="readwritemany">
+            <dt>ReadWriteMany</dt>
+            <dd>A Kubernetes persistent volume access mode allowing many nodes to mount the same volume for writing at once. A single block device cannot serve it safely, so the driver underneath is nearly always NFS.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="rfc-1094">
+            <dt>RFC 1094</dt>
+            <dd>The 1989 specification in which Sun published NFS version 2 openly, letting anybody implement the protocol without a licence. The decision that turned a workstation feature into an industry default.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="rfc-8881">
+            <dt>RFC 8881</dt>
+            <dd>The specification of NFS version 4.1, covering sessions, delegations and parallel NFS. The version that the managed cloud file services speak on the wire.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="rpcsec-gss">
+            <dt>RPCSEC_GSS</dt>
+            <dd>The security framework that lets NFS use Kerberos for real authentication, integrity and privacy instead of trusting the client's word. Correct and rarely deployed, because standing up a Kerberos realm is a project rather than an afternoon.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="sharenfs">
+            <dt>sharenfs</dt>
+            <dd>A ZFS dataset property that publishes the dataset over NFS. Setting it makes the pool itself the record of what is shared, so the filesystem and the share cannot drift out of step.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="smb">
+            <dt>SMB</dt>
+            <dd>The file sharing protocol of the Windows world, also implemented by Samba on Unix systems. The alternative to NFS in mixed environments, and notably absent from Google Cloud Filestore.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="soft-mount">
+            <dt>soft mount</dt>
+            <dd>An NFS mount option under which operations return an error instead of waiting when the server stops answering. Kinder to the machine and dangerous for applications never written to expect a failed read.</dd>
         </dl>
         <dl class="vv-dict-entry" id="strongswan">
             <dt>strongSwan</dt>
