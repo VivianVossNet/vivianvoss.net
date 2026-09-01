@@ -68,6 +68,10 @@
             <dt>ABI</dt>
             <dd>Application Binary Interface. The low-level contract between a binary and the operating system: syscall numbers, calling conventions, data layout. Determines which binaries run on which kernel.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="accton">
+            <dt>accton</dt>
+            <dd>The command that switches on process accounting, after which the kernel records every process that runs along with the resources it used. Read back with sa and lastcomm, it answers what ran and what it cost.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="acid">
             <dt>ACID</dt>
             <dd>Atomicity, Consistency, Isolation, Durability. The four guarantees a database transaction must provide for reliability.</dd>
@@ -87,6 +91,10 @@
         <dl class="vv-dict-entry" id="ai-bill-of-materials">
             <dt>AI bill of materials</dt>
             <dd>A proposed provenance record, an AI-SBOM, that tags each generated component with the model that produced it, along with the prompt and generation metadata, so a line can later be traced to its origin. An emerging practice rather than a settled standard.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="alert-fatigue">
+            <dt>alert fatigue</dt>
+            <dd>The condition in which operators stop reacting to alarms because too many of them are wrong, late or irrelevant. Usually described as a human failing, though a fair share of it originates in query expressions that return plausible but incorrect numbers.</dd>
         </dl>
         <dl class="vv-dict-entry" id="alpine">
             <dt>Alpine</dt>
@@ -140,9 +148,21 @@
             <dt>Azure NetApp Files</dt>
             <dd>Microsoft's managed file service built on NetApp technology, offering NFSv3 and NFSv4.1 volumes alongside SMB, commonly used to back ReadWriteMany volumes in Azure Kubernetes Service.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="central-syslog">
+            <dt>central syslog</dt>
+            <dd>An arrangement in which every machine forwards its log messages to one collector, so a fleet's events sit in a single place. One line on the clients and one flag on the collector, both in the base system.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="exporter">
+            <dt>exporter</dt>
+            <dd>A small program that translates a system's own numbers into the format a metrics collector expects. It adds an agent to every machine being watched, which is one of the layers a self-contained approach avoids.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="exports">
             <dt>exports</dt>
             <dd>The FreeBSD configuration file, documented in section five of the manual, that lists which filesystems an NFS server publishes and to which clients, with the options governing each export.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="golden-snapshot">
+            <dt>golden snapshot</dt>
+            <dd>A filesystem snapshot of a known-clean state, used as the starting point for repeatable measurements. Rolling back to it before each run guarantees that nothing from earlier work contaminates the result.</dd>
         </dl>
         <dl class="vv-dict-entry" id="google-cloud-filestore">
             <dt>Google Cloud Filestore</dt>
@@ -160,9 +180,21 @@
             <dt>Kerberos</dt>
             <dd>A network authentication protocol from MIT in which a trusted third party issues time-limited tickets, so machines can prove who they are without sending passwords across the wire. The proper answer to NFS identity, at the cost of running a realm.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="lastcomm">
+            <dt>lastcomm</dt>
+            <dd>Prints the accounting record of recently executed commands: which program, which user, how much processor time, at what hour. Forensics for the question of what was running when the machine misbehaved.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="mount-nfs">
             <dt>mount_nfs</dt>
             <dd>The FreeBSD command that attaches a remote NFS filesystem to the local directory tree. Part of the base system rather than any package, which pkg which will confirm.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="munin">
+            <dt>Munin</dt>
+            <dd>A light-weight monitoring system that collects values from nodes and draws graphs on a web page. Master and node together weigh 2,533,160 bytes on FreeBSD, doing the graphing job for which much heavier stacks are usually installed.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="node-exporter">
+            <dt>node_exporter</dt>
+            <dd>The Prometheus agent that reads a host's own counters, processor time, memory, disks and network, and serves them over HTTP for a collector to scrape. It reports the state of the machine and carries no process names, which is why a metric can show a pinned core without naming what pinned it.</dd>
         </dl>
         <dl class="vv-dict-entry" id="object-store">
             <dt>object store</dt>
@@ -171,6 +203,10 @@
         <dl class="vv-dict-entry" id="pnfs">
             <dt>pNFS</dt>
             <dd>Parallel NFS, introduced with version 4.1, which separates metadata from data so that a client can read and write across many storage servers at once rather than funnelling everything through one.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="promql">
+            <dt>PromQL</dt>
+            <dd>Prometheus's query language, used to select time series and compute rates, percentiles and aggregations across them. Powerful within Prometheus and portable nowhere else, which makes it a skill that stops paying the day a house changes tooling.</dd>
         </dl>
         <dl class="vv-dict-entry" id="readwritemany">
             <dt>ReadWriteMany</dt>
@@ -1465,6 +1501,18 @@
             <dt>STRICT tables</dt>
             <dd>A table option added to SQLite in version 3.37 which makes declared column types binding, so that a value of the wrong type is rejected instead of converted. It arrived seventeen years after the file format froze, and its existence is a quiet admission that type affinity, however deliberate, left a soft edge that some applications needed closed.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="syslogd">
+            <dt>syslogd</dt>
+            <dd>The system logging daemon. It receives messages from the kernel and from programs, writes them to files under /var/log with timestamps, and can forward the lot to a central collector with a single configuration line.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="sysstat">
+            <dt>sysstat</dt>
+            <dd>A Linux package collecting system activity at intervals and storing it for later reading with sar, holding twenty-eight days by default. The closest thing to a built-in metrics history on that platform, and it weighs a couple of megabytes.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="systat">
+            <dt>systat</dt>
+            <dd>A FreeBSD utility showing live system statistics in a full-screen terminal display, with views for virtual memory, network interfaces, disk activity and more. The moment rather than the history.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="th3">
             <dt>TH3</dt>
             <dd>The Test Harness 3, a proprietary test suite for SQLite written in C and maintained by the SQLite developers. It holds 50,362 distinct test cases which expand across parameter combinations into roughly 2.4 million test instances, and it exists deliberately as a second and unconnected body of tests alongside the open TCL suite, so that a blind spot in one cannot be a blind spot in both. TH3 is what carries SQLite's one hundred per cent branch and MC/DC coverage.</dd>
@@ -1476,6 +1524,10 @@
         <dl class="vv-dict-entry" id="threat-model">
             <dt>threat model</dt>
             <dd>A written statement of what an attacker must already be able to do before a system can be attacked at all. SQLite publishes one: every historical vulnerability against the library requires either an attacker who can run arbitrary SQL, or one who can supply a maliciously crafted database file. The value of writing it down is that it can be pointed at, which a project assembled from several hundred transitive dependencies cannot do.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="time-series-database">
+            <dt>time series database</dt>
+            <dd>A store built for values stamped with a time, optimised for writing many samples and querying ranges of them. Prometheus carries one; the base system of a Unix does not, which is the honest gap in the comparison.</dd>
         </dl>
         <dl class="vv-dict-entry" id="triage-tax">
             <dt>triage tax</dt>

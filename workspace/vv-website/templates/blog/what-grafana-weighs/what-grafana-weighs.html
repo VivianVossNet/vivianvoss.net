@@ -1,0 +1,302 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}Grafana, or Two Commands &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="An empty FreeBSD jail, three packages, and 976 megabytes later the machine can report that it is idle. The base system managed that already, with fourteen tools that were installed before we started. A measurement protocol.">
+{( endslot )}
+
+{( slot canonical )}/blog/what-grafana-weighs{( endslot )}
+
+{( slot og-title )}Grafana, or Two Commands &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}The Bench Marker. A watcher living inside the system reports symptom and reason in one breath, because both were written a few lines apart in the same file. A watcher standing outside reports the symptom, and somebody then goes to fetch the reason. Everything else follows from that, including the bill.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Grafana, or Two Commands",
+    "datePublished": "2026-09-01",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/what-grafana-weighs",
+    "description": "A measurement run in a FreeBSD 15.0-RELEASE jail rolled back to a golden snapshot, host load 0.10 at the start. Before anything was installed the jail held 397,508 kilobytes on disk, eight processes, one package, and fourteen base-system tools that already covered alerting, history and forensics: syslogd, newsyslog, periodic, accton, sa, lastcomm, vmstat, iostat, top, systat, dmesg, last, cron and mail. Installing prometheus, grafana and node_exporter took disk to 1,085,564 kB, and starting the services once took it to 1,351,227 kB, a further 259 megabytes laid down before a human had looked at anything. Resident memory settled at 470,104 kB, of which Grafana holds 373,664. In fairness the packages pulled in no dependencies at all, since Go binaries are statically linked, and the metadata figure of 1,130,627,388 bytes compresses to 688 megabytes on ZFS. Grafana's own database, before a single dashboard exists, is 265,768 kilobytes; the entire log directory of the same jail is 79. A staged incident put a clock on the difference: a process in a tight loop was at the head of top after two milliseconds of machine time, and ps named the full command line, process identifier and owner three milliseconds in, which is about a minute of human time for somebody typing two commands and reading two answers. At the same second the exporter served 206 metrics, all correct, none containing a process name. The claim under examination, that you fly blind without the stack, does not survive contact with the base system. What the stack genuinely adds is fifteen-second resolution and a query language across a fleet, and munin-master with munin-node weighs 2,533,160 bytes for the graphing job alone, a factor of 446.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-09-01">1 September 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>Grafana, or Two Commands</h1>
+        <p class="vv-article-meta"><em>An empty jail, three packages, and 976 megabytes later the machine can finally report that it is idle. The base system had already managed that, with fourteen tools installed before we started. The Bench Marker.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">bench marker</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">observability</span>
+            <span class="vv-pill">sysadmin</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p>At twenty past four in the morning a mail arrives. Subject line from a machine, body from <code>periodic</code>, and somewhere in the second paragraph sits the sentence that explains the whole night: a filesystem crossed eighty per cent, and here are the twenty lines the system logged while it happened. Whoever reads that mail learns what went wrong, in the words of the program that had the trouble, at the moment it had it.</p>
+
+        <p>That is the difference this piece is about, and it is a difference of address. A watcher that lives inside the system reports the symptom and the reason in one breath, because both were written a few lines apart in the same file. A watcher standing outside reports the symptom, and then somebody has to go and fetch the reason.</p>
+
+        <p>Everything else follows from that, including the bill.</p>
+
+        <h2>What the scale says</h2>
+
+        <p>The measurement ran in a FreeBSD 15.0-RELEASE jail on my own hardware, rolled back to a golden snapshot so nothing from previous work could contaminate it. Host load at the start was 0.10, which is as close to nothing as a running machine gets.</p>
+
+        <p>The jail before any of this held 397,508 kilobytes on disk, eight processes, one package and fourteen base-system tools that already did the job, the package in question being <code>pkg</code> itself. Those fourteen are worth naming, because the whole argument turns on them:</p>
+
+        <pre><code>syslogd  newsyslog  periodic  accton  sa  lastcomm
+vmstat  iostat  top  systat  dmesg  last  cron  mail</code></pre>
+
+        <p>Alerting, event history, daily reporting, process accounting and live inspection, all present, all documented in the manual, all costing nothing. Then three commands, <code>pkg install prometheus grafana node_exporter</code>, and the arithmetic afterwards.</p>
+
+        <p>Disk went to 1,085,564 kB, a difference of 688 megabytes. Starting the services once pushed it to 1,351,227 kB, so the first start alone laid down another 259 megabytes before a human had looked at anything at all. Resident memory settled at 470,104 kB three quarters of a minute later, of which Grafana holds 373,664, Prometheus 80,396 and the node exporter a modest 16,044. Eight processes had become fourteen.</p>
+
+        <p>Two things in fairness: the package metadata claims 1,130,627,388 bytes and ZFS compression brings the actual footprint down to 688 megabytes, so both figures are true and I quote both. And the installation pulled in no dependencies at all, because Go binaries are statically linked. That is genuinely tidy, and rather better than most stacks manage.</p>
+
+        <svg viewBox="0 0 560 260"
+             aria-label="Logarithmic bar chart of what each approach weighs on disk. The Prometheus, Grafana and node exporter stack: 1,130,627,388 bytes according to package metadata. Munin master plus munin node, which draws the same graphs on a web page: 2,533,160 bytes. The fourteen base system tools covering alerting, history and forensics: zero additional bytes, because they arrived with the operating system. The ratio between the stack and Munin is 446 to one."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .wg-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .wg-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .wg-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .wg-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .wg-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .wg-bar   { fill: var(--accent); rx: 2; }
+                .wg-bar2  { fill: var(--border); rx: 2; }
+                .wg-barg  { fill: #4ab542; rx: 2; }
+                .wg-line  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="280" y="20" class="wg-title" text-anchor="middle">What each approach weighs, logarithmic scale</text>
+
+            <text x="20" y="52" class="wg-item">the stack</text>
+            <rect x="140" y="42" width="277" height="18" class="wg-bar"/>
+            <text x="425" y="55" class="wg-head">1,130,627,388 B</text>
+            <text x="20" y="66" class="wg-muted">prometheus, grafana, node_exporter</text>
+
+            <text x="20" y="106" class="wg-item">munin</text>
+            <rect x="140" y="96" width="196" height="18" class="wg-bar2"/>
+            <text x="342" y="109" class="wg-item">2,533,160 B</text>
+            <text x="20" y="120" class="wg-muted">master + node, same graphs on a web page</text>
+
+            <text x="20" y="160" class="wg-item">base system</text>
+            <rect x="140" y="150" width="3" height="18" class="wg-barg"/>
+            <text x="152" y="163" class="wg-good">0 B</text>
+            <text x="20" y="174" class="wg-muted">fourteen tools, alerting, history, forensics</text>
+
+            <line x1="140" y1="196" x2="520" y2="196" class="wg-line"/>
+            <text x="280" y="216" class="wg-item" text-anchor="middle">Between the first bar and the second lies a factor of 446,</text>
+            <text x="280" y="232" class="wg-item" text-anchor="middle">for the one job Grafana is usually wheeled in to do.</text>
+            <text x="280" y="250" class="wg-muted" text-anchor="middle">Measured on FreeBSD 15.0-RELEASE, 1 September 2026</text>
+        </svg>
+
+        <p>Now the number that made me stop and check it twice. Grafana's own database, <code>/var/db/grafana</code>, before a single dashboard exists and before anybody has logged in: 265,768 kilobytes. Two hundred and seventy-two megabytes of nothing in particular.</p>
+
+        <p>The entire log directory of that jail, holding every event the operating system has recorded since it booted, is 79 kilobytes.</p>
+
+        <h2>Two commands, one minute</h2>
+
+        <p>Numbers about storage are one thing. The question that matters on a bad morning is how fast somebody gets to the cause, so I staged an incident and put a clock on it. A process went into a tight loop and pinned a core, which is about as ordinary as failures get.</p>
+
+        <p><code>top -b -o cpu</code> put the offender at the head of the list two milliseconds after I asked. Then <code>ps -axo pid,pcpu,command | sort -rnk2</code> printed this:</p>
+
+        <pre><code>30881 99.1 sh -c while :; do :; done</code></pre>
+
+        <p>Three milliseconds of machine time, and that line carries the whole command, the process identifier and the user who owns it. <code>procstat</code> added the binary path a millisecond later, in case anybody wanted to know which <code>sh</code> it was.</p>
+
+        <p>Those milliseconds are the honest measurement and the dishonest headline, so let me put the human number next to them. Opening a terminal, typing two commands and reading two answers takes about a minute, and that minute is the figure worth comparing with anything. Two commands, both in the base system since before some of my colleagues were born, one minute from wondering to knowing.</p>
+
+        <p>At the same second the exporter was serving its metrics, and here is what it had to say about the same event:</p>
+
+        <pre><code>node_cpu_seconds_total{cpu="0",mode="user"} 267.17
+node_cpu_seconds_total{cpu="1",mode="user"} 314.09</code></pre>
+
+        <p>Two hundred and six metrics, one per counter per core, and not one of them contains the string <code>sh -c while</code>. That is not a flaw in the exporter, which does exactly what it was built to do: it reports the state of the host. Nothing in that counter was ever going to name the process. The dashboard will draw a beautiful step change at 05:52 and it will be entirely correct and it will not tell you who did it.</p>
+
+        <svg viewBox="0 0 560 300"
+             aria-label="Two paths from an alarm to a named cause. The base system path has three nodes: the machine detects the threshold, sends a mail containing the relevant log lines, and the reader has the cause, taking about one minute. The dashboard path has eight nodes: the metric crosses a threshold, an alert fires, somebody logs in, finds the time window, picks the host, opens the log, and if they have no shell access on that host they raise a ticket instead, which goes to a morning review and returns with a question, taking about eleven working days. The two paths end at the same place."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pt-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .pt-headg { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .pt-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 8px; }
+                .pt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .pt-nodeg { fill: none; stroke: #4ab542; stroke-width: 1.2; rx: 3; }
+                .pt-node  { fill: none; stroke: var(--accent); stroke-width: 1.2; rx: 3; }
+                .pt-edge  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="280" y="20" class="pt-title" text-anchor="middle">Two routes from alarm to named cause</text>
+
+            <text x="20" y="48" class="pt-headg">INSIDE THE SYSTEM</text>
+            <rect x="20" y="58" width="96" height="26" class="pt-nodeg"/>
+            <text x="68" y="75" class="pt-item" text-anchor="middle">threshold crossed</text>
+            <line x1="116" y1="71" x2="146" y2="71" class="pt-edge"/>
+            <rect x="146" y="58" width="112" height="26" class="pt-nodeg"/>
+            <text x="202" y="71" class="pt-item" text-anchor="middle">mail, with the log</text>
+            <text x="202" y="81" class="pt-muted" text-anchor="middle">lines attached</text>
+            <line x1="258" y1="71" x2="288" y2="71" class="pt-edge"/>
+            <rect x="288" y="58" width="96" height="26" class="pt-nodeg"/>
+            <text x="336" y="75" class="pt-item" text-anchor="middle">cause in hand</text>
+            <text x="410" y="75" class="pt-headg">about one minute</text>
+
+            <text x="20" y="128" class="pt-head">STANDING OUTSIDE</text>
+            <rect x="20" y="138" width="76" height="26" class="pt-node"/>
+            <text x="58" y="155" class="pt-item" text-anchor="middle">metric crosses</text>
+            <line x1="96" y1="151" x2="120" y2="151" class="pt-edge"/>
+            <rect x="120" y="138" width="60" height="26" class="pt-node"/>
+            <text x="150" y="155" class="pt-item" text-anchor="middle">alert fires</text>
+            <line x1="180" y1="151" x2="204" y2="151" class="pt-edge"/>
+            <rect x="204" y="138" width="56" height="26" class="pt-node"/>
+            <text x="232" y="155" class="pt-item" text-anchor="middle">log in</text>
+            <line x1="260" y1="151" x2="284" y2="151" class="pt-edge"/>
+            <rect x="284" y="138" width="76" height="26" class="pt-node"/>
+            <text x="322" y="155" class="pt-item" text-anchor="middle">find the window</text>
+            <line x1="360" y1="151" x2="384" y2="151" class="pt-edge"/>
+            <rect x="384" y="138" width="64" height="26" class="pt-node"/>
+            <text x="416" y="155" class="pt-item" text-anchor="middle">pick the host</text>
+            <line x1="448" y1="151" x2="472" y2="151" class="pt-edge"/>
+            <rect x="472" y="138" width="64" height="26" class="pt-node"/>
+            <text x="504" y="155" class="pt-item" text-anchor="middle">open the log</text>
+
+            <line x1="232" y1="164" x2="232" y2="190" class="pt-edge"/>
+            <text x="240" y="182" class="pt-muted">no shell access on that host</text>
+            <rect x="180" y="190" width="104" height="26" class="pt-node"/>
+            <text x="232" y="207" class="pt-item" text-anchor="middle">raise a ticket</text>
+            <line x1="284" y1="203" x2="308" y2="203" class="pt-edge"/>
+            <rect x="308" y="190" width="104" height="26" class="pt-node"/>
+            <text x="360" y="203" class="pt-item" text-anchor="middle">morning review,</text>
+            <text x="360" y="213" class="pt-item" text-anchor="middle">a question, a return</text>
+            <text x="424" y="207" class="pt-head">about eleven days</text>
+
+            <text x="280" y="252" class="pt-item" text-anchor="middle">Both routes end at the same sentence about what went wrong.</text>
+            <text x="280" y="268" class="pt-item" text-anchor="middle">The upper one carries it from the start; the lower one collects it later.</text>
+            <text x="280" y="288" class="pt-muted" text-anchor="middle">Upper path measured; lower path an observation from practice, not a stopwatch figure</text>
+        </svg>
+
+        <p>So the honest word for the second path is later: see the step, log in, find the window, pick the host, open the log. Anybody without shell access on that host stops at step two and writes a ticket, and this is where the minutes stop mattering altogether.</p>
+
+        <p>That ticket, in my experience, has something of a career ahead of it. It waits for the morning review, where it is discussed by people who were not there when it happened, and assigned to somebody else who also was not. It comes back with a question. It goes out again. Rather often it is closed a fortnight later with a note observing that the thing has not recurred, which is true and explains nothing. One minute at the terminal, then eleven working days at the process, and the eleven days are not the tool's fault in any technical sense: the tool simply put the answer somewhere that required a meeting to reach.</p>
+
+        <p>Unless the fault is stopping the business, of course. Then the whole apparatus is quietly stepped around, somebody with a key logs into the box, and runs <code>top</code>.</p>
+
+        <h2>The watcher nobody watches</h2>
+
+        <p>Here is the part that gets left out of every comparison I have read, and it is the one with real money attached.</p>
+
+        <p>Prometheus and Grafana do not run in the air. They need a machine. That machine needs patching, needs backing up, needs a certificate before somebody puts a login screen on the open internet, which is a small kerfuffle of its own, and it needs monitoring, because a monitoring server that has quietly fallen over does not send an alert saying that it has quietly fallen over. The failure of the alarm is the one failure the alarm cannot report.</p>
+
+        <p>Four hundred and seventy megabytes of resident memory and a gigabyte of disk amounts to an instance in its own right, and instances have invoices. Then somebody has to learn the query language, and in larger houses that somebody becomes a team, and that team sits between the systems and the people who run them, and reports to them.</p>
+
+        <svg viewBox="0 0 560 250"
+             aria-label="Layer diagram showing where the observation lives in each arrangement. On the left, the base system arrangement has two layers: the machine you care about, and inside it the tools that watch it, so there is nothing else to maintain. On the right, the stack arrangement has four layers: the machine you care about, an exporter on it, a second machine running the collector and the web interface, and above that a person or team who knows the query language. The second machine needs patching, backups, a certificate and monitoring of its own."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .ly-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .ly-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .ly-headg { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .ly-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .ly-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .ly-boxg  { fill: none; stroke: #4ab542; stroke-width: 1.2; rx: 3; }
+                .ly-box   { fill: none; stroke: var(--accent); stroke-width: 1.2; rx: 3; }
+                .ly-line  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="280" y="20" class="ly-title" text-anchor="middle">Where the observation lives</text>
+
+            <text x="130" y="46" class="ly-headg" text-anchor="middle">TWO LAYERS</text>
+            <rect x="30" y="128" width="200" height="60" class="ly-boxg"/>
+            <text x="130" y="148" class="ly-item" text-anchor="middle">the machine you care about</text>
+            <rect x="52" y="154" width="156" height="26" class="ly-boxg"/>
+            <text x="130" y="171" class="ly-item" text-anchor="middle">the tools that watch it</text>
+            <text x="130" y="208" class="ly-muted" text-anchor="middle">nothing else to patch, back up or watch</text>
+
+            <line x1="280" y1="36" x2="280" y2="220" class="ly-line"/>
+
+            <text x="420" y="46" class="ly-head" text-anchor="middle">FOUR LAYERS</text>
+            <rect x="330" y="56" width="200" height="26" class="ly-box"/>
+            <text x="430" y="73" class="ly-item" text-anchor="middle">someone who knows the language</text>
+            <rect x="330" y="88" width="200" height="34" class="ly-box"/>
+            <text x="430" y="102" class="ly-item" text-anchor="middle">a second machine: collector, web</text>
+            <text x="430" y="114" class="ly-muted" text-anchor="middle">patches, backups, certificate, monitoring</text>
+            <rect x="330" y="128" width="200" height="60" class="ly-box"/>
+            <text x="430" y="148" class="ly-item" text-anchor="middle">the machine you care about</text>
+            <rect x="352" y="154" width="156" height="26" class="ly-box"/>
+            <text x="430" y="171" class="ly-item" text-anchor="middle">an exporter on it</text>
+            <text x="430" y="208" class="ly-muted" text-anchor="middle">three of the four want looking after</text>
+
+            <text x="280" y="240" class="ly-item" text-anchor="middle">The recursion is the cost: layers two and three exist only to watch layer four.</text>
+        </svg>
+
+        <p>The base system tools have none of that recursion. <code>top</code> runs on the machine you are already worried about. If that machine is dead, you know, because it is dead.</p>
+
+        <h2>The language you cannot take with you</h2>
+
+        <p>The remaining case for the stack, and it is a real one, is the query language. Ninety-fifth percentile of response time across fifty hosts, a rate over a five-minute window, a sum across a fleet: that is genuinely awkward with <code>awk</code>, and PromQL does it in a line.</p>
+
+        <p>Two things are worth saying about that line, though, and neither appears in the vendor material.</p>
+
+        <p>The first is that the skill does not travel. Somebody who knows <code>grep</code> and <code>awk</code> has known them for thirty years and will use them on any machine they ever sit at. Somebody who knows PromQL knows Prometheus. The moment the house changes tooling, the second person starts again, and the first person does not notice the change. That is a commercial property wearing technical clothes, and it does rather well at what it looks like it is doing.</p>
+
+        <p>The second is that a query language is a new place for bugs to live. A wrong <code>grep</code> returns nothing and you notice within the second. A wrong PromQL expression returns a number, and the number looks fine, and the alert built on it fires late or never or constantly. Alert fatigue is usually described as a human problem. A fair part of it is a syntax problem in a language most of the people on call do not write daily.</p>
+
+        <h2>Where it earns its keep</h2>
+
+        <p>Now the other side, in its strongest form, because this is a measurement and not a sermon.</p>
+
+        <p>Fine resolution is real. Fifteen-second sampling catches a spike that a daily report averages into invisibility, and if the question is whether latency degraded gradually over three weeks, no log will answer it. Aggregation across a fleet is real: nobody greps fifty hosts by hand at four in the morning. And pictures for people without shell access are real, because a product owner asking whether Tuesday was worse than Monday deserves an answer that is not a terminal.</p>
+
+        <p>But look at what those three cost when you buy them separately. Central syslog is in the base system: one line on the clients, one flag on the collector, and the fleet's logs sit in one place where <code>grep</code> behaves exactly as it always did. For the pictures, <code>munin-master</code> and <code>munin-node</code> together weigh 2,533,160 bytes and draw graphs on a web page all day long. That is a factor of 446 against the stack measured above, for the specific job that Grafana is usually wheeled in to do.</p>
+
+        <blockquote><p>The gigabyte does not buy visibility. Visibility was already there, and part of it was better. The gigabyte buys resolution and a query language, and those two things should be bought deliberately, by somebody who has said out loud what they are for.</p></blockquote>
+
+        <h2>The point</h2>
+
+        <p>The claim under examination was that without this stack you are flying blind. On the machine in front of me, before any package was installed, <code>syslogd</code> was writing events with timestamps, <code>newsyslog</code> was rotating them, <code>periodic</code> was preparing a daily report to mail out, and <code>accton</code> was ready to account for every process that ran. Fourteen tools out of fourteen, present, documented, and costing nothing.</p>
+
+        <p>None of this means the stack is wrong. It means the sentence used to justify it is, and a different sentence would have to be defended out loud: that fifteen-second resolution across fifty machines is worth a gigabyte, a second machine, a specialist and the training that keeps them. Some houses should. Most of the ones I have walked into were paying for the resolution and using it to answer questions their logs had already answered.</p>
+
+        <p>The same applies on Linux, incidentally, where all of this runs on the shell just as well and the tools merely have different names.</p>
+
+        <p>That mail at twenty past four came from the machine that had the problem, and it brought the reason with it, because it was standing close enough to see.</p>
+
+        <aside class="vv-aside">
+            <p><strong>The measurement protocol:</strong></p>
+            <ul>
+                <li><strong>Environment:</strong> jail <code>test_and_benchmarks</code> on FreeBSD 15.0-RELEASE, rolled back with <code>zfs rollback -r</code> to a golden snapshot before the run; host load 0.10 at start; nothing installed but the three packages under test.</li>
+                <li><strong>Before:</strong> 397,508 kB on disk, 8 processes, 1 package, 14 base-system tools present.</li>
+                <li><strong>After installation:</strong> 1,085,564 kB. <strong>After first start:</strong> 1,351,227 kB. <strong>Resident at idle:</strong> 470,104 kB total, Grafana 373,664 · Prometheus 80,396 · node_exporter 16,044. Processes 8 to 14.</li>
+                <li><strong>Package metadata:</strong> 1,130,627,388 bytes, compressing to 688 MB on ZFS. No dependencies; the binaries are statically linked.</li>
+                <li><strong>Empty databases:</strong> <code>/var/db/grafana</code> 265,768 kB with no dashboard defined; <code>/var/log</code> 79 kB holding every event since boot.</li>
+                <li><strong>Time series growth:</strong> 18 to 28 kB in 299 seconds at 206 metrics, roughly 20 MB per week per host, quoted as a rate rather than a week-long measurement.</li>
+                <li><strong>Incident:</strong> a process in a tight loop; <code>top</code> at 2 ms, <code>ps</code> naming the full command line at 3 ms of machine time, roughly one minute of human time for two commands and two answers. Two runaway processes were present rather than one, an artefact of an aborted first attempt, which does not change the result.</li>
+                <li><strong>Alternative for the graphs:</strong> munin-master 1,424,371 + munin-node 1,108,789 bytes.</li>
+                <li><a href="https://man.freebsd.org/cgi/man.cgi?query=periodic&amp;sektion=8" target="_blank" rel="noopener">FreeBSD manual page for periodic(8)</a> and <a href="https://man.freebsd.org/cgi/man.cgi?query=newsyslog&amp;sektion=8" target="_blank" rel="noopener">newsyslog(8)</a></li>
+                <li><a href="https://prometheus.io/docs/prometheus/latest/storage/" target="_blank" rel="noopener">Prometheus storage and retention</a></li>
+                <li><a href="https://grafana.com/docs/grafana/latest/setup-grafana/installation/" target="_blank" rel="noopener">Grafana system requirements</a></li>
+                <li><a href="https://munin-monitoring.org/" target="_blank" rel="noopener">Munin, the light-weight alternative for graphs</a></li>
+                <li>On Linux the same ground is covered by <code>journalctl</code> and <code>sar</code> from the sysstat package.</li>
+                <li><a href="https://vossscher-verlag.com" target="_blank" rel="noopener">Vivian Voss, "Integrated by Design", Vossscher Verlag</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
