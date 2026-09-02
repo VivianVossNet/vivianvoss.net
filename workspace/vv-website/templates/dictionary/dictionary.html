@@ -96,6 +96,10 @@
             <dt>alert fatigue</dt>
             <dd>The condition in which operators stop reacting to alarms because too many of them are wrong, late or irrelevant. Usually described as a human failing, though a fair share of it originates in query expressions that return plausible but incorrect numbers.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="alexandra-noonan">
+            <dt>Alexandra Noonan</dt>
+            <dd>The engineer who wrote up Segment's return from more than 140 services to a single one in July 2018, in unusual detail and including what the move cost them. The write-up remains the reference work on the subject.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="alpine">
             <dt>Alpine</dt>
             <dd>A small, security-oriented Linux distribution built on musl and BusyBox rather than glibc and GNU coreutils. Widely used as a minimal container base image. One of the userlands that share the Linux kernel and little else.</dd>
@@ -160,6 +164,10 @@
             <dt>exports</dt>
             <dd>The FreeBSD configuration file, documented in section five of the manual, that lists which filesystems an NFS server publishes and to which clients, with the options governing each export.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="fault-isolation">
+            <dt>fault isolation</dt>
+            <dd>The property that a failure in one component cannot take the others down with it. A genuine benefit of splitting a system up, and the thing Segment knowingly gave up when it moved back to one service.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="golden-snapshot">
             <dt>golden snapshot</dt>
             <dd>A filesystem snapshot of a known-clean state, used as the starting point for repeatable measurements. Rolling back to it before each run guarantees that nothing from earlier work contaminates the result.</dd>
@@ -184,6 +192,10 @@
             <dt>lastcomm</dt>
             <dd>Prints the accounting record of recently executed commands: which program, which user, how much processor time, at what hour. Forensics for the question of what was running when the machine misbehaved.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="mbuf">
+            <dt>mbuf</dt>
+            <dd>The FreeBSD kernel's buffer structure for network data. Drew Gallatin's work on external-page and not-ready mbufs is part of what lets a single machine serve four hundred gigabits per second.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="mount-nfs">
             <dt>mount_nfs</dt>
             <dd>The FreeBSD command that attaches a remote NFS filesystem to the local directory tree. Part of the base system rather than any package, which pkg which will confirm.</dd>
@@ -199,6 +211,10 @@
         <dl class="vv-dict-entry" id="object-store">
             <dt>object store</dt>
             <dd>Storage addressed by key rather than by path, where a write replaces a whole object and there is no notion of opening a file, seeking within it or locking it. Excellent for write-once read-many workloads, awkward as a substitute for a shared filesystem.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="open-connect">
+            <dt>Open Connect</dt>
+            <dd>Netflix's own content delivery network, built from appliances that the company places inside internet providers. The software on them is FreeBSD, and the kernel work done for them went back into the FreeBSD tree.</dd>
         </dl>
         <dl class="vv-dict-entry" id="pnfs">
             <dt>pNFS</dt>
@@ -224,6 +240,10 @@
             <dt>RPCSEC_GSS</dt>
             <dd>The security framework that lets NFS use Kerberos for real authentication, integrity and privacy instead of trusting the client's word. Correct and rarely deployed, because standing up a Kerberos realm is a project rather than an afternoon.</dd>
         </dl>
+        <dl class="vv-dict-entry" id="s3">
+            <dt>S3</dt>
+            <dd>Amazon's object store, addressed by key rather than by path. Excellent for write-once read-many data, and a poor place to hand frames between components, since every handover becomes a paid request.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="sharenfs">
             <dt>sharenfs</dt>
             <dd>A ZFS dataset property that publishes the dataset over NFS. Setting it makes the pool itself the record of what is shared, so the filesystem and the share cannot drift out of step.</dd>
@@ -235,6 +255,10 @@
         <dl class="vv-dict-entry" id="soft-mount">
             <dt>soft mount</dt>
             <dd>An NFS mount option under which operations return an error instead of waiting when the server stops answering. Kinder to the machine and dangerous for applications never written to expect a failed read.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="step-functions">
+            <dt>Step Functions</dt>
+            <dd>An AWS service that coordinates other services as a state machine, paying per state transition. Convenient for orchestrating small pieces, and the meter runs on every step, which is what made Prime Video's frame-by-frame pipeline expensive.</dd>
         </dl>
         <dl class="vv-dict-entry" id="strongswan">
             <dt>strongSwan</dt>
