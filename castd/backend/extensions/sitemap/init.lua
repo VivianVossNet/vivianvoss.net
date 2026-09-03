@@ -40,6 +40,7 @@ local pages = {
     { loc = "/series/divide-et-impera",   priority = "0.6", changefreq = "monthly" },
     { loc = "/series/bsd-field-guide",   priority = "0.6", changefreq = "monthly" },
     -- blog articles
+    { loc = "/blog/boring-has-no-sales-team",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/hours-to-milliseconds",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/what-grafana-weighs",   priority = "0.7", changefreq = "yearly" },
     { loc = "/blog/nfs-under-your-cloud-bill",   priority = "0.7", changefreq = "yearly" },
