@@ -870,6 +870,10 @@
             <dd>A commercial observability platform that instruments applications and infrastructure and traces requests across services. Like every monitoring tool it reports where a symptom surfaces, which is not always where the cause sits.</dd>
         </dl>
 <h3 id="letter-E">E</h3>
+        <dl class="vv-dict-entry" id="exit-status">
+            <dt>exit status</dt>
+            <dd>The integer a Unix program returns when it finishes: zero conventionally means success. FreeBSD&#8217;s periodic(8) turns it into a reporting vocabulary of four values, where 0 means nothing notable happened, 1 is information, 2 is a warning and anything above 2 is something the operator should see now.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="ebs">
             <dt>EBS</dt>
             <dd>Elastic Block Store, the network-attached block storage service behind most EC2 instances. Billed per provisioned gigabyte-month rather than per gigabyte used.</dd>
@@ -1357,6 +1361,18 @@
             <dd>A 1978 ruling of the German Federal Constitutional Court (BVerfGE 49, 89) that introduced the three-stage theory distinguishing generally accepted rules of technology, state of the art, and existing scientific knowledge and research. Still the basis for reading the term state of the art in IT security law.</dd>
         </dl>
         <h3 id="letter-L">L</h3>
+        <dl class="vv-dict-entry" id="lockf">
+            <dt>lockf</dt>
+            <dd>A FreeBSD base system utility that runs a command while holding an exclusive lock on a file. With -t 0 it gives up immediately if the lock is taken, which is how periodic(8) prevents two runs of the same set from overlapping without any scheduler of its own.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="locate">
+            <dt>locate</dt>
+            <dd>A Unix utility that finds files by name in a database rebuilt periodically rather than by walking the filesystem. On FreeBSD that rebuild is one of the five weekly periodic scripts and accounts for most of the weekly run time.</dd>
+        </dl>
+        <dl class="vv-dict-entry" id="logd">
+            <dt>logd</dt>
+            <dd>The logging daemon of modern macOS, which collects and manages system log data. Apple cited it and its siblings when removing the inherited periodic(8) utility in macOS 15, on the grounds that the maintenance work had moved into managed services.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="launchd">
             <dt>launchd</dt>
             <dd>The init system and service manager of macOS, starting daemons and agents from property-list files; Apple's counterpart to systemd.</dd>
@@ -1698,6 +1714,10 @@
             <dd>Annual demoscene awards presented since 2017, successor in spirit to the Scene.org Awards, with categories including Best Soundtrack, Best Visuals, Best Direction and Best High-End Demo.</dd>
         </dl>
         <h3 id="letter-N">N</h3>
+        <dl class="vv-dict-entry" id="newaliases">
+            <dt>newaliases</dt>
+            <dd>The command that rebuilds the mail aliases database after /etc/aliases has been edited. On a FreeBSD machine it is what makes the nightly periodic report reach a person rather than a mailbox nobody opens.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="neoverse">
             <dt>Neoverse</dt>
             <dd>ARM's line of licensed CPU cores for servers and high-performance computing; the cores on which Europe's SiPearl Rhea1 is built.</dd>
@@ -1888,6 +1908,10 @@
             <dd>The practice of being able to answer questions about a running system from the outside. In the kernel it means dynamic instrumentation; as a purchased product it means agents, a collector and a dashboard, charged per host and per gigabyte.</dd>
         </dl>
         <h3 id="letter-P">P</h3>
+        <dl class="vv-dict-entry" id="periodic">
+            <dt>periodic</dt>
+            <dd>FreeBSD&#8217;s maintenance framework, first shipped in FreeBSD 3.0 in October 1998. A driver of 123 lines of POSIX shell runs the scripts in /etc/periodic/{daily,weekly,monthly,security}, filters their output by exit status through the switches in periodic.conf, and posts what remains to root. Adding a task means dropping a script into a directory.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="patent-grant">
             <dt>patent grant</dt>
             <dd>A clause in which contributors license the patents that their contribution necessarily infringes, so recipients cannot be sued over the code they were given. Apache 2.0 contains one in section three, and it terminates if the recipient begins patent litigation over the work.</dd>
@@ -2078,6 +2102,10 @@
             <dd>The Canadian company, founded near Ottawa, that began building QNX in 1982. The origin of one of the most widely deployed operating systems almost nobody can name.</dd>
         </dl>
         <h3 id="letter-R">R</h3>
+        <dl class="vv-dict-entry" id="run-parts">
+            <dt>run-parts</dt>
+            <dd>The Debian-derived helper that runs every executable in a directory, used on Linux to drive /etc/cron.daily and its siblings. It schedules in the same way FreeBSD&#8217;s periodic(8) does and has no equivalent of its configuration layer or of the collected report.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="rack">
             <dt>RACK</dt>
             <dd>Recent ACKnowledgement, a TCP loss-detection method that infers loss from the order and timing of acknowledgements rather than counting duplicates. Contributed to FreeBSD from Netflix's traffic work.</dd>
@@ -2211,6 +2239,10 @@
             <dd>A frame debugger for graphics work. It captures a single frame of a running application and lets you step through every draw call and inspect the buffers, which is the only practical way to find out why a picture is wrong.</dd>
         </dl>
         <h3 id="letter-S">S</h3>
+        <dl class="vv-dict-entry" id="setuid">
+            <dt>setuid</dt>
+            <dd>A file permission bit that makes a program run with the privileges of its owner rather than of the user invoking it. Because a new setuid binary is a classic sign of compromise, FreeBSD&#8217;s nightly security run reports any that appeared since the previous check.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="saas">
             <dt>SaaS</dt>
             <dd>Software as a Service. Renting access to software hosted by the vendor, paid via recurring subscription rather than a perpetual licence.</dd>
@@ -2691,6 +2723,10 @@
             <dd>Virtual Network Stack in FreeBSD. Gives each jail its own interfaces, routing table, and firewall rules. Kernel-native network isolation without overlay networks.</dd>
         </dl>
         <h3 id="letter-W">W</h3>
+        <dl class="vv-dict-entry" id="whatis">
+            <dt>whatis</dt>
+            <dd>A Unix utility that looks up the one-line description of a manual page in a database. On FreeBSD that database is rebuilt by the weekly periodic run.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="wabi-sabi">
             <dt>wabi-sabi</dt>
             <dd>A Japanese aesthetic that finds beauty in the imperfect, the impermanent and the worn, described for Western readers by Leonard Koren in 1994. In engineering terms, the honoured wear of a coherent maintained thing, distinct from the unmanaged decay of one no one owns.</dd>
@@ -3017,6 +3053,10 @@
             <dd>Founder and leader of the OpenBSD project. Forked OpenSSH in 1999. Three decades of security-first development, auditing every line, removing attack surface instead of adding features.</dd>
         </dl>
         <h3 id="person-S">S</h3>
+        <dl class="vv-dict-entry" id="brian-somers">
+            <dt>Brian Somers</dt>
+            <dd>FreeBSD developer, credited with Paul Traina as an author of periodic(8), the maintenance framework that first shipped in FreeBSD 3.0 in October 1998 and has carried both names on its manual page ever since.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="salvatore-sanfilippo">
             <dt>Salvatore Sanfilippo</dt>
             <dd>Sicilian developer known as antirez. Created Redis in 2009, a single-threaded in-memory data structure server. Maintained it personally for fifteen years.</dd>
@@ -3030,6 +3070,10 @@
             <dd>Co-creator of Scrum with Jeff Sutherland. Founded the Scrum Alliance, later Scrum.org. Admitted that 75 per cent of organisations using Scrum will not succeed.</dd>
         </dl>
         <h3 id="person-T">T</h3>
+        <dl class="vv-dict-entry" id="paul-traina">
+            <dt>Paul Traina</dt>
+            <dd>FreeBSD developer, credited with Brian Somers as an author of periodic(8), the framework that replaced the older three-script arrangement with a directory of small scripts and a configuration layer.</dd>
+        </dl>
         <dl class="vv-dict-entry" id="dave-thomas">
             <dt>Dave Thomas</dt>
             <dd>Agile Manifesto signatory. Co-author of The Pragmatic Programmer. Declared 'Agile is Dead' in 2014, arguing the word had been hijacked by consultancies.</dd>

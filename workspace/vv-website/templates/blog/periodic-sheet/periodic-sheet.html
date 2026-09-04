@@ -1,0 +1,311 @@
+{! extends "../../_base.html" | slotlist !}
+
+{( slot title )}The Report periodic Sends Anyway &#x2014; Vivian Voss{( endslot )}
+
+{( slot meta )}
+<meta name="description" content="One hundred and twenty-three lines of POSIX shell run fifty-six scripts every night on FreeBSD and post the result to root. The configuration file does not exist until somebody writes it. Measured on FreeBSD 15.0: 0.26 seconds, 6,020 KB, a report of 41 lines, and two CVEs in twenty-eight years.">
+{( endslot )}
+
+{( slot canonical )}/blog/periodic-sheet{( endslot )}
+
+{( slot og-title )}The Report periodic Sends Anyway &#x2014; Vivian Voss{( endslot )}
+
+{( slot og-desc )}Technical Beauty Scope. Apple removed periodic from macOS 15 and the reasoning was sound. On FreeBSD it still runs at one minute past three: 56 scripts, no daemon, four exit codes as the entire reporting vocabulary, and zero lines of required configuration. The measurement sheet with every command.{( endslot )}
+
+{( slot jsonld )}<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Report periodic Sends Anyway",
+    "datePublished": "2026-09-04",
+    "author": { "@id": "https://vivianvoss.net/#person" },
+    "publisher": { "@id": "https://vivianvoss.net/#person" },
+    "url": "https://vivianvoss.net/blog/periodic-sheet",
+    "description": "A measurement sheet for periodic(8), the FreeBSD base system utility that runs maintenance and security scripts on a schedule and posts the result to root. The driver is 4,468 bytes of POSIX shell holding 123 lines once comments and blanks are removed, with exactly one function called output_pipe and lockf(1) as its entire concurrency model. Beneath it sit 56 scripts totalling 1,822 lines across daily, weekly, monthly and security. A script signals the weight of its output through its exit status alone: zero for nothing notable, one for information, two for a warning and anything above for something that wants attention now, which is the whole reporting vocabulary and the reason a machine with nothing to say sends nothing at all. Measured on FreeBSD 15.0-RELEASE in a jail rolled back to a clean image, median of three runs: the daily set runs in 0.26 seconds using 6,020 KB of resident memory and produces a report of 41 lines and 1,309 bytes; the security set of fifteen scripts runs in 0.16 seconds; the weekly set takes 2.00 seconds and 35 MB rebuilding the locate and whatis databases. The defaults file carries 132 switches and a fresh install has no /etc/periodic.conf at all, so the required configuration is zero lines. Two CVEs exist against the utility in twenty-eight years, CVE-1999-0761 and CVE-2000-0890, both local and the last published in 2001, with the usual caveat that attention manufactures CVE numbers. periodic first appeared in FreeBSD 3.0 on 16 October 1998, written by Paul Traina and Brian Somers. OpenBSD and NetBSD keep the older shape of three scripts at /etc/daily, /etc/weekly and /etc/monthly; Linux has cron.daily through run-parts without the configuration layer; and Apple removed periodic in macOS 15 on the grounds that logd had taken the work over, which is true and cost the habit of a machine writing an account of itself every night.",
+    "inLanguage": "en-GB",
+    "isPartOf": { "@id": "https://vivianvoss.net/#website" }
+}</script>{( endslot )}
+
+{( slot content )}
+<article class="vv-article">
+    <header class="vv-article-header">
+        <p class="vv-article-meta">
+            <time datetime="2026-09-04">4 September 2026</time>
+            <span aria-hidden="true">&#x25A0;</span>
+            <a href="https://www.linkedin.com/in/vvoss/" target="_blank" rel="noopener">Read on LinkedIn</a>
+        </p>
+        <h1>The Report periodic Sends Anyway</h1>
+        <p class="vv-article-meta"><em>One hundred and twenty-three lines of shell run fifty-six scripts every night and post the result to root. The configuration file does not exist until somebody writes it, and on this machine nobody ever did. Technical Beauty Scope.</em></p>
+        <div class="vv-pills">
+            <span class="vv-pill">technical beauty scope</span>
+            <span class="vv-pill">freebsd</span>
+            <span class="vv-pill">base system</span>
+            <span class="vv-pill">periodic</span>
+        </div>
+    </header>
+
+    <div class="vv-article-body">
+        <p><em>Technical Beauty Scope</em> &#x25A0; the measurement sheet</p>
+
+        <p>Here is the whole of <code>/etc/periodic/daily</code> on a freshly installed FreeBSD 15 system, in the order it runs:</p>
+
+<pre><code>100.clean-disks      400.status-disks     460.status-mail-rejects
+110.clean-tmps       401.status-graid     480.leapfile-ntpd
+120.clean-preserve   404.status-zfs       480.status-ntpd
+130.clean-msgs       406.status-gmirror   500.queuerun
+140.clean-rwho       407.status-graid3    510.status-world-kernel
+150.clean-hoststat   408.status-gstripe   800.scrub-zfs
+200.backup-passwd    409.status-gconcat   801.trim-zfs
+210.backup-aliases   410.status-mfi       999.local
+221.backup-gpart     420.status-network
+222.backup-gmirror   430.status-uptime
+223.backup-zfs       440.status-mailq
+300.calendar         450.status-security
+310.accounting</code></pre>
+
+        <p>Thirty-three files. The numbers in front of the names are the entire scheduling mechanism: shell glob order, nothing else. No dependency graph, no declaration of what runs after what, no engine to resolve any of it. Somebody wanted <code>clean-disks</code> to happen before <code>status-disks</code> and gave one a lower number, and that decision has held since the Clinton administration.</p>
+
+        <p>Read the names slowly and you have a rather complete answer to the question of what a Unix machine ought to check on itself. Are the passwd files backed up. Did the ZFS pools scrub. Is the mail queue moving. Has anybody added a setuid binary. The last entry, <code>999.local</code>, is the door left open for whatever you want to add, and it needs no registration anywhere.</p>
+
+        <p>I measured all of this on a FreeBSD 15.0 jail rolled back to a clean image this morning. Every number below has its command beside it.</p>
+
+        <h2>The driver is one hundred and twenty-three lines</h2>
+
+        <p><code>/usr/sbin/periodic</code> is 4,468 bytes of POSIX shell. Strip the comments and blank lines and 123 remain. It contains exactly one function, called <code>output_pipe</code>, which decides whether a chunk of text goes to a mail command, to a file, or to standard output.</p>
+
+        <p>The rest is a loop. For each argument it takes a lock, then re-runs itself:</p>
+
+<pre><code>lockf -s -t 0 "${lockfile}" /bin/sh $0 LOCKED "$arg"</code></pre>
+
+        <p>That is the concurrency model in its entirety. If yesterday's run is somehow still going, <code>lockf</code> fails immediately, the new run says so and stops. Nobody wrote a scheduler for this, because <code>lockf(1)</code> was already in the base system and does the job.</p>
+
+        <p>The part worth slowing down for is how a script tells <code>periodic</code> whether its output matters. There is no logging library, no severity enum, no structured event. There is the exit status: zero when nothing notable happened, one for information, two for a warning, and anything above two for something the operator should look at now.</p>
+
+        <p>Four numbers, and every one of the fifty-six scripts speaks that vocabulary. The configuration file then says, per script, which of those levels you actually want in your morning mail. A machine that has nothing to report sends nothing, because the scripts all exited zero and the operator asked not to be told about zeroes.</p>
+
+        <svg viewBox="0 0 560 300"
+             aria-label="Layer diagram of what runs periodic and what periodic runs. At the top, cron reads three lines in /etc/crontab. Below it the driver, 123 lines of POSIX shell holding one function and a lockf call. Below that four directories: daily with 33 scripts, security with 15, weekly with 5 and monthly with 3, together 1822 lines. Each script returns an exit status of zero, one, two or above two. That status passes through the configuration filter of 132 switches in the defaults file, and what survives is posted as mail to root. Everything shown ships with the base system."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pl-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pl-head  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 9px; font-weight: 700; }
+                .pl-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 9px; }
+                .pl-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 8px; }
+                .pl-good  { font-family: 'Oxanium', system-ui, sans-serif; fill: #4ab542; font-size: 9px; font-weight: 700; }
+                .pl-box   { fill: none; stroke: var(--border); stroke-width: 1; rx: 4; }
+                .pl-line  { stroke: var(--border); stroke-width: 1; }
+            </style>
+            <text x="280" y="20" class="pl-title" text-anchor="middle">What runs it, and what it runs</text>
+
+            <rect x="150" y="34" width="260" height="26" class="pl-box"></rect>
+            <text x="280" y="51" class="pl-item" text-anchor="middle">cron &#x22A3; three lines in /etc/crontab</text>
+            <line x1="280" y1="60" x2="280" y2="74" class="pl-line"></line>
+
+            <rect x="120" y="74" width="320" height="30" class="pl-box"></rect>
+            <text x="280" y="88" class="pl-head" text-anchor="middle">/usr/sbin/periodic</text>
+            <text x="280" y="99" class="pl-muted" text-anchor="middle">123 lines of shell &#x22A3; one function &#x22A3; lockf(1)</text>
+            <line x1="280" y1="104" x2="280" y2="118" class="pl-line"></line>
+
+            <rect x="30" y="118" width="120" height="30" class="pl-box"></rect>
+            <text x="90" y="132" class="pl-item" text-anchor="middle">daily</text>
+            <text x="90" y="143" class="pl-muted" text-anchor="middle">33 scripts</text>
+            <rect x="160" y="118" width="120" height="30" class="pl-box"></rect>
+            <text x="220" y="132" class="pl-item" text-anchor="middle">security</text>
+            <text x="220" y="143" class="pl-muted" text-anchor="middle">15 scripts</text>
+            <rect x="290" y="118" width="120" height="30" class="pl-box"></rect>
+            <text x="350" y="132" class="pl-item" text-anchor="middle">weekly</text>
+            <text x="350" y="143" class="pl-muted" text-anchor="middle">5 scripts</text>
+            <rect x="420" y="118" width="110" height="30" class="pl-box"></rect>
+            <text x="475" y="132" class="pl-item" text-anchor="middle">monthly</text>
+            <text x="475" y="143" class="pl-muted" text-anchor="middle">3 scripts</text>
+            <text x="280" y="160" class="pl-muted" text-anchor="middle">56 scripts, 1,822 lines</text>
+
+            <line x1="280" y1="166" x2="280" y2="180" class="pl-line"></line>
+            <rect x="120" y="180" width="320" height="30" class="pl-box"></rect>
+            <text x="280" y="194" class="pl-item" text-anchor="middle">exit status &#x2192; 0 &#x22A3; 1 &#x22A3; 2 &#x22A3; above 2</text>
+            <text x="280" y="205" class="pl-muted" text-anchor="middle">the entire reporting vocabulary</text>
+            <line x1="280" y1="210" x2="280" y2="224" class="pl-line"></line>
+
+            <rect x="120" y="224" width="320" height="30" class="pl-box"></rect>
+            <text x="280" y="238" class="pl-item" text-anchor="middle">configuration filter</text>
+            <text x="280" y="249" class="pl-muted" text-anchor="middle">132 switches in /etc/defaults/periodic.conf, none of them yours</text>
+            <line x1="280" y1="254" x2="280" y2="268" class="pl-line"></line>
+
+            <rect x="180" y="268" width="200" height="24" class="pl-box"></rect>
+            <text x="280" y="284" class="pl-good" text-anchor="middle">mail to root, 41 lines</text>
+        </svg>
+
+        <p>Anyone who has tried to make a modern agent quiet during a planned migration will recognise what that saves. Here the filter lives one layer below the noise, in the exit status of the thing that produced it, and the thing that produced it is forty lines of shell you can read.</p>
+
+        <h2>What it costs to run</h2>
+
+        <p>The daily set, all thirty-three scripts including the nested security run: <strong>0.26 seconds</strong> and <strong>6,020 KB</strong> of resident memory, median of three runs. The security set on its own: <strong>0.16 seconds</strong>, 6,012 KB. Monthly is 0.04 seconds and does not trouble the machine at all.</p>
+
+        <p>The weekly set is the outlier and I would rather name it than bury it: <strong>2.00 seconds</strong> and <strong>35 MB</strong>, almost all of it spent rebuilding the <code>locate</code> and <code>whatis</code> databases. That is real work with a real result, and it happens once a week at a quarter past four on a Saturday morning.</p>
+
+        <svg viewBox="0 0 560 250"
+             aria-label="Bar chart of the run time of each periodic set, measured on FreeBSD 15.0 as the median of three runs. The weekly set takes 2.00 seconds, by far the longest, and uses 35 megabytes rebuilding the locate and whatis databases. The daily set takes 0.26 seconds using 6,020 kilobytes. The security set takes 0.16 seconds using 6,012 kilobytes. The monthly set takes 0.04 seconds using 2,708 kilobytes."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pb-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pb-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; }
+                .pb-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .pb-val   { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--accent); font-size: 10px; font-weight: 700; }
+                .pb-bar   { fill: var(--border); rx: 2; }
+                .pb-bar-accent { fill: var(--accent); rx: 2; }
+            </style>
+            <text x="280" y="20" class="pb-title" text-anchor="middle">Seconds per run, median of three</text>
+
+            <text x="20" y="60" class="pb-item">weekly</text>
+            <rect x="110" y="50" width="360" height="14" class="pb-bar-accent"></rect>
+            <text x="480" y="61" class="pb-val">2.00 s</text>
+            <text x="20" y="74" class="pb-muted">5 scripts, 35 MB, rebuilds locate and whatis</text>
+
+            <text x="20" y="112" class="pb-item">daily</text>
+            <rect x="110" y="102" width="47" height="14" class="pb-bar"></rect>
+            <text x="167" y="113" class="pb-val">0.26 s</text>
+            <text x="20" y="126" class="pb-muted">33 scripts, 6,020 KB, includes the nested security run</text>
+
+            <text x="20" y="164" class="pb-item">security</text>
+            <rect x="110" y="154" width="29" height="14" class="pb-bar"></rect>
+            <text x="149" y="165" class="pb-val">0.16 s</text>
+            <text x="20" y="178" class="pb-muted">15 scripts, 6,012 KB</text>
+
+            <text x="20" y="216" class="pb-item">monthly</text>
+            <rect x="110" y="206" width="7" height="14" class="pb-bar"></rect>
+            <text x="127" y="217" class="pb-val">0.04 s</text>
+            <text x="20" y="230" class="pb-muted">3 scripts, 2,708 KB</text>
+
+            <text x="280" y="246" class="pb-muted" text-anchor="middle">FreeBSD 15.0-RELEASE, jail rolled back to a clean image, /usr/bin/time -l</text>
+        </svg>
+
+        <p>The report itself came to <strong>41 lines and 1,309 bytes</strong>. Thirty-eight lines and 632 bytes for the security run. A person reads that over the first coffee and is finished before it goes cold.</p>
+
+        <p>Underneath: 1,822 lines of shell across all fifty-six scripts, comments and blanks removed. The defaults file is 420 lines carrying 132 switches. Runtime dependencies come to none in the usual sense, since there is no binary to link: <code>cron</code> starts it, <code>sh</code> runs it, <code>mail</code> delivers it, and all three arrived with the system.</p>
+
+        <p>Three lines in <code>/etc/crontab</code> are what schedules the whole arrangement.</p>
+
+<pre><code>1  3 * * *  root  periodic daily
+15 4 * * 6  root  periodic weekly
+30 5 1 * *  root  periodic monthly</code></pre>
+
+        <svg viewBox="0 0 560 220"
+             aria-label="Timeline of when periodic runs. Across a day from midnight to midnight, the daily set fires at one minute past three and finishes in 0.26 seconds. On Saturdays the weekly set fires at a quarter past four and takes two seconds. On the first of each month the monthly set fires at half past five and takes 0.04 seconds. The three moments are marked on a single axis, and a note records that the same three times appear in Apple's inherited manual page for its own copy of the utility."
+             role="img"
+             style="max-width:560px;width:100%;height:auto;margin:2em 0">
+            <style>
+                .pt-title { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 13px; font-weight: 700; }
+                .pt-item  { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--text); font-size: 10px; font-weight: 700; }
+                .pt-muted { font-family: 'Oxanium', system-ui, sans-serif; fill: var(--muted); font-size: 9px; }
+                .pt-axis  { stroke: var(--border); stroke-width: 1; }
+                .pt-tick  { stroke: var(--border); stroke-width: 1; }
+                .pt-mark  { fill: var(--accent); }
+            </style>
+            <text x="280" y="20" class="pt-title" text-anchor="middle">Three moments in the night</text>
+
+            <line x1="40" y1="90" x2="520" y2="90" class="pt-axis"></line>
+            <text x="40" y="108" class="pt-muted" text-anchor="middle">00:00</text>
+            <text x="160" y="108" class="pt-muted" text-anchor="middle">06:00</text>
+            <text x="280" y="108" class="pt-muted" text-anchor="middle">12:00</text>
+            <text x="400" y="108" class="pt-muted" text-anchor="middle">18:00</text>
+            <text x="520" y="108" class="pt-muted" text-anchor="middle">24:00</text>
+            <line x1="160" y1="86" x2="160" y2="94" class="pt-tick"></line>
+            <line x1="280" y1="86" x2="280" y2="94" class="pt-tick"></line>
+            <line x1="400" y1="86" x2="400" y2="94" class="pt-tick"></line>
+
+            <circle cx="101" cy="90" r="4" class="pt-mark"></circle>
+            <line x1="101" y1="86" x2="101" y2="50" class="pt-tick"></line>
+            <text x="101" y="44" class="pt-item" text-anchor="middle">03:01 daily</text>
+            <text x="101" y="33" class="pt-muted" text-anchor="middle">33 scripts, 0.26 s</text>
+
+            <circle cx="125" cy="90" r="4" class="pt-mark"></circle>
+            <line x1="125" y1="94" x2="125" y2="140" class="pt-tick"></line>
+            <text x="125" y="153" class="pt-item" text-anchor="middle">04:15 weekly</text>
+            <text x="125" y="164" class="pt-muted" text-anchor="middle">Saturdays, 5 scripts, 2.00 s</text>
+
+            <circle cx="150" cy="90" r="4" class="pt-mark"></circle>
+            <line x1="150" y1="94" x2="150" y2="182" class="pt-tick"></line>
+            <text x="150" y="195" class="pt-item" text-anchor="middle">05:30 monthly</text>
+            <text x="150" y="206" class="pt-muted" text-anchor="middle">first of the month, 3 scripts, 0.04 s</text>
+
+            <text x="400" y="60" class="pt-muted" text-anchor="middle">The same three times stand in Apple's</text>
+            <text x="400" y="72" class="pt-muted" text-anchor="middle">manual page for its inherited copy</text>
+        </svg>
+
+        <h2>Security: two entries, both from the last century</h2>
+
+        <p>The National Vulnerability Database holds two vulnerabilities against <code>periodic</code>. CVE-1999-0761, published in 2000, a buffer overflow in the fts routines that a local user could reach through the program, scored 7.2. CVE-2000-0890, published in 2001, a symlink attack in FreeBSD 4.1.1 and earlier, scored 1.2. Nothing since.</p>
+
+        <p>The caveat this series always attaches applies with some force here: attention manufactures CVE numbers, and a shell script in a base system attracts rather little of it. Two entries in twenty-eight years is a pleasant sheet, and it is not a certificate.</p>
+
+        <p>The four questions get straighter answers. It runs as root, which is the honest price of a program that inspects passwd files and mounts. It takes no data from the network. It gives up no privileges, having been given none to trade. The fourth question, about parsing complex formats, is where an eyebrow belongs. <code>periodic.conf</code> never goes through a parser at all: the driver <em>sources</em> it, so the configuration file is executable shell code running with full privileges. There is a long tradition behind that choice, and the practical consequence is that write access to <code>/etc/periodic.conf</code> amounts to root.</p>
+
+        <p>Worth adding that a good part of what the tool checks is itself security work. <code>100.chksetuid</code> reports setuid binaries that appeared overnight. <code>300.chkuid0</code> looks for accounts that have quietly acquired uid zero. <code>400.passwdless</code> finds empty passwords, <code>800.loginfail</code> counts failed logins, and <code>520.pfdenied</code> summarises what the firewall turned away. Fifteen scripts, and the whole set runs in a sixth of a second.</p>
+
+        <h2>Longevity: three families, and one that let it go</h2>
+
+        <p><code>periodic</code> first appeared in FreeBSD 3.0, released on 16 October 1998. Twenty-seven years and eleven months in the base system, written by Paul Traina and Brian Somers, and the manual page has carried both names ever since.</p>
+
+        <p>The BSD family split three ways on the idea. OpenBSD and NetBSD kept the older shape: three shell scripts at <code>/etc/daily</code>, <code>/etc/weekly</code> and <code>/etc/monthly</code>, with a separate <code>security(8)</code> for the nightly insecurity report, and local additions going into <code>.local</code> files beside them. FreeBSD took the same idea in 1998 and moved it into a directory of small scripts with a configuration layer on top, which is why there are 132 switches and why a package can drop a file into <code>/usr/local/etc/periodic/</code> and be picked up without touching anything. Linux has <code>/etc/cron.daily</code> and its siblings driven by <code>run-parts</code>, which schedules the same way and has no equivalent of the configuration layer or of the report as a concept, so the reporting is generally bought in.</p>
+
+        <p>And then there is the system I am typing this on. macOS ran Apple's inherited copy of <code>periodic</code> for two decades. On macOS 26.5.2 the binary is gone, <code>/etc/periodic/</code> is gone, there is no <code>/etc/crontab</code>, and <code>man periodic</code> finds nothing. Apple removed it in macOS 15, after years of deprecation, on the grounds that <code>logd</code> and its siblings had taken over the actual work.</p>
+
+        <p>That reasoning is sound, and it deserves saying plainly instead of being propped up as a straw man. A system with a managed log service genuinely does not need a shell script to roll logs. What went with it was the part that had nothing to do with logs: the habit of a machine composing a short written account of itself every night and sending it to a person. On FreeBSD that habit is a file you can read, and on the machine in front of me it is an absence.</p>
+
+        <h2>Stability: nothing to migrate</h2>
+
+        <p>The three <code>crontab</code> lines above are the same three lines documented in Apple's manual page for its own inherited version, at the same minutes past the same hours. The variable names in <code>periodic.conf</code> follow one pattern and have followed it for decades, which is why a script written for <code>999.local</code> in 1999 needs no adjustment now.</p>
+
+        <p>Then there is the file I kept looking for and could not find. A fresh FreeBSD install has no <code>/etc/periodic.conf</code>. No empty stub, no commented template: the file simply does not exist, and the system reports for duty every morning regardless. All 132 switches live in <code>/etc/defaults/periodic.conf</code>, which you never edit, and your own file is created only when you first want to disagree with something. Zero lines of configuration, and the machine still writes.</p>
+
+        <blockquote><p>A tool that reports faithfully to an empty room has done its job and achieved nothing.</p></blockquote>
+
+        <h2>The limit</h2>
+
+        <p>The resolution is one day. Something that breaks at ten past three in the morning is in tomorrow's mail, and if you need to know within thirty seconds, this is not the tool and was never meant to be.</p>
+
+        <p>The output is prose for humans. There is no query language, no retention, no way to ask what the mail queue looked like on a Tuesday in June. Anybody who needs that history has to keep it themselves.</p>
+
+        <p>The delivery has a well-known failure mode, and no amount of engineering addresses it. Mail to root goes to a mailbox most people never open, so the report accumulates somewhere in <code>/var/mail</code> and nobody reads a line of it. Two lines fix that: a real address against <code>root</code> in <code>/etc/aliases</code>, then <code>newaliases</code>, and the machine starts talking to a person.</p>
+
+        <p>There is no timeout on a script. I found this the hard way whilst measuring: the run hung for over three minutes on <code>405.pkg-base-audit</code>, a package-supplied script fetching a vulnerability database, and <code>periodic</code> waited patiently the entire time because waiting is what it does. None of the base system's own scripts reaches outside the machine, so this particular trouble arrives with the packages you add.</p>
+
+        <p>And the root question stands. It runs as root, it sources its configuration as shell, and both facts are older than most of the people running it.</p>
+
+        <h2>The sheet</h2>
+
+        <aside class="vv-aside">
+            <p><strong>The measurement sheet:</strong></p>
+            <ul>
+                <li><strong>Efficiency:</strong> driver 123 lines of POSIX shell (4,468 bytes) &#x22A3; 56 scripts, 1,822 lines &#x22A3; daily run 0.26 s / 6,020 KB &#x22A3; security run 0.16 s / 6,012 KB &#x22A3; weekly 2.00 s / 35 MB &#x22A3; report 41 lines &#x22A3; no linked libraries</li>
+                <li><strong>Security:</strong> 2 CVEs in 28 years, both local, last published 2001 &#x22A3; runs as root &#x22A3; takes no network data &#x22A3; sources its config as shell &#x22A3; 15 of its own scripts do security checks</li>
+                <li><strong>Longevity:</strong> FreeBSD 3.0, 16 October 1998 &#x22A3; base system, 27 years 11 months &#x22A3; FreeBSD yes &#x22A3; OpenBSD and NetBSD in the older /etc/daily form &#x22A3; macOS removed it in 15.0 &#x22A3; Linux has run-parts without the configuration layer</li>
+                <li><strong>Stability:</strong> same three crontab lines since 1998 &#x22A3; one naming pattern for 132 switches &#x22A3; zero lines of required configuration &#x22A3; /etc/periodic.conf absent on a fresh install</li>
+                <li>Measured on FreeBSD 15.0-RELEASE in a jail rolled back to a clean image, 4 September 2026, median of three runs.</li>
+                <li><a href="https://man.freebsd.org/cgi/man.cgi?query=periodic&amp;sektion=8" target="_blank" rel="noopener">periodic(8), FreeBSD manual pages</a></li>
+                <li><a href="https://man.freebsd.org/cgi/man.cgi?query=periodic.conf&amp;sektion=5" target="_blank" rel="noopener">periodic.conf(5), FreeBSD manual pages</a></li>
+                <li><a href="https://www.freebsd.org/releases/3.0R/announce/" target="_blank" rel="noopener">FreeBSD 3.0-RELEASE announcement, 16 October 1998</a></li>
+                <li><a href="https://nvd.nist.gov/vuln/detail/CVE-1999-0761" target="_blank" rel="noopener">CVE-1999-0761, National Vulnerability Database</a></li>
+                <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2000-0890" target="_blank" rel="noopener">CVE-2000-0890, National Vulnerability Database</a></li>
+                <li><a href="https://man.openbsd.org/weekly.8" target="_blank" rel="noopener">daily(8) and weekly(8), OpenBSD manual pages</a></li>
+                <li><a href="https://man.netbsd.org/daily.conf.5" target="_blank" rel="noopener">daily.conf(5), NetBSD manual pages</a></li>
+                <li><a href="https://manpagez.com/man/5/periodic.conf/" target="_blank" rel="noopener">periodic.conf(5) as shipped by Apple</a></li>
+                <li><a href="https://www.heise.de/en/news/Cleanup-scripts-macOS-15-removes-periodic-but-no-longer-needs-it-10007870.html" target="_blank" rel="noopener">Cleanup scripts: macOS 15 removes periodic, heise online</a></li>
+                <li><a href="https://eclecticlight.co/2024/11/06/sequoia-catches-periodic-and-vms/" target="_blank" rel="noopener">Sequoia catches: periodic and VMs, The Eclectic Light Company</a></li>
+                <li><a href="https://freebsdfoundation.org/blog/an-introduction-to-freebsds-periodic-system/" target="_blank" rel="noopener">An Introduction to FreeBSD's Periodic System, FreeBSD Foundation</a></li>
+                <li><a href="/blog/periodic">The mechanism explained without the measurements, April 2026</a></li>
+                <li><a href="https://vossscher-verlag.com/en/books/integrated-by-design" target="_blank" rel="noopener">Integrated by Design, Vossscher Verlag</a></li>
+            </ul>
+        </aside>
+
+        <p>Somewhere on a machine you have not logged into for a year, at one minute past three, fifty-six small scripts are working through a checklist somebody wrote before the euro existed, and the mail has been going out the whole time.</p>
+
+        <p class="vv-article-meta"><a href="/series/technical-beauty-scope">&#x2190; Technical Beauty Scope</a></p>
+    </div>
+
+    <footer class="vv-article-footer">
+        <a href="/blog">&#x2190; All articles</a>
+    </footer>
+</article>
+{( endslot )}
